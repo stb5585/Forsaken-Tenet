@@ -379,7 +379,15 @@ class ShopManager(TownScreenBase):
         tools = list(misc_dict.get("Key", []))
         tools.extend(cls for cls in misc_dict.get("Scroll", []) if cls is items_module.BlankScroll)
         for label, item_classes in misc_dict.items():
-            if label in {"Key", "Scroll", "Magic Tool", "Toxin Reagent", "Toxin", "Ammunition"}:
+            if label in {
+                "Key",
+                "Scroll",
+                "Magic Tool",
+                "Toxin Reagent",
+                "Toxin",
+                "Ammunition",
+                "Crossbow Bolts",
+            }:
                 continue
             tools.extend(item_classes)
         guild_tabs = {"Tools": tools} if self._has_available_items(tools) else {}
