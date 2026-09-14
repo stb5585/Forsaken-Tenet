@@ -428,6 +428,36 @@ def test_required_argument_enemy_constructors_render_expected_state():
 @pytest.mark.parametrize(
     "enemy_cls",
     [
+        enemies.Zombie,
+        enemies.Quasit,
+        enemies.GiantScorpion,
+        enemies.InvisibleStalker,
+        enemies.DrowAssassin,
+    ],
+)
+def test_non_druid_enemies_use_piercing_strike_instead_of_poison_strike(enemy_cls):
+    """Enemy-only kits must not retain the Druid Poison Strike spell."""
+    enemy = enemy_cls()
+
+    assert "Poison Strike" not in enemy.spellbook["Spells"]
+    assert "Poison Strike" not in enemy.spellbook["Skills"]
+    assert "Piercing Strike" in enemy.spellbook["Skills"]
+    assert any(entry["ability"] == "Piercing Strike" for entry in enemy.action_stack)
+
+
+def test_jester_verdant_form_uses_piercing_strike_instead_of_poison_strike():
+    jester = enemies.Jester()
+    jester._apply_jester_form("verdant", track_cooldown=False)
+
+    assert "Poison Strike" not in jester.spellbook["Spells"]
+    assert "Poison Strike" not in jester.spellbook["Skills"]
+    assert "Piercing Strike" in jester.spellbook["Skills"]
+    assert any(entry["ability"] == "Piercing Strike" for entry in jester.action_stack)
+
+
+@pytest.mark.parametrize(
+    "enemy_cls",
+    [
         enemies.Minotaur,
         enemies.Jester,
         enemies.Incubus,

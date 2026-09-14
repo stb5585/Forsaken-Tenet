@@ -957,10 +957,11 @@ class InvisibleStalker(Elemental):
         }
         self.gold = random.randint(65, 79)
         self.spellbook = {
-            "Spells": {"Poison Strike": abilities.PoisonStrike()},
+            "Spells": {},
             "Skills": {
                 "Backstab": abilities.Backstab(),
                 "Kidney Punch": abilities.KidneyPunch(),
+                "Piercing Strike": abilities.PiercingStrike(),
                 "Smoke Screen": abilities.SmokeScreen(),
                 "Parry": abilities.Parry(),
             },
@@ -981,7 +982,7 @@ class InvisibleStalker(Elemental):
                 },
             },
             {"ability": "Kidney Punch", "priority": ActionPriority.HIGH},
-            {"ability": "Poison Strike", "priority": ActionPriority.NORMAL},
+            {"ability": "Piercing Strike", "priority": ActionPriority.NORMAL},
             {
                 "ability": "Smoke Screen",
                 "priority": ActionPriority.LOW,
@@ -1678,19 +1679,20 @@ class DrowAssassin(Humanoid):
         }
         self.gold = random.randint(160, 250)
         self.spellbook = {
-            "Spells": {"Poison Strike": abilities.PoisonStrike()},
+            "Spells": {},
             "Skills": {
                 "Backstab": abilities.Backstab(),
                 "Kidney Punch": abilities.KidneyPunch(),
                 "Mug": abilities.Mug(),
                 "Parry": abilities.Parry(),
+                "Piercing Strike": abilities.PiercingStrike(),
                 "Smoke Screen": abilities.SmokeScreen(),
                 "Shadow Strike": abilities.ShadowStrike(),
             },
         }
         self.action_stack = [
             {"ability": "Attack", "priority": ActionPriority.NORMAL},
-            {"ability": "Poison Strike", "priority": ActionPriority.NORMAL},
+            {"ability": "Piercing Strike", "priority": ActionPriority.NORMAL},
             {"ability": "Backstab", "priority": ActionPriority.HIGH},
             {
                 "ability": "Shadow Strike",
@@ -2372,11 +2374,16 @@ class Jester(Humanoid):
             "resistance": _fixed_resistances(
                 Earth=0.20, Wind=0.20, Poison=0.50, Physical=0.30, Holy=-0.10
             ),
-            "spells": (abilities.PoisonStrike,),
-            "skills": (abilities.TripleStrike, abilities.Mug, abilities.SleepingPowder),
+            "spells": (),
+            "skills": (
+                abilities.TripleStrike,
+                abilities.PiercingStrike,
+                abilities.Mug,
+                abilities.SleepingPowder,
+            ),
             "action_stack": [
                 {"ability": "Triple Strike", "priority": ActionPriority.NORMAL},
-                {"ability": "Poison Strike", "priority": ActionPriority.HIGH},
+                {"ability": "Piercing Strike", "priority": ActionPriority.HIGH},
                 {"ability": "Mug", "priority": ActionPriority.NORMAL},
                 {
                     "ability": "Sleeping Powder",
