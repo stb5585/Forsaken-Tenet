@@ -3,6 +3,8 @@
 import inspect
 
 from src.core import abilities
+from src.core.combat.action_interface import action_reference_for_ability
+from src.core.save_system.item_serialization import AbilitySerializer
 from src.core.abilities import (
     bard,
     base,
@@ -83,3 +85,20 @@ def test_progression_catalogs_reference_split_implementations():
 def test_legacy_alias_and_yaml_directory_remain_available():
     assert abilities.SongInspiration is abilities.MelodyInspiration
     assert abilities._YAML_DIR.is_dir()
+
+
+def test_every_learnable_active_ability_has_a_stable_shortcut_and_save_identity():
+    """Prevent catalog additions from silently becoming unassignable actions."""
+    active_abilities = []
+    for ability_class in _progression_abilities():
+        ability = ability_class()
+        if getattr(ability, "passive", False) or getattr(ability, "exploration_cast", False):
+            continue
+        active_abilities.append(ability)
+
+    references = [action_reference_for_ability(ability) for ability in active_abilities]
+    serialized = [AbilitySerializer.serialize(ability) for ability in active_abilities]
+
+    assert all(reference is not None for reference in references)
+    assert all(reference.action_id == saved for reference, saved in zip(references, serialized))
+    assert all(AbilitySerializer.deserialize(ability_id) is not None for ability_id in serialized)

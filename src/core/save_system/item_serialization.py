@@ -122,6 +122,9 @@ class AbilitySerializer:
         """Convert an ability to its canonical slug or legacy class token."""
         if ability is None:
             return ""
+        from ..abilities.catalog import ensure_catalog_ability_identity
+
+        ensure_catalog_ability_identity(ability)
         if getattr(ability, "ability_id", None):
             return str(ability.ability_id)
         legacy_token = str(getattr(ability, "_class_name", ability.__class__.__name__))
@@ -139,6 +142,12 @@ class AbilitySerializer:
         """
         if not name:
             return None
+
+        from ..abilities.catalog import catalog_ability_from_id
+
+        catalog_ability = catalog_ability_from_id(name)
+        if catalog_ability is not None:
+            return catalog_ability
 
         if re.fullmatch(r"[a-z][a-z0-9_]*", name):
             yaml_path = CORE_DATA_DIR / "abilities" / f"{name}.yaml"
