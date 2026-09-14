@@ -1847,6 +1847,10 @@ class Bite(NaturalWeapon):
             if not random.randint(0, 39 // result.crit):
                 result.target.stats.con -= 1
                 result.extra["Disease"] = True
+                result.effects_applied["Stat"].append("Constitution Down")
+                result.message += (
+                    f"{result.target.name} contracts a disease! Constitution is reduced by 1.\n"
+                )
         return results
 
 
@@ -1864,6 +1868,10 @@ class Bite2(Bite):
             if not random.randint(0, 19 // result.crit):
                 result.extra["Disease"] = True
                 result.target.stats.con -= 1
+                result.effects_applied["Stat"].append("Constitution Down")
+                result.message += (
+                    f"{result.target.name} contracts a disease! Constitution is reduced by 1.\n"
+                )
         return results
 
 
