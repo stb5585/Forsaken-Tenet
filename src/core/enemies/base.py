@@ -223,6 +223,8 @@ class Enemy(Character):
                         self.spellbook["Skills"][skill_name].passive,
                         self.spellbook["Skills"][skill_name].name == "Backstab"
                         and not target.incapacitated(),
+                        self.spellbook["Skills"][skill_name].name == "Disarm"
+                        and not self._target_has_weapon(target),
                         self.spellbook["Skills"][skill_name].weapon and self.is_disarmed(),
                         self.spellbook["Skills"][skill_name].name == "Smoke Screen"
                         and self.health.current > self.health.max * ENEMY_LOW_HEALTH_THRESHOLD,
@@ -883,6 +885,9 @@ class Enemy(Character):
                 self._debuff_failure_cooldowns[ability_name] = remaining
 
     def _target_has_weapon(self, target: Character) -> bool:
+        is_disarmed = getattr(target, "is_disarmed", None)
+        if callable(is_disarmed) and is_disarmed():
+            return False
         equipment = getattr(target, "equipment", {})
         weapon = equipment.get("Weapon") if isinstance(equipment, dict) else None
         if weapon is None:

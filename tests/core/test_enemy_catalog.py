@@ -456,6 +456,20 @@ def test_enemy_legacy_options_can_select_spell_and_skill(monkeypatch):
     assert skill_enemy.options(target, [], None) == ("Use Skill", "Disarm")
 
 
+def test_enemy_disarm_priority_skips_an_already_disarmed_target(monkeypatch):
+    target = TestGameState.create_player(class_name="Warrior", race_name="Human", level=1)
+    target.physical_effects["Disarm"].active = True
+    enemy = _make_enemy(name="Test Disarmer")
+    enemy.spellbook["Skills"]["Disarm"] = abilities.Disarm()
+    enemy.action_stack = [
+        {"ability": "Attack", "priority": enemies.ActionPriority.NORMAL},
+        {"ability": "Disarm", "priority": enemies.ActionPriority.HIGH},
+    ]
+    monkeypatch.setattr("src.core.enemies.random.choice", lambda choices: choices[-1])
+
+    assert enemy.options(target, [], None) == ("Attack", None)
+
+
 def test_enemy_can_choose_and_use_combat_consumable_from_inventory(monkeypatch):
     target = TestGameState.create_player(class_name="Warrior", race_name="Human", level=1)
     potion_enemy = _make_enemy(name="Potion Goblin")
