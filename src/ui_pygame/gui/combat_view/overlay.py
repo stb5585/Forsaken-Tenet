@@ -592,24 +592,24 @@ class CombatOverlayMixin:
         if not effects:
             return
         view_width = int(self.screen_width * 0.65)
-        y = self.screen_height - 198
-        rect = pygame.Rect(10, y, max(180, view_width - 20), 23)
+        y = self.screen_height - 204
+        rect = pygame.Rect(10, y, max(180, view_width - 20), 29)
         self._draw_panel_surface(
             rect,
-            fill=(66, 42, 72),
-            border=(190, 118, 205),
-            accent=(236, 190, 98),
-            alpha=225,
-            border_width=1,
+            fill=(79, 35, 91),
+            border=(235, 126, 248),
+            accent=(255, 207, 86),
+            alpha=242,
+            border_width=2,
         )
         effect = effects[0]
         font = pygame.font.Font(None, 19)
         text = self._truncate_text(
             font,
-            f"{effect.icon_label}  {effect.label}: {effect.detail}",
+            f"{effect.icon_label}  {effect.label.upper()}: {effect.detail}",
             rect.width - 14,
         )
-        self.screen.blit(font.render(text, True, (247, 226, 245)), (rect.left + 7, rect.top + 4))
+        self.screen.blit(font.render(text, True, (255, 241, 255)), (rect.left + 7, rect.top + 6))
 
     def _render_combat_log_overlay(self):
         """Render combat log as semi-transparent overlay on dungeon view."""

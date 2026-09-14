@@ -359,6 +359,28 @@ def test_low_hp_only_priority_skips_until_threshold(monkeypatch):
     assert healer.options(target, [], None) == ("Cast Spell", "Regen")
 
 
+def test_full_health_enemy_skips_heal_and_deprioritizes_regen(monkeypatch):
+    target = TestGameState.create_player(class_name="Warrior", race_name="Human", level=1)
+    healer = _make_enemy(name="Test Healer")
+    healer.spellbook["Spells"] = {
+        "Heal": abilities.Heal(),
+        "Regen": abilities.Regen(),
+    }
+    healer.action_stack = [
+        {"ability": "Attack", "priority": enemies.ActionPriority.NORMAL},
+        {"ability": "Heal", "priority": enemies.ActionPriority.HIGH},
+        {"ability": "Regen", "priority": enemies.ActionPriority.HIGH},
+    ]
+    monkeypatch.setattr("src.core.enemies.random.choice", lambda seq: seq[-1])
+
+    assert healer.options(target, [], None) == ("Cast Spell", "Regen")
+    assert healer.get_last_action_metadata()["priority"] == enemies.ActionPriority.LOW
+
+    healer.health.current -= 1
+    assert healer.options(target, [], None) == ("Cast Spell", "Regen")
+    assert healer.get_last_action_metadata()["priority"] == enemies.ActionPriority.HIGH
+
+
 def test_enemy_options_cover_pickup_surface_and_flee_legacy_paths(monkeypatch):
     low_level_target = TestGameState.create_player(class_name="Warrior", race_name="Human", level=1)
     weapon = items.Weapon("Test Sword", "", 0, 0.0, 1, 1, "1-Handed", "Sword", False, True)
