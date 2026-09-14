@@ -48,6 +48,18 @@ def test_start_battle_clears_stale_cambion_anti_magic_outside_realm():
     assert player.anti_magic_active is False
 
 
+def test_start_battle_encumbered_player_loses_initiative():
+    """Encumbrance must override virtual-readiness initiative jitter."""
+    player = TestGameState.create_player(name="TestHero", class_name="Warrior", race_name="Human")
+    player.encumbered = True
+    enemy = Goblin()
+
+    first, second = BattleEngine(player, enemy, DummyCombatTile()).start_battle()
+
+    assert first is enemy
+    assert second is player
+
+
 def test_enemy_sleeping_powder_bypasses_required_monocane_inventory():
     player = TestGameState.create_player(name="TestHero", class_name="Warrior", race_name="Human")
     enemy = Goblin()
