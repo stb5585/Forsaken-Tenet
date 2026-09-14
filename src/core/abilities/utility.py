@@ -111,6 +111,7 @@ class Rally(Skill):
         self.subtyp = "Enhance"
         self.cost = 5
         self.target_self = True
+        self.ability_id = "rally"
 
     def use(self, user, target=None, **kwargs):
         result = super().use(user, user, **kwargs)

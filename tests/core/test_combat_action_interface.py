@@ -2,6 +2,7 @@
 
 from types import SimpleNamespace
 
+from src.core.abilities.utility import Rally
 from src.core.combat.action_interface import (
     SHORTCUT_SLOT_COUNT,
     ActionReference,
@@ -70,6 +71,22 @@ def test_all_actions_keep_unavailable_learned_actions_visible_with_reason():
     assert entries[1].enabled is True
     assert entries[0].icon_key == "spell_arcane"
     assert entries[1].icon_key == "skill_offense"
+
+
+def test_rally_has_a_stable_reference_and_can_be_assigned_to_a_shortcut():
+    """Legacy Python abilities need a stable identity for the shortcut editor."""
+    player = _player()
+    player.mana.current = 10
+    player.spellbook["Skills"] = {"Rally": Rally()}
+
+    rally = next(entry for entry in learned_action_presentations(player) if entry.choice == "Rally")
+    assignments = assign_shortcut(player, 0, rally.reference)
+    slot = shortcut_presentations(player)[0]
+
+    assert rally.reference == ActionReference(ActionReferenceKind.ABILITY, "rally")
+    assert assignments[0] == rally.reference
+    assert slot.action is not None
+    assert slot.action.choice == "Rally"
 
 
 def test_engine_owned_target_scope_marks_single_target_action_without_a_target():
