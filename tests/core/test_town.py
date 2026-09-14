@@ -147,7 +147,7 @@ def test_bounty_board_records_initial_restock_baseline(monkeypatch):
     }
 
 
-def test_bounty_board_does_not_restock_when_visible_or_active(monkeypatch):
+def test_bounty_board_does_not_restock_while_offers_are_visible(monkeypatch):
     from src.core import town
 
     game = _make_game()
@@ -160,16 +160,6 @@ def test_bounty_board_does_not_restock_when_visible_or_active(monkeypatch):
     assert board.generate_bounties(game) is False
     assert board.bounties == []
     assert game.player_char.bounty_board_state["initialized"] is True
-
-    game = _make_game(bounty_quests={"Goblin": [{"enemy": "Goblin"}, 0, False]})
-    game.player_char.gameplay_stats = {"steps_taken": 999, "enemies_defeated": 99}
-    board = town.BountyBoard()
-    monkeypatch.setattr(board, "create_bounty", lambda _game: {"name": "New Hunt"})
-
-    assert board.generate_bounties(game) is False
-    assert board.bounties == []
-    assert game.player_char.bounty_board_state["initialized"] is True
-
 
 def test_bounty_board_waits_for_progress_before_restock(monkeypatch):
     from src.core import town
@@ -192,6 +182,41 @@ def test_bounty_board_waits_for_progress_before_restock(monkeypatch):
     game.player_char.gameplay_stats["steps_taken"] = town.BOUNTY_RESTOCK_STEP_THRESHOLD
     assert board.generate_bounties(game) is True
     assert board.bounties == [{"name": "New Hunt"}]
+
+
+def test_bounty_board_restocks_with_active_bounties_until_active_cap(monkeypatch):
+    from src.core import town
+
+    game = _make_game(bounty_quests={"Goblin": [{"enemy": "Goblin"}, 0, False]})
+    game.player_char.gameplay_stats = {
+        "steps_taken": town.BOUNTY_RESTOCK_STEP_THRESHOLD,
+        "enemies_defeated": 0,
+    }
+    game.player_char.bounty_board_state = {
+        "initialized": True,
+        "last_restock_level": 20,
+        "last_restock_steps": 0,
+        "last_restock_enemies_defeated": 0,
+    }
+    board = town.BountyBoard()
+    monkeypatch.setattr("src.core.town.random.randint", lambda _a, _b: 4)
+    monkeypatch.setattr(board, "create_bounty", lambda _game: {"name": "New Hunt"})
+
+    assert board.generate_bounties(game) is True
+    assert board.bounties == [{"name": "New Hunt"}] * 3
+
+    game = _make_game(
+        bounty_quests={
+            f"Target {index}": [{"enemy": f"Target {index}"}, 0, False]
+            for index in range(town.MAX_ACTIVE_BOUNTIES)
+        }
+    )
+    game.player_char.gameplay_stats = {"steps_taken": 999, "enemies_defeated": 99}
+    board = town.BountyBoard()
+    monkeypatch.setattr(board, "create_bounty", lambda _game: {"name": "Blocked Hunt"})
+
+    assert board.generate_bounties(game) is False
+    assert board.bounties == []
 
 
 def test_bounty_board_restock_can_be_triggered_by_defeats_or_level(monkeypatch):

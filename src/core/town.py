@@ -27,6 +27,7 @@ TAVERN_FLAVOR_DIALOGUES = get_tavern_flavor_dialogues()
 
 BOUNTY_RESTOCK_STEP_THRESHOLD = 200
 BOUNTY_RESTOCK_ENEMY_THRESHOLD = 8
+MAX_ACTIVE_BOUNTIES = 4
 
 BOUNTY_BOARD_STATE_DEFAULTS = {
     "initialized": False,
@@ -405,7 +406,7 @@ def should_restock_bounty_board(game, *, available_count=None):
     state = ensure_bounty_board_state(player_char)
     if available_count is None:
         available_count = len(getattr(game, "bounties", {}) or {})
-    if active_bounty_count(player_char) > 0 or available_count > 0:
+    if active_bounty_count(player_char) >= MAX_ACTIVE_BOUNTIES or available_count > 0:
         return False
     if not state["initialized"]:
         return True
@@ -470,18 +471,19 @@ class BountyBoard:
 
     def generate_bounties(self, game):
         available_count = len(getattr(game, "bounties", {}) or {})
-        if active_bounty_count(game.player_char) > 0 or available_count > 0:
+        active_count = active_bounty_count(game.player_char)
+        if active_count >= MAX_ACTIVE_BOUNTIES or available_count > 0:
             state = ensure_bounty_board_state(game.player_char)
             if not state["initialized"]:
                 mark_bounty_board_restock(game.player_char)
             return False
         if not should_restock_bounty_board(game, available_count=available_count):
             return False
-        num = random.randint(1, 4) - len(game.player_char.quest_dict["Bounty"])
-        if num > 0:
-            for _ in range(num):
-                bounty = self.create_bounty(game)
-                self.bounties.append(bounty)
+        capacity = MAX_ACTIVE_BOUNTIES - active_count
+        num = min(capacity, random.randint(1, MAX_ACTIVE_BOUNTIES))
+        for _ in range(num):
+            bounty = self.create_bounty(game)
+            self.bounties.append(bounty)
         if self.bounties:
             mark_bounty_board_restock(game.player_char)
             return True

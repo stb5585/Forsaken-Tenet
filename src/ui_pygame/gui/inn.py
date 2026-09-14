@@ -5,7 +5,12 @@ Implements the core tavern logic from town.py adapted for Pygame presenter.
 
 import random
 
-from src.core.town import PATRON_DIALOGUES, TAVERN_FLAVOR_DIALOGUES
+from src.core.town import (
+    MAX_ACTIVE_BOUNTIES,
+    PATRON_DIALOGUES,
+    TAVERN_FLAVOR_DIALOGUES,
+    active_bounty_count,
+)
 
 from .confirmation_popup import ConfirmationPopup
 from .level_up import LevelUpScreen
@@ -201,6 +206,15 @@ class InnManager(TownScreenBase):
         bounty_screen = LocationMenuScreen(self.presenter, "Accept Bounty")
 
         while True:
+            if active_bounty_count(self.player_char) >= MAX_ACTIVE_BOUNTIES:
+                popup = ConfirmationPopup(
+                    self.presenter,
+                    f"You can hold at most {MAX_ACTIVE_BOUNTIES} active bounties.",
+                    show_buttons=False,
+                )
+                popup.show(**self.popup_show_kwargs())
+                return
+
             # Get available bounties
             bounties_available = []
             if hasattr(self.presenter, "game") and hasattr(self.presenter.game, "bounties"):
