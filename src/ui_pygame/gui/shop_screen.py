@@ -476,9 +476,7 @@ class ShopScreen(TownScreenBase):
                 == item.name
                 for slot in compatible_slots
             ):
-                equipped_text = self.normal_font.render(
-                    "Already Equipped", True, self.colors.GOLD
-                )
+                equipped_text = self.normal_font.render("Already Equipped", True, self.colors.GOLD)
                 equipped_rect = equipped_text.get_rect(
                     center=(self.mod_rect.centerx, self.mod_rect.top + 34)
                 )

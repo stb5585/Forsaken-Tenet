@@ -161,6 +161,7 @@ def test_bounty_board_does_not_restock_while_offers_are_visible(monkeypatch):
     assert board.bounties == []
     assert game.player_char.bounty_board_state["initialized"] is True
 
+
 def test_bounty_board_waits_for_progress_before_restock(monkeypatch):
     from src.core import town
 

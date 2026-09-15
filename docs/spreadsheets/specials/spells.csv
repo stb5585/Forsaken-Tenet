@@ -130,7 +130,7 @@ Photon Sphere,Ultima,Spells,Spell,Non-elemental,,150,Mana,1.5,4,all_enemies,Fals
 Plant Seeds,PlantSeeds,Spells,Spell,Earth,Nature,0,,1.0,,single_enemy,False,True,,Archdruid,,False,,Spread seeds of life around the battlefield; each seed changes the growth.
 Poison Breath,PoisonBreath,Spells,Spell,Poison,Poison,20,Mana,1.5,5,single_enemy,False,True,2,Archdruid,Basilisk,True,,"Your spew forth a toxic breath, dealing poison damage and poisoning the target."
 Poison Dart,PoisonDart,Spells,Spell,Poison,Nature,8,Mana,1.15,6,single_enemy,False,True,,Druid; Pathfinder,,False,,Shape a thorn into a venomous dart and send it into the enemy.
-Poison Strike,PoisonStrike,Spells,Spell,Poison,Nature,12,Mana,1.0,,single_enemy,False,True,,Pathfinder,Drow Assassin; Giant Scorpion; Invisible Stalker; Quasit; Zombie,False,,"Partially transform, biting the target for physical and poison damage."
+Poison Strike,PoisonStrike,Spells,Spell,Poison,Nature,12,Mana,1.0,,single_enemy,False,True,,Pathfinder,,False,,"Partially transform, biting the target for physical and poison damage."
 Polymorph,Polymorph,Spells,Spell,Arcane,Arcane,12,Mana,1.0,,single_enemy,False,True,,Mage,,False,,Transform an enemy into a harmless bunny that cannot act for 2 turns. Bosses resist the transformation 90% of the time.
 Prismatic Cataclysm,PrismaticCataclysm,Spells,Spell,Elemental,Elemental,180,Mana,1.0,,all_enemies,False,True,,Wizard,Circe,False,,Unleash all six elemental schools across every enemy.
 Prismatic Finale,PrismaticFinale,Spells,Spell,Elemental,Elemental,18,Mana,1.0,,single_enemy,False,True,,Troubadour,,False,,"Spend all Crescendo to deal scaling Fire, Ice, Electric, or Wind damage."

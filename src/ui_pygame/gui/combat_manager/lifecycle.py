@@ -729,7 +729,9 @@ class CombatLifecycleMixin:
                     activated = is_left_click(event) or event.type == pygame.FINGERUP
                     if activated and input_armed:
                         focus_control_at = getattr(self.combat_view, "enemy_focus_control_at", None)
-                        direction = focus_control_at(position) if callable(focus_control_at) else None
+                        direction = (
+                            focus_control_at(position) if callable(focus_control_at) else None
+                        )
                         if direction is not None:
                             self.engine.cycle_focus(direction)
                             enemy = self.engine._focused_enemy()
