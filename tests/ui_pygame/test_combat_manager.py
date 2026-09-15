@@ -808,7 +808,6 @@ def test_capture_background_scroll_handling_and_action_deduplication(monkeypatch
         "Spells",
         "Skills",
         "Items",
-        "Auto Kill",
     ]
 
     beast = _make_player()

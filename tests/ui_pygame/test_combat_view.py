@@ -173,7 +173,7 @@ def test_two_enemy_target_uses_arrow_without_selection_plate():
     target_rect = view._enemy_target_rects["second"]
     marker_y = max(second_lane.top + 44, target_rect.top - 18)
     marker_sample = (target_rect.centerx, marker_y + 4)
-    assert screen.get_at(marker_sample)[:3] == view.colors["panel_accent"]
+    assert screen.get_at(marker_sample)[:3] == view.colors["turn_enemy_alt"]
 
 
 def test_polymorph_animator_paces_within_its_randomized_span():
