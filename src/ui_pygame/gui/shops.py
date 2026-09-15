@@ -29,6 +29,18 @@ class ShopManager(TownScreenBase):
         if self._active_shopkeeper_portrait:
             shop_screen.set_location_portrait(self._active_shopkeeper_portrait)
 
+    @staticmethod
+    def _shop_options(quest_manager, giver: str, *, craft_option: str | None = None) -> list[str]:
+        """Build shop actions without an inert Quests entry."""
+        options = ["Buy", "Sell"]
+        has_quest = getattr(quest_manager, "has_available_or_active_quest", None)
+        if not callable(has_quest) or has_quest(giver):
+            options.append("Quests")
+        if craft_option:
+            options.append(craft_option)
+        options.append("Leave")
+        return options
+
     def visit_blacksmith(self):
         """Visit Griswold's Blacksmith - weapons and shields."""
         if self.player_char.player_level() < 5:
@@ -47,8 +59,6 @@ class ShopManager(TownScreenBase):
         shop_screen = ShopScreen(self.presenter, self.player_char, "Griswold's Blacksmith")
         self._active_shopkeeper_portrait = "Griswold"
         self._set_shopkeeper_portrait(shop_screen)
-        shop_screen.set_options(["Buy", "Sell", "Quests", "Leave"])
-
         from .quest_manager import QuestManager
 
         qm = QuestManager(
@@ -59,6 +69,7 @@ class ShopManager(TownScreenBase):
             ),
             renderer_preserve_formatting=True,
         )
+        shop_screen.set_options(self._shop_options(qm, "Griswold"))
 
         while True:
             choice = shop_screen.navigate_options()
@@ -83,7 +94,7 @@ class ShopManager(TownScreenBase):
                 elif buy_choice == "Helmets":
                     self.buy_helmets()
                 # Always restore main options after buy submenu (including ESC/Back)
-                shop_screen.set_options(["Buy", "Sell", "Quests", "Leave"])
+                shop_screen.set_options(self._shop_options(qm, "Griswold"))
                 shop_screen.shop_message = "Griswold's Blacksmith"
             elif choice == "Sell":
                 self.sell_items()
@@ -151,7 +162,7 @@ class ShopManager(TownScreenBase):
             ),
             renderer_preserve_formatting=True,
         )
-        shop_screen.set_options(["Buy", "Sell", "Quests", "Leave"])
+        shop_screen.set_options(self._shop_options(qm, "Alchemist"))
 
         while True:
             choice = shop_screen.navigate_options()
@@ -197,9 +208,16 @@ class ShopManager(TownScreenBase):
             ),
             renderer_preserve_formatting=True,
         )
-        options = ["Buy", "Sell", "Quests", "Leave"]
-        if dragoon.can_craft_draconite_pendant(self.player_char):
-            options.insert(3, "Craft Draconite Pendant")
+        qm._active_giver = "Jeweler"
+        options = self._shop_options(
+            qm,
+            "Jeweler",
+            craft_option=(
+                "Craft Draconite Pendant"
+                if dragoon.can_craft_draconite_pendant(self.player_char)
+                else None
+            ),
+        )
         shop_screen.set_options(options)
 
         while True:
@@ -221,9 +239,15 @@ class ShopManager(TownScreenBase):
             elif choice == "Craft Draconite Pendant":
                 ok, message = dragoon.craft_draconite_pendant(self.player_char)
                 self.presenter.show_message(message)
-                options = ["Buy", "Sell", "Quests", "Leave"]
-                if dragoon.can_craft_draconite_pendant(self.player_char):
-                    options.insert(3, "Craft Draconite Pendant")
+                options = self._shop_options(
+                    qm,
+                    "Jeweler",
+                    craft_option=(
+                        "Craft Draconite Pendant"
+                        if dragoon.can_craft_draconite_pendant(self.player_char)
+                        else None
+                    ),
+                )
                 shop_screen.set_options(options)
 
     def visit_magic_shop(self):
@@ -239,7 +263,17 @@ class ShopManager(TownScreenBase):
         shop_screen = ShopScreen(self.presenter, self.player_char, self.MAGIC_SHOP_MESSAGE)
         self._active_shopkeeper_portrait = self.MAGIC_SHOPKEEPER
         self._set_shopkeeper_portrait(shop_screen)
-        shop_screen.set_options(["Buy", "Sell", "Quests", "Leave"])
+        from .quest_manager import QuestManager
+
+        qm = QuestManager(
+            self.presenter,
+            self.player_char,
+            quest_text_renderer=lambda text: shop_screen.display_quest_text(
+                text, npc_name=self.MAGIC_SHOPKEEPER
+            ),
+            renderer_preserve_formatting=True,
+        )
+        shop_screen.set_options(self._shop_options(qm, self.MAGIC_SHOPKEEPER))
 
         while True:
             choice = shop_screen.navigate_options()
@@ -256,16 +290,6 @@ class ShopManager(TownScreenBase):
             elif choice == "Sell":
                 self.sell_items()
             elif choice == "Quests":
-                from .quest_manager import QuestManager
-
-                qm = QuestManager(
-                    self.presenter,
-                    self.player_char,
-                    quest_text_renderer=lambda text: shop_screen.display_quest_text(
-                        text, npc_name=self.MAGIC_SHOPKEEPER
-                    ),
-                    renderer_preserve_formatting=True,
-                )
                 qm.check_and_offer(self.MAGIC_SHOPKEEPER)
 
     def buy_weapons(self):

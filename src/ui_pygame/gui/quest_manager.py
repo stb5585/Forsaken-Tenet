@@ -154,6 +154,22 @@ class QuestManager:
                 side_list.append(q)
         return main_list, side_list
 
+    def has_available_or_active_quest(self, giver: str) -> bool:
+        """Return whether a giver merits a Quests menu entry for this player."""
+        mains, sides = self._eligible_quests(giver)
+        for quest_type, groups in (("Main", mains), ("Side", sides)):
+            for group in groups:
+                for name, definition in group.items():
+                    player_quests = getattr(self.player_char, "quest_dict", {})
+                    if not isinstance(player_quests, dict):
+                        player_quests = {}
+                    active = player_quests.get(quest_type, {}).get(name)
+                    if isinstance(active, dict) and not active.get("Turned In", False):
+                        return True
+                    if active is None and self._can_offer_quest(name, definition, quest_type):
+                        return True
+        return False
+
     def _can_offer_quest(self, quest_name: str, q: dict[str, Any], typ: str) -> bool:
         """Check if quest can be offered based on prerequisites."""
         # Check if quest requires another quest to be turned in first

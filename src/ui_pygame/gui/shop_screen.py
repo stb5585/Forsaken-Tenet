@@ -464,6 +464,26 @@ class ShopScreen(TownScreenBase):
                 self.screen.blit(cant_text, cant_rect)
                 return
 
+            compatible_slots = []
+            try:
+                from src.core import items as items_module
+
+                compatible_slots = items_module.equipment_slots_for_item(item)
+            except (AttributeError, TypeError):
+                compatible_slots = [equip_slot]
+            if any(
+                getattr(getattr(self.player_char, "equipment", {}).get(slot), "name", None)
+                == item.name
+                for slot in compatible_slots
+            ):
+                equipped_text = self.normal_font.render(
+                    "Already Equipped", True, self.colors.GOLD
+                )
+                equipped_rect = equipped_text.get_rect(
+                    center=(self.mod_rect.centerx, self.mod_rect.top + 34)
+                )
+                self.screen.blit(equipped_text, equipped_rect)
+
             # Only recalculate if the item selection changed
             if self.current_item != self.cached_item_index:
                 self.cached_diff_str = self.player_char.equip_diff(item, equip_slot, buy=True)
