@@ -1465,7 +1465,6 @@ class Wererat(Monster):
             "Pendant": items.NoPendant(),
         }
         self.gold = random.randint(40, 65)
-        self.inventory["Scorpion Venom"] = [items.ScorpionVenom]
         self.inventory["Rat Tail"] = [items.RatTail]
         self.inventory["Leather"] = [items.Leather]
         self.transform = [Wererat, Bandit2]
@@ -1682,6 +1681,7 @@ class GiantScorpion(Animal):
             "Pendant": items.NoPendant(),
         }
         self.gold = random.randint(40, 65)
+        self.inventory["Scorpion Venom"] = [items.ScorpionVenom]
         self.resistance["Poison"] = 0.25
         self.resistance["Physical"] = 0.25
         self.spellbook["Skills"]["Piercing Strike"] = abilities.PiercingStrike()

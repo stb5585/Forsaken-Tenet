@@ -32,6 +32,12 @@
   damage without changing its one-turn setup, MP cost, or contested stun.
 - Corrected enemy escape settlement so an escaped singleton grants no
   experience, gold, loot, kill, bounty, or quest credit.
+- Added labeled previous/next hostile targeting controls, stable hostile-lane
+  timeline colors, direct lane selection, and debug-only `K` Auto Kill access.
+- Added affected bounty counts to combat victory popups and retained combat
+  outcome sequencing behind the completed enemy fade.
+- Rebalanced Barghest for a normally geared level-15 encounter, reducing its
+  overwhelming initiative and damage pressure while preserving its boss kit.
 
 ### Dungeon, Gathering, And Persistence
 
@@ -47,6 +53,10 @@
   Mimics remain unchanged.
 - Cleared stale dungeon frames after death/re-entry and completed catalog item
   icon routing, including Monocane, crossbows, bolts, and venoms.
+- Made trap damage an input-guarded dungeon acknowledgement that blocks movement
+  until dismissed, and made acknowledgement popups resistant to buffered input.
+- Surface existing post-level-10 resurrection gold costs and possible stat loss
+  in the defeat summary before returning to town.
 
 ### Quest, Content, And Playtest Reliability
 
@@ -64,6 +74,16 @@
 - Added focused regression coverage for gathering rendering/persistence,
   chest outcomes, quest stages and collection progress, escape settlement,
   combat presentation, and deterministic post-hit ability assertions.
+- Made shop Quest entries conditional on active, available, or turn-in quests;
+  shop equipment comparisons now identify items already equipped in compatible
+  slots without preventing duplicate purchases.
+- Restored the Character Menu's learned-ability reference view, including
+  passive abilities, and retained Action Layout for shortcut assignment with
+  hover descriptions.
+- Recorded the current shop-gate and stock-filter audit as a deferred economy
+  design gate; no prices, stock, or opening levels changed.
+- Moved Scorpion Venom from Wererat loot to Giant Scorpion loot to match the
+  creature-themed drop source.
 
 ### Promotion Stabilization
 
