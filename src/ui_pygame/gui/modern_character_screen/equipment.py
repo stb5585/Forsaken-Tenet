@@ -293,7 +293,15 @@ class CharacterEquipmentMixin:
         elif chosen == "Bestiary":
             popup = BestiaryPopupMenu(self.presenter, self)
             _ = popup.show(player_char, flush_events=True, require_key_release=True)
-        elif chosen in {"Abilities", "Action Layout", "Specials"}:
+        elif chosen == "Abilities":
+            popup = SimpleListPopupMenu(
+                self.presenter,
+                self,
+                title="Abilities",
+                source_fn=self._ability_reference_entries,
+            )
+            popup.show(player_char, flush_events=True, require_key_release=True)
+        elif chosen in {"Action Layout", "Specials"}:
             self._edit_action_layout(player_char)
         elif chosen == "Totem Aspects":
             popup = TotemAspectsPopupMenu(self.presenter, self, title="Totem Aspects")
@@ -309,8 +317,22 @@ class CharacterEquipmentMixin:
             "Key Items",
             "Bestiary",
             "Abilities",
+            "Action Layout",
             "Exit Menu",
         ]
+
+    @staticmethod
+    def _ability_reference_entries(player_char):
+        """Return every learned active and passive ability for the reference view."""
+        spellbook = getattr(player_char, "spellbook", {}) or {}
+        entries = []
+        for category in ("Skills", "Spells"):
+            abilities = spellbook.get(category, {}) if isinstance(spellbook, dict) else {}
+            if not abilities:
+                continue
+            entries.append(f"--- {category} ---")
+            entries.extend(abilities.values())
+        return entries
 
     def _edit_action_layout(self, player_char) -> None:
         """Edit the same persisted shortcut layout used by in-combat All Actions."""
@@ -488,6 +510,27 @@ class CharacterEquipmentMixin:
                     rect.left + 5,
                     rect.top + 51,
                     rect.width - 10,
+                )
+            hovered_description = ""
+            try:
+                pointer = pygame.mouse.get_pos()
+            except pygame.error:
+                pointer = (-1, -1)
+            for index, _category, rect in action_rows:
+                if rect.collidepoint(pointer):
+                    hovered_description = str(actions[index].description or "")
+                    break
+            if hovered_description:
+                tooltip = pygame.Rect(panel.left + 18, slot_y - 70, panel.width - 36, 38)
+                pygame.draw.rect(self.screen, (20, 20, 26), tooltip, border_radius=4)
+                pygame.draw.rect(self.screen, self.colors.BORDER_COLOR, tooltip, 1, border_radius=4)
+                self._draw_text(
+                    hovered_description,
+                    self.small_font,
+                    self.colors.LIGHT_GRAY,
+                    tooltip.left + 8,
+                    tooltip.top + 9,
+                    tooltip.width - 16,
                 )
             if dragged_action is not None and dragged_position is not None:
                 drag_icon = pygame.transform.smoothscale(
