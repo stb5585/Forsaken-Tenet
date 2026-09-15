@@ -605,12 +605,12 @@ class Zombie(Undead):
         }
         self.gold = random.randint(15, 30)
         self.spellbook = {
-            "Spells": {"Poison Strike": abilities.PoisonStrike()},
-            "Skills": {},
+            "Spells": {},
+            "Skills": {"Piercing Strike": abilities.PiercingStrike()},
         }
         self.action_stack = [
             {"ability": "Attack", "priority": ActionPriority.NORMAL},
-            {"ability": "Poison Strike", "priority": ActionPriority.NORMAL},
+            {"ability": "Piercing Strike", "priority": ActionPriority.NORMAL},
         ]
         self.level.pro_level = 1
         self.picture = "zombie.txt"
@@ -733,15 +733,18 @@ class Quasit(Fiend):
         }
         self.gold = random.randint(25, 40)
         self.spellbook = {
-            "Spells": {"Poison Strike": abilities.PoisonStrike()},
-            "Skills": {"Shapeshift": abilities.Shapeshift()},
+            "Spells": {},
+            "Skills": {
+                "Piercing Strike": abilities.PiercingStrike(),
+                "Shapeshift": abilities.Shapeshift(),
+            },
         }
         self.resistance["Poison"] = 1
         self.status_immunity.append("Poison")
         self.transform = [Quasit, ElectricBat, GiantCentipede, BattleToad]
         self.action_stack = [
             {"ability": "Attack", "priority": ActionPriority.NORMAL},
-            {"ability": "Poison Strike", "priority": ActionPriority.NORMAL},
+            {"ability": "Piercing Strike", "priority": ActionPriority.NORMAL},
             {
                 "ability": "Shapeshift",
                 "priority": ActionPriority.HIGH,
@@ -1022,16 +1025,16 @@ class Barghest(Fiend):
     def __init__(self):
         super().__init__(
             name="Barghest",
-            health=145,
+            health=135,
             mana=120,
-            strength=25,
+            strength=22,
             intel=15,
             wisdom=14,
             con=18,
             charisma=14,
-            dex=16,
-            attack=40,
-            defense=35,
+            dex=12,
+            attack=34,
+            defense=30,
             magic=21,
             magic_def=32,
             exp=500,
@@ -1462,7 +1465,6 @@ class Wererat(Monster):
             "Pendant": items.NoPendant(),
         }
         self.gold = random.randint(40, 65)
-        self.inventory["Scorpion Venom"] = [items.ScorpionVenom]
         self.inventory["Rat Tail"] = [items.RatTail]
         self.inventory["Leather"] = [items.Leather]
         self.transform = [Wererat, Bandit2]
@@ -1679,12 +1681,13 @@ class GiantScorpion(Animal):
             "Pendant": items.NoPendant(),
         }
         self.gold = random.randint(40, 65)
+        self.inventory["Scorpion Venom"] = [items.ScorpionVenom]
         self.resistance["Poison"] = 0.25
         self.resistance["Physical"] = 0.25
-        self.spellbook["Spells"]["Poison Strike"] = abilities.PoisonStrike()
+        self.spellbook["Skills"]["Piercing Strike"] = abilities.PiercingStrike()
         self.action_stack = [
             {"ability": "Attack", "priority": ActionPriority.NORMAL},
-            {"ability": "Poison Strike", "priority": ActionPriority.NORMAL},
+            {"ability": "Piercing Strike", "priority": ActionPriority.NORMAL},
         ]
         self.level.pro_level = 2
         self.picture = "giantscorpion.txt"

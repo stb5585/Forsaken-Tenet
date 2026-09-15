@@ -437,6 +437,7 @@ class CombatOutcomeMixin:
             return self._handle_vesperion_true_final_victory(player_char, enemy)
 
         encounter = getattr(self.engine, "encounter", None)
+        bounty_before = self._bounty_progress_snapshot(player_char, encounter, enemy)
         tamed_members = (
             [
                 member
@@ -491,9 +492,13 @@ class CombatOutcomeMixin:
 
         if outcome.result == "defeat":
             self._pause_with_events(DEFEAT_PAUSE_MS)
+            death_summary = str(getattr(player_char, "last_death_message", "") or "").strip()
+            defeat_message = "You have been defeated!"
+            if death_summary:
+                defeat_message = f"{defeat_message}\n\n{death_summary}"
 
             _show_end_popup(
-                "You have been defeated!",
+                defeat_message,
                 background=pre_outcome_background,
                 refresh_background=False,
             )
@@ -557,6 +562,8 @@ class CombatOutcomeMixin:
             if outcome.level_up:
                 end_messages.append("\nLEVEL UP!")
 
+            end_messages.extend(self._bounty_progress_lines(player_char, bounty_before))
+
             _show_end_popup(
                 "\n".join(end_messages),
                 background=pre_outcome_background,
@@ -591,6 +598,38 @@ class CombatOutcomeMixin:
         self.combat_view.reset_combat_log()
         self._combat_background = None
         return True
+
+    @staticmethod
+    def _bounty_progress_snapshot(player_char, encounter, enemy) -> dict[str, tuple[int, int]]:
+        """Capture active bounty counts for members that can resolve this encounter."""
+        bounties = getattr(player_char, "quest_dict", {}).get("Bounty", {})
+        if not isinstance(bounties, dict):
+            return {}
+        enemies = [enemy]
+        if encounter is not None:
+            enemies = [member.enemy for member in getattr(encounter, "members", ())]
+        snapshot = {}
+        for member_enemy in enemies:
+            entry = bounties.get(getattr(member_enemy, "name", ""))
+            if isinstance(entry, list) and len(entry) >= 3 and isinstance(entry[0], dict):
+                snapshot[member_enemy.name] = (int(entry[1]), int(entry[0].get("num", 1)))
+        return snapshot
+
+    @staticmethod
+    def _bounty_progress_lines(player_char, before: dict[str, tuple[int, int]]) -> list[str]:
+        """Format bounty changes caused by a completed encounter for the victory popup."""
+        bounties = getattr(player_char, "quest_dict", {}).get("Bounty", {})
+        lines = []
+        for name, (old_count, total) in before.items():
+            entry = bounties.get(name) if isinstance(bounties, dict) else None
+            if not isinstance(entry, list) or len(entry) < 3:
+                continue
+            new_count = int(entry[1])
+            if new_count == old_count:
+                continue
+            suffix = " — Ready to turn in!" if bool(entry[2]) else ""
+            lines.append(f"Bounty: {name} {new_count}/{total}{suffix}")
+        return lines
 
     def _pause_with_events(self, duration_ms: int) -> None:
         """Pause briefly while pumping events to avoid unresponsive window."""

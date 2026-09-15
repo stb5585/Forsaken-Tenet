@@ -25,6 +25,7 @@ class CombatOverlayMixin:
             enemy = encounter.primary_enemy
             self._enemy_card_rects = {}
             self._enemy_target_rects = {}
+            self._enemy_focus_control_rects = {}
             self.render_enemy_in_dungeon(
                 player_char,
                 enemy,
@@ -45,6 +46,24 @@ class CombatOverlayMixin:
         lane_width = max(230, (view_width - (margin * 2) - gap) // 2)
         self._enemy_card_rects = {}
         self._enemy_target_rects = {}
+        self._enemy_focus_control_rects = {}
+        control_font = pygame.font.Font(None, 17)
+        for direction, label, x in (
+            (-1, "Previous Target  Q / LB", 12),
+            (1, "Next Target  E / RB", 174),
+        ):
+            rect = pygame.Rect(x, 166, 150, 28)
+            self._enemy_focus_control_rects[direction] = rect
+            pygame.draw.rect(self.screen, (32, 30, 36), rect, border_radius=4)
+            pygame.draw.rect(
+                self.screen,
+                self._hostile_lane_color(0 if direction < 0 else 1),
+                rect,
+                1,
+                border_radius=4,
+            )
+            text = control_font.render(label, True, (230, 225, 210))
+            self.screen.blit(text, text.get_rect(center=rect.center))
 
         for index, member in enumerate(encounter.members):
             enemy = member.enemy
@@ -68,6 +87,8 @@ class CombatOverlayMixin:
                 continue
             if living:
                 self._enemy_card_rects[member.combatant_id] = lane
+            lane_color = self._hostile_lane_color(index)
+            pygame.draw.rect(self.screen, lane_color, lane, 3 if focused else 1)
 
             title_font = pygame.font.Font(None, 25)
             body_font = pygame.font.Font(None, 20)
@@ -181,7 +202,7 @@ class CombatOverlayMixin:
                 marker_y = max(lane.top + 44, target_rect.top - 18)
                 pygame.draw.polygon(
                     self.screen,
-                    self.colors["panel_accent"],
+                    lane_color,
                     (
                         (target_rect.centerx - 8, marker_y),
                         (target_rect.centerx + 8, marker_y),
@@ -498,7 +519,7 @@ class CombatOverlayMixin:
                 token_size,
                 token_size,
             )
-            border = self._timeline_actor_border(entry.actor_id)
+            border = self._timeline_actor_border(entry.actor_id, engine)
             pygame.draw.rect(self.screen, (30, 30, 38), token_rect.inflate(4, 4), border_radius=4)
             pygame.draw.rect(
                 self.screen,
@@ -551,10 +572,20 @@ class CombatOverlayMixin:
                 1,
             )
 
-    def _timeline_actor_border(self, actor_id: str) -> tuple[int, int, int]:
+    def _timeline_actor_border(self, actor_id: str, engine=None) -> tuple[int, int, int]:
         """Return the established side color for a timeline token outline."""
-        key = "turn_player" if actor_id == PLAYER_ACTOR_ID else "turn_enemy"
-        return self.colors[key]
+        if actor_id == PLAYER_ACTOR_ID:
+            return self.colors["turn_player"]
+        encounter = getattr(engine, "encounter", None)
+        members = getattr(encounter, "members", ())
+        for index, member in enumerate(members):
+            if getattr(member, "combatant_id", None) == actor_id:
+                return self._hostile_lane_color(index)
+        return self.colors["turn_enemy"]
+
+    def _hostile_lane_color(self, index: int) -> tuple[int, int, int]:
+        """Return a stable, readable color for an encounter hostile lane."""
+        return self.colors["turn_enemy" if index % 2 == 0 else "turn_enemy_alt"]
 
     @staticmethod
     def _timeline_actor(actor_id, player_char, engine, current_actor):
@@ -592,24 +623,24 @@ class CombatOverlayMixin:
         if not effects:
             return
         view_width = int(self.screen_width * 0.65)
-        y = self.screen_height - 198
-        rect = pygame.Rect(10, y, max(180, view_width - 20), 23)
+        y = self.screen_height - 204
+        rect = pygame.Rect(10, y, max(180, view_width - 20), 29)
         self._draw_panel_surface(
             rect,
-            fill=(66, 42, 72),
-            border=(190, 118, 205),
-            accent=(236, 190, 98),
-            alpha=225,
-            border_width=1,
+            fill=(79, 35, 91),
+            border=(235, 126, 248),
+            accent=(255, 207, 86),
+            alpha=242,
+            border_width=2,
         )
         effect = effects[0]
         font = pygame.font.Font(None, 19)
         text = self._truncate_text(
             font,
-            f"{effect.icon_label}  {effect.label}: {effect.detail}",
+            f"{effect.icon_label}  {effect.label.upper()}: {effect.detail}",
             rect.width - 14,
         )
-        self.screen.blit(font.render(text, True, (247, 226, 245)), (rect.left + 7, rect.top + 4))
+        self.screen.blit(font.render(text, True, (255, 241, 255)), (rect.left + 7, rect.top + 6))
 
     def _render_combat_log_overlay(self):
         """Render combat log as semi-transparent overlay on dungeon view."""

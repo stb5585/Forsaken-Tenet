@@ -205,6 +205,8 @@ class Enemy(Character):
                 if self.tunnel:
                     if spell.subtyp not in ["Heal", "Support"]:
                         continue
+                if self._should_skip_full_health_heal(spell):
+                    continue
                 if self.spellbook["Spells"][spell_name].cost <= self.mana.current:
                     spell_list.append(spell_name)
             if spell_list:
@@ -221,6 +223,8 @@ class Enemy(Character):
                         self.spellbook["Skills"][skill_name].passive,
                         self.spellbook["Skills"][skill_name].name == "Backstab"
                         and not target.incapacitated(),
+                        self.spellbook["Skills"][skill_name].name == "Disarm"
+                        and not self._target_has_weapon(target),
                         self.spellbook["Skills"][skill_name].weapon and self.is_disarmed(),
                         self.spellbook["Skills"][skill_name].name == "Smoke Screen"
                         and self.health.current > self.health.max * ENEMY_LOW_HEALTH_THRESHOLD,
@@ -338,6 +342,10 @@ class Enemy(Character):
                 # Skip passive spells and check mana
                 if spell.passive or self.mana.current < spell.cost:
                     continue
+                if self._should_skip_full_health_heal(spell):
+                    continue
+                if self._is_full_health() and self._is_regen_spell(spell):
+                    priority = ActionPriority.LOW
                 if self.tunnel and spell.subtyp not in ["Heal", "Support"]:
                     continue
                 action_type = "Cast Spell"
@@ -387,7 +395,9 @@ class Enemy(Character):
 
             # Add action to weighted pool proportional to priority weight
             for _ in range(weight):
-                weighted_actions.append((action_type, ability_name, dict(action_entry)))
+                resolved_entry = dict(action_entry)
+                resolved_entry["priority"] = priority
+                weighted_actions.append((action_type, ability_name, resolved_entry))
 
         # If no weighted actions available, fall back to standard options() logic
         if not weighted_actions:
@@ -400,6 +410,23 @@ class Enemy(Character):
             self._used_single_use_abilities.add(ability_name)
         self._advance_debuff_failure_cooldowns()
         return action_type, ability_name
+
+    def _is_full_health(self) -> bool:
+        """Return whether an enemy has no missing health to restore."""
+        return self.health.current >= self.health.max
+
+    @staticmethod
+    def _is_regen_spell(spell) -> bool:
+        """Recognize the recurring self-heal that remains a low-priority setup."""
+        return str(getattr(spell, "name", "")).strip().lower().startswith("regen")
+
+    def _should_skip_full_health_heal(self, spell) -> bool:
+        """Avoid spending a direct healing spell when it cannot restore health."""
+        return (
+            self._is_full_health()
+            and getattr(spell, "subtyp", None) == "Heal"
+            and not self._is_regen_spell(spell)
+        )
 
     def _pickup_weapon_priority(self) -> ActionPriority:
         """Classify how urgently this enemy should recover from Disarm."""
@@ -858,6 +885,9 @@ class Enemy(Character):
                 self._debuff_failure_cooldowns[ability_name] = remaining
 
     def _target_has_weapon(self, target: Character) -> bool:
+        is_disarmed = getattr(target, "is_disarmed", None)
+        if callable(is_disarmed) and is_disarmed():
+            return False
         equipment = getattr(target, "equipment", {})
         weapon = equipment.get("Weapon") if isinstance(equipment, dict) else None
         if weapon is None:

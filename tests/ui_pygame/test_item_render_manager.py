@@ -239,6 +239,7 @@ def test_default_item_render_map_uses_dedicated_art_for_new_tools_and_signet():
     expected = {
         items.LockpickKit().name: "tools/lockpick_kit",
         items.SmokeBomb().name: "tools/smoke_bomb",
+        items.WaterBladder().name: "tools/water_bladder",
         items.Oculus().name: "magic_tools/oculus",
         items.ThievesGuildSignet().name: "accessories/rings/thieves_guild_signet",
     }

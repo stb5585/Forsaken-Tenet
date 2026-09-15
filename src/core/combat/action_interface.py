@@ -99,7 +99,10 @@ def _active_abilities(player: Any) -> Iterable[tuple[str, str, Any]]:
 
 
 def action_reference_for_ability(ability: Any) -> ActionReference | None:
-    """Return the persisted slug reference for a data-backed learned ability."""
+    """Return the persisted slug reference for a learned active ability."""
+    from ..abilities.catalog import ensure_catalog_ability_identity
+
+    ensure_catalog_ability_identity(ability)
     ability_id = getattr(ability, "ability_id", None)
     if not isinstance(ability_id, str) or not ability_id:
         return None

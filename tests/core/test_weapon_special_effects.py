@@ -113,6 +113,24 @@ def test_vampire_bite_life_steal(monkeypatch):
     assert attacker.health.current == initial_health + 20
 
 
+@pytest.mark.parametrize("bite_cls", [items.Bite, items.Bite2])
+def test_bite_disease_reports_constitution_loss_in_combat(monkeypatch, bite_cls):
+    """A successful Bite disease proc must surface its permanent CON penalty."""
+    attacker = create_test_character("Biter")
+    defender = create_test_character("Victim")
+    attacker.equipment["Weapon"] = bite_cls()
+    starting_con = defender.stats.con
+
+    monkeypatch.setattr(random, "random", lambda: 0.0)
+    monkeypatch.setattr(random, "randint", lambda _low, _high: 0)
+
+    message = attacker._apply_equipment_effects(defender, "Weapon", damage=10, crit=1)
+
+    assert defender.stats.con == starting_con - 1
+    assert "contracts a disease" in message
+    assert "constitution is reduced by 1" in message.lower()
+
+
 def test_demon_claw_reports_doom_message():
     """Demon Claw should surface the Doom message when its special applies."""
     from src.core.character import StatusEffect

@@ -115,6 +115,7 @@ class CombatLifecycleMixin:
         # Initialize combat state
         self.running = True
         self._last_combat_timeline = ()
+        self._debug_auto_kill_hint_shown = False
         self.combat_view.reset_combat_log()
         has_sight = player_has_sight(player_char)
         hidden_names = [
@@ -165,6 +166,8 @@ class CombatLifecycleMixin:
             self.combat_view.add_combat_message(f"{player_char.name} has the initiative!")
         else:
             self.combat_view.add_combat_message(f"{first.name} has the initiative!")
+        if getattr(player_char, "anti_magic_active", False):
+            self._show_anti_magic_warning()
 
         clock = pygame.time.Clock()
         fled = False
@@ -295,6 +298,19 @@ class CombatLifecycleMixin:
         # Combat ended - show result
         return self._handle_combat_end(player_char, primary_enemy, fled)
 
+    def _show_anti_magic_warning(self) -> None:
+        """Present one blocking warning after combat art is ready, before turns begin."""
+        from ..confirmation_popup import ConfirmationPopup
+
+        popup = ConfirmationPopup(
+            self.presenter,
+            "ANTI-MAGIC FIELD ACTIVE\n\n"
+            "Spells and standard skills are suppressed in this encounter.\n\n"
+            "The field remains marked above the combat controls.",
+            show_buttons=False,
+        )
+        popup.show(flush_events=True, require_key_release=True)
+
     def _prepare_enemy_combat_assets(self, enemy: Character) -> None:
         """Warm the current enemy's combat sprites before the first combat frame."""
         prepare = getattr(self.combat_view, "prepare_enemy_assets", None)
@@ -395,9 +411,6 @@ class CombatLifecycleMixin:
         ):
             idx = 2 if "Defend" in deduped else 1
             deduped.insert(idx, "Pickup Weapon")
-
-        if self._debug_mode_enabled() and "Auto Kill" not in deduped:
-            deduped.append("Auto Kill")
 
         return deduped
 
@@ -529,6 +542,10 @@ class CombatLifecycleMixin:
         Returns:
             str/bool: "flee" if fled, False if cancelled, True if action taken
         """
+        if self._debug_mode_enabled() and not self._debug_auto_kill_hint_shown:
+            self.combat_view.add_combat_message("Debug: Press K to defeat the focused enemy.")
+            self._debug_auto_kill_hint_shown = True
+
         # Pre-turn: process status effects and check if player can act
         pre = self.engine.pre_turn()
         if pre.effects_text:
@@ -636,6 +653,10 @@ class CombatLifecycleMixin:
                     elif key == pygame.K_e:
                         self.engine.cycle_focus(1)
                         enemy = self.engine._focused_enemy()
+                    elif key == pygame.K_k and self._debug_mode_enabled():
+                        action_result = self._execute_action("Auto Kill", player_char, enemy)
+                        if action_result is not None:
+                            action_taken = True
                     elif key == pygame.K_UP or key == pygame.K_w:
                         continue
                     elif key == pygame.K_DOWN or key == pygame.K_s:
@@ -707,6 +728,14 @@ class CombatLifecycleMixin:
                         )
                     activated = is_left_click(event) or event.type == pygame.FINGERUP
                     if activated and input_armed:
+                        focus_control_at = getattr(self.combat_view, "enemy_focus_control_at", None)
+                        direction = (
+                            focus_control_at(position) if callable(focus_control_at) else None
+                        )
+                        if direction is not None:
+                            self.engine.cycle_focus(direction)
+                            enemy = self.engine._focused_enemy()
+                            continue
                         card_at = getattr(self.combat_view, "enemy_card_at", None)
                         target_id = card_at(position) if callable(card_at) else None
                         if target_id is not None:

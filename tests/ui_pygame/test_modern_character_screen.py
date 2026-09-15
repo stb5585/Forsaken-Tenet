@@ -2773,6 +2773,7 @@ def test_modern_character_menu_actions_remove_quit_and_put_exit_last(monkeypatch
         "Key Items",
         "Bestiary",
         "Abilities",
+        "Action Layout",
         "Exit Menu",
     ]
     assert "Change Equipment" not in screen.menu_options

@@ -359,6 +359,28 @@ def test_low_hp_only_priority_skips_until_threshold(monkeypatch):
     assert healer.options(target, [], None) == ("Cast Spell", "Regen")
 
 
+def test_full_health_enemy_skips_heal_and_deprioritizes_regen(monkeypatch):
+    target = TestGameState.create_player(class_name="Warrior", race_name="Human", level=1)
+    healer = _make_enemy(name="Test Healer")
+    healer.spellbook["Spells"] = {
+        "Heal": abilities.Heal(),
+        "Regen": abilities.Regen(),
+    }
+    healer.action_stack = [
+        {"ability": "Attack", "priority": enemies.ActionPriority.NORMAL},
+        {"ability": "Heal", "priority": enemies.ActionPriority.HIGH},
+        {"ability": "Regen", "priority": enemies.ActionPriority.HIGH},
+    ]
+    monkeypatch.setattr("src.core.enemies.random.choice", lambda seq: seq[-1])
+
+    assert healer.options(target, [], None) == ("Cast Spell", "Regen")
+    assert healer.get_last_action_metadata()["priority"] == enemies.ActionPriority.LOW
+
+    healer.health.current -= 1
+    assert healer.options(target, [], None) == ("Cast Spell", "Regen")
+    assert healer.get_last_action_metadata()["priority"] == enemies.ActionPriority.HIGH
+
+
 def test_enemy_options_cover_pickup_surface_and_flee_legacy_paths(monkeypatch):
     low_level_target = TestGameState.create_player(class_name="Warrior", race_name="Human", level=1)
     weapon = items.Weapon("Test Sword", "", 0, 0.0, 1, 1, "1-Handed", "Sword", False, True)
@@ -406,6 +428,36 @@ def test_required_argument_enemy_constructors_render_expected_state():
 @pytest.mark.parametrize(
     "enemy_cls",
     [
+        enemies.Zombie,
+        enemies.Quasit,
+        enemies.GiantScorpion,
+        enemies.InvisibleStalker,
+        enemies.DrowAssassin,
+    ],
+)
+def test_non_druid_enemies_use_piercing_strike_instead_of_poison_strike(enemy_cls):
+    """Enemy-only kits must not retain the Druid Poison Strike spell."""
+    enemy = enemy_cls()
+
+    assert "Poison Strike" not in enemy.spellbook["Spells"]
+    assert "Poison Strike" not in enemy.spellbook["Skills"]
+    assert "Piercing Strike" in enemy.spellbook["Skills"]
+    assert any(entry["ability"] == "Piercing Strike" for entry in enemy.action_stack)
+
+
+def test_jester_verdant_form_uses_piercing_strike_instead_of_poison_strike():
+    jester = enemies.Jester()
+    jester._apply_jester_form("verdant", track_cooldown=False)
+
+    assert "Poison Strike" not in jester.spellbook["Spells"]
+    assert "Poison Strike" not in jester.spellbook["Skills"]
+    assert "Piercing Strike" in jester.spellbook["Skills"]
+    assert any(entry["ability"] == "Piercing Strike" for entry in jester.action_stack)
+
+
+@pytest.mark.parametrize(
+    "enemy_cls",
+    [
         enemies.Minotaur,
         enemies.Jester,
         enemies.Incubus,
@@ -432,6 +484,20 @@ def test_enemy_legacy_options_can_select_spell_and_skill(monkeypatch):
     skill_enemy.spellbook["Skills"]["Disarm"] = abilities.Disarm()
     monkeypatch.setattr(random, "choice", lambda seq: seq[-1])
     assert skill_enemy.options(target, [], None) == ("Use Skill", "Disarm")
+
+
+def test_enemy_disarm_priority_skips_an_already_disarmed_target(monkeypatch):
+    target = TestGameState.create_player(class_name="Warrior", race_name="Human", level=1)
+    target.physical_effects["Disarm"].active = True
+    enemy = _make_enemy(name="Test Disarmer")
+    enemy.spellbook["Skills"]["Disarm"] = abilities.Disarm()
+    enemy.action_stack = [
+        {"ability": "Attack", "priority": enemies.ActionPriority.NORMAL},
+        {"ability": "Disarm", "priority": enemies.ActionPriority.HIGH},
+    ]
+    monkeypatch.setattr("src.core.enemies.random.choice", lambda choices: choices[-1])
+
+    assert enemy.options(target, [], None) == ("Attack", None)
 
 
 def test_enemy_can_choose_and_use_combat_consumable_from_inventory(monkeypatch):

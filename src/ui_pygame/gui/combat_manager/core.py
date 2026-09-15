@@ -59,6 +59,7 @@ class CombatManagerCoreMixin:
         self._last_combat_timeline = ()
         self.available_actions = []
         self._slot_symbol_cache = None
+        self._debug_auto_kill_hint_shown = False
 
     def _capture_background(self):
         if hasattr(self.presenter, "get_background_surface"):

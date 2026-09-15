@@ -46,6 +46,7 @@ class CombatViewCoreMixin:
             "message_bg": (30, 30, 35),
             "turn_player": (70, 130, 210),
             "turn_enemy": (180, 80, 70),
+            "turn_enemy_alt": (205, 145, 65),
             "telegraph": (255, 205, 110),
             "log_damage": (235, 120, 105),
             "log_heal": (120, 210, 135),
@@ -87,6 +88,7 @@ class CombatViewCoreMixin:
         )
         self._enemy_target_rects: dict[str, pygame.Rect] = {}
         self._enemy_card_rects: dict[str, pygame.Rect] = {}
+        self._enemy_focus_control_rects: dict[int, pygame.Rect] = {}
         self._last_player_target_rect = pygame.Rect(
             28,
             self.screen_height - 270,
@@ -126,6 +128,13 @@ class CombatViewCoreMixin:
         for combatant_id, rect in self._enemy_card_rects.items():
             if rect.collidepoint(position):
                 return combatant_id
+        return None
+
+    def enemy_focus_control_at(self, position) -> int | None:
+        """Return target-cycle direction for a visible focus control."""
+        for direction, rect in self._enemy_focus_control_rects.items():
+            if rect.collidepoint(position):
+                return direction
         return None
 
     def trigger_impact_effect(

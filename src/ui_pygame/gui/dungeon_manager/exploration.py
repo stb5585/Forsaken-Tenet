@@ -270,8 +270,21 @@ class DungeonExplorationMixin:
                 self.ui_dirty = True
                 self.view_dirty = True
 
-        for message in map_tiles.pop_cambion_messages(self.player_char):
+        cambion_messages = map_tiles.pop_cambion_messages(self.player_char)
+        for message in cambion_messages:
             self.add_message(message)
+        if "Trap" in tile_type and cambion_messages:
+            from ..confirmation_popup import ConfirmationPopup
+
+            popup = ConfirmationPopup(
+                self.presenter,
+                "\n".join(cambion_messages),
+                show_buttons=False,
+            )
+            popup.show(
+                background_draw_func=self._draw_cached_popup_background,
+                min_display_ms=300,
+            )
 
         # Check if tile effect teleported player to town (e.g., "Bring Him Home" quest)
         if self.player_char.in_town():

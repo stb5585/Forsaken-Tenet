@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from functools import lru_cache
+
 from .assassin import (
     ApplyToxin,
     BlackLotusMastery,
@@ -1732,3 +1734,90 @@ spell_dict = {
     },
     "Beast Master": {},
 }
+
+
+# A renamed Python catalog ability keeps its prior save/shortcut slug here.
+# No aliases are currently needed, but the explicit boundary prevents a display
+# rename from silently invalidating an existing assignment.
+PYTHON_CATALOG_ABILITY_ID_ALIASES: dict[str, str] = {}
+
+
+def _catalog_slug(value: object) -> str:
+    """Return a canonical underscore slug from a unique catalog display name."""
+    normalized = "".join(char.lower() if char.isalnum() else " " for char in str(value))
+    return "_".join(normalized.split())
+
+
+@lru_cache(maxsize=1)
+def _python_catalog_ability_ids() -> tuple[dict[type, str], dict[str, type]]:
+    """Build canonical identities for active Python abilities in player catalogs.
+
+    YAML abilities own their IDs directly. Older Python implementations did
+    not, so their unique learned display names are the catalog-owned canonical
+    identity. Collisions fail eagerly rather than creating ambiguous shortcut
+    or save references.
+    """
+    by_type: dict[type, str] = {}
+    by_id: dict[str, type] = {}
+    reserved_ids: dict[str, type] = {}
+    for catalog in (skill_dict, spell_dict):
+        for levels in catalog.values():
+            for entry in levels.values():
+                for ability_ctor in ability_classes_for(entry):
+                    ability = ability_ctor()
+                    if getattr(ability, "passive", False) or getattr(
+                        ability, "exploration_cast", False
+                    ):
+                        continue
+                    existing_id = getattr(ability, "ability_id", None)
+                    if isinstance(existing_id, str) and existing_id:
+                        reserved_ids[existing_id] = ability_ctor
+                        continue
+                    ability_id = _catalog_slug(getattr(ability, "name", ""))
+                    if not ability_id:
+                        raise RuntimeError(
+                            f"Active catalog ability {ability_ctor.__name__} has no identity name."
+                        )
+                    if ability_id in reserved_ids:
+                        raise RuntimeError(
+                            f"Catalog ability identity collision for {ability_id}: "
+                            f"{reserved_ids[ability_id].__name__} already owns that slug."
+                        )
+                    existing_ctor = by_id.get(ability_id)
+                    if existing_ctor is not None and existing_ctor is not ability_ctor:
+                        raise RuntimeError(
+                            f"Catalog ability identity collision for {ability_id}: "
+                            f"{existing_ctor.__name__} and {ability_ctor.__name__}."
+                        )
+                    by_type[ability_ctor] = ability_id
+                    by_id[ability_id] = ability_ctor
+    collisions = set(by_id).intersection(reserved_ids)
+    if collisions:
+        ability_id = sorted(collisions)[0]
+        raise RuntimeError(
+            f"Catalog ability identity collision for {ability_id}: "
+            f"{reserved_ids[ability_id].__name__} already owns that slug."
+        )
+    return by_type, by_id
+
+
+def ensure_catalog_ability_identity(ability: object) -> str | None:
+    """Assign and return the stable slug for a learned catalog ability."""
+    existing_id = getattr(ability, "ability_id", None)
+    if isinstance(existing_id, str) and existing_id:
+        return existing_id
+    ability_id = _python_catalog_ability_ids()[0].get(type(ability))
+    if ability_id is not None:
+        ability.ability_id = ability_id
+    return ability_id
+
+
+def catalog_ability_from_id(ability_id: str) -> object | None:
+    """Recreate a Python catalog ability from its canonical shortcut/save slug."""
+    canonical_id = PYTHON_CATALOG_ABILITY_ID_ALIASES.get(ability_id, ability_id)
+    ability_ctor = _python_catalog_ability_ids()[1].get(canonical_id)
+    if ability_ctor is None:
+        return None
+    ability = ability_ctor()
+    ensure_catalog_ability_identity(ability)
+    return ability

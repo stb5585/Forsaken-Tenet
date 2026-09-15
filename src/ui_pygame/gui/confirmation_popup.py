@@ -226,6 +226,12 @@ class ConfirmationPopup:
         Returns:
             True if Yes (or any key if no buttons), False if No
         """
+        # Informational popups must never consume the key/click that opened them.
+        # Choice dialogs keep their caller-controlled input behavior.
+        if not self.show_buttons:
+            flush_events = True
+            require_key_release = True
+
         background = None
         if background_draw_func is None:
             background = self._get_background_surface()

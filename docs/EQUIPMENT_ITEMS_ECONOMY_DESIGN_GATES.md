@@ -56,6 +56,18 @@ failure, and rollback after partial equip failure.
 
 ## Shop Stock Reveal Pacing
 
+### Current Availability Audit — September 2026
+
+Current store doors are level-gated: Magic Shop at 3, Blacksmith at 5, and
+Jeweler and Thieves Guild at 10. Once open, each shop filters stock by item
+restriction, town rarity rules, and its own category construction; restorative
+potions also add stronger tiers at levels 10 and 30. Empty tabs are suppressed
+where the shop checks availability before building the tab.
+
+No gate or stock change is approved by this audit. The next economy proposal
+should compare starter access, route guidance, and class equipment needs before
+choosing between earlier doors, starter stock, or staged stock reveal.
+
 Shop stock reveal pacing remains a future per-character economy polish gate.
 This covers slower or staged appearance of newly available shop items without
 adding account-wide storage or cross-character stock sharing.

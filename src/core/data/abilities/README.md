@@ -45,8 +45,12 @@ upgrade families, while shared non-display aliases fail validation. Legacy
 `type` and `subtype` fields below continue to select execution classes during
 the compatibility period; they are not the canonical taxonomy.
 
-New saves serialize abilities by slug. Class tokens and display names remain
-read-only compatibility inputs; new code must not persist them.
+New saves serialize abilities by slug. YAML abilities declare their own slug;
+active Python abilities in the player progression catalogs receive a validated
+canonical slug from their unique catalog display name. A display-name change is
+therefore an identity migration and must preserve the old slug as a read-only
+compatibility input. Class tokens and display names otherwise remain read-only
+compatibility inputs; new code must not persist them.
 
 ## Progression Ownership
 

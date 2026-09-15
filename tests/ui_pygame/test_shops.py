@@ -562,6 +562,7 @@ def test_buy_helpers_route_to_expected_equipment_methods(monkeypatch):
     assert items.BlankScroll in item_calls[11][0]["Tools"]
     assert items.LockpickKit in item_calls[11][0]["Tools"]
     assert items.SmokeBomb in item_calls[11][0]["Tools"]
+    assert items.WoodenBolts not in item_calls[11][0]["Tools"]
     assert items.Oculus not in item_calls[11][0]["Tools"]
     assert items.FireScroll not in item_calls[11][0]["Tools"]
     assert item_calls[11][0]["Toxins"] == [items.MildToxin]

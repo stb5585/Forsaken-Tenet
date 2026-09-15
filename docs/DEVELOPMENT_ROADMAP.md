@@ -196,3 +196,30 @@ standalone turn-ins: the Barkeep points Seraphine's commission to the first
 descent, and Griswold turns Mara's lead into a Bandit contract. Green and Red
 Slimes now share the existing Fungus Spore drop, so the early Spore quest is
 open to every class; the Lich commission moves to level 55.
+
+## Shipped — Playtest Presentation And Encounter Follow-Up
+
+Multi-enemy combat now presents explicit previous/next target controls alongside
+direct lane selection, with stable distinct hostile-lane colors across the
+battlefield and timeline. Debug mode exposes Auto Kill with `K`; normal combat
+does not expose it. Victory popups include affected bounty progress.
+
+Trap damage and other acknowledgement-only messages require fresh input before
+they can close, and trap feedback blocks movement over the updated dungeon
+frame. Post-level-10 death now surfaces its existing resurrection gold cost and
+possible stat loss in the defeat summary.
+
+Barghest is tuned for a normally geared level-15 encounter with approximately
+even baseline initiative pressure. Shop panes identify equipment already worn
+in a compatible slot, and shop Quest entries appear only when that giver has an
+offer, active quest, or turn-in. The Character Menu separates the learned
+ability reference from Action Layout and shows a description while an
+assignable action is hovered.
+
+## Deferred Design Gate — Shop Stock And Opening Pacing
+
+No store gate or stock change is approved yet. The current gate and stock-filter
+audit is recorded in
+[`EQUIPMENT_ITEMS_ECONOMY_DESIGN_GATES.md`](EQUIPMENT_ITEMS_ECONOMY_DESIGN_GATES.md);
+the next slice must approve starter access, route guidance, and class-equipment
+needs before changing shop availability.

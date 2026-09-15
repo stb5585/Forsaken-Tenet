@@ -537,11 +537,14 @@ class BattleEngine(BattleTurnMixin, BattleActionMixin, BattleOutcomeMixin):
                 self.player._promotion_kit_messages = messages
             messages.append(kit_start_message)
         forced_enemy_initiative = bool(getattr(self.tile, "trap_forced_initiative", False))
+        player_loses_initiative = forced_enemy_initiative or bool(
+            getattr(self.player, "encumbered", False)
+        )
         self._actor_cycle = build_readiness_cycle(
             self.player,
             self.encounter,
             rng=self._rng,
-            force_player_last=forced_enemy_initiative,
+            force_player_last=player_loses_initiative,
         )
         if forced_enemy_initiative:
             self.tile.trap_forced_initiative = False

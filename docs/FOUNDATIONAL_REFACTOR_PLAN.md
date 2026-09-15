@@ -298,6 +298,9 @@ structural work.
   token. Missing items leave a disabled assignment. Empty slots auto-fill from
   learned active abilities in acquisition order without overwriting a player
   choice; upgrades replace their predecessor in place.
+- YAML abilities declare their own slugs. Active Python abilities in the
+  player progression catalogs receive validated canonical slugs from their
+  unique catalog names; a rename requires an explicit compatibility alias.
 - All Actions lists every learned active action and keeps assigned or
   unavailable entries visible with a specific MP, status, equipment, target,
   item-count, or class-resource reason. Passives and reactions remain read-only
@@ -340,6 +343,12 @@ foundation:
    qualifying floor-3/4 pairs at 15% behind the kill switch.
 8. Closure: remove internal adapters, update baselines and playtest material,
    and record rest as deferred.
+
+Post-foundation interface polish keeps target focus actor-ID based: hostile
+lanes remain directly selectable and expose previous/next focus controls with
+keyboard and controller labels. Timeline token colors are stable per hostile
+lane, while the player remains blue; these colors are presentation only and do
+not alter action legality or engine targeting.
 
 Current slice status:
 
