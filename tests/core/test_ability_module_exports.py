@@ -3,8 +3,6 @@
 import inspect
 
 from src.core import abilities
-from src.core.combat.action_interface import action_reference_for_ability
-from src.core.save_system.item_serialization import AbilitySerializer
 from src.core.abilities import (
     bard,
     base,
@@ -24,6 +22,8 @@ from src.core.abilities import (
     thief,
     utility,
 )
+from src.core.combat.action_interface import action_reference_for_ability
+from src.core.save_system.item_serialization import AbilitySerializer
 
 ABILITY_MODULES = (
     base,
