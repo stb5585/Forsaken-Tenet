@@ -492,9 +492,13 @@ class CombatOutcomeMixin:
 
         if outcome.result == "defeat":
             self._pause_with_events(DEFEAT_PAUSE_MS)
+            death_summary = str(getattr(player_char, "last_death_message", "") or "").strip()
+            defeat_message = "You have been defeated!"
+            if death_summary:
+                defeat_message = f"{defeat_message}\n\n{death_summary}"
 
             _show_end_popup(
-                "You have been defeated!",
+                defeat_message,
                 background=pre_outcome_background,
                 refresh_background=False,
             )

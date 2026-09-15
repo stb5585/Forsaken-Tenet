@@ -502,6 +502,7 @@ class PlayerExplorationMixin:
         death_message += self._drop_rookie_body_on_death()
         self.to_town()
         death_message += "You wake up in town.\n"
+        self.last_death_message = death_message
         return death_message
 
     def _drop_rookie_body_on_death(self):
