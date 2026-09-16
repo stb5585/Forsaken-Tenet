@@ -56,7 +56,7 @@ backup_saves/*
 
 # ignore old files
 docs/archive/
-old_assets/
+unused_assets/
 
 # ignore system files
 .DS_Store

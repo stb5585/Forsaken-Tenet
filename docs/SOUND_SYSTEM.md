@@ -168,10 +168,11 @@ combat themes/effects while keeping missing-file fallback behavior intact.
 
 ## Sonniss GDC 2024 Source Audit
 
-`old_assets/Sonniss.com-GDC2024-GameAudioBundle1of9` through `9of9` contain
-482 WAV assets from the Sonniss GDC 2024 bundle. The included README files say
-the supplied assets are royalty-free for personal and commercial use without
-attribution; retain the supplied licence PDF and source path in
+The reviewed Sonniss GDC 2024 sources from bundles 1–9 are organized under
+`unused_assets/audio_candidates/` and `unused_assets/audio_unsuitable/`. They
+contain 482 WAV assets in total. The included README files say the supplied
+assets are royalty-free for personal and commercial use without attribution;
+retain the supplied licence PDF and source path in
 [`ASSET_PROVENANCE.md`](ASSET_PROVENANCE.md) whenever an asset is promoted.
 
 The bundle is a source library, not a runtime dependency. Do not copy a raw
@@ -183,11 +184,11 @@ anomalous setting calls for it.
 
 For local auditioning, the reviewed source directories are arranged as follows:
 
-- `old_assets/audio_candidates/<bundle>/` contains the 23 high-value libraries
+- `unused_assets/audio_candidates/<bundle>/` contains the 23 high-value libraries
   listed below.
-- `old_assets/audio_unsuitable/<bundle>/` contains the 125 reviewed libraries
+- `unused_assets/audio_unsuitable/<bundle>/` contains the 125 reviewed libraries
   that do not fit the current game-audio needs.
-- `old_assets/audio_source_metadata/<bundle>/` retains the original licence,
+- `unused_assets/audio_source_metadata/<bundle>/` retains the original licence,
   README, and file-list materials for every bundle.
 
 This is a local, ignored workspace organization only; it does not promote raw
@@ -242,7 +243,7 @@ Priority order for an asset pass:
 
 - Audition against the existing gameplay event at the intended in-game volume.
 - Create only a derived runtime asset under `assets/sounds/` or `assets/music/`;
-  keep the original bundle file under `old_assets/`.
+  keep the original bundle file under `unused_assets/`.
 - Trim silence, remove problematic peaks, apply short fades, and preserve the
   source sample rate where practical. Use OGG for long loops.
 - Record source bundle, provider, original filename, derived filename, and

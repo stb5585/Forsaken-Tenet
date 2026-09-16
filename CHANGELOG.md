@@ -47,6 +47,8 @@
 - Organized the reviewed Sonniss source library into local candidate,
   unsuitable, and source-metadata directories without promoting or deleting
   any raw audio.
+- Renamed the local source/reference workspace from `old_assets/` to
+  `unused_assets/` to distinguish currently unused material from retired work.
 - Replaced automatic Deathcap collection with deterministic, persistent
   gathering nodes on eligible cave paths. Druid/Archdruid identify and harvest
   Acorn, Vine Seed, Fungus Spore, and Hemlock Root; Assassin identifies and
