@@ -379,6 +379,9 @@ def test_location_music_routes_context_to_theme_names(tmp_path, fake_mixer, monk
     assert manager.resolve_music_theme("Town") == "town"
     assert manager.resolve_music_theme("Main Menu") == "menu"
     assert manager.resolve_music_theme("Blacksmith") == "shop"
+    assert manager.resolve_music_theme("Dungeon Final") == "dungeon_final"
+    assert manager.resolve_music_theme("Funhouse") == "funhouse"
+    assert manager.resolve_music_theme("Realm of Cambion") == "realm_of_cambion"
     assert manager.resolve_music_theme("Final Room", final=True) == "combat_final"
     assert manager.resolve_music_theme("Combat", boss=True) == "combat_boss"
     assert manager.resolve_music_theme("Unknown Place") == "town"
@@ -666,10 +669,15 @@ def test_combat_start_music_uses_boss_and_final_flags(tmp_path, fake_mixer, monk
     ]
 
 
-def test_dungeon_combat_keeps_the_running_dungeon_music(tmp_path, fake_mixer, monkeypatch):
+@pytest.mark.parametrize(
+    "area_music", ("dungeon", "dungeon_final", "funhouse", "realm_of_cambion")
+)
+def test_dungeon_combat_keeps_the_running_area_music(
+    tmp_path, fake_mixer, monkeypatch, area_music
+):
     _state, _music = fake_mixer
     manager = sound_module.SoundManager(assets_dir=str(_make_assets_dir(tmp_path)))
-    manager.current_music = "dungeon"
+    manager.current_music = area_music
     music_calls = []
     sfx_calls = []
     monkeypatch.setattr(manager, "play_sfx", lambda name, **_kwargs: sfx_calls.append(name))
@@ -695,5 +703,5 @@ def test_dungeon_combat_keeps_the_running_dungeon_music(tmp_path, fake_mixer, mo
 
     assert sfx_calls == ["combat_start", "victory"]
     assert music_calls == []
-    assert manager.current_music == "dungeon"
+    assert manager.current_music == area_music
     assert manager._pre_combat_music is None

@@ -54,6 +54,9 @@ DEFAULT_MUSIC_NAMES = (
     "church",
     "inn",
     "dungeon",
+    "dungeon_final",
+    "funhouse",
+    "realm_of_cambion",
     "combat_normal",
     "combat_boss",
     "combat_final",
@@ -70,8 +73,15 @@ LOCATION_MUSIC_THEMES = {
     "church": "church",
     "inn": "inn",
     "dungeon": "dungeon",
+    "dungeon_final": "dungeon_final",
+    "funhouse": "funhouse",
+    "realm_of_cambion": "realm_of_cambion",
     "combat": "combat_normal",
 }
+
+DUNGEON_EXPLORATION_MUSIC = frozenset(
+    {"dungeon", "dungeon_final", "funhouse", "realm_of_cambion"}
+)
 
 MUSIC_ASSET_ALIASES = {
     "dungeon": ("dungeon", "eerie_dungeon_background"),
@@ -154,7 +164,7 @@ class SoundManager:
         self.play_sfx("combat_start")
         # Dungeon combat uses the existing dungeon bed so the transition keeps
         # its playback position instead of restarting a music loop.
-        if self.current_music == "dungeon":
+        if self.current_music in DUNGEON_EXPLORATION_MUSIC:
             return
         if not (self.current_music or "").startswith("combat_"):
             self._pre_combat_music = self.current_music

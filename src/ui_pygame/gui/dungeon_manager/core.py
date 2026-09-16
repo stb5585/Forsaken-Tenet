@@ -20,6 +20,10 @@ from ..loot_popup import LootPopup
 logger = logging.getLogger(__name__)
 
 
+_FINAL_DUNGEON_LEVEL = 6
+_FUNHOUSE_LEVEL = 7
+
+
 class DungeonCoreMixin:
     def __init__(self, presenter, player_char, game_instance):
         self.presenter = presenter
@@ -104,6 +108,22 @@ class DungeonCoreMixin:
         if self._cached_view is not None:
             return self._cached_view
         return self.presenter.screen.copy()
+
+    def _sync_dungeon_music(self) -> None:
+        """Select the exploration theme matching the player's current dungeon area."""
+        level = self.player_char.location_z
+        if level == map_tiles.REALM_OF_CAMBION_LEVEL:
+            location = "realm_of_cambion"
+        elif level == _FUNHOUSE_LEVEL:
+            location = "funhouse"
+        elif level == _FINAL_DUNGEON_LEVEL:
+            location = "dungeon_final"
+        else:
+            location = "dungeon"
+
+        play_location_music = getattr(self.game, "_play_location_music", None)
+        if callable(play_location_music):
+            play_location_music(location)
 
     def _get_character_screen(self):
         if self.character_screen is None:
@@ -424,9 +444,11 @@ class DungeonCoreMixin:
                 self.player_char.location_z = z
                 self.player_char.facing = "south"
                 self.player_char.funhouse_return = None
+                self._sync_dungeon_music()
                 return
         if hasattr(self.player_char, "exit_funhouse"):
             self.player_char.exit_funhouse()
+            self._sync_dungeon_music()
 
     def _load_dungeon_background(self):
         """Load and scale the dungeon background once."""

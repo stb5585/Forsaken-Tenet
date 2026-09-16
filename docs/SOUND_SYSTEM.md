@@ -152,10 +152,15 @@ Preserve the current missing-asset fallback behavior, diagnostics,
 `sounds/new_sounds/` staged lookup, music aliases, and combat/location music
 theme routing unless a promoted audio spec explicitly changes them.
 
-Dungeon-origin combat deliberately retains the running `dungeon` music bed,
+Dungeon-origin combat deliberately retains its running exploration music bed,
 including boss and final encounters, so it continues without a restart. Combat
 start and outcome effects still play; non-dungeon combat retains normal theme
 routing.
+
+Ordinary dungeon levels 1–5 use the shared `dungeon` theme. Level 6, the
+Funhouse (level 7), and the Realm of Cambion (level 8) route to the distinct
+`dungeon_final`, `funhouse`, and `realm_of_cambion` themes. Those three OGG
+assets are pending; diagnostics expose the missing files without breaking play.
 
 Final SFX and music replacement remains an asset-content pass. It should cover
 menu, town, shops, Church, inn, dungeon, normal combat, boss combat, and final
