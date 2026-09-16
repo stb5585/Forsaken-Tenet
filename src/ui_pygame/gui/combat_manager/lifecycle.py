@@ -132,10 +132,6 @@ class CombatLifecycleMixin:
             identity_setter(hidden_names)
         labels = ", ".join(member.display_label for member in encounter.members)
         self.combat_view.add_combat_message(f"Combat started with {labels}!")
-        if getattr(player_char, "anti_magic_active", False):
-            self.combat_view.add_combat_message(
-                "An anti-magic field suppresses spells and standard skills in this encounter."
-            )
         self._combat_background = self._capture_background()
         for member in encounter.members:
             self._prepare_enemy_combat_assets(member.enemy)
@@ -159,6 +155,10 @@ class CombatLifecycleMixin:
 
         # Determine who goes first (engine handles initiative)
         first, _ = self.engine.start_battle()
+        if getattr(player_char, "anti_magic_active", False):
+            self.combat_view.add_combat_message(
+                "An anti-magic field suppresses spells and standard skills in this encounter."
+            )
         if player_char.encumbered:
             self.combat_view.add_combat_message("You are ENCUMBERED! Enemy strikes first!")
 

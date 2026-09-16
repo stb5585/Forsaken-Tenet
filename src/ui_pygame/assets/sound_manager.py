@@ -37,6 +37,7 @@ DEFAULT_SFX_NAMES = (
     "bird_attack_sound",
     "mortal_strike",
     "shield_block_metal_weapon",
+    "metal_weapon_disarm",
     "blade_parry",
     "underground_spring",
     "open_door",
@@ -82,6 +83,10 @@ LOCATION_MUSIC_THEMES = {
 
 DUNGEON_EXPLORATION_MUSIC = frozenset(
     {"dungeon", "dungeon_final", "funhouse", "realm_of_cambion"}
+)
+
+_METAL_DISARM_WEAPON_TYPES = frozenset(
+    {"Battle Axe", "Crossbow", "Dagger", "Hammer", "Longsword", "Polearm", "Sword"}
 )
 
 MUSIC_ASSET_ALIASES = {
@@ -275,7 +280,13 @@ class SoundManager:
         """Handle status effect applied event."""
         status_name = event.data.get("status_name", "").lower()
 
-        if "poison" in status_name or "bleed" in status_name:
+        if status_name == "disarm":
+            equipment = getattr(getattr(event, "target", None), "equipment", {})
+            weapon = equipment.get("Weapon") if isinstance(equipment, dict) else None
+            weapon_type = str(getattr(weapon, "subtyp", "") or "")
+            if weapon_type in _METAL_DISARM_WEAPON_TYPES:
+                self.play_sfx("metal_weapon_disarm")
+        elif "poison" in status_name or "bleed" in status_name:
             self.play_sfx("poison")
         elif "stun" in status_name or "freeze" in status_name:
             self.play_sfx("stun")

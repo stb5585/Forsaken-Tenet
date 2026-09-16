@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -602,6 +603,22 @@ def test_event_handlers_route_to_expected_sound_effects(tmp_path, fake_mixer, mo
         GameEvent(type=EventType.STATUS_APPLIED, timestamp=0, data={"status_name": "Poison"})
     )
     manager._on_status_applied(
+        SimpleNamespace(
+            data={"status_name": "Disarm"},
+            target=SimpleNamespace(
+                equipment={"Weapon": SimpleNamespace(subtyp="Sword")},
+            ),
+        )
+    )
+    manager._on_status_applied(
+        SimpleNamespace(
+            data={"status_name": "Disarm"},
+            target=SimpleNamespace(
+                equipment={"Weapon": SimpleNamespace(subtyp="Staff")},
+            ),
+        )
+    )
+    manager._on_status_applied(
         GameEvent(type=EventType.STATUS_APPLIED, timestamp=0, data={"status_name": "Freeze"})
     )
     manager._on_status_applied(
@@ -649,6 +666,7 @@ def test_event_handlers_route_to_expected_sound_effects(tmp_path, fake_mixer, mo
         ("spell_cast", None, 0),
         ("heal", None, 0),
         ("poison", None, 0),
+        ("metal_weapon_disarm", None, 0),
         ("stun", None, 0),
         ("burn", None, 0),
         ("player_death", None, 0),

@@ -142,6 +142,7 @@ Current source-specific staged routes include:
 - `bird_attack_sound.wav` for `Screech`.
 - `spell_cast` for scroll item use, and `heal` for potion/elixir item use.
 - `shield_block_metal_weapon.wav` for block events.
+- `metal_weapon_disarm.wav` when Disarm removes a metal main-hand weapon.
 - `ice_spell.ogg`, `distorted_scream.wav`, `mortal_strike.wav`,
   `underground_spring.ogg`, and `open_door.ogg` through existing runtime hooks.
 

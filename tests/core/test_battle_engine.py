@@ -11,6 +11,7 @@ from src.core.combat.battle_engine import STOLEN_SCROLL_CHOICE_PREFIX, BattleEng
 from src.core.combat.targeting import TargetScope
 from src.core.data.data_driven_abilities import DataDrivenSpell
 from src.core.enemies import Barghest, Goblin, GuildArcaneBoss
+from src.core.player import REALM_OF_CAMBION_LEVEL
 from tests.test_framework import TestGameState
 
 
@@ -46,6 +47,27 @@ def test_start_battle_clears_stale_cambion_anti_magic_outside_realm():
     BattleEngine(player, Goblin(), DummyCombatTile()).start_battle()
 
     assert player.anti_magic_active is False
+
+
+def test_cambion_anti_magic_suppresses_player_and_enemy_abilities():
+    player = TestGameState.create_player(name="TestHero", class_name="Warrior", race_name="Human")
+    player.location_z = REALM_OF_CAMBION_LEVEL
+    player.anti_magic_active = True
+    player.spellbook["Skills"]["Rally"] = abilities.Rally()
+    enemy = Goblin()
+    enemy.spellbook["Spells"]["Firebolt"] = abilities.Firebolt()
+    engine = BattleEngine(player, enemy, DummyCombatTile())
+
+    engine.start_battle()
+
+    assert player.anti_magic_active is True
+    assert enemy.anti_magic_active is True
+    engine.attacker = player
+    engine.defender = enemy
+    assert "anti-magic field" in engine._execute_skill("Rally").lower()
+    engine.attacker = enemy
+    engine.defender = player
+    assert "anti-magic field" in engine._execute_spell("Firebolt").lower()
 
 
 def test_start_battle_encumbered_player_loses_initiative():

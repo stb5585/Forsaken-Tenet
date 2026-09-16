@@ -40,6 +40,8 @@
   overwhelming initiative and damage pressure while preserving its boss kit.
 - Routed natural-weapon blocks to the generic impact effect instead of the
   metal weapon shield-block effect.
+- Made Cambion anti-magic encounter-wide for both player and enemies, and
+  added metal-weapon Disarm audio feedback.
 
 ### Dungeon, Gathering, And Persistence
 

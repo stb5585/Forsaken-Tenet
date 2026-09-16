@@ -503,6 +503,9 @@ class BattleEngine(BattleTurnMixin, BattleActionMixin, BattleOutcomeMixin):
         in_realm_of_cambion = getattr(self.player, "in_realm_of_cambion", None)
         if callable(in_realm_of_cambion) and not in_realm_of_cambion():
             self.player.anti_magic_active = False
+        anti_magic_active = bool(getattr(self.player, "anti_magic_active", False))
+        for member in self.encounter.members:
+            member.enemy.anti_magic_active = anti_magic_active
 
         self._clear_stale_charging_actions(self.player)
         for member in self.encounter.members:

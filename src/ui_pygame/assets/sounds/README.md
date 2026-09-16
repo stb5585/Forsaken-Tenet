@@ -32,6 +32,7 @@ This directory contains sound effects for The Forsaken Tenet.
 - `spell_buff.wav` - Buff spell
 - `shield_block_metal_weapon.wav` - Shield block impact effect
 - `blade_parry.wav` - Blade-equipped parry (dagger, sword, longsword, battle axe, or polearm)
+- `metal_weapon_disarm.wav` - Metal main-hand weapon knocked away by Disarm
 - `underground_spring.ogg` - Underground spring interaction ambience
 - `open_door.ogg` - Door-opening effect
 - `spell_debuff.wav` - Debuff spell
@@ -73,7 +74,7 @@ runtime path is intentionally not a provenance classification: the
 Sonniss-derived custom effects are `bird_attack_sound.wav`, `blade_parry.wav`,
 `distorted_scream.wav`, `ice_spell.ogg`, `laser_beam.wav`,
 `mortal_strike.wav`, `open_door.ogg`, `shield_block_metal_weapon.wav`, and
-`underground_spring.ogg`. Other current effects are OpenAI-generated
+`underground_spring.ogg`, and `metal_weapon_disarm.wav`. Other current effects are OpenAI-generated
 placeholders or effects. See [`docs/ASSET_PROVENANCE.md`](../../../../docs/ASSET_PROVENANCE.md)
 before distributing or replacing an asset.
 
