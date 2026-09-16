@@ -181,6 +181,18 @@ route. Avoid using real-world guns, vehicles, sports crowds, voices, or modern
 office/city ambience for the medieval-fantasy game except where an explicit
 anomalous setting calls for it.
 
+For local auditioning, the reviewed source directories are arranged as follows:
+
+- `old_assets/audio_candidates/<bundle>/` contains the 23 high-value libraries
+  listed below.
+- `old_assets/audio_unsuitable/<bundle>/` contains the 125 reviewed libraries
+  that do not fit the current game-audio needs.
+- `old_assets/audio_source_metadata/<bundle>/` retains the original licence,
+  README, and file-list materials for every bundle.
+
+This is a local, ignored workspace organization only; it does not promote raw
+audio into the game or change the required provenance process.
+
 ### High-Value Candidate Families
 
 | Runtime need | Recommended source family | First files to audition | Intended use |

@@ -44,6 +44,9 @@
 - Kept the shared dungeon music continuous through dungeon combat and assigned
   dedicated pending themes for final level 6, the Funhouse, and the Realm of
   Cambion; ordinary levels 1–5 retain the current dungeon bed.
+- Organized the reviewed Sonniss source library into local candidate,
+  unsuitable, and source-metadata directories without promoting or deleting
+  any raw audio.
 - Replaced automatic Deathcap collection with deterministic, persistent
   gathering nodes on eligible cave paths. Druid/Archdruid identify and harvest
   Acorn, Vine Seed, Fungus Spore, and Hemlock Root; Assassin identifies and
