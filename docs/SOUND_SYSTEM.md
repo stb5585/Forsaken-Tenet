@@ -156,6 +156,78 @@ Final SFX and music replacement remains an asset-content pass. It should cover
 menu, town, shops, Church, inn, dungeon, normal combat, boss combat, and final
 combat themes/effects while keeping missing-file fallback behavior intact.
 
+## Sonniss GDC 2024 Source Audit
+
+`old_assets/Sonniss.com-GDC2024-GameAudioBundle1of9` through `9of9` contain
+482 WAV assets from the Sonniss GDC 2024 bundle. The included README files say
+the supplied assets are royalty-free for personal and commercial use without
+attribution; retain the supplied licence PDF and source path in
+[`ASSET_PROVENANCE.md`](ASSET_PROVENANCE.md) whenever an asset is promoted.
+
+The bundle is a source library, not a runtime dependency. Do not copy a raw
+asset into live assets until it has been auditioned, trimmed, normalized,
+converted to a suitable mono/stereo WAV or OGG, and named after its runtime
+route. Avoid using real-world guns, vehicles, sports crowds, voices, or modern
+office/city ambience for the medieval-fantasy game except where an explicit
+anomalous setting calls for it.
+
+### High-Value Candidate Families
+
+| Runtime need | Recommended source family | First files to audition | Intended use |
+| --- | --- | --- | --- |
+| Dungeon bed and water detail | Bundle 1 `InMotionAudio - Cave Design` | `AMBUndr_CaveDesign01...`, `WATRDrip_SingleDrip03...`, `AMBUndwtr_WaterFlow05...` | Replace/augment the dungeon loop, cave drips, and spring interaction. |
+| Underground Spring | Bundle 6 `Pole Position - Winter Forest Stream`; Bundle 8 `Stefano Cremona - Rivers, Streams, Creeks` | `Stream - LIGHT - Medium Speed - Flow...`, `Small_Creek_Close_02.wav` | Softer location-loop and short interaction tail. |
+| Physical impacts and blocks | Bundle 2 `Justsoundeffects - Melee Weapons`; Bundle 6 `Pole Position - The Metal Hit Sweeteners Library` | `WEAPArmr_Metal Shield Block Hits...`, `WEAPAxe_Long Two-Handed Axe Flesh Hit...`, `Iron - Thick - HIT - Hammer.wav` | Upgrade hit, heavy hit, critical hit, and shield block variants. |
+| Doors, locks, and chests | Bundle 2 `Jake Fielding - Squeaky Gates`; Bundle 6 `Rogue Waves - Creaking Door`; Bundle 8 `Sonic Bat - Videogame Foley Essentials Vol. II` | `DOORGate_Wooden Metal Hinge Creaks...`, `DOORCreak_Wooden Door, Opening and Closing 09...`, `SBvfe2_Shaking Small Wooden Box 030.wav` | Door open/close, secret-door, chest, and lock feedback. |
+| Spell motion and magic | Bundle 6 `Rescopic Sound - Distinct Whooshes` and `High Voltage`; Bundle 2 `Mechanical Wave - Sound Effects Collection` | `WHSH_Airy-Whoosh Wind Gust 11...`, `ELECEmf_Electrical Panel Pitchdown 12st...`, `ICEMisc_Ice Sizzle_05...` | Wind, lightning, ice, generic cast, and anti-magic/sigil design layers. |
+| Horror, boss, and revelation stingers | Bundle 1 `InMotionAudio - Sinister Textures` / `GEODRONE`; Bundle 2 `Jake Fielding - Haunted Metal` | `DSGNErie_EerieBoilerRoom06...`, `DSGNDron_Geofon17...`, `DSGNBoom_Cinematic Metallic Hit...` | Boss reveals, relics, anti-magic activation, and defeat punctuation; use sparingly. |
+| UI feedback | Bundle 6 `Rescopic Sound - User Interaction` | `UIClick_Select Middle 29...`, `UIAlert_Confirm Middle 12...`, `UIData_Progress 19...` | Replace generic menu select, confirm, and progression/level-up feedback. |
+| Town and exterior ambience | Bundle 2 `Justsoundeffects - Forest Ambiences`; Bundle 8 `Systematic Sound - Rural Countryside` / `Nightscapes` | `AMBForst_Spring Noon Deciduous Forest...`, `AMBRurl_Field Wheat Dry Sizzle...`, `AMBForst_Nighttime-Woodlands...` | Optional low-level town/outdoor beds and night-event ambience. |
+| Fire and hearth | Bundle 9 `UberDuo - The Wood Stove Audio Prop Set` | `FIREMisc_Fire Crackling In A Woodstove...`, `DOORMetl_Woodstove, Door, Iron, Close...` | Inn, campfire, fire spell, forge, and hearth variations. |
+
+Ellipses in the table preserve the distinctive filename prefix. Locate a
+candidate by its source directory and prefix; select a short clean region only
+after listening. The `Rogue Waves - Kawaii UI`, Sci-Fi, and Anime collections
+are useful only for intentionally stylized UI or arcane effects, not default
+fantasy combat.
+
+### Upgrade And Missing-Sound Backlog
+
+Priority order for an asset pass:
+
+1. **Music remains the largest gap.** Only `eerie_dungeon_background.wav` is
+   currently present. Commission or license seamless original tracks for menu,
+   town, shop, church, inn, normal combat, boss combat, and final combat; the
+   Sonniss material should be treated as ambience/stinger layers, not score.
+2. **Replace placeholder-like core combat sounds** with coherent variations for
+   light hit, heavy hit, critical hit, miss, block/parry, player death, enemy
+   death, victory, defeat, and flee. Create a small randomized variant pool
+   only after the base routes are approved.
+3. **Complete elemental identity:** distinct fire, ice, lightning, wind,
+   water, earth, poison, holy, shadow, heal, buff, debuff, and anti-magic
+   sounds. Current routing collapses several categories into generic cast or
+   status effects.
+4. **Fill world interactions:** chest/lockpick, trap trigger and damage,
+   stairs, gathering/foraging, key item/relic discovery, Mimic reveal, secret
+   door, merchant purchase/sale, quest accepted/completed/turned-in, and gold
+   reward.
+5. **Add location ambience deliberately:** town daytime/night, inn hearth and
+   crowd murmur, blacksmith forge, church room tone, dungeon cave/water,
+   funhouse, boss room, and weather/realm variants. These require loop-point
+   checks and quiet mixing, not one-shot playback.
+
+### Promotion Checklist
+
+- Audition against the existing gameplay event at the intended in-game volume.
+- Create only a derived runtime asset under `assets/sounds/` or `assets/music/`;
+  keep the original bundle file under `old_assets/`.
+- Trim silence, remove problematic peaks, apply short fades, and preserve the
+  source sample rate where practical. Use OGG for long loops.
+- Record source bundle, provider, original filename, derived filename, and
+  intended route in `ASSET_PROVENANCE.md`.
+- Add/update the sound-manager route and a focused asset-resolution test only
+  when the selected asset is ready to ship.
+
 Future audio enhancements such as spatial audio, dynamic combat-intensity
 music, randomized SFX, audio ducking, sound profiles, and per-entity sound
 customization require a settings or audio-content spec before implementation.
