@@ -162,16 +162,15 @@ def test_audio_asset_diagnostics_report_sound_and_music_availability(tmp_path, f
     assets_dir = _make_assets_dir(tmp_path)
     (assets_dir / "sounds" / "hit.wav").write_bytes(b"wav")
     (assets_dir / "sounds" / "heal.ogg").write_bytes(b"ogg")
-    (assets_dir / "sounds" / "new_sounds").mkdir()
-    (assets_dir / "sounds" / "new_sounds" / "spring.wav").write_bytes(b"wav")
-    (assets_dir / "sounds" / "new_sounds" / "distorted_scream.wav").write_bytes(b"wav")
-    (assets_dir / "sounds" / "new_sounds" / "bird_attack_sound.wav").write_bytes(b"wav")
-    (assets_dir / "sounds" / "new_sounds" / "laser_beam.wav").write_bytes(b"wav")
-    (assets_dir / "sounds" / "new_sounds" / "mortal_strike.wav").write_bytes(b"wav")
-    (assets_dir / "sounds" / "new_sounds" / "ice_spell.wav").write_bytes(b"wav")
-    (assets_dir / "sounds" / "new_sounds" / "shield_block_metal_weapon.wav").write_bytes(b"wav")
-    (assets_dir / "sounds" / "new_sounds" / "underground_spring.wav").write_bytes(b"wav")
-    (assets_dir / "sounds" / "new_sounds" / "open_door.wav").write_bytes(b"wav")
+    (assets_dir / "sounds" / "spring.wav").write_bytes(b"wav")
+    (assets_dir / "sounds" / "distorted_scream.wav").write_bytes(b"wav")
+    (assets_dir / "sounds" / "bird_attack_sound.wav").write_bytes(b"wav")
+    (assets_dir / "sounds" / "laser_beam.wav").write_bytes(b"wav")
+    (assets_dir / "sounds" / "mortal_strike.wav").write_bytes(b"wav")
+    (assets_dir / "sounds" / "ice_spell.wav").write_bytes(b"wav")
+    (assets_dir / "sounds" / "shield_block_metal_weapon.wav").write_bytes(b"wav")
+    (assets_dir / "sounds" / "underground_spring.wav").write_bytes(b"wav")
+    (assets_dir / "sounds" / "open_door.wav").write_bytes(b"wav")
     (assets_dir / "music" / "town.mp3").write_bytes(b"mp3")
     (assets_dir / "music" / "eerie_dungeon_background.wav").write_bytes(b"wav")
     manager = sound_module.SoundManager(assets_dir=str(assets_dir))
@@ -180,7 +179,7 @@ def test_audio_asset_diagnostics_report_sound_and_music_availability(tmp_path, f
 
     assert manager.resolve_sfx_path("hit") == assets_dir / "sounds" / "hit.wav"
     assert manager.resolve_sfx_path("heal") == assets_dir / "sounds" / "heal.ogg"
-    assert manager.resolve_sfx_path("spring") == assets_dir / "sounds" / "new_sounds" / "spring.wav"
+    assert manager.resolve_sfx_path("spring") == assets_dir / "sounds" / "spring.wav"
     assert manager.resolve_music_path("town") == assets_dir / "music" / "town.mp3"
     assert (
         manager.resolve_music_path("dungeon")
@@ -189,8 +188,6 @@ def test_audio_asset_diagnostics_report_sound_and_music_availability(tmp_path, f
     assert manager.get_sfx_candidate_paths("hit") == (
         assets_dir / "sounds" / "hit.wav",
         assets_dir / "sounds" / "hit.ogg",
-        assets_dir / "sounds" / "new_sounds" / "hit.wav",
-        assets_dir / "sounds" / "new_sounds" / "hit.ogg",
     )
     assert manager.get_music_candidate_paths("town") == (
         assets_dir / "music" / "town.ogg",
@@ -220,8 +217,6 @@ def test_audio_asset_diagnostics_report_sound_and_music_availability(tmp_path, f
                 "checked_paths": [
                     str(assets_dir / "sounds" / "hit.wav"),
                     str(assets_dir / "sounds" / "hit.ogg"),
-                    str(assets_dir / "sounds" / "new_sounds" / "hit.wav"),
-                    str(assets_dir / "sounds" / "new_sounds" / "hit.ogg"),
                 ],
             },
             "heal": {
@@ -230,18 +225,14 @@ def test_audio_asset_diagnostics_report_sound_and_music_availability(tmp_path, f
                 "checked_paths": [
                     str(assets_dir / "sounds" / "heal.wav"),
                     str(assets_dir / "sounds" / "heal.ogg"),
-                    str(assets_dir / "sounds" / "new_sounds" / "heal.wav"),
-                    str(assets_dir / "sounds" / "new_sounds" / "heal.ogg"),
                 ],
             },
             "spring": {
                 "available": True,
-                "path": str(assets_dir / "sounds" / "new_sounds" / "spring.wav"),
+                "path": str(assets_dir / "sounds" / "spring.wav"),
                 "checked_paths": [
                     str(assets_dir / "sounds" / "spring.wav"),
                     str(assets_dir / "sounds" / "spring.ogg"),
-                    str(assets_dir / "sounds" / "new_sounds" / "spring.wav"),
-                    str(assets_dir / "sounds" / "new_sounds" / "spring.ogg"),
                 ],
             },
             "missing": {
@@ -250,8 +241,6 @@ def test_audio_asset_diagnostics_report_sound_and_music_availability(tmp_path, f
                 "checked_paths": [
                     str(assets_dir / "sounds" / "missing.wav"),
                     str(assets_dir / "sounds" / "missing.ogg"),
-                    str(assets_dir / "sounds" / "new_sounds" / "missing.wav"),
-                    str(assets_dir / "sounds" / "new_sounds" / "missing.ogg"),
                 ],
             },
         },
@@ -539,6 +528,20 @@ def test_event_handlers_route_to_expected_sound_effects(tmp_path, fake_mixer, mo
         GameEvent(type=EventType.DAMAGE_DEALT, timestamp=0, data={"damage": 10})
     )
     manager._on_block(GameEvent(type=EventType.BLOCK, timestamp=0, data={"damage_blocked": 25}))
+    manager._on_block(
+        GameEvent(
+            type=EventType.BLOCK,
+            timestamp=0,
+            data={"reaction": "parry", "parry_style": "blade"},
+        )
+    )
+    manager._on_block(
+        GameEvent(
+            type=EventType.BLOCK,
+            timestamp=0,
+            data={"reaction": "parry", "parry_style": "generic"},
+        )
+    )
     manager._on_healing(GameEvent(type=EventType.HEALING_DONE, timestamp=0, data={}))
     manager._on_spell_cast(
         GameEvent(type=EventType.SPELL_CAST, timestamp=0, data={"spell_name": "Fireball"})
@@ -619,6 +622,8 @@ def test_event_handlers_route_to_expected_sound_effects(tmp_path, fake_mixer, mo
         ("heavy_hit", None, 0),
         ("hit", None, 0),
         ("shield_block_metal_weapon", None, 0),
+        ("blade_parry", None, 0),
+        ("block", None, 0),
         ("heal", None, 0),
         ("spell_fire", None, 0),
         ("ice_spell", None, 0),

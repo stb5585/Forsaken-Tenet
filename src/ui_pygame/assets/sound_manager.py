@@ -37,6 +37,7 @@ DEFAULT_SFX_NAMES = (
     "bird_attack_sound",
     "mortal_strike",
     "shield_block_metal_weapon",
+    "blade_parry",
     "underground_spring",
     "open_door",
     "poison",
@@ -205,7 +206,11 @@ class SoundManager:
             self.play_sfx("hit")
 
     def _on_block(self, event):
-        """Handle shield block events."""
+        """Route shield blocks and parries to their appropriate effects."""
+        if event.data.get("reaction") == "parry":
+            sound_name = "blade_parry" if event.data.get("parry_style") == "blade" else "block"
+            self.play_sfx(sound_name)
+            return
         self.play_sfx("shield_block_metal_weapon")
 
     def _on_healing(self, event):
@@ -303,10 +308,9 @@ class SoundManager:
 
     def get_sfx_candidate_paths(self, sound_name: str) -> tuple[Path, ...]:
         """Return sound-effect filenames checked for a sound name."""
-        paths = []
-        for directory in (self.sounds_dir, self.sounds_dir / "new_sounds"):
-            paths.extend(directory / f"{sound_name}.{extension}" for extension in ("wav", "ogg"))
-        return tuple(paths)
+        return tuple(
+            self.sounds_dir / f"{sound_name}.{extension}" for extension in ("wav", "ogg")
+        )
 
     def get_music_candidate_paths(self, music_name: str) -> tuple[Path, ...]:
         """Return music filenames checked for a music name."""

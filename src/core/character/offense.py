@@ -33,12 +33,16 @@ from ..constants import (
     SEEKER_CRIT_BONUS,
     WEAPON_CRIT_WEIGHT,
 )
+from ..events import EventType, create_combat_event, get_event_bus
 from .models import _class_name, sigmoid
 
 if TYPE_CHECKING:
     from ..combat.contact import ContactInputs
     from .core import Character
     from .models import WeaponDamageResult
+
+
+_BLADE_PARRY_WEAPON_TYPES = frozenset({"Battle Axe", "Dagger", "Longsword", "Polearm", "Sword"})
 
 
 _WeaponStrike = tuple[str | None, int, int, int, float]
@@ -1136,6 +1140,28 @@ class CharacterOffenseMixin:
             pass
         return f"{defender.name} evades {self.name}'s attack.\n" + ghost, False
 
+    def _emit_parry_event(self, defender: Character, damage_deflected: int) -> None:
+        """Emit presentation metadata for a successful melee parry."""
+        weapon_types = tuple(
+            str(getattr(defender.equipment.get(slot), "subtyp", "") or "")
+            for slot in ("Weapon", "OffHand")
+        )
+        blade_weapon_type = next(
+            (weapon_type for weapon_type in weapon_types if weapon_type in _BLADE_PARRY_WEAPON_TYPES),
+            None,
+        )
+        get_event_bus().emit(
+            create_combat_event(
+                EventType.BLOCK,
+                actor=defender,
+                target=self,
+                reaction="parry",
+                parry_style="blade" if blade_weapon_type else "generic",
+                parry_weapon_type=blade_weapon_type,
+                damage_blocked=damage_deflected,
+            )
+        )
+
     def _apply_parry(self, defender: Character, damage: int) -> tuple[int, str, bool, bool]:
         """Attempt a shield-incompatible melee deflection and optional Riposte."""
         from ..classes import ability_mechanics, footpad, grandmaster
@@ -1160,6 +1186,7 @@ class CharacterOffenseMixin:
         deflect_ratio = 1.0 if random.random() < 0.20 else random.uniform(0.50, 0.85)
         deflected = max(1, int(damage * deflect_ratio))
         remaining = max(0, damage - deflected)
+        self._emit_parry_event(defender, deflected)
         msg = f"{defender.name} parries and deflects {deflected} damage.\n"
         msg += footpad.restore_ghost_step(defender)
         try:

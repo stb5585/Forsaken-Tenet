@@ -149,8 +149,8 @@ Current source-specific staged routes include:
 
 This document owns the audio side of the Systems, Audio, and Meta gates.
 Preserve the current missing-asset fallback behavior, diagnostics,
-`sounds/new_sounds/` staged lookup, music aliases, and combat/location music
-theme routing unless a promoted audio spec explicitly changes them.
+direct `sounds/` lookup, music aliases, and combat/location music theme routing
+unless a promoted audio spec explicitly changes them.
 
 Dungeon-origin combat deliberately retains its running exploration music bed,
 including boss and final encounters, so it continues without a restart. Combat
