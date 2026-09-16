@@ -87,7 +87,7 @@ sound_manager.set_master_volume(0.8)
 sound_manager.set_sfx_volume(0.7)
 
 # Set music volume
-sound_manager.set_music_volume(0.5)
+sound_manager.set_music_volume(0.1)
 
 # Disable all sound
 sound_manager.disable()
@@ -142,8 +142,8 @@ Current source-specific staged routes include:
 - `bird_attack_sound.wav` for `Screech`.
 - `spell_cast` for scroll item use, and `heal` for potion/elixir item use.
 - `shield_block_metal_weapon.wav` for block events.
-- `ice_spell.wav`, `distorted_scream.wav`, `mortal_strike.wav`,
-  `underground_spring.wav`, and `open_door.wav` through existing runtime hooks.
+- `ice_spell.ogg`, `distorted_scream.wav`, `mortal_strike.wav`,
+  `underground_spring.ogg`, and `open_door.ogg` through existing runtime hooks.
 
 ## Audio Gates
 
@@ -218,7 +218,7 @@ fantasy combat.
 
 Priority order for an asset pass:
 
-1. **Music remains the largest gap.** Only `eerie_dungeon_background.wav` is
+1. **Music remains the largest gap.** Only `dungeon.ogg` is currently
    currently present. Commission or license seamless original tracks for menu,
    town, shop, church, inn, normal combat, boss combat, and final combat; the
    Sonniss material should be treated as ambience/stinger layers, not score.
@@ -296,7 +296,7 @@ Default settings (configured in `SoundManager.__init__`):
 
 - **Master**: 1.0 (100%)
 - **SFX**: 0.7 (70%)
-- **Music**: 0.5 (50%)
+- **Music**: 0.1 (10%)
 
 ## Performance Notes
 
@@ -342,8 +342,7 @@ Future audio enhancements are tracked in the Audio Gates section above.
 
 ## Deferred Format Optimization
 
-The large runtime WAV files may be converted to OGG in a later size-focused
-slice. Preserve the current source-quality files in an owner-controlled archive
-or document their disposition first, then verify playback through Pygame and a
-fresh frozen-artifact smoke test. This optimization is independent of audio
-routing and is not required for the current Linux development build.
+Long runtime music, ambience, and multi-second effects now use OGG where that
+meaningfully reduces package size. Preserve high-quality masters in an
+owner-controlled archive, then verify playback through Pygame and a fresh
+frozen-artifact smoke test after replacing or reconverting an asset.

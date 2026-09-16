@@ -42,14 +42,11 @@ The exact source filename or annual bundle for each transformed Sonniss asset
 is not recorded. Before public distribution, retain a copy of the applicable
 Sonniss terms with the project and add per-file source mappings if the release
 process requires them. Do not infer individual creators or source filenames.
-The two largest runtime files are currently:
-
-- `music/eerie_dungeon_background.wav` (about 21 MB);
-- `sounds/underground_spring.wav` (about 19 MB).
-
-WAV-to-OGG conversion remains a later size optimization. Pygame 2 supports OGG
-playback, but the current source-quality WAV files should first be preserved in
-an owner-controlled archive or have their disposition documented.
+Long custom runtime assets are now shipped as OGG derivatives, including
+`music/dungeon.ogg` and `sounds/underground_spring.ogg`. Preserve the original
+source-quality WAV files in `unused_assets/` or another owner-controlled archive
+before replacing a runtime asset. Pygame 2 supports OGG playback; use it for
+music, ambience, and multi-second effects where package size matters.
 
 ## Generated Review And Source Material
 

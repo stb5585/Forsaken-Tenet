@@ -27,7 +27,8 @@ This creates simple beep sounds in `src/ui_pygame/assets/sounds/` for developmen
 You'll hear:
 - **Menu sounds** when navigating (arrow keys, enter, escape)
 - **Combat sounds** during battles (hits, crits, spells, etc.)
-- **Background music** when matching music files are present; the current `dungeon` theme can resolve `music/eerie_dungeon_background.wav`
+- **Background music** when matching music files are present; the current
+  `dungeon` theme resolves `music/dungeon.ogg`
 
 ## Sound Categories
 

@@ -350,7 +350,7 @@ def test_play_music_handles_busy_track_and_fallback_files(tmp_path, fake_mixer):
 
     assert music.fadeouts == [300]
     assert music.loaded and music.loaded[0].endswith("battle.mp3")
-    assert music.volumes == [0.5]
+    assert music.volumes == [manager.music_volume]
     assert music.plays == [(3, 600)]
     assert manager.current_music == "battle"
 
@@ -443,7 +443,7 @@ def test_stop_pause_resume_and_volume_controls(tmp_path, fake_mixer):
     assert manager.master_volume == 1.0
     assert manager.sfx_volume == 0.0
     assert manager.music_volume == 1.0
-    assert music.volumes[-2:] == [0.5, 1.0]
+    assert music.volumes[-2:] == [0.1, 1.0]
 
     manager.current_music = "dungeon"
     music.busy = False
@@ -528,6 +528,13 @@ def test_event_handlers_route_to_expected_sound_effects(tmp_path, fake_mixer, mo
         GameEvent(type=EventType.DAMAGE_DEALT, timestamp=0, data={"damage": 10})
     )
     manager._on_block(GameEvent(type=EventType.BLOCK, timestamp=0, data={"damage_blocked": 25}))
+    manager._on_block(
+        GameEvent(
+            type=EventType.BLOCK,
+            timestamp=0,
+            data={"damage_blocked": 25, "attack_source": "natural_weapon"},
+        )
+    )
     manager._on_block(
         GameEvent(
             type=EventType.BLOCK,
@@ -622,6 +629,7 @@ def test_event_handlers_route_to_expected_sound_effects(tmp_path, fake_mixer, mo
         ("heavy_hit", None, 0),
         ("hit", None, 0),
         ("shield_block_metal_weapon", None, 0),
+        ("block", None, 0),
         ("blade_parry", None, 0),
         ("block", None, 0),
         ("heal", None, 0),

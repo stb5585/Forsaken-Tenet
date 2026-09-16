@@ -116,7 +116,7 @@ class SoundManager:
         # Volume settings (0.0 to 1.0)
         self.master_volume = 1.0
         self.sfx_volume = 0.7
-        self.music_volume = 0.5
+        self.music_volume = 0.1
         self.enabled = True
 
         # Event bus integration
@@ -210,6 +210,9 @@ class SoundManager:
         if event.data.get("reaction") == "parry":
             sound_name = "blade_parry" if event.data.get("parry_style") == "blade" else "block"
             self.play_sfx(sound_name)
+            return
+        if event.data.get("attack_source") == "natural_weapon":
+            self.play_sfx("block")
             return
         self.play_sfx("shield_block_metal_weapon")
 

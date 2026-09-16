@@ -15,7 +15,8 @@ This directory contains background music for The Forsaken Tenet.
 - `shop.ogg` - Shop ambient music
 - `church.ogg` - Church ambient music
 - `inn.ogg` - Inn/tavern music
-- `eerie_dungeon_background.wav` - Current staged dungeon theme; resolved by the runtime `dungeon` theme alias
+- `dungeon.ogg` - Current dungeon theme for ordinary levels; the runtime retains
+  the older `eerie_dungeon_background` alias as a missing-file fallback only
 
 ### Dungeons
 - `dungeon.ogg` - Generic dungeon theme

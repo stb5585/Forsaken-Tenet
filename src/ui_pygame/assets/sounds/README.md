@@ -24,7 +24,7 @@ This directory contains sound effects for The Forsaken Tenet.
 - `spell_cast.wav` - Generic spell casting
 - `spell_fire.wav` - Fire spell
 - `spell_ice.wav` - Ice/frost spell  
-- `ice_spell.wav` - Ice/frost spell and skill effect
+- `ice_spell.ogg` - Ice/frost spell and skill effect
 - `laser_beam.wav` - Laser weapon-damage effect
 - `bird_attack_sound.wav` - Screech/lightning-bird call effect
 - `spell_lightning.wav` - Lightning/shock spell
@@ -32,8 +32,8 @@ This directory contains sound effects for The Forsaken Tenet.
 - `spell_buff.wav` - Buff spell
 - `shield_block_metal_weapon.wav` - Shield block impact effect
 - `blade_parry.wav` - Blade-equipped parry (dagger, sword, longsword, battle axe, or polearm)
-- `underground_spring.wav` - Underground spring interaction ambience
-- `open_door.wav` - Door-opening effect
+- `underground_spring.ogg` - Underground spring interaction ambience
+- `open_door.ogg` - Door-opening effect
 - `spell_debuff.wav` - Debuff spell
 - `distorted_scream.wav` - Scream/howl/nightmare skill effect
 - `mortal_strike.wav` - Mortal Strike skill effect
@@ -71,9 +71,9 @@ This directory contains sound effects for The Forsaken Tenet.
 All short effects live directly in this directory regardless of origin. The
 runtime path is intentionally not a provenance classification: the
 Sonniss-derived custom effects are `bird_attack_sound.wav`, `blade_parry.wav`,
-`distorted_scream.wav`, `ice_spell.wav`, `laser_beam.wav`,
-`mortal_strike.wav`, `open_door.wav`, `shield_block_metal_weapon.wav`, and
-`underground_spring.wav`. Other current effects are OpenAI-generated
+`distorted_scream.wav`, `ice_spell.ogg`, `laser_beam.wav`,
+`mortal_strike.wav`, `open_door.ogg`, `shield_block_metal_weapon.wav`, and
+`underground_spring.ogg`. Other current effects are OpenAI-generated
 placeholders or effects. See [`docs/ASSET_PROVENANCE.md`](../../../../docs/ASSET_PROVENANCE.md)
 before distributing or replacing an asset.
 
