@@ -152,6 +152,10 @@ class SoundManager:
     def _on_combat_start(self, event):
         """Handle combat start event."""
         self.play_sfx("combat_start")
+        # Dungeon combat uses the existing dungeon bed so the transition keeps
+        # its playback position instead of restarting a music loop.
+        if self.current_music == "dungeon":
+            return
         if not (self.current_music or "").startswith("combat_"):
             self._pre_combat_music = self.current_music
         self.play_location_music(

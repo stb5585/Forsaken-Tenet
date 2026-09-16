@@ -666,7 +666,7 @@ def test_combat_start_music_uses_boss_and_final_flags(tmp_path, fake_mixer, monk
     ]
 
 
-def test_combat_end_restores_previous_location_music(tmp_path, fake_mixer, monkeypatch):
+def test_dungeon_combat_keeps_the_running_dungeon_music(tmp_path, fake_mixer, monkeypatch):
     _state, _music = fake_mixer
     manager = sound_module.SoundManager(assets_dir=str(_make_assets_dir(tmp_path)))
     manager.current_music = "dungeon"
@@ -694,9 +694,6 @@ def test_combat_end_restores_previous_location_music(tmp_path, fake_mixer, monke
     )
 
     assert sfx_calls == ["combat_start", "victory"]
-    assert music_calls == [
-        ("location", "combat", {"boss": True, "final": False}),
-        ("music", "dungeon"),
-    ]
+    assert music_calls == []
     assert manager.current_music == "dungeon"
     assert manager._pre_combat_music is None

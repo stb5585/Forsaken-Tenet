@@ -152,6 +152,11 @@ Preserve the current missing-asset fallback behavior, diagnostics,
 `sounds/new_sounds/` staged lookup, music aliases, and combat/location music
 theme routing unless a promoted audio spec explicitly changes them.
 
+Dungeon-origin combat deliberately retains the running `dungeon` music bed,
+including boss and final encounters, so it continues without a restart. Combat
+start and outcome effects still play; non-dungeon combat retains normal theme
+routing.
+
 Final SFX and music replacement remains an asset-content pass. It should cover
 menu, town, shops, Church, inn, dungeon, normal combat, boss combat, and final
 combat themes/effects while keeping missing-file fallback behavior intact.
