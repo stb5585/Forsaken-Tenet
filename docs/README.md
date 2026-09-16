@@ -67,6 +67,9 @@ priority, owner documents define current behavior and decision gates, and
 
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) — runtime boundaries, public APIs,
   combat/targeting flow, save policy, resource paths, and distribution.
+- [`MOBILE_PLATFORM_ROADMAP.md`](MOBILE_PLATFORM_ROADMAP.md) — deferred,
+  incremental path to a supported desktop-and-Android release while preserving
+  one core game engine.
 - [`ASSET_PROVENANCE.md`](ASSET_PROVENANCE.md) — runtime and source asset
   inventory, known provenance, and attribution gaps.
 - [`EVENT_EMISSIONS.md`](EVENT_EMISSIONS.md) — event contracts, emitters,
