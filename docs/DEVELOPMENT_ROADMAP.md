@@ -115,6 +115,7 @@ These are bounded follow-ups, not current priorities:
 | Guardian rooms, mini-bosses, deeper Reflection, and Vesperion tuning | Story trigger, failure/retry behavior, route compatibility, and balance target. | [`STORY_AND_ENDGAME_DESIGN.md`](STORY_AND_ENDGAME_DESIGN.md) |
 | Dynamic/spatial audio and final asset replacement | Concrete asset list, runtime routing, fallback, and settings behavior. | [`SOUND_SYSTEM.md`](SOUND_SYSTEM.md) |
 | Profiles, achievements, run summaries, and account-wide Bestiary data | Ownership, privacy, storage, migration, and reset contract. | This roadmap plus a future dedicated spec. |
+| Mobile and multi-platform support | Completion of the active stabilization program, shared input/display/runtime foundations, a successful Android feasibility spike, and explicit release ownership. | [`MOBILE_PLATFORM_ROADMAP.md`](MOBILE_PLATFORM_ROADMAP.md) |
 | Broad UI/core cleanup | A concrete duplicated rule or save/testability defect with a bounded extraction plan. | The affected domain owner document. |
 
 ## Watch Items
