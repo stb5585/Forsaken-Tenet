@@ -463,8 +463,15 @@ class DungeonExplorationMixin:
                 if event.type == pygame.QUIT:
                     self.running = False
                     self.player_char.quit = True
+                    continue
 
-                elif event.type == pygame.MOUSEWHEEL:
+                if self.playtest_controls is not None:
+                    control_command = self.playtest_controls.command_from_event(event)
+                    if control_command is not None:
+                        self.handle_command(control_command)
+                        continue
+
+                if event.type == pygame.MOUSEWHEEL:
                     if event.y > 0:
                         self.scroll_message_log(-1)
                     elif event.y < 0:
@@ -781,6 +788,9 @@ class DungeonExplorationMixin:
                 print(f"Damage flash render error: {e}")
                 traceback.print_exc()
                 self._render_error_logged = True
+
+        if self.playtest_controls is not None:
+            self.playtest_controls.render()
 
         self._cached_frame = screen.copy()
 

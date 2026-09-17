@@ -59,6 +59,9 @@ Always prefer the project virtual environment for Python commands:
 
 # Debug launch
 ./launch_debug.sh
+
+# Add on-screen dungeon controls for Moonlight or touch playtesting
+./.venv/bin/python game_pygame.py --remote-playtest-controls
 ```
 
 Installed and frozen builds store saves and other mutable state in the

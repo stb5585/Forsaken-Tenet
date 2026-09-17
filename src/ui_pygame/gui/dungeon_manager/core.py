@@ -14,6 +14,7 @@ from src.ui_pygame.assets.npc_art_manager import get_npc_art_manager
 
 from ..combat_manager.manager import GUICombatManager
 from ..dungeon_hud import DungeonHUD
+from ..dungeon_playtest_controls import DungeonPlaytestControls
 from ..dungeon_renderer import DungeonRenderer
 from ..loot_popup import LootPopup
 
@@ -25,7 +26,9 @@ _FUNHOUSE_LEVEL = 7
 
 
 class DungeonCoreMixin:
-    def __init__(self, presenter, player_char, game_instance):
+    def __init__(
+        self, presenter, player_char, game_instance, *, remote_playtest_controls: bool = False
+    ):
         self.presenter = presenter
         self.player_char = player_char
         self.game = game_instance
@@ -69,6 +72,9 @@ class DungeonCoreMixin:
         self.running = True
         self._navigation_input_suppressed_until = 0
         self._navigation_keys_awaiting_release: set[int] = set()
+        self.playtest_controls = (
+            DungeonPlaytestControls(presenter) if remote_playtest_controls else None
+        )
 
         # --- Render throttling / caching ---
         # The 3D view is expensive; only redraw it when something actually changes.
