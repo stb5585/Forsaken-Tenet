@@ -212,7 +212,6 @@ class PlayerProgressionMixin:
                         >= self.quest_dict["Bounty"][enemy.name][0]["num"]
                     ):
                         self.quest_dict["Bounty"][enemy.name][2] = True
-                        quest_message += "You have completed a bounty.\n"
             if enemy.name == "Waitress":
                 self.quest_dict["Side"]["Something to Cry About"]["Completed"] = True
                 quest_message += "You have completed the quest Something to Cry About.\n"
