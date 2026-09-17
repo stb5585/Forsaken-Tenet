@@ -2,7 +2,6 @@
 
 from collections.abc import Callable
 
-
 TextWidthMeasurer = Callable[[str], int]
 
 

@@ -197,9 +197,7 @@ def build_zone_geometry(rect: RectF, next_rect: RectF, depth: int = 0) -> ZoneGe
             (back_center_mid, ny),
         )
     )
-    left_ceiling_open = Quad(
-        ((x, y), (front_center_left, y), (back_center_left, ny), (nx, ny))
-    )
+    left_ceiling_open = Quad(((x, y), (front_center_left, y), (back_center_left, ny), (nx, ny)))
     right_ceiling_open = Quad(
         ((front_center_right, y), (x + w, y), (nx + nw, ny), (back_center_right, ny))
     )
