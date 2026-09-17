@@ -1,6 +1,6 @@
 # Mobile And Multi-Platform Roadmap
 
-Status: `Deferred — Do Not Start Until The Current Playtest/Stabilization Program Allows It`
+Status: `In Progress — Phase 1 semantic-input foundation`
 
 This document defines the eventual path from the current desktop Pygame game to
 a supported desktop-and-Android release. It deliberately begins with frontend
@@ -115,7 +115,7 @@ Exit gate:
 
 ## Phase 1 — Semantic Input Boundary
 
-State: `Deferred`
+State: `In Progress — dungeon command boundary`
 
 Purpose: replace duplicated raw-device handling with shared, screen-appropriate
 commands. This improves desktop keyboard/controller consistency immediately and
@@ -134,6 +134,18 @@ Scope:
   cannot accidentally dismiss newly opened acknowledgement screens.
 - Preserve each screen's existing shortcuts and controller parity where those
   controls already exist.
+
+Current implementation:
+
+- `src/ui_common.input.UiCommand` owns the initial vocabulary for common
+  navigation plus dungeon actions.
+- `src.ui_pygame.input_adapter` maps current dungeon keyboard shortcuts to
+  those commands.
+- `DungeonManager.handle_command()` is the device-neutral dispatch point for
+  dungeon movement, turns, interaction, stairs, map/menu, paging, and the
+  existing debug shortcut.
+- Touch controls, pointer normalization, controller mappings, and migration of
+  shared menus, popups, and combat selection remain future Phase 1 slices.
 
 Out of scope:
 
