@@ -1,9 +1,6 @@
-"""Compatibility exports for Pygame dungeon geometry callers.
+"""Platform-neutral models for dungeon presentation."""
 
-The geometry itself is renderer-neutral and lives in :mod:`src.ui_common.dungeon`.
-"""
-
-from src.ui_common.dungeon.geometry import (
+from .geometry import (
     Quad,
     RectF,
     ZoneGeometry,
@@ -11,10 +8,12 @@ from src.ui_common.dungeon.geometry import (
     build_next_depth_rect,
     build_zone_geometry,
 )
+from .render_commands import RenderCommand
 
 __all__ = [
     "Quad",
     "RectF",
+    "RenderCommand",
     "ZoneGeometry",
     "build_depth_rect",
     "build_next_depth_rect",

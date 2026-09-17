@@ -1,15 +1,5 @@
-"""Models behavior for the renderer package."""
+"""Compatibility exports for Pygame dungeon renderer callers."""
 
-from dataclasses import dataclass
+from src.ui_common.dungeon.render_commands import RenderCommand
 
-from ..geometry import Quad
-
-
-@dataclass(frozen=True)
-class RenderCommand:
-    depth: int
-    order: int
-    panel_id: str
-    texture_key: str
-    quad: Quad
-    darkness: float
+__all__ = ["RenderCommand"]

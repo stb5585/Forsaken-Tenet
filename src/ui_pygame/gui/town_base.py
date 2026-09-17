@@ -8,30 +8,15 @@ import os
 import pygame
 
 from src.paths import PYGAME_ASSETS_DIR
+from src.ui_common.text import wrap_text_to_width
 from src.ui_pygame.assets.npc_art_manager import get_npc_art_manager
 
 from .mouse_helpers import is_left_click
 
 
 def wrap_text_to_pixel_width(text: str, font: pygame.font.Font, max_width: int) -> list[str]:
-    """Wrap text using actual rendered pixel widths."""
-    if not text:
-        return [""]
-
-    lines: list[str] = []
-    current = ""
-    for word in text.split():
-        candidate = f"{current} {word}".strip()
-        if not current or font.size(candidate)[0] <= max_width:
-            current = candidate
-            continue
-
-        lines.append(current)
-        current = word
-
-    if current:
-        lines.append(current)
-    return lines or [text]
+    """Wrap text using a Pygame font's rendered pixel widths."""
+    return wrap_text_to_width(text, lambda candidate: font.size(candidate)[0], max_width)
 
 
 class TownColors:
