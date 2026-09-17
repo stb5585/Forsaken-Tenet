@@ -8,6 +8,8 @@ import pygame
 from src.core import map_tiles, quest_progress
 from src.core.abilities import detects_encounter
 from src.core.player import DIRECTIONS
+from src.ui_common.input import UiCommand
+from src.ui_pygame.input_adapter import dungeon_command_for_key
 
 from ..input_guards import (
     prepare_guarded_input,
@@ -513,62 +515,55 @@ class DungeonExplorationMixin:
 
         return not self.player_char.quit  # Return True if player didn't quit game
 
-    def _handle_keypress(self, key):
-        """Handle keyboard input for dungeon navigation."""
+    def _handle_keypress(self, key: int) -> None:
+        """Translate a Pygame key then dispatch its dungeon command."""
         if self._navigation_input_suppressed(key):
             return
 
-        # Movement and turning
-        if key in (pygame.K_w, pygame.K_UP):
+        command = dungeon_command_for_key(key, debug_mode=getattr(self.game, "debug_mode", False))
+        if command is not None:
+            self.handle_command(command)
+
+    def handle_command(self, command: UiCommand) -> bool:
+        """Execute one platform-neutral dungeon presentation command.
+
+        Returns:
+            True when the command belongs to dungeon navigation; otherwise False.
+        """
+        if command is UiCommand.DUNGEON_MOVE_FORWARD:
             self.move_forward()
-
-        elif key in (pygame.K_a, pygame.K_LEFT):
+        elif command is UiCommand.DUNGEON_TURN_LEFT:
             self.turn_left()
-
-        elif key in (pygame.K_d, pygame.K_RIGHT):
+        elif command is UiCommand.DUNGEON_TURN_RIGHT:
             self.turn_right()
-
-        elif key in (pygame.K_s, pygame.K_DOWN):
+        elif command is UiCommand.DUNGEON_TURN_AROUND:
             self.turn_around()
-
-        # Stairs
-        elif key == pygame.K_u:
+        elif command is UiCommand.DUNGEON_USE_STAIRS_UP:
             self.use_stairs_up()
-
-        elif key == pygame.K_j:
+        elif command is UiCommand.DUNGEON_USE_STAIRS_DOWN:
             self.use_stairs_down()
-
-        # Interact
-        elif key == pygame.K_o:
+        elif command is UiCommand.DUNGEON_INTERACT:
             self.interact()
-
-        elif key == pygame.K_PAGEUP:
+        elif command is UiCommand.PAGE_PREVIOUS:
             self.scroll_message_log(-1)
-
-        elif key == pygame.K_PAGEDOWN:
+        elif command is UiCommand.PAGE_NEXT:
             self.scroll_message_log(1)
-
-        elif key == pygame.K_m:
+        elif command is UiCommand.OPEN_MAP:
             self._show_enlarged_minimap()
-
-        # Character menu
-        elif key == pygame.K_c:
-            # Open character screen (same as town)
+        elif command is UiCommand.OPEN_CHARACTER:
             while True:
                 choice = self._get_character_screen().navigate(self.player_char)
                 if choice == "Exit Menu" or choice is None:
                     break
                 else:
-                    # Placeholder until inventory/equipment/etc screens exist
                     self.presenter.show_message("This menu is not yet implemented in the dungeon.")
-
-        # Debug level-up shortcut
-        elif key == pygame.K_l and getattr(self.game, "debug_mode", False):
+        elif command is UiCommand.DEBUG_LEVEL_UP and getattr(self.game, "debug_mode", False):
             self.game.debug_level_up()
-
-        # Escape menu
-        elif key == pygame.K_ESCAPE:
+        elif command is UiCommand.OPEN_MENU:
             self._show_menu()
+        else:
+            return False
+        return True
 
     def _show_enlarged_minimap(self):
         """Show the enlarged minimap modal over the current dungeon view."""
