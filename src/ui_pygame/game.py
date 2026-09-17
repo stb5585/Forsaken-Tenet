@@ -118,12 +118,13 @@ class PygameGame:
         },
     }
 
-    def __init__(self, debug_mode=False):
+    def __init__(self, debug_mode=False, remote_playtest_controls=False):
         pygame.init()
         self.presenter = PygamePresenter()
         self.presenter.game = self  # Expose game to presenter for managers (bounties, etc.)
         self.event_bus = self.presenter.event_bus  # Use the same event bus as presenter
         self.debug_mode = debug_mode
+        self.remote_playtest_controls = remote_playtest_controls
         self._random_combat = True
         self.load_files = SaveManager.list_saves()
         self.races_dict = races_dict
@@ -322,7 +323,12 @@ class PygameGame:
             self.barracks_manager = BarracksManager(self.presenter, self.player_char, game=self)
         except TypeError:
             self.barracks_manager = BarracksManager(self.presenter, self.player_char)
-        self.dungeon_manager = DungeonManager(self.presenter, self.player_char, self)
+        manager_kwargs = {}
+        if getattr(self, "remote_playtest_controls", False):
+            manager_kwargs["remote_playtest_controls"] = True
+        self.dungeon_manager = DungeonManager(
+            self.presenter, self.player_char, self, **manager_kwargs
+        )
 
     def _build_player_character(
         self, race_name, class_name, name="Hero", sex="Male", portrait_variant=0
@@ -1388,6 +1394,11 @@ def main() -> int:
         action="store_true",
         help="Validate packaged resources and headless startup, then exit",
     )
+    parser.add_argument(
+        "--remote-playtest-controls",
+        action="store_true",
+        help="Enable on-screen dungeon controls for touch and remote playtesting",
+    )
     args = parser.parse_args()
 
     install_signal_handlers()
@@ -1402,7 +1413,10 @@ def main() -> int:
 
     game = None
     try:
-        game = PygameGame(debug_mode=args.debug)
+        game_kwargs = {"debug_mode": args.debug}
+        if args.remote_playtest_controls:
+            game_kwargs["remote_playtest_controls"] = True
+        game = PygameGame(**game_kwargs)
         if args.character_menu:
             game.player_char = game.create_default_character(name=args.preview_name)
             game.initialize_managers()

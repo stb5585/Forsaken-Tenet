@@ -144,6 +144,10 @@ Current implementation:
 - `DungeonManager.handle_command()` is the device-neutral dispatch point for
   dungeon movement, turns, interaction, stairs, map/menu, paging, and the
   existing debug shortcut.
+- `--remote-playtest-controls` enables an opt-in Pygame dungeon overlay for
+  forwarded mouse clicks or native touch presses. It provides move/turn,
+  interact, map/menu, and message-log paging without changing normal desktop
+  controls or layouts.
 - Touch controls, pointer normalization, controller mappings, and migration of
   shared menus, popups, and combat selection remain future Phase 1 slices.
 
