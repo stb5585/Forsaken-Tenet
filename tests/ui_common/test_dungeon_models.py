@@ -1,9 +1,11 @@
 """Tests for renderer-neutral dungeon presentation models."""
 
-from src.ui_common.dungeon.geometry import RectF
-from src.ui_common.dungeon.geometry import build_depth_rect
-from src.ui_common.dungeon.geometry import build_next_depth_rect
-from src.ui_common.dungeon.geometry import build_zone_geometry
+from src.ui_common.dungeon.geometry import (
+    RectF,
+    build_depth_rect,
+    build_next_depth_rect,
+    build_zone_geometry,
+)
 
 
 def test_common_geometry_matches_the_existing_dungeon_projection() -> None:
