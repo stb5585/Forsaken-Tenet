@@ -153,8 +153,11 @@ def test_visit_church_routes_actions(monkeypatch):
             rendered.append((text, kwargs.get("npc_name")))
 
     class FakeQuestManager:
-        def __init__(self, _presenter, _player, quest_text_renderer, **_kwargs):
+        def __init__(self, _presenter, _player, quest_text_renderer=None, **_kwargs):
             self.quest_text_renderer = quest_text_renderer
+
+        def has_available_or_active_quest(self, _giver):
+            return True
 
         def check_and_offer(self, patron):
             self.quest_text_renderer(f"{patron} quest")
@@ -173,6 +176,46 @@ def test_visit_church_routes_actions(monkeypatch):
     assert callable(FakePopup.show_kwargs[-1]["background_draw_func"])
     FakePopup.show_kwargs[-1]["background_draw_func"]()
     assert draw_frame_calls == [False]
+
+
+def test_visit_church_hides_quest_option_without_available_or_active_quest(monkeypatch):
+    player = _make_player()
+    presenter = _make_presenter()
+    monkeypatch.setattr(
+        church.ChurchManager, "_load_background", lambda self: setattr(self, "background", None)
+    )
+    monkeypatch.setattr("src.ui_pygame.gui.church.ConfirmationPopup", FakePopup)
+    manager = church.ChurchManager(presenter, player)
+
+    option_snapshots = []
+
+    class FakeLocationMenuScreen:
+        def __init__(self, _presenter, _title):
+            pass
+
+        def set_location_portrait(self, _npc_name):
+            return None
+
+        def draw_frame(self, *, do_flip=False):
+            return None
+
+        def navigate(self, options, **_kwargs):
+            option_snapshots.append(tuple(options))
+            return options.index("Leave")
+
+    class FakeQuestManager:
+        def __init__(self, *_args, **_kwargs):
+            pass
+
+        def has_available_or_active_quest(self, _giver):
+            return False
+
+    monkeypatch.setattr("src.ui_pygame.gui.church.LocationMenuScreen", FakeLocationMenuScreen)
+    monkeypatch.setattr("src.ui_pygame.gui.church.QuestManager", FakeQuestManager)
+
+    manager.visit_church()
+
+    assert option_snapshots == [("Save Game", "Leave")]
 
 
 def test_save_game_reports_success_and_failure(monkeypatch):

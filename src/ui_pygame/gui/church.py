@@ -366,7 +366,18 @@ class ChurchManager(TownScreenBase):
 
     def visit_church(self):
         """Visit the Church of Elysia."""
-        church_options = ["Save Game", "Quests"]
+        church_screen = LocationMenuScreen(self.presenter, "Church of Elysia")
+        church_screen.set_location_portrait("Priest")
+        self._popup_background_draw_func = lambda: church_screen.draw_frame(do_flip=False)
+        quest_manager = QuestManager(
+            self.presenter,
+            self.player_char,
+            quest_text_renderer=lambda text: church_screen.display_quest_text(text, npc_name="Priest"),
+            renderer_preserve_formatting=True,
+        )
+        church_options = ["Save Game"]
+        if quest_manager.has_available_or_active_quest("Priest"):
+            church_options.append("Quests")
         from ...core import persistent_afflictions as afflictions
 
         if any(
@@ -382,10 +393,6 @@ class ChurchManager(TownScreenBase):
         if demonologist.is_demonologist(self.player_char):
             church_options.append("Hidden Crypt")
         church_options.append("Leave")
-
-        church_screen = LocationMenuScreen(self.presenter, "Church of Elysia")
-        church_screen.set_location_portrait("Priest")
-        self._popup_background_draw_func = lambda: church_screen.draw_frame(do_flip=False)
 
         while True:
             choice_idx = church_screen.navigate(
@@ -406,15 +413,7 @@ class ChurchManager(TownScreenBase):
                 self.save_game()
 
             elif church_options[choice_idx] == "Quests":
-                qm = QuestManager(
-                    self.presenter,
-                    self.player_char,
-                    quest_text_renderer=lambda text: church_screen.display_quest_text(
-                        text, npc_name="Priest"
-                    ),
-                    renderer_preserve_formatting=True,
-                )
-                qm.check_and_offer("Priest")
+                quest_manager.check_and_offer("Priest")
 
             elif church_options[choice_idx] == "Cure Curses":
                 message = afflictions.cure_curses(self.player_char)
@@ -448,6 +447,11 @@ class ChurchManager(TownScreenBase):
                 church_options.insert(-1, rite_label)
             elif not self._arcane_class_ring_rite_available() and rite_label in church_options:
                 church_options.remove(rite_label)
+            has_quests = quest_manager.has_available_or_active_quest("Priest")
+            if has_quests and "Quests" not in church_options:
+                church_options.insert(-1, "Quests")
+            elif not has_quests and "Quests" in church_options:
+                church_options.remove("Quests")
 
     def _choose_paladin_vow(self):
         vow = PaladinVowSelectionPopup(self.presenter).show(
