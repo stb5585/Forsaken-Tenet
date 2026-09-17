@@ -700,12 +700,8 @@ def test_combat_start_music_uses_boss_and_final_flags(tmp_path, fake_mixer, monk
     ]
 
 
-@pytest.mark.parametrize(
-    "area_music", ("dungeon", "dungeon_final", "funhouse", "realm_of_cambion")
-)
-def test_dungeon_combat_keeps_the_running_area_music(
-    tmp_path, fake_mixer, monkeypatch, area_music
-):
+@pytest.mark.parametrize("area_music", ("dungeon", "dungeon_final", "funhouse", "realm_of_cambion"))
+def test_dungeon_combat_keeps_the_running_area_music(tmp_path, fake_mixer, monkeypatch, area_music):
     _state, _music = fake_mixer
     manager = sound_module.SoundManager(assets_dir=str(_make_assets_dir(tmp_path)))
     manager.current_music = area_music

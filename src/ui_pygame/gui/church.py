@@ -372,7 +372,9 @@ class ChurchManager(TownScreenBase):
         quest_manager = QuestManager(
             self.presenter,
             self.player_char,
-            quest_text_renderer=lambda text: church_screen.display_quest_text(text, npc_name="Priest"),
+            quest_text_renderer=lambda text: church_screen.display_quest_text(
+                text, npc_name="Priest"
+            ),
             renderer_preserve_formatting=True,
         )
         church_options = ["Save Game"]

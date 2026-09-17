@@ -1147,7 +1147,11 @@ class CharacterOffenseMixin:
             for slot in ("Weapon", "OffHand")
         )
         blade_weapon_type = next(
-            (weapon_type for weapon_type in weapon_types if weapon_type in _BLADE_PARRY_WEAPON_TYPES),
+            (
+                weapon_type
+                for weapon_type in weapon_types
+                if weapon_type in _BLADE_PARRY_WEAPON_TYPES
+            ),
             None,
         )
         get_event_bus().emit(
