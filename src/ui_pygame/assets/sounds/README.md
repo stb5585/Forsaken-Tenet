@@ -24,18 +24,20 @@ This directory contains sound effects for The Forsaken Tenet.
 - `spell_cast.wav` - Generic spell casting
 - `spell_fire.wav` - Fire spell
 - `spell_ice.wav` - Ice/frost spell  
-- `new_sounds/ice_spell.wav` - Staged ice/frost spell and skill effect
-- `new_sounds/laser_beam.wav` - Staged Laser weapon-damage effect
-- `new_sounds/bird_attack_sound.wav` - Staged Screech/lightning-bird call effect
+- `ice_spell.ogg` - Ice/frost spell and skill effect
+- `laser_beam.wav` - Laser weapon-damage effect
+- `bird_attack_sound.wav` - Screech/lightning-bird call effect
 - `spell_lightning.wav` - Lightning/shock spell
 - `spell_heal.wav` - Healing spell
 - `spell_buff.wav` - Buff spell
-- `new_sounds/shield_block_metal_weapon.wav` - Staged shield block impact effect
-- `new_sounds/underground_spring.wav` - Staged underground spring interaction ambience
-- `new_sounds/open_door.wav` - Staged door-opening effect
+- `shield_block_metal_weapon.wav` - Shield block impact effect
+- `blade_parry.wav` - Blade-equipped parry (dagger, sword, longsword, battle axe, or polearm)
+- `metal_weapon_disarm.wav` - Metal main-hand weapon knocked away by Disarm
+- `underground_spring.ogg` - Underground spring interaction ambience
+- `open_door.ogg` - Door-opening effect
 - `spell_debuff.wav` - Debuff spell
-- `new_sounds/distorted_scream.wav` - Staged scream/howl/nightmare skill effect
-- `new_sounds/mortal_strike.wav` - Staged Mortal Strike skill effect
+- `distorted_scream.wav` - Scream/howl/nightmare skill effect
+- `mortal_strike.wav` - Mortal Strike skill effect
 
 ### Status Effect Sounds
 - `poison.wav` - Poison/bleed applied
@@ -64,6 +66,21 @@ This directory contains sound effects for The Forsaken Tenet.
 2. Use descriptive names (lowercase, underscores)
 3. Keep files small (<100KB for SFX recommended)
 4. Use 44100Hz sample rate for compatibility
+
+## Runtime Organization And Provenance
+
+All short effects live directly in this directory regardless of origin. The
+runtime path is intentionally not a provenance classification: the
+Sonniss-derived custom effects are `bird_attack_sound.wav`, `blade_parry.wav`,
+`distorted_scream.wav`, `ice_spell.ogg`, `laser_beam.wav`,
+`mortal_strike.wav`, `open_door.ogg`, `shield_block_metal_weapon.wav`, and
+`underground_spring.ogg`, and `metal_weapon_disarm.wav`. Other current effects are OpenAI-generated
+placeholders or effects. See [`docs/ASSET_PROVENANCE.md`](../../../../docs/ASSET_PROVENANCE.md)
+before distributing or replacing an asset.
+
+Background music remains in `assets/music/`: it is streamed and looped through
+`pygame.mixer.music`, whereas these short effects are cached as
+`pygame.mixer.Sound` instances.
 
 ## Creating Placeholder Sounds
 

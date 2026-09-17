@@ -187,6 +187,7 @@ class DungeonNavigationMixin:
 
         self.player_char.location_z = target_level
         self._sync_realm_scoped_effects()
+        self._sync_dungeon_music()
         if hasattr(self.player_char, "record_stairs_used"):
             self.player_char.record_stairs_used()
         if "StairsUp" in tile_type:
@@ -219,6 +220,7 @@ class DungeonNavigationMixin:
 
         self.player_char.location_z = target_level
         self._sync_realm_scoped_effects()
+        self._sync_dungeon_music()
         if hasattr(self.player_char, "record_stairs_used"):
             self.player_char.record_stairs_used()
         if "StairsDown" in tile_type:

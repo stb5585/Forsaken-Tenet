@@ -9,6 +9,7 @@ import yaml
 from src.core import abilities, enemies, items
 from src.core.classes import ability_mechanics
 from src.core.data.ability_loader import AbilityFactory
+from src.core.events import EventBus, EventType
 from tests.test_framework import TestGameState
 
 DETECT_CLASSES = (
@@ -109,6 +110,11 @@ def test_parry_is_blocked_by_shields_and_riposte_is_a_separate_skill(monkeypatch
     attacker = enemies.Goblin()
     defender = _player("Knight Enchanter")
     defender.spellbook["Skills"]["Parry"] = abilities.Parry()
+    event_bus = EventBus()
+    event_bus.enable()
+    events = []
+    event_bus.subscribe(EventType.BLOCK, events.append)
+    monkeypatch.setattr("src.core.character.offense.get_event_bus", lambda: event_bus)
     rolls = iter((0.0, 0.5, 0.9))
     monkeypatch.setattr("src.core.character.offense.random.random", lambda: next(rolls))
     monkeypatch.setattr("src.core.character.offense.random.uniform", lambda *_args: 0.5)
@@ -117,9 +123,14 @@ def test_parry_is_blocked_by_shields_and_riposte_is_a_separate_skill(monkeypatch
     assert attacker._apply_parry(defender, 20) == (20, "", False, False)
 
     defender.equipment["OffHand"] = items.NoOffHand()
+    defender.equipment["Weapon"] = items.Dirk()
     remaining, message, parried, aborted = attacker._apply_parry(defender, 20)
     assert (remaining, parried, aborted) == (10, True, False)
     assert "ripostes" not in message
+    assert len(events) == 1
+    assert events[0].data["reaction"] == "parry"
+    assert events[0].data["parry_style"] == "blade"
+    assert events[0].data["parry_weapon_type"] == "Dagger"
 
 
 def test_monocane_has_five_casting_uses_before_removal():

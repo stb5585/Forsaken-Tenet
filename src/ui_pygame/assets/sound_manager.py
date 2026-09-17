@@ -37,6 +37,8 @@ DEFAULT_SFX_NAMES = (
     "bird_attack_sound",
     "mortal_strike",
     "shield_block_metal_weapon",
+    "metal_weapon_disarm",
+    "blade_parry",
     "underground_spring",
     "open_door",
     "poison",
@@ -54,6 +56,9 @@ DEFAULT_MUSIC_NAMES = (
     "church",
     "inn",
     "dungeon",
+    "dungeon_final",
+    "funhouse",
+    "realm_of_cambion",
     "combat_normal",
     "combat_boss",
     "combat_final",
@@ -70,8 +75,17 @@ LOCATION_MUSIC_THEMES = {
     "church": "church",
     "inn": "inn",
     "dungeon": "dungeon",
+    "dungeon_final": "dungeon_final",
+    "funhouse": "funhouse",
+    "realm_of_cambion": "realm_of_cambion",
     "combat": "combat_normal",
 }
+
+DUNGEON_EXPLORATION_MUSIC = frozenset({"dungeon", "dungeon_final", "funhouse", "realm_of_cambion"})
+
+_METAL_DISARM_WEAPON_TYPES = frozenset(
+    {"Battle Axe", "Crossbow", "Dagger", "Hammer", "Longsword", "Polearm", "Sword"}
+)
 
 MUSIC_ASSET_ALIASES = {
     "dungeon": ("dungeon", "eerie_dungeon_background"),
@@ -105,7 +119,7 @@ class SoundManager:
         # Volume settings (0.0 to 1.0)
         self.master_volume = 1.0
         self.sfx_volume = 0.7
-        self.music_volume = 0.5
+        self.music_volume = 0.1
         self.enabled = True
 
         # Event bus integration
@@ -152,6 +166,10 @@ class SoundManager:
     def _on_combat_start(self, event):
         """Handle combat start event."""
         self.play_sfx("combat_start")
+        # Dungeon combat uses the existing dungeon bed so the transition keeps
+        # its playback position instead of restarting a music loop.
+        if self.current_music in DUNGEON_EXPLORATION_MUSIC:
+            return
         if not (self.current_music or "").startswith("combat_"):
             self._pre_combat_music = self.current_music
         self.play_location_music(
@@ -191,7 +209,14 @@ class SoundManager:
             self.play_sfx("hit")
 
     def _on_block(self, event):
-        """Handle shield block events."""
+        """Route shield blocks and parries to their appropriate effects."""
+        if event.data.get("reaction") == "parry":
+            sound_name = "blade_parry" if event.data.get("parry_style") == "blade" else "block"
+            self.play_sfx(sound_name)
+            return
+        if event.data.get("attack_source") == "natural_weapon":
+            self.play_sfx("block")
+            return
         self.play_sfx("shield_block_metal_weapon")
 
     def _on_healing(self, event):
@@ -253,7 +278,13 @@ class SoundManager:
         """Handle status effect applied event."""
         status_name = event.data.get("status_name", "").lower()
 
-        if "poison" in status_name or "bleed" in status_name:
+        if status_name == "disarm":
+            equipment = getattr(getattr(event, "target", None), "equipment", {})
+            weapon = equipment.get("Weapon") if isinstance(equipment, dict) else None
+            weapon_type = str(getattr(weapon, "subtyp", "") or "")
+            if weapon_type in _METAL_DISARM_WEAPON_TYPES:
+                self.play_sfx("metal_weapon_disarm")
+        elif "poison" in status_name or "bleed" in status_name:
             self.play_sfx("poison")
         elif "stun" in status_name or "freeze" in status_name:
             self.play_sfx("stun")
@@ -289,10 +320,7 @@ class SoundManager:
 
     def get_sfx_candidate_paths(self, sound_name: str) -> tuple[Path, ...]:
         """Return sound-effect filenames checked for a sound name."""
-        paths = []
-        for directory in (self.sounds_dir, self.sounds_dir / "new_sounds"):
-            paths.extend(directory / f"{sound_name}.{extension}" for extension in ("wav", "ogg"))
-        return tuple(paths)
+        return tuple(self.sounds_dir / f"{sound_name}.{extension}" for extension in ("wav", "ogg"))
 
     def get_music_candidate_paths(self, music_name: str) -> tuple[Path, ...]:
         """Return music filenames checked for a music name."""

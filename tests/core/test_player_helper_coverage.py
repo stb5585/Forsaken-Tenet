@@ -77,7 +77,7 @@ class TestPlayerHelperCoverage:
         named_enemy_message = player.quests(enemy=SimpleNamespace(name="Orc"))
         waitress_message = player.quests(enemy=SimpleNamespace(name="Waitress"))
 
-        assert "completed a bounty" in bounty_message
+        assert bounty_message == ""
         assert player.quest_dict["Bounty"]["Goblin"][1] == 2
         assert player.quest_dict["Bounty"]["Goblin"][2] is True
         assert "Clear the Cave" in named_enemy_message

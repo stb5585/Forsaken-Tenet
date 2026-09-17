@@ -256,6 +256,7 @@ class DungeonExplorationMixin:
             pass
         else:
             hp_after = getattr(self.player_char.health, "current", None)
+            self._sync_dungeon_music()
             if (
                 "FirePath" in tile_type
                 and hp_before is not None
@@ -357,6 +358,7 @@ class DungeonExplorationMixin:
                 if "MerzhinBossRoom" in type(current_tile).__name__:
                     self.add_message("Merzhin falls and the Realm of Cambion collapses around you.")
                     self.player_char.exit_realm_of_cambion()
+                    self._sync_dungeon_music()
                     self._mark_view_dirty()
             elif not self.player_char.is_alive():
                 # Player died - return to town or exit funhouse
@@ -364,11 +366,13 @@ class DungeonExplorationMixin:
                     # In funhouse - exit instead of going to town
                     self.add_message("You were defeated... The funhouse spits you back out.")
                     self.player_char.exit_funhouse()
+                    self._sync_dungeon_music()
                 elif self.player_char.in_realm_of_cambion():
                     self.add_message(
                         "You were defeated... The Realm of Cambion hurls you back to the spring."
                     )
                     self.player_char.exit_realm_of_cambion()
+                    self._sync_dungeon_music()
                     self._mark_view_dirty()
                 else:
                     self.add_message("You were defeated...")
@@ -404,6 +408,7 @@ class DungeonExplorationMixin:
         self._cached_view = None
         self._cached_frame = None
         self._mark_view_dirty()
+        self._sync_dungeon_music()
 
         # Always show a loading screen on entry. If we're in town coordinates, use a descending message.
         if hasattr(self.player_char, "in_town") and callable(self.player_char.in_town):

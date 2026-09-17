@@ -15,7 +15,8 @@ This directory contains background music for The Forsaken Tenet.
 - `shop.ogg` - Shop ambient music
 - `church.ogg` - Church ambient music
 - `inn.ogg` - Inn/tavern music
-- `eerie_dungeon_background.wav` - Current staged dungeon theme; resolved by the runtime `dungeon` theme alias
+- `dungeon.ogg` - Current dungeon theme for ordinary levels; the runtime retains
+  the older `eerie_dungeon_background` alias as a missing-file fallback only
 
 ### Dungeons
 - `dungeon.ogg` - Generic dungeon theme
@@ -23,6 +24,14 @@ This directory contains background music for The Forsaken Tenet.
 - `dungeon_floor2.ogg` - Mid dungeon floors
 - `dungeon_floor3.ogg` - Deep dungeon floors
 - `dungeon_final.ogg` - Final dungeon area
+- `funhouse.ogg` - Funhouse challenge area
+- `realm_of_cambion.ogg` - Realm of Cambion area
+
+`dungeon` is used on ordinary dungeon levels 1–5 (and any non-special
+side-area level). `dungeon_final`, `funhouse`, and `realm_of_cambion` are
+separate runtime themes for levels 6, 7, and 8 respectively. The latter three
+tracks are currently required assets; their absence is reported by audio
+diagnostics and degrades safely until they are supplied.
 
 ### Combat
 - `combat_normal.ogg` - Normal combat music

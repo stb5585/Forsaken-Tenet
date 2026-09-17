@@ -64,7 +64,7 @@ Enemy inspection panels and boss navigation figures use the same transparent com
 
 This keeps the visible enemy identity consistent between dungeon navigation, combat, target panels, and compact tokens.
 
-The retired `enemy_renders/` atlas and `enemy_combat_art/` artwork set have been moved to `old_assets/retired_enemy_art/`. The retired generated enemy sprite PNGs have been moved to `old_assets/retired_enemy_sprites/`.
+The retired `enemy_renders/` atlas and `enemy_combat_art/` artwork set have been moved to `unused_assets/retired_enemy_art/`. The retired generated enemy sprite PNGs have been moved to `unused_assets/retired_enemy_sprites/`.
 
 ## Asset Validation
 

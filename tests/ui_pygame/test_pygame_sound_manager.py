@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -162,16 +163,15 @@ def test_audio_asset_diagnostics_report_sound_and_music_availability(tmp_path, f
     assets_dir = _make_assets_dir(tmp_path)
     (assets_dir / "sounds" / "hit.wav").write_bytes(b"wav")
     (assets_dir / "sounds" / "heal.ogg").write_bytes(b"ogg")
-    (assets_dir / "sounds" / "new_sounds").mkdir()
-    (assets_dir / "sounds" / "new_sounds" / "spring.wav").write_bytes(b"wav")
-    (assets_dir / "sounds" / "new_sounds" / "distorted_scream.wav").write_bytes(b"wav")
-    (assets_dir / "sounds" / "new_sounds" / "bird_attack_sound.wav").write_bytes(b"wav")
-    (assets_dir / "sounds" / "new_sounds" / "laser_beam.wav").write_bytes(b"wav")
-    (assets_dir / "sounds" / "new_sounds" / "mortal_strike.wav").write_bytes(b"wav")
-    (assets_dir / "sounds" / "new_sounds" / "ice_spell.wav").write_bytes(b"wav")
-    (assets_dir / "sounds" / "new_sounds" / "shield_block_metal_weapon.wav").write_bytes(b"wav")
-    (assets_dir / "sounds" / "new_sounds" / "underground_spring.wav").write_bytes(b"wav")
-    (assets_dir / "sounds" / "new_sounds" / "open_door.wav").write_bytes(b"wav")
+    (assets_dir / "sounds" / "spring.wav").write_bytes(b"wav")
+    (assets_dir / "sounds" / "distorted_scream.wav").write_bytes(b"wav")
+    (assets_dir / "sounds" / "bird_attack_sound.wav").write_bytes(b"wav")
+    (assets_dir / "sounds" / "laser_beam.wav").write_bytes(b"wav")
+    (assets_dir / "sounds" / "mortal_strike.wav").write_bytes(b"wav")
+    (assets_dir / "sounds" / "ice_spell.wav").write_bytes(b"wav")
+    (assets_dir / "sounds" / "shield_block_metal_weapon.wav").write_bytes(b"wav")
+    (assets_dir / "sounds" / "underground_spring.wav").write_bytes(b"wav")
+    (assets_dir / "sounds" / "open_door.wav").write_bytes(b"wav")
     (assets_dir / "music" / "town.mp3").write_bytes(b"mp3")
     (assets_dir / "music" / "eerie_dungeon_background.wav").write_bytes(b"wav")
     manager = sound_module.SoundManager(assets_dir=str(assets_dir))
@@ -180,7 +180,7 @@ def test_audio_asset_diagnostics_report_sound_and_music_availability(tmp_path, f
 
     assert manager.resolve_sfx_path("hit") == assets_dir / "sounds" / "hit.wav"
     assert manager.resolve_sfx_path("heal") == assets_dir / "sounds" / "heal.ogg"
-    assert manager.resolve_sfx_path("spring") == assets_dir / "sounds" / "new_sounds" / "spring.wav"
+    assert manager.resolve_sfx_path("spring") == assets_dir / "sounds" / "spring.wav"
     assert manager.resolve_music_path("town") == assets_dir / "music" / "town.mp3"
     assert (
         manager.resolve_music_path("dungeon")
@@ -189,8 +189,6 @@ def test_audio_asset_diagnostics_report_sound_and_music_availability(tmp_path, f
     assert manager.get_sfx_candidate_paths("hit") == (
         assets_dir / "sounds" / "hit.wav",
         assets_dir / "sounds" / "hit.ogg",
-        assets_dir / "sounds" / "new_sounds" / "hit.wav",
-        assets_dir / "sounds" / "new_sounds" / "hit.ogg",
     )
     assert manager.get_music_candidate_paths("town") == (
         assets_dir / "music" / "town.ogg",
@@ -220,8 +218,6 @@ def test_audio_asset_diagnostics_report_sound_and_music_availability(tmp_path, f
                 "checked_paths": [
                     str(assets_dir / "sounds" / "hit.wav"),
                     str(assets_dir / "sounds" / "hit.ogg"),
-                    str(assets_dir / "sounds" / "new_sounds" / "hit.wav"),
-                    str(assets_dir / "sounds" / "new_sounds" / "hit.ogg"),
                 ],
             },
             "heal": {
@@ -230,18 +226,14 @@ def test_audio_asset_diagnostics_report_sound_and_music_availability(tmp_path, f
                 "checked_paths": [
                     str(assets_dir / "sounds" / "heal.wav"),
                     str(assets_dir / "sounds" / "heal.ogg"),
-                    str(assets_dir / "sounds" / "new_sounds" / "heal.wav"),
-                    str(assets_dir / "sounds" / "new_sounds" / "heal.ogg"),
                 ],
             },
             "spring": {
                 "available": True,
-                "path": str(assets_dir / "sounds" / "new_sounds" / "spring.wav"),
+                "path": str(assets_dir / "sounds" / "spring.wav"),
                 "checked_paths": [
                     str(assets_dir / "sounds" / "spring.wav"),
                     str(assets_dir / "sounds" / "spring.ogg"),
-                    str(assets_dir / "sounds" / "new_sounds" / "spring.wav"),
-                    str(assets_dir / "sounds" / "new_sounds" / "spring.ogg"),
                 ],
             },
             "missing": {
@@ -250,8 +242,6 @@ def test_audio_asset_diagnostics_report_sound_and_music_availability(tmp_path, f
                 "checked_paths": [
                     str(assets_dir / "sounds" / "missing.wav"),
                     str(assets_dir / "sounds" / "missing.ogg"),
-                    str(assets_dir / "sounds" / "new_sounds" / "missing.wav"),
-                    str(assets_dir / "sounds" / "new_sounds" / "missing.ogg"),
                 ],
             },
         },
@@ -361,7 +351,7 @@ def test_play_music_handles_busy_track_and_fallback_files(tmp_path, fake_mixer):
 
     assert music.fadeouts == [300]
     assert music.loaded and music.loaded[0].endswith("battle.mp3")
-    assert music.volumes == [0.5]
+    assert music.volumes == [manager.music_volume]
     assert music.plays == [(3, 600)]
     assert manager.current_music == "battle"
 
@@ -379,6 +369,9 @@ def test_location_music_routes_context_to_theme_names(tmp_path, fake_mixer, monk
     assert manager.resolve_music_theme("Town") == "town"
     assert manager.resolve_music_theme("Main Menu") == "menu"
     assert manager.resolve_music_theme("Blacksmith") == "shop"
+    assert manager.resolve_music_theme("Dungeon Final") == "dungeon_final"
+    assert manager.resolve_music_theme("Funhouse") == "funhouse"
+    assert manager.resolve_music_theme("Realm of Cambion") == "realm_of_cambion"
     assert manager.resolve_music_theme("Final Room", final=True) == "combat_final"
     assert manager.resolve_music_theme("Combat", boss=True) == "combat_boss"
     assert manager.resolve_music_theme("Unknown Place") == "town"
@@ -451,7 +444,7 @@ def test_stop_pause_resume_and_volume_controls(tmp_path, fake_mixer):
     assert manager.master_volume == 1.0
     assert manager.sfx_volume == 0.0
     assert manager.music_volume == 1.0
-    assert music.volumes[-2:] == [0.5, 1.0]
+    assert music.volumes[-2:] == [0.1, 1.0]
 
     manager.current_music = "dungeon"
     music.busy = False
@@ -536,6 +529,27 @@ def test_event_handlers_route_to_expected_sound_effects(tmp_path, fake_mixer, mo
         GameEvent(type=EventType.DAMAGE_DEALT, timestamp=0, data={"damage": 10})
     )
     manager._on_block(GameEvent(type=EventType.BLOCK, timestamp=0, data={"damage_blocked": 25}))
+    manager._on_block(
+        GameEvent(
+            type=EventType.BLOCK,
+            timestamp=0,
+            data={"damage_blocked": 25, "attack_source": "natural_weapon"},
+        )
+    )
+    manager._on_block(
+        GameEvent(
+            type=EventType.BLOCK,
+            timestamp=0,
+            data={"reaction": "parry", "parry_style": "blade"},
+        )
+    )
+    manager._on_block(
+        GameEvent(
+            type=EventType.BLOCK,
+            timestamp=0,
+            data={"reaction": "parry", "parry_style": "generic"},
+        )
+    )
     manager._on_healing(GameEvent(type=EventType.HEALING_DONE, timestamp=0, data={}))
     manager._on_spell_cast(
         GameEvent(type=EventType.SPELL_CAST, timestamp=0, data={"spell_name": "Fireball"})
@@ -589,6 +603,22 @@ def test_event_handlers_route_to_expected_sound_effects(tmp_path, fake_mixer, mo
         GameEvent(type=EventType.STATUS_APPLIED, timestamp=0, data={"status_name": "Poison"})
     )
     manager._on_status_applied(
+        SimpleNamespace(
+            data={"status_name": "Disarm"},
+            target=SimpleNamespace(
+                equipment={"Weapon": SimpleNamespace(subtyp="Sword")},
+            ),
+        )
+    )
+    manager._on_status_applied(
+        SimpleNamespace(
+            data={"status_name": "Disarm"},
+            target=SimpleNamespace(
+                equipment={"Weapon": SimpleNamespace(subtyp="Staff")},
+            ),
+        )
+    )
+    manager._on_status_applied(
         GameEvent(type=EventType.STATUS_APPLIED, timestamp=0, data={"status_name": "Freeze"})
     )
     manager._on_status_applied(
@@ -616,6 +646,9 @@ def test_event_handlers_route_to_expected_sound_effects(tmp_path, fake_mixer, mo
         ("heavy_hit", None, 0),
         ("hit", None, 0),
         ("shield_block_metal_weapon", None, 0),
+        ("block", None, 0),
+        ("blade_parry", None, 0),
+        ("block", None, 0),
         ("heal", None, 0),
         ("spell_fire", None, 0),
         ("ice_spell", None, 0),
@@ -633,6 +666,7 @@ def test_event_handlers_route_to_expected_sound_effects(tmp_path, fake_mixer, mo
         ("spell_cast", None, 0),
         ("heal", None, 0),
         ("poison", None, 0),
+        ("metal_weapon_disarm", None, 0),
         ("stun", None, 0),
         ("burn", None, 0),
         ("player_death", None, 0),
@@ -666,10 +700,11 @@ def test_combat_start_music_uses_boss_and_final_flags(tmp_path, fake_mixer, monk
     ]
 
 
-def test_combat_end_restores_previous_location_music(tmp_path, fake_mixer, monkeypatch):
+@pytest.mark.parametrize("area_music", ("dungeon", "dungeon_final", "funhouse", "realm_of_cambion"))
+def test_dungeon_combat_keeps_the_running_area_music(tmp_path, fake_mixer, monkeypatch, area_music):
     _state, _music = fake_mixer
     manager = sound_module.SoundManager(assets_dir=str(_make_assets_dir(tmp_path)))
-    manager.current_music = "dungeon"
+    manager.current_music = area_music
     music_calls = []
     sfx_calls = []
     monkeypatch.setattr(manager, "play_sfx", lambda name, **_kwargs: sfx_calls.append(name))
@@ -694,9 +729,6 @@ def test_combat_end_restores_previous_location_music(tmp_path, fake_mixer, monke
     )
 
     assert sfx_calls == ["combat_start", "victory"]
-    assert music_calls == [
-        ("location", "combat", {"boss": True, "final": False}),
-        ("music", "dungeon"),
-    ]
-    assert manager.current_music == "dungeon"
+    assert music_calls == []
+    assert manager.current_music == area_music
     assert manager._pre_combat_music is None

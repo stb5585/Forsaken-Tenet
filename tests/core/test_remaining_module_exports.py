@@ -91,7 +91,8 @@ def test_character_composes_every_split_behavior_method():
         if inspect.isfunction(implementation)
     }
 
-    assert len(methods) == 56
+    # _emit_parry_event is part of the split offense contract as well.
+    assert len(methods) == 57
     for name, implementation in methods.items():
         assert getattr(character.Character, name) is implementation
 

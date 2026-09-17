@@ -38,9 +38,25 @@
   outcome sequencing behind the completed enemy fade.
 - Rebalanced Barghest for a normally geared level-15 encounter, reducing its
   overwhelming initiative and damage pressure while preserving its boss kit.
+- Routed natural-weapon blocks to the generic impact effect instead of the
+  metal weapon shield-block effect.
+- Made active dungeon anti-magic encounter-wide for both player and enemies,
+  and added metal-weapon Disarm audio feedback.
 
 ### Dungeon, Gathering, And Persistence
 
+- Kept the shared dungeon music continuous through dungeon combat and assigned
+  dedicated pending themes for final level 6, the Funhouse, and the Realm of
+  Cambion; ordinary levels 1–5 retain the current dungeon bed.
+- Organized the reviewed Sonniss source library into local candidate,
+  unsuitable, and source-metadata directories without promoting or deleting
+  any raw audio.
+- Renamed the local source/reference workspace from `old_assets/` to
+  `unused_assets/` to distinguish currently unused material from retired work.
+- Integrated Sonniss-derived effects into the primary sound directory with
+  provenance documented separately, and added blade-specific parry feedback.
+- Converted the dungeon bed and longer custom effects to compact runtime OGG
+  assets while preserving source WAV files outside the runtime asset tree.
 - Replaced automatic Deathcap collection with deterministic, persistent
   gathering nodes on eligible cave paths. Druid/Archdruid identify and harvest
   Acorn, Vine Seed, Fungus Spore, and Hemlock Root; Assassin identifies and

@@ -671,6 +671,31 @@ def test_navigation_awards_hidden_cache_after_floor_is_mapped(monkeypatch):
     assert player.facing in {"north", "south", "east", "west"}
 
 
+def test_sync_dungeon_music_selects_special_area_themes(monkeypatch):
+    manager, _presenter, player, game = _make_manager(monkeypatch)
+    music_calls = []
+    game._play_location_music = music_calls.append
+
+    for level in (1, 5, 9):
+        player.location_z = level
+        manager._sync_dungeon_music()
+    player.location_z = 6
+    manager._sync_dungeon_music()
+    player.location_z = 7
+    manager._sync_dungeon_music()
+    player.location_z = dungeon_manager.map_tiles.REALM_OF_CAMBION_LEVEL
+    manager._sync_dungeon_music()
+
+    assert music_calls == [
+        "dungeon",
+        "dungeon",
+        "dungeon",
+        "dungeon_final",
+        "funhouse",
+        "realm_of_cambion",
+    ]
+
+
 def test_use_stairs_up_interact_secret_shop_and_dialogue_helpers(monkeypatch):
     manager, presenter, player, _game = _make_manager(monkeypatch)
     manager._show_dungeon_loading_screen = lambda *_args, **_kwargs: None

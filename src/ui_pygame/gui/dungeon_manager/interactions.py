@@ -633,6 +633,7 @@ class DungeonInteractionMixin:
                 min_display_ms=300,
             ):
                 map_tiles.enter_realm_of_cambion(self.player_char)
+                self._sync_dungeon_music()
                 self._mark_view_dirty()
                 self.add_message("The spring pulls you into the Realm of Cambion.")
 

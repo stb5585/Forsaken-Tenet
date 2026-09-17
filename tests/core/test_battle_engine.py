@@ -38,14 +38,37 @@ def test_pre_start_action_scope_uses_player_ability_owner():
     assert engine.target_scope_for_action("Cast Spell", "Firebolt") is TargetScope.SINGLE_ENEMY
 
 
-def test_start_battle_clears_stale_cambion_anti_magic_outside_realm():
+def test_start_battle_preserves_active_dungeon_anti_magic():
     player = TestGameState.create_player(name="TestHero", class_name="Warrior", race_name="Human")
-    player.location_z = 1
+    player.location_z = 2
     player.anti_magic_active = True
+    enemy = Goblin()
 
-    BattleEngine(player, Goblin(), DummyCombatTile()).start_battle()
+    BattleEngine(player, enemy, DummyCombatTile()).start_battle()
 
-    assert player.anti_magic_active is False
+    assert player.anti_magic_active is True
+    assert enemy.anti_magic_active is True
+
+
+def test_dungeon_anti_magic_suppresses_player_and_enemy_abilities():
+    player = TestGameState.create_player(name="TestHero", class_name="Warrior", race_name="Human")
+    player.location_z = 2
+    player.anti_magic_active = True
+    player.spellbook["Skills"]["Rally"] = abilities.Rally()
+    enemy = Goblin()
+    enemy.spellbook["Spells"]["Firebolt"] = abilities.Firebolt()
+    engine = BattleEngine(player, enemy, DummyCombatTile())
+
+    engine.start_battle()
+
+    assert player.anti_magic_active is True
+    assert enemy.anti_magic_active is True
+    engine.attacker = player
+    engine.defender = enemy
+    assert "anti-magic field" in engine._execute_skill("Rally").lower()
+    engine.attacker = enemy
+    engine.defender = player
+    assert "anti-magic field" in engine._execute_spell("Firebolt").lower()
 
 
 def test_start_battle_encumbered_player_loses_initiative():
