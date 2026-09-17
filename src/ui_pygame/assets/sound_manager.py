@@ -81,9 +81,7 @@ LOCATION_MUSIC_THEMES = {
     "combat": "combat_normal",
 }
 
-DUNGEON_EXPLORATION_MUSIC = frozenset(
-    {"dungeon", "dungeon_final", "funhouse", "realm_of_cambion"}
-)
+DUNGEON_EXPLORATION_MUSIC = frozenset({"dungeon", "dungeon_final", "funhouse", "realm_of_cambion"})
 
 _METAL_DISARM_WEAPON_TYPES = frozenset(
     {"Battle Axe", "Crossbow", "Dagger", "Hammer", "Longsword", "Polearm", "Sword"}
@@ -322,9 +320,7 @@ class SoundManager:
 
     def get_sfx_candidate_paths(self, sound_name: str) -> tuple[Path, ...]:
         """Return sound-effect filenames checked for a sound name."""
-        return tuple(
-            self.sounds_dir / f"{sound_name}.{extension}" for extension in ("wav", "ogg")
-        )
+        return tuple(self.sounds_dir / f"{sound_name}.{extension}" for extension in ("wav", "ogg"))
 
     def get_music_candidate_paths(self, music_name: str) -> tuple[Path, ...]:
         """Return music filenames checked for a music name."""
