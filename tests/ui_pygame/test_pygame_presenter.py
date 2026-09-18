@@ -166,6 +166,7 @@ def _install_presenter_fakes(monkeypatch, *, fullscreen=False):
     monkeypatch.setattr(
         "src.ui_pygame.presentation.pygame_presenter.pygame.font.init", lambda: None
     )
+
     def fake_set_mode(size, *flags):
         mode_calls.append((size, flags))
         display_screen._size = size

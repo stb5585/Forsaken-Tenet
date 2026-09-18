@@ -82,7 +82,9 @@ def test_load_background_caches_downscaled_larger_art(monkeypatch):
         scaled_sizes.append((image.get_size(), size))
         return pygame.Surface(size)
 
-    monkeypatch.setattr("src.ui_pygame.gui.town_base.pygame.transform.smoothscale", fake_smoothscale)
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.town_base.pygame.transform.smoothscale", fake_smoothscale
+    )
     base = town_base.TownScreenBase(presenter)
 
     assert scaled_sizes == [((1280, 960), (640, 480))]

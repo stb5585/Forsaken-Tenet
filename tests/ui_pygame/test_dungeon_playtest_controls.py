@@ -197,6 +197,10 @@ def test_native_1080p_layout_scales_targets_and_mouse_hit_testing() -> None:
     )
 
     assert forward.rect.width > 108
-    assert controls.command_from_event(
-        SimpleNamespace(type=pygame.MOUSEBUTTONDOWN, button=1, pos=forward.rect.center), now_ms=100
-    ) is UiCommand.DUNGEON_MOVE_FORWARD
+    assert (
+        controls.command_from_event(
+            SimpleNamespace(type=pygame.MOUSEBUTTONDOWN, button=1, pos=forward.rect.center),
+            now_ms=100,
+        )
+        is UiCommand.DUNGEON_MOVE_FORWARD
+    )

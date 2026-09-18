@@ -169,9 +169,7 @@ def test_release_guard_waits_for_mouse_button_release(monkeypatch):
     """A popup must not accept the mouse-down event that opened it."""
     mouse_states = iter([(True, False, False), (False, False, False)])
     monkeypatch.setattr("src.ui_pygame.gui.input_guards.pygame.event.pump", lambda: None)
-    monkeypatch.setattr(
-        "src.ui_pygame.gui.input_guards.pygame.key.get_pressed", lambda: []
-    )
+    monkeypatch.setattr("src.ui_pygame.gui.input_guards.pygame.key.get_pressed", lambda: [])
     monkeypatch.setattr(
         "src.ui_pygame.gui.input_guards.pygame.mouse.get_pressed",
         lambda: next(mouse_states),

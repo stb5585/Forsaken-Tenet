@@ -228,6 +228,7 @@ def test_town_menu_ignores_a_followup_click_inside_pointer_cooldown(monkeypatch)
     assert screen.navigate(["Shops"]) == 0
     assert presenter._town_menu_pointer_armed_at == 381
 
+
 def test_town_menu_quit_event_raises(monkeypatch):
     presenter = _make_presenter()
     monkeypatch.setattr(

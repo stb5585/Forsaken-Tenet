@@ -101,7 +101,12 @@ class TownScreenBase:
         path = PYGAME_ASSETS_DIR / "backgrounds" / filename
         ui_scale = getattr(getattr(self.presenter, "layout_metrics", None), "display", None)
         ui_scale = getattr(ui_scale, "ui_scale", 1.0)
-        suffixes = ["@3x", "@2x", ""] if ui_scale > 2 else ["@2x", ""]
+        if ui_scale > 2:
+            suffixes = ["@3x", "@2x", ""]
+        elif ui_scale > 1:
+            suffixes = ["@2x", ""]
+        else:
+            suffixes = [""]
         for suffix in suffixes:
             candidate = path.with_name(f"{path.stem}{suffix}{path.suffix}")
             if os.path.exists(candidate):
