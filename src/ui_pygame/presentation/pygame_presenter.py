@@ -183,6 +183,24 @@ class PygamePresenter(GamePresenter):
         self._refresh_display_configuration()
         return True
 
+    def apply_display_mode(
+        self, *, fullscreen: bool, resolution: tuple[int, int] | None = None
+    ) -> None:
+        """Recreate the native display surface for a user-selected display mode."""
+        self.fullscreen = fullscreen
+        if fullscreen:
+            size = self._desktop_render_size(resolution or (self.width, self.height))
+            self.screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
+        else:
+            if resolution is None:
+                raise ValueError("windowed display mode requires a resolution")
+            self.screen = pygame.display.set_mode(resolution)
+        self._refresh_display_configuration()
+        self.title_font = pygame.font.Font(None, self.layout_metrics.font_size(48))
+        self.large_font = pygame.font.Font(None, self.layout_metrics.font_size(36))
+        self.normal_font = pygame.font.Font(None, self.layout_metrics.font_size(24))
+        self.small_font = pygame.font.Font(None, self.layout_metrics.font_size(18))
+
     def _subscribe_to_events(self):
         """Subscribe to combat events for animations."""
         self.event_bus.subscribe(EventType.COMBAT_START, self._on_combat_start)

@@ -37,7 +37,7 @@ class CombatOverlayMixin:
             return
 
         self.update_animations()
-        view_width = int(self.screen_width * 0.65)
+        view_width = self.dungeon_view_width
         gap = 12
         margin = 12
         top = 230
@@ -243,7 +243,7 @@ class CombatOverlayMixin:
         # Enemy appears in the center-front of the dungeon view (foreground layer)
         # Position at bottom-center of the dungeon view area (left 65% of screen)
         visual_offset_x, visual_offset_y = self.enemy_visual_offset
-        view_width = int(self.screen_width * 0.65)
+        view_width = self.dungeon_view_width
         center_x = view_width // 2 + visual_offset_x + self._enemy_recoil_offset()
 
         # Position enemy at bottom third (standing on the floor ahead)
@@ -453,8 +453,8 @@ class CombatOverlayMixin:
         )
         self._render_player_danger_vignette(player_char)
         self._render_telegraph_banner(enemy=enemy, overlay=True)
-        has_sight = self._enemy_details_visible(player_char, enemy, show_enemy_details)
-        self._render_enemy_info_panel(enemy, has_sight, overlay=True)
+        # The dungeon HUD owns the right-side column. The legacy enemy-info
+        # card previously overlapped that native responsive HUD at wide sizes.
         self._render_ability_status_visuals(enemy, "enemy")
         self._render_ability_status_visuals(player_char, "player")
 
@@ -486,17 +486,19 @@ class CombatOverlayMixin:
         """Render the current actor and upcoming opportunities in one ribbon."""
         if not entries:
             return
-        view_width = int(self.screen_width * 0.65)
+        view_width = self.dungeon_view_width
         visible_entries = entries[:6]
-        active_width = 154
-        next_token_size = 28
-        next_spacing = next_token_size + 8
-        width = active_width + max(0, len(visible_entries) - 1) * next_spacing + 16
+        active_width = self.native_unit(154)
+        next_token_size = self.native_unit(28)
+        next_spacing = next_token_size + self.native_unit(8)
+        width = (
+            active_width + max(0, len(visible_entries) - 1) * next_spacing + self.native_unit(16)
+        )
         rect = pygame.Rect(
-            max(8, view_width - width - 10),
-            164,
+            max(self.native_unit(8), view_width - width - self.native_unit(10)),
+            self.native_unit(164),
             width,
-            58,
+            self.native_unit(58),
         )
         self._draw_panel_surface(
             rect,
@@ -506,13 +508,13 @@ class CombatOverlayMixin:
             alpha=210,
             border_width=1,
         )
-        label_font = pygame.font.Font(None, 20)
-        name_font = pygame.font.Font(None, 16)
+        label_font = pygame.font.Font(None, self.native_unit(20))
+        name_font = pygame.font.Font(None, self.native_unit(16))
         for index, entry in enumerate(visible_entries):
             active = index == 0
-            token_size = 40 if active else next_token_size
+            token_size = self.native_unit(40) if active else next_token_size
             next_token_x = rect.left + active_width + (index - 1) * next_spacing
-            token_x = rect.left + 9 if active else next_token_x
+            token_x = rect.left + self.native_unit(9) if active else next_token_x
             token_rect = pygame.Rect(
                 token_x,
                 rect.centery - token_size // 2,
@@ -520,13 +522,19 @@ class CombatOverlayMixin:
                 token_size,
             )
             border = self._timeline_actor_border(entry.actor_id, engine)
-            pygame.draw.rect(self.screen, (30, 30, 38), token_rect.inflate(4, 4), border_radius=4)
+            token_padding = self.native_unit(4)
+            pygame.draw.rect(
+                self.screen,
+                (30, 30, 38),
+                token_rect.inflate(token_padding, token_padding),
+                border_radius=token_padding,
+            )
             pygame.draw.rect(
                 self.screen,
                 border,
-                token_rect.inflate(4, 4),
-                3 if active else 2,
-                border_radius=4,
+                token_rect.inflate(token_padding, token_padding),
+                self.native_unit(3 if active else 2),
+                border_radius=token_padding,
             )
             actor = self._timeline_actor(entry.actor_id, player_char, engine, current_actor)
             hidden_enemy = entry.actor_id != PLAYER_ACTOR_ID and self._enemy_hidden_by_invisibility(
@@ -541,7 +549,7 @@ class CombatOverlayMixin:
             if token is not None:
                 self.screen.blit(token, token.get_rect(center=token_rect.center))
             else:
-                fallback = pygame.font.Font(None, 17).render(
+                fallback = pygame.font.Font(None, self.native_unit(17)).render(
                     str(entry.display_label or "?")[:1].upper(), True, (230, 225, 210)
                 )
                 self.screen.blit(fallback, fallback.get_rect(center=token_rect.center))
@@ -553,23 +561,25 @@ class CombatOverlayMixin:
                 actor_name = str(getattr(actor, "name", "") or entry.display_label)
                 if hidden_enemy:
                     actor_name = presented_enemy_name(actor, self._has_sight(player_char))
-                actor_name = self._truncate_text(name_font, actor_name, active_width - 62)
+                actor_name = self._truncate_text(
+                    name_font, actor_name, active_width - self.native_unit(62)
+                )
                 self.screen.blit(
                     label_font.render(label, True, (250, 245, 230)),
-                    (token_rect.right + 9, rect.top + 10),
+                    (token_rect.right + self.native_unit(9), rect.top + self.native_unit(10)),
                 )
                 self.screen.blit(
                     name_font.render(actor_name, True, (205, 205, 210)),
-                    (token_rect.right + 9, rect.top + 34),
+                    (token_rect.right + self.native_unit(9), rect.top + self.native_unit(34)),
                 )
 
         if len(visible_entries) > 1:
             pygame.draw.line(
                 self.screen,
                 (100, 100, 115),
-                (rect.left + active_width - 8, rect.top + 8),
-                (rect.left + active_width - 8, rect.bottom - 8),
-                1,
+                (rect.left + active_width - self.native_unit(8), rect.top + self.native_unit(8)),
+                (rect.left + active_width - self.native_unit(8), rect.bottom - self.native_unit(8)),
+                self.native_unit(1),
             )
 
     def _timeline_actor_border(self, actor_id: str, engine=None) -> tuple[int, int, int]:
@@ -622,9 +632,14 @@ class CombatOverlayMixin:
         """Show persistent, reusable world-modifier feedback above combat controls."""
         if not effects:
             return
-        view_width = int(self.screen_width * 0.65)
-        y = self.screen_height - 204
-        rect = pygame.Rect(10, y, max(180, view_width - 20), 29)
+        view_width = self.dungeon_view_width
+        y = self.screen_height - self.native_unit(204)
+        rect = pygame.Rect(
+            self.native_unit(10),
+            y,
+            max(self.native_unit(180), view_width - self.native_unit(20)),
+            self.native_unit(29),
+        )
         self._draw_panel_surface(
             rect,
             fill=(79, 35, 91),
@@ -634,19 +649,22 @@ class CombatOverlayMixin:
             border_width=2,
         )
         effect = effects[0]
-        font = pygame.font.Font(None, 19)
+        font = pygame.font.Font(None, self.native_unit(19))
         text = self._truncate_text(
             font,
             f"{effect.icon_label}  {effect.label.upper()}: {effect.detail}",
-            rect.width - 14,
+            rect.width - self.native_unit(14),
         )
-        self.screen.blit(font.render(text, True, (255, 241, 255)), (rect.left + 7, rect.top + 6))
+        self.screen.blit(
+            font.render(text, True, (255, 241, 255)),
+            (rect.left + self.native_unit(7), rect.top + self.native_unit(6)),
+        )
 
     def _render_combat_log_overlay(self):
         """Render combat log as semi-transparent overlay on dungeon view."""
-        view_width = int(self.screen_width * 0.65)
-        log_height = 150
-        log_y = 10  # Top of screen
+        view_width = self.dungeon_view_width
+        log_height = self.native_unit(150)
+        log_y = self.native_unit(10)  # Top of screen
 
         log_rect = pygame.Rect(0, log_y, view_width, log_height)
         self._draw_panel_surface(
@@ -659,13 +677,15 @@ class CombatOverlayMixin:
         )
 
         # Messages
-        font = pygame.font.Font(None, 22)
-        y = log_y + 10
-        line_height = 25
+        font = pygame.font.Font(None, self.native_unit(22))
+        y = log_y + self.native_unit(10)
+        line_height = self.native_unit(25)
         max_lines = self.log_lines_per_page
         lines_rendered = 0
 
-        display_lines = self._wrapped_combat_log_entries(view_width - 30, font=font, overlay=True)
+        display_lines = self._wrapped_combat_log_entries(
+            view_width - self.native_unit(30), font=font, overlay=True
+        )
         max_scroll = max(0, len(display_lines) - max_lines)
         self.log_scroll_offset = min(self.log_scroll_offset, max_scroll)
 
@@ -673,9 +693,18 @@ class CombatOverlayMixin:
             if lines_rendered >= max_lines:
                 break
             marker_color = (90, 90, 98) if line.continuation else line.marker_color
-            pygame.draw.rect(self.screen, marker_color, pygame.Rect(11, y + 5, 4, 12))
+            pygame.draw.rect(
+                self.screen,
+                marker_color,
+                pygame.Rect(
+                    self.native_unit(11),
+                    y + self.native_unit(5),
+                    self.native_unit(4),
+                    self.native_unit(12),
+                ),
+            )
             msg_surf = font.render(line.text, True, line.color)
-            self.screen.blit(msg_surf, (31 if line.continuation else 20, y))
+            self.screen.blit(msg_surf, (self.native_unit(31 if line.continuation else 20), y))
             y += line_height
             lines_rendered += 1
 
@@ -693,8 +722,8 @@ class CombatOverlayMixin:
 
     def _render_action_menu_overlay(self, actions, selected_action, interface_snapshot=None):
         """Render a six-slot ability bar and compact fixed-system commands."""
-        view_width = int(self.screen_width * 0.65)
-        menu_height = 174
+        view_width = self.dungeon_view_width
+        menu_height = self.native_unit(174)
         menu_y = self.screen_height - menu_height
 
         menu_rect = pygame.Rect(0, menu_y, view_width, menu_height)
@@ -721,14 +750,19 @@ class CombatOverlayMixin:
             )
             return
 
-        card_y = menu_y + 9
-        card_height = 104
-        card_width = max(72, (view_width - 28) // 6)
+        card_y = menu_y + self.native_unit(9)
+        card_height = self.native_unit(104)
+        card_width = max(self.native_unit(72), (view_width - self.native_unit(28)) // 6)
         icon_manager = get_ability_icon_manager()
-        name_font = pygame.font.Font(None, 18)
-        slot_font = pygame.font.Font(None, 17)
+        name_font = pygame.font.Font(None, self.native_unit(18))
+        slot_font = pygame.font.Font(None, self.native_unit(17))
         for index, slot in enumerate(slots):
-            rect = pygame.Rect(12 + index * card_width, card_y, card_width - 4, card_height)
+            rect = pygame.Rect(
+                self.native_unit(12) + index * card_width,
+                card_y,
+                card_width - self.native_unit(4),
+                card_height,
+            )
             action = slot.action
             enabled = action is not None and action.enabled
             selected = selected_action == index
@@ -740,37 +774,54 @@ class CombatOverlayMixin:
                 border=border,
                 accent=(150, 170, 206),
                 alpha=240,
-                border_width=3 if selected else 1,
+                border_width=self.native_unit(3 if selected else 1),
             )
             slot_text = slot_font.render(str(index + 1), True, (248, 226, 151))
-            self.screen.blit(slot_text, (rect.left + 5, rect.top + 4))
+            self.screen.blit(
+                slot_text, (rect.left + self.native_unit(5), rect.top + self.native_unit(4))
+            )
             icon_key = getattr(action, "icon_key", "unknown") if action is not None else "unknown"
             icon = icon_manager.get_icon(icon_key)
-            icon = pygame.transform.smoothscale(icon, (34, 34))
-            self.screen.blit(icon, icon.get_rect(centerx=rect.centerx, top=rect.top + 18))
+            icon_size = self.native_unit(34)
+            icon = pygame.transform.smoothscale(icon, (icon_size, icon_size))
+            self.screen.blit(
+                icon,
+                icon.get_rect(centerx=rect.centerx, top=rect.top + self.native_unit(18)),
+            )
             label = action.display_name if action is not None else "Empty"
             label = label.replace("Spell: ", "").replace("Skill: ", "")
-            label = self._truncate_text(name_font, label, rect.width - 8)
+            label = self._truncate_text(name_font, label, rect.width - self.native_unit(8))
             color = (242, 242, 238) if enabled else (178, 154, 160)
             label_surf = name_font.render(label, True, color)
             self.screen.blit(
-                label_surf, label_surf.get_rect(centerx=rect.centerx, top=rect.top + 57)
+                label_surf,
+                label_surf.get_rect(centerx=rect.centerx, top=rect.top + self.native_unit(57)),
             )
             if action is not None and not action.enabled:
-                reason = self._truncate_text(name_font, action.availability.reason, rect.width - 8)
+                reason = self._truncate_text(
+                    name_font, action.availability.reason, rect.width - self.native_unit(8)
+                )
                 reason_surf = name_font.render(reason, True, (226, 154, 148))
                 self.screen.blit(
-                    reason_surf, reason_surf.get_rect(centerx=rect.centerx, top=rect.top + 78)
+                    reason_surf,
+                    reason_surf.get_rect(centerx=rect.centerx, top=rect.top + self.native_unit(78)),
                 )
 
         commands = actions[6:]
-        command_y = menu_y + 122
+        command_y = menu_y + self.native_unit(122)
         if commands:
-            command_width = max(70, (view_width - 24) // len(commands))
-            command_font = pygame.font.Font(None, 20)
+            command_width = max(
+                self.native_unit(70), (view_width - self.native_unit(24)) // len(commands)
+            )
+            command_font = pygame.font.Font(None, self.native_unit(20))
             for offset, command in enumerate(commands):
                 index = offset + 6
-                rect = pygame.Rect(12 + offset * command_width, command_y, command_width - 4, 37)
+                rect = pygame.Rect(
+                    self.native_unit(12) + offset * command_width,
+                    command_y,
+                    command_width - self.native_unit(4),
+                    self.native_unit(37),
+                )
                 selected = selected_action == index
                 unavailable = " — Not available this turn." in str(command)
                 pygame.draw.rect(
@@ -783,11 +834,11 @@ class CombatOverlayMixin:
                     self.screen,
                     (244, 204, 91) if selected else (128, 125, 145),
                     rect,
-                    2 if selected else 1,
-                    border_radius=4,
+                    self.native_unit(2 if selected else 1),
+                    border_radius=self.native_unit(4),
                 )
                 label = str(command).replace(" — Not available this turn.", "")
-                label = self._truncate_text(command_font, label, rect.width - 8)
+                label = self._truncate_text(command_font, label, rect.width - self.native_unit(8))
                 color = (185, 170, 175) if unavailable else (238, 235, 225)
                 text = command_font.render(label, True, color)
                 self.screen.blit(text, text.get_rect(center=rect.center))
@@ -807,10 +858,10 @@ class CombatOverlayMixin:
         if callable(incapacitated) and incapacitated():
             return
 
-        view_width = int(self.screen_width * 0.65) if overlay else self.combat_width
-        token_size = 46
-        text_left = token_size + 26
-        min_height = 64
+        view_width = self.dungeon_view_width
+        token_size = self.native_unit(46)
+        text_left = token_size + self.native_unit(26)
+        min_height = self.native_unit(64)
         label = "Your Turn" if current_turn == "player" else "Enemy Turn"
         hidden_enemy = current_turn == "enemy" and self._enemy_hidden_by_invisibility(
             turn_actor,
@@ -825,23 +876,30 @@ class CombatOverlayMixin:
             sublabel = getattr(turn_actor, "name", "Player")
         color = self.colors["turn_player" if current_turn == "player" else "turn_enemy"]
 
-        font = pygame.font.Font(None, 26)
-        small_font = pygame.font.Font(None, 18)
+        font = pygame.font.Font(None, self.native_unit(26))
+        small_font = pygame.font.Font(None, self.native_unit(18))
         label_surf = font.render(label, True, (255, 255, 255))
 
-        max_width = max(120, view_width - 30)
+        max_width = max(self.native_unit(120), view_width - self.native_unit(30))
         width = min(
             max(
-                label_surf.get_width() + text_left + 14,
-                small_font.size(sublabel)[0] + text_left + 14,
-                180,
+                label_surf.get_width() + text_left + self.native_unit(14),
+                small_font.size(sublabel)[0] + text_left + self.native_unit(14),
+                self.native_unit(180),
             ),
             max_width,
         )
-        sublabel = self._truncate_text(small_font, sublabel, width - text_left - 14)
+        sublabel = self._truncate_text(
+            small_font, sublabel, width - text_left - self.native_unit(14)
+        )
         sublabel_surf = small_font.render(sublabel, True, (220, 220, 220))
-        x = max(15, (view_width - width) // 2)
-        rect = pygame.Rect(x, 164 if overlay else 12, width, min_height)
+        x = max(self.native_unit(15), (view_width - width) // 2)
+        rect = pygame.Rect(
+            x,
+            self.native_unit(164 if overlay else 12),
+            width,
+            min_height,
+        )
 
         if overlay:
             panel = pygame.Surface(rect.size)
@@ -851,7 +909,7 @@ class CombatOverlayMixin:
         else:
             pygame.draw.rect(self.screen, (18, 18, 24), rect)
 
-        pygame.draw.rect(self.screen, color, rect, 3)
+        pygame.draw.rect(self.screen, color, rect, self.native_unit(3))
         if current_turn == "player":
             try:
                 if turn_actor is player_char:
@@ -884,17 +942,19 @@ class CombatOverlayMixin:
                         f"Failed to render enemy token for {getattr(enemy, 'name', enemy)}: {exc}"
                     )
         if token is not None:
-            self.screen.blit(token, (rect.left + 8, rect.centery - token_size // 2))
-        self.screen.blit(label_surf, (rect.left + text_left, rect.top + 8))
-        self.screen.blit(sublabel_surf, (rect.left + text_left, rect.top + 34))
+            self.screen.blit(
+                token, (rect.left + self.native_unit(8), rect.centery - token_size // 2)
+            )
+        self.screen.blit(label_surf, (rect.left + text_left, rect.top + self.native_unit(8)))
+        self.screen.blit(sublabel_surf, (rect.left + text_left, rect.top + self.native_unit(34)))
         if current_turn == "player" and turn_actor is not player_char:
             icons = self._collect_status_icons(turn_actor)
             if icons:
                 self._render_status_icons(
                     icons,
                     rect.left + text_left,
-                    rect.bottom + 4,
-                    max_width=width - text_left - 10,
+                    rect.bottom + self.native_unit(4),
+                    max_width=width - text_left - self.native_unit(10),
                     max_rows=1,
                 )
 

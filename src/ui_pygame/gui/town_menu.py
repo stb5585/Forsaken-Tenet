@@ -14,6 +14,8 @@ from .input_guards import (
 from .mouse_helpers import hit_index, is_left_click, mouse_position
 from .town_base import TownScreenBase
 
+_TOWN_MENU_POINTER_COOLDOWN_MS = 180
+
 
 class TownMenuScreen(TownScreenBase):
     """
@@ -48,6 +50,7 @@ class TownMenuScreen(TownScreenBase):
         "Statistics": (
             "Review the record of your run: travel, combat, survival, and personal bests."
         ),
+        "Settings": ("Adjust fullscreen and native render resolution."),
         "Quit to Main Menu": ("Step away from Silvana and return to the main menu."),
     }
 
@@ -174,6 +177,7 @@ class TownMenuScreen(TownScreenBase):
             flush_events=flush_events,
             require_key_release=require_key_release,
         )
+        pointer_armed_at = getattr(self.presenter, "_town_menu_pointer_armed_at", 0)
 
         while True:
             # Draw everything
@@ -195,6 +199,14 @@ class TownMenuScreen(TownScreenBase):
                     self.current_selection = hovered
                 elif hovered is not None and is_left_click(event):
                     if input_armed:
+                        try:
+                            if pygame.time.get_ticks() < pointer_armed_at:
+                                continue
+                            self.presenter._town_menu_pointer_armed_at = (
+                                pygame.time.get_ticks() + _TOWN_MENU_POINTER_COOLDOWN_MS
+                            )
+                        except pygame.error:
+                            pass
                         self.current_selection = hovered
                         return self.current_selection
                 if event.type == pygame.KEYDOWN:

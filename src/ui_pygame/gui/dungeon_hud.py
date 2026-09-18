@@ -953,6 +953,13 @@ class DungeonHUD:
         x_margin = self.hud_x + 20
         panel_width = self.hud_width - 40
         feature_height = feature_height or self._combat_feature_height()
+        if not combat_resources and not self._is_living_active_summon(active_summon):
+            fallback_lines = self._combat_feature_lines(player_char, enemy, active_summon)
+            if len(fallback_lines) == 1 and fallback_lines[0][0] == "Focus":
+                label, value, color = fallback_lines[0]
+                compact = self.small_font.render(f"{label}: {value}", True, color)
+                self.screen.blit(compact, (x_margin, y_offset))
+                return
         title = self.stat_font.render("Combat Focus", True, (150, 150, 255))
         self.screen.blit(title, (x_margin, y_offset))
         panel_rect = pygame.Rect(x_margin, y_offset + 30, panel_width, feature_height - 30)

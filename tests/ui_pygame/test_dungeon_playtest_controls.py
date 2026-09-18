@@ -29,10 +29,7 @@ def test_layout_keeps_controls_above_the_message_area_and_non_overlapping() -> N
         UiCommand.DUNGEON_TURN_RIGHT,
         UiCommand.DUNGEON_TURN_AROUND,
         UiCommand.DUNGEON_INTERACT,
-        UiCommand.OPEN_MAP,
         UiCommand.OPEN_MENU,
-        UiCommand.PAGE_PREVIOUS,
-        UiCommand.PAGE_NEXT,
     }
     assert all(button.rect.bottom <= 668 for button in buttons)
     assert not any(
@@ -45,6 +42,18 @@ def test_layout_keeps_controls_above_the_message_area_and_non_overlapping() -> N
     assert labels[UiCommand.DUNGEON_MOVE_FORWARD] == ""
     assert labels[UiCommand.DUNGEON_TURN_RIGHT] == ""
     assert labels[UiCommand.DUNGEON_TURN_AROUND] == ""
+    assert labels[UiCommand.OPEN_MENU] == "MENU"
+
+    buttons_by_command = {button.command: button for button in buttons}
+    assert buttons_by_command[UiCommand.DUNGEON_MOVE_FORWARD].rect.centerx == (
+        buttons_by_command[UiCommand.DUNGEON_TURN_AROUND].rect.centerx
+    )
+    assert buttons_by_command[UiCommand.DUNGEON_TURN_LEFT].rect.top == (
+        buttons_by_command[UiCommand.DUNGEON_TURN_AROUND].rect.top
+    )
+    assert buttons_by_command[UiCommand.DUNGEON_TURN_RIGHT].rect.top == (
+        buttons_by_command[UiCommand.DUNGEON_TURN_AROUND].rect.top
+    )
 
 
 def test_control_hit_testing_supports_native_touch_and_mouse_event_shapes() -> None:

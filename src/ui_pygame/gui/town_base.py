@@ -75,7 +75,15 @@ class TownScreenBase:
                 # asset is fine; enlarging this source creates a falsely
                 # soft fullscreen image, so retain it at native size instead.
                 bg_width, bg_height = bg_image.get_size()
-                if bg_width >= self.width and bg_height >= self.height:
+                if "@" in bg_path.stem:
+                    # Generated high-resolution variants are presentation art:
+                    # cover the available viewport without distortion.  This
+                    # avoids the black frame introduced by centering a wide
+                    # landscape source inside an equally wide display.
+                    scale = max(self.width / bg_width, self.height / bg_height)
+                    new_size = (int(bg_width * scale), int(bg_height * scale))
+                    self.background = pygame.transform.smoothscale(bg_image, new_size)
+                elif bg_width >= self.width and bg_height >= self.height:
                     scale = min(self.width / bg_width, self.height / bg_height)
                     new_size = (int(bg_width * scale), int(bg_height * scale))
                     self.background = pygame.transform.smoothscale(bg_image, new_size)
@@ -103,8 +111,9 @@ class TownScreenBase:
     def draw_background(self):
         """Draw the town background image."""
         if self.background:
-            # Native-size fallback intentionally leaves a dark matte around
-            # unavailable high-resolution town art.
+            # The legacy 1024x768 fallback intentionally leaves a dark matte
+            # rather than claiming it is lossless fullscreen art.  Responsive
+            # variants use cover scaling and fill the display.
             self.screen.fill(self.colors.BLACK)
             bg_rect = self.background.get_rect(center=(self.width // 2, self.height // 2))
             self.screen.blit(self.background, bg_rect)

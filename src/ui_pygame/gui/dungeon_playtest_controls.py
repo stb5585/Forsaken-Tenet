@@ -43,6 +43,8 @@ class DungeonPlaytestControls:
         gap = max(unit(8), button_size // 7)
         margin = max(unit(12), button_size // 4)
         content_bottom = height - message_height - margin
+        # Resemble physical cursor keys: up in the middle, then left/down/right
+        # below it.  The menu remains reachable at the upper-left of the view.
         top_row_y = content_bottom - (button_size * 2) - gap
         bottom_row_y = content_bottom - button_size
         left_x = margin
@@ -52,15 +54,13 @@ class DungeonPlaytestControls:
         use_size = int(button_size * 1.35)
         use_x = hud_x - margin - use_size
         use_y = content_bottom - use_size
-        log_height = max(38, button_size // 2)
-        log_y = margin
 
         return (
             PlaytestControlButton(
-                UiCommand.DUNGEON_TURN_LEFT,
-                "",
-                pygame.Rect(left_x, top_row_y, button_size, button_size),
-                (72, 134, 190),
+                UiCommand.OPEN_MENU,
+                "MENU",
+                pygame.Rect(margin, margin, button_size, button_size),
+                (145, 93, 91),
             ),
             PlaytestControlButton(
                 UiCommand.DUNGEON_MOVE_FORWARD,
@@ -69,16 +69,10 @@ class DungeonPlaytestControls:
                 (77, 156, 102),
             ),
             PlaytestControlButton(
-                UiCommand.DUNGEON_TURN_RIGHT,
+                UiCommand.DUNGEON_TURN_LEFT,
                 "",
-                pygame.Rect(right_x, top_row_y, button_size, button_size),
-                (72, 134, 190),
-            ),
-            PlaytestControlButton(
-                UiCommand.OPEN_MAP,
-                "MAP",
                 pygame.Rect(left_x, bottom_row_y, button_size, button_size),
-                (120, 104, 175),
+                (72, 134, 190),
             ),
             PlaytestControlButton(
                 UiCommand.DUNGEON_TURN_AROUND,
@@ -87,28 +81,16 @@ class DungeonPlaytestControls:
                 (72, 134, 190),
             ),
             PlaytestControlButton(
-                UiCommand.OPEN_MENU,
-                "MENU",
+                UiCommand.DUNGEON_TURN_RIGHT,
+                "",
                 pygame.Rect(right_x, bottom_row_y, button_size, button_size),
-                (145, 93, 91),
+                (72, 134, 190),
             ),
             PlaytestControlButton(
                 UiCommand.DUNGEON_INTERACT,
                 "USE",
                 pygame.Rect(use_x, use_y, use_size, use_size),
                 (185, 143, 53),
-            ),
-            PlaytestControlButton(
-                UiCommand.PAGE_PREVIOUS,
-                "LOG +",
-                pygame.Rect(use_x, log_y, use_size, log_height),
-                (93, 103, 119),
-            ),
-            PlaytestControlButton(
-                UiCommand.PAGE_NEXT,
-                "LOG -",
-                pygame.Rect(use_x, log_y + log_height + gap, use_size, log_height),
-                (93, 103, 119),
             ),
         )
 

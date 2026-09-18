@@ -11,6 +11,8 @@ from src.core.player import DIRECTIONS
 from src.ui_common.input import UiCommand
 from src.ui_pygame.input_adapter import dungeon_command_for_key
 
+from ..dungeon_hud import DungeonHUD
+from ..dungeon_renderer import DungeonRenderer
 from ..input_guards import (
     prepare_guarded_input,
     release_guard_allows_input,
@@ -476,6 +478,16 @@ class DungeonExplorationMixin:
                         self.handle_command(control_command)
                         continue
 
+                if event.type == pygame.FINGERDOWN:
+                    self._touch_log_last_y = self._touch_event_y(event)
+                    continue
+                if event.type == pygame.FINGERMOTION:
+                    self._scroll_navigation_log_from_touch(event)
+                    continue
+                if event.type == pygame.FINGERUP:
+                    self._touch_log_last_y = None
+                    continue
+
                 if event.type == pygame.MOUSEWHEEL:
                     if event.y > 0:
                         self.scroll_message_log(-1)
@@ -526,6 +538,27 @@ class DungeonExplorationMixin:
             self.reset_message_log()
 
         return not self.player_char.quit  # Return True if player didn't quit game
+
+    def _touch_event_y(self, event) -> int | None:
+        """Convert SDL's normalized finger y-coordinate to native pixels."""
+        try:
+            return round(float(event.y) * self.presenter.screen.get_height())
+        except (AttributeError, TypeError, ValueError):
+            return None
+
+    def _scroll_navigation_log_from_touch(self, event) -> None:
+        """Scroll the navigation log after a deliberate vertical finger drag."""
+        current_y = self._touch_event_y(event)
+        if current_y is None or self._touch_log_last_y is None:
+            return
+        metrics = getattr(self.presenter, "layout_metrics", None)
+        threshold = metrics.unit(32) if metrics is not None else 32
+        delta_y = current_y - self._touch_log_last_y
+        if abs(delta_y) < threshold:
+            return
+        # Pull content down to reveal older entries; push it up for newer ones.
+        self.scroll_message_log(-1 if delta_y > 0 else 1)
+        self._touch_log_last_y = current_y
 
     def _handle_keypress(self, key: int) -> None:
         """Translate a Pygame key then dispatch its dungeon command."""
@@ -608,6 +641,7 @@ class DungeonExplorationMixin:
         ]
         if getattr(self.game, "debug_mode", False):
             menu_options.append("Save Game")
+        menu_options.append("Settings")
         menu_options.append("Quit Game (No Save)")
 
         choice = self._popup_menu(
@@ -629,6 +663,17 @@ class DungeonExplorationMixin:
                     break
                 else:
                     self.presenter.show_message("This menu is not yet implemented in the dungeon.")
+
+        elif menu_options[choice] == "Settings":
+            show_display_settings = getattr(self.game, "show_display_settings", None)
+            if callable(show_display_settings) and show_display_settings():
+                # The display surface has been recreated.  Rebuild cached
+                # view state and the responsive dungeon collaborators.
+                self.renderer = DungeonRenderer(self.presenter)
+                self.hud = DungeonHUD(self.presenter)
+                self._cached_view = None
+                self._cached_frame = None
+                self._mark_view_dirty()
 
         elif menu_options[choice] == "Save Game":
             from ..confirmation_popup import ConfirmationPopup

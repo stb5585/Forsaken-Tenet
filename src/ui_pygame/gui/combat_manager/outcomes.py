@@ -227,6 +227,9 @@ class CombatOutcomeMixin:
 
     def _render_combat_frame(self, player_char, enemy, actions, selected_action):
         """Render a single frame of combat."""
+        refresh_layout = getattr(self.combat_view, "refresh_layout", None)
+        if callable(refresh_layout):
+            refresh_layout()
         if not hasattr(player_char, "level_exp"):
             player_char = self._selection_frame_player(player_char)
 

@@ -92,7 +92,14 @@ class DungeonCoreMixin:
         self._cached_view = None  # pygame.Surface
         self._cached_frame = None  # pygame.Surface
         self._next_anim_tick = 0
-        self._anim_interval_ms = 120  # torch flicker / subtle view effects
+        metrics = getattr(self.presenter, "layout_metrics", None)
+        ui_scale = getattr(getattr(metrics, "display", None), "ui_scale", 1.0)
+        # Ambient torch redraws used to happen eight times per second on the
+        # fixed canvas. At a native 1080p viewport that is several times the
+        # fill/projection work, so keep input-driven frames immediate while
+        # reducing only the nonessential idle animation cadence.
+        self._anim_interval_ms = 250 if ui_scale > 1.0 else 120
+        self._touch_log_last_y: int | None = None
 
         # Load dungeon background for in-dungeon popups and character menu.
         self._load_dungeon_background()
@@ -478,7 +485,14 @@ class DungeonCoreMixin:
             try:
                 bg_image = pygame.image.load(bg_path).convert()
                 bg_width, bg_height = bg_image.get_size()
-                if bg_width >= self.presenter.width and bg_height >= self.presenter.height:
+                if "@" in bg_path.stem and bg_width >= 1024:
+                    scale = max(
+                        self.presenter.width / bg_width,
+                        self.presenter.height / bg_height,
+                    )
+                    new_size = (int(bg_width * scale), int(bg_height * scale))
+                    self._dungeon_background = pygame.transform.smoothscale(bg_image, new_size)
+                elif bg_width >= self.presenter.width and bg_height >= self.presenter.height:
                     scale = min(self.presenter.width / bg_width, self.presenter.height / bg_height)
                     new_size = (int(bg_width * scale), int(bg_height * scale))
                     self._dungeon_background = pygame.transform.smoothscale(bg_image, new_size)

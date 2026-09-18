@@ -25,10 +25,16 @@ def release_guard_allows_input(require_key_release: bool, input_armed: bool) -> 
         pass
     try:
         keys_released = not any(pygame.key.get_pressed())
-        mouse_released = not any(pygame.mouse.get_pressed())
-        return keys_released and mouse_released
     except pygame.error:
-        return True
+        # Headless tests and a transient display reset may not expose key
+        # state, but that must not override a known held state from the other
+        # input device.
+        keys_released = True
+    try:
+        mouse_released = not any(pygame.mouse.get_pressed())
+    except pygame.error:
+        mouse_released = True
+    return keys_released and mouse_released
 
 
 def update_input_armed_from_event(event, require_key_release: bool, input_armed: bool) -> bool:

@@ -184,9 +184,12 @@ native font/primitive measurements. Dungeon exploration, HUD, message area,
 and remote playtest controls use those metrics for 4:3, landscape, and
 extra-wide landscape layouts.
 
-Menus, popups, combat, and targeting remain legacy fixed-layout screens in
-this slice. They draw directly to the native surface (and therefore do not use
+Most menus, popups, and targeting remain legacy fixed-layout screens in this
+slice. They draw directly to the native surface (and therefore do not use
 whole-frame scaling), but their placement has not yet been adaptively migrated.
+In-place dungeon combat is the limited exception: its battlefield, enemy
+sprite, action-card icons, turn ribbon, and timeline badges use the active
+native metrics. Its broader side-panel layout is still a later migration.
 
 Purpose: make the desktop UI robust at different window sizes and establish the
 coordinate model required by Android.
@@ -221,20 +224,44 @@ Exit gate:
 - Larger source art may be downscaled once and cached for a viewport. Existing
   low-resolution art is never treated as a lossless fullscreen asset; filtering
   cannot restore detail lost from an upscaled source.
-- `town.png` is currently only 1024x768. At a larger viewport, town screens
-  intentionally show it at native size with a dark matte rather than enlarge
-  it. A high-resolution town-background variant is required before full-bleed
-  town art can return.
-- `dungeon.png` is also 1024x768 and is used only by the dungeon loading
-  screen; it follows the same native-size fallback. The first-person dungeon
-  view is rendered from individual projected textures and native Pygame
-  primitives, not from an enlarged completed 1024x768 frame. Resolution
-  variants should use the same asset name plus a documented resolution suffix
-  when high-resolution source art is supplied.
+- `town@2x.png` and `dungeon@2x.png` are the current landscape presentation
+  variants. They use aspect-preserving cover placement, so their viewport has
+  no black frame. The supplied/generated sources are 1672x941, however, so a
+  1920x1080 display needs a small enlargement; they are interim art, not a
+  substitute for a 1920x1080-or-larger master. The legacy 1024x768 originals
+  remain intentionally matted rather than upscaled.
+- The first-person dungeon view is rendered from individual projected textures
+  and native Pygame primitives, not from an enlarged completed 1024x768 frame.
+  Resolution variants should use the same asset name plus a documented
+  resolution suffix when higher-resolution source art is supplied.
 - A 1366x768 Sunshine host stream can still be enlarged by a 2340x1080 phone.
   That transport/client scaling is separate from in-game rendering. When
   available, manually test with a 1920x1080 virtual or native Sunshine host to
   verify the game itself draws text and controls at 1080p before streaming.
+- The main-menu Display Settings entry offers native windowed 1024x768,
+  1366x768, and 1920x1080 modes plus active-display fullscreen. It recreates
+  the Pygame surface and metrics before a new screen is entered. It uses the
+  established popup style and is also available from the Town and Dungeon
+  menus.
+- The dungeon playtest overlay uses a cursor-key arrangement (Menu at the
+  upper-left; Up above Left/Down/Right), omits the redundant Map and Log
+  buttons, and supports navigation-log mouse-wheel and finger-drag scrolling.
+  Town menu pointer selections have a short re-entry guard to prevent a
+  closing click from selecting the next town option.
+- Character-menu Action Layout now uses the same bordered popup treatment and
+  explicit close affordance as the other character popups; click-outside is no
+  longer a special exit path. Its shortcut icons, rows, and targets, plus
+  Progression-tree nodes and combat status/timeline badges, use native layout
+  metrics. Other character and town menus still need a deliberate touch-target
+  migration before they can be called mobile-ready.
+- Native high-resolution exploration throttles idle ambient redraws to four
+  per second. Movement, mouse, touch, and keyboard changes still invalidate
+  and draw immediately. Broader profiling and screen-by-screen modal migration
+  remain later work.
+- In-place dungeon combat now follows the dungeon viewport width for enemy
+  sprites and battlefield overlays. Its former right-column enemy info card is
+  intentionally suppressed because it overlapped the responsive dungeon HUD;
+  detailed combat-side panels remain a later combat-layout migration.
 
 ## Phase 3 — Screen Runtime And Modal Migration
 

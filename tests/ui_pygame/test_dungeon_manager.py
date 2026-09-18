@@ -2977,7 +2977,7 @@ def test_additional_tile_intro_effect_menu_and_render_error_branches(monkeypatch
         debug_mode=True, running=True, save_game=lambda: manager.messages.append("saved")
     )
     manager.running = True
-    manager._popup_menu = lambda title, options, **_kwargs: 3
+    manager._popup_menu = lambda title, options, **_kwargs: 4
     manager._show_menu()
     assert manager.running is False
     assert manager.player_char.quit is True
