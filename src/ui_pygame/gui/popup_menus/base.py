@@ -216,6 +216,39 @@ class BasePopupMenu:
                 return index
         return None
 
+    def scrollbar_rects(self) -> tuple[pygame.Rect, pygame.Rect] | None:
+        """Return the list scrollbar track and thumb when the list overflows."""
+        max_visible = self.visible_row_count()
+        if len(self.items) <= max_visible:
+            return None
+        track = pygame.Rect(
+            self.list_rect.right - 14, self.list_rect.top + 4, 10, self.list_rect.height - 8
+        )
+        thumb_height = max(24, int(track.height * max_visible / len(self.items)))
+        max_scroll = len(self.items) - max_visible
+        thumb_top = track.top + int((track.height - thumb_height) * self.scroll_offset / max_scroll)
+        return track, pygame.Rect(track.left, thumb_top, track.width, thumb_height)
+
+    def _scroll_to_pointer(self, position: tuple[int, int]) -> bool:
+        """Move the list based on a scrollbar click and report whether it was handled."""
+        scrollbar = self.scrollbar_rects()
+        if scrollbar is None:
+            return False
+        track, _thumb = scrollbar
+        if not track.collidepoint(position):
+            return False
+        max_visible = self.visible_row_count()
+        max_scroll = len(self.items) - max_visible
+        travel = max(1, track.height - max(24, int(track.height * max_visible / len(self.items))))
+        relative_y = max(0, min(travel, position[1] - track.top))
+        self.scroll_offset = round(relative_y * max_scroll / travel)
+        self.selected_index = max(
+            self.scroll_offset,
+            min(self.selected_index, self.scroll_offset + max_visible - 1),
+        )
+        self._ensure_visible()
+        return True
+
     def _handle_held_scroll(self):
         try:
             pressed = pygame.key.get_pressed()
@@ -510,20 +543,11 @@ class BasePopupMenu:
             self.screen.blit(text, (text_x, y))
             y += self.line_height
 
-        # Scrollbar indicator (simple)
-        if len(self.items) > max_visible:
-            bar_height = int(self.list_rect.height * max_visible / len(self.items))
-            bar_height = max(24, bar_height)
-            max_scroll = len(self.items) - max_visible
-            scrolled = (
-                0
-                if max_scroll <= 0
-                else int(self.scroll_offset * (self.list_rect.height - bar_height) / max_scroll)
-            )
-            bar_rect = pygame.Rect(
-                self.list_rect.right - 12, self.list_rect.top + scrolled + 4, 8, bar_height
-            )
-            pygame.draw.rect(self.screen, self.GRAY, bar_rect)
+        scrollbar = self.scrollbar_rects()
+        if scrollbar is not None:
+            track, thumb = scrollbar
+            pygame.draw.rect(self.screen, (48, 48, 56), track)
+            pygame.draw.rect(self.screen, self.GRAY, thumb)
 
     def draw_details(self, player_char):
         item = self.items[self.selected_index] if self.items else None
@@ -669,6 +693,18 @@ class BasePopupMenu:
                             continue
                         running = False
                         result = None
+                        continue
+                    if (
+                        event.type == pygame.MOUSEBUTTONDOWN
+                        and getattr(event, "button", None) in (4, 5)
+                        and self.items
+                    ):
+                        self._move_selection(-1 if event.button == 4 else 1)
+                        self._quick_scroll_frame = 0
+                        continue
+                    if is_left_click(event) and self._scroll_to_pointer(
+                        mouse_position(event) or (-1, -1)
+                    ):
                         continue
                     hovered = self._hit_visible_row(mouse_position(event))
                     if (

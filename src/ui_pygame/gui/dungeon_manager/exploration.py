@@ -679,6 +679,20 @@ class DungeonExplorationMixin:
         panel_y = (self.presenter.height - panel_height) // 2
         panel_rect = pygame.Rect(panel_x, panel_y, panel_width, panel_height)
 
+        def option_rects() -> list[pygame.Rect]:
+            title_surf = self.presenter.title_font.render(title, True, (218, 165, 32))
+            title_rect = title_surf.get_rect(center=(panel_rect.centerx, panel_rect.top + 40))
+            first_option_y = title_rect.bottom + 20
+            return [
+                pygame.Rect(
+                    panel_rect.left + 20,
+                    first_option_y - 18 + index * 40,
+                    panel_rect.width - 40,
+                    36,
+                )
+                for index in range(len(options))
+            ]
+
         def draw():
             # Draw background dimmed
             screen.blit(background, (0, 0))
@@ -696,13 +710,10 @@ class DungeonExplorationMixin:
             screen.blit(title_surf, title_rect)
 
             # Options
-            y = title_rect.bottom + 20
-            for idx, opt in enumerate(options):
+            for idx, (opt, rect) in enumerate(zip(options, option_rects(), strict=True)):
                 color = (218, 165, 32) if idx == selected else (255, 255, 255)
                 surf = self.presenter.large_font.render(opt, True, color)
-                rect = surf.get_rect(center=(panel_rect.centerx, y))
-                screen.blit(surf, rect)
-                y += 40
+                screen.blit(surf, surf.get_rect(center=rect.center))
 
             # Instructions
             instr = "UP/DOWN: Navigate  ENTER: Select  ESC: Cancel"
@@ -731,6 +742,24 @@ class DungeonExplorationMixin:
                         return selected
                     elif event.key == pygame.K_ESCAPE:
                         return None
+                elif event.type in (pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN):
+                    position = getattr(event, "pos", None)
+                    hovered = next(
+                        (
+                            index
+                            for index, rect in enumerate(option_rects())
+                            if rect.collidepoint(position)
+                        ),
+                        None,
+                    )
+                    if hovered is not None:
+                        selected = hovered
+                        if (
+                            event.type == pygame.MOUSEBUTTONDOWN
+                            and getattr(event, "button", None) == 1
+                            and input_armed
+                        ):
+                            return selected
             clock.tick(30)
 
     def _render(self):

@@ -121,6 +121,11 @@ class StickyPopup(DemoPopup):
         return ("selected", item)
 
 
+class OverflowPopup(DemoPopup):
+    def build_items(self, _player_char):
+        self.items = [f"Entry {index}" for index in range(40)]
+
+
 def _make_presenter():
     return SimpleNamespace(
         screen=RecordingScreen(),
@@ -252,7 +257,6 @@ def test_base_popup_supports_mouse_hover_click_and_wheel(monkeypatch):
 
     popup = DemoPopup(presenter, parent, title="Test")
     popup.build_items(player)
-    rows = dict(popup.visible_row_rects())
     events = iter(
         [
             [SimpleNamespace(type=pygame.MOUSEWHEEL, y=-1)],
@@ -262,6 +266,19 @@ def test_base_popup_supports_mouse_hover_click_and_wheel(monkeypatch):
     monkeypatch.setattr("src.ui_pygame.gui.popup_menus.pygame.event.get", lambda: next(events, []))
 
     assert popup.show(player) == ("selected", "Beta")
+
+
+def test_base_popup_scrollbar_click_repositions_an_overflowing_list(monkeypatch):
+    _patch_visuals(monkeypatch)
+    presenter = _make_presenter()
+    popup = OverflowPopup(presenter, _make_parent(), title="Overflow")
+    popup.build_items(_make_player())
+    scrollbar = popup.scrollbar_rects()
+
+    assert scrollbar is not None
+    track, _thumb = scrollbar
+    assert popup._scroll_to_pointer((track.centerx, track.bottom - 1)) is True
+    assert popup.scroll_offset == len(popup.items) - popup.visible_row_count()
 
 
 def test_specials_popup_casts_exploration_spells_with_confirmation(monkeypatch):

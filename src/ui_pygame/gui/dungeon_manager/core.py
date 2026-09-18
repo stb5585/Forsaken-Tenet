@@ -27,7 +27,13 @@ _FUNHOUSE_LEVEL = 7
 
 class DungeonCoreMixin:
     def __init__(
-        self, presenter, player_char, game_instance, *, remote_playtest_controls: bool = False
+        self,
+        presenter,
+        player_char,
+        game_instance,
+        *,
+        remote_playtest_controls: bool = False,
+        remote_playtest_input_diagnostics: bool = False,
     ):
         self.presenter = presenter
         self.player_char = player_char
@@ -73,7 +79,9 @@ class DungeonCoreMixin:
         self._navigation_input_suppressed_until = 0
         self._navigation_keys_awaiting_release: set[int] = set()
         self.playtest_controls = (
-            DungeonPlaytestControls(presenter) if remote_playtest_controls else None
+            DungeonPlaytestControls(presenter, input_diagnostics=remote_playtest_input_diagnostics)
+            if remote_playtest_controls
+            else None
         )
 
         # --- Render throttling / caching ---

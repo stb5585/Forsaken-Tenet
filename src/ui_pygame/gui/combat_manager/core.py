@@ -485,6 +485,20 @@ class CombatManagerCoreMixin:
             option_y += 34
         return rects
 
+    def _selection_menu_back_rect(self) -> pygame.Rect:
+        """Return the shared click target that cancels an in-combat picker."""
+        panel_width = max(420, int(self.screen.get_width() * 0.65))
+        panel_y = self.screen.get_height() - 176
+        return pygame.Rect(panel_width - 88, panel_y + 12, 68, 26)
+
+    def _selection_menu_back_clicked(self, event, input_armed: bool) -> bool:
+        """Return whether an armed left click chose the picker Back target."""
+        return (
+            input_armed
+            and is_left_click(event)
+            and self._selection_menu_back_rect().collidepoint(mouse_position(event) or (-1, -1))
+        )
+
     def _selection_menu_hit_index(self, options, scroll_offset: int, event) -> int | None:
         rect_pairs = self._selection_menu_option_rects(options, scroll_offset)
         visible_index = hit_index([rect for _index, rect in rect_pairs], mouse_position(event))

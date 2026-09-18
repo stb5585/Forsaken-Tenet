@@ -106,6 +106,11 @@ class SelectionSupportMixin:
         font_small = pygame.font.Font(None, 18)
         title_surf = font_large.render(title, True, (232, 218, 186))
         self.screen.blit(title_surf, (panel_x + 20, panel_y + 12))
+        back_rect = self._selection_menu_back_rect()
+        pygame.draw.rect(self.screen, (72, 64, 48), back_rect)
+        pygame.draw.rect(self.screen, (188, 150, 86), back_rect, 1)
+        back_text = font_small.render("Back", True, (232, 218, 186))
+        self.screen.blit(back_text, back_text.get_rect(center=back_rect.center))
         descriptions = getattr(self, "_selection_menu_descriptions", None)
         if descriptions and 0 <= selected < len(descriptions):
             title_width = (
@@ -116,7 +121,7 @@ class SelectionSupportMixin:
             description = self._fit_text_to_width(
                 font_small,
                 str(descriptions[selected] or ""),
-                max(80, panel_width - title_width - 58),
+                max(80, panel_width - title_width - back_rect.width - 74),
             )
             if description:
                 desc_surf = font_small.render(description, True, (188, 188, 176))
@@ -159,10 +164,8 @@ class SelectionSupportMixin:
             )
 
         if len(options) > max_visible:
-            instructions = (
-                "Up/Down or W/S: Navigate | PgUp/PgDn: Scroll | Enter: Select | Esc: Cancel"
-            )
+            instructions = "Wheel: Scroll | PgUp/PgDn: Scroll | Enter: Select | Esc: Cancel"
         else:
-            instructions = "Up/Down or W/S: Navigate | Enter/Space: Select | Esc: Cancel"
+            instructions = "Click Back or Esc: Cancel | Enter/Space: Select"
         instr_surf = font_small.render(instructions, True, (176, 176, 176))
         self.screen.blit(instr_surf, (panel_x + 20, panel_y + panel_height - 24))

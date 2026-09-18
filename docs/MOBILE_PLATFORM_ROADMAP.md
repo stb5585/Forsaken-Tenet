@@ -145,11 +145,17 @@ Current implementation:
   dungeon movement, turns, interaction, stairs, map/menu, paging, and the
   existing debug shortcut.
 - `--remote-playtest-controls` enables an opt-in Pygame dungeon overlay for
-  forwarded mouse clicks or native touch presses. It provides move/turn,
-  interact, map/menu, and message-log paging without changing normal desktop
-  controls or layouts.
-- Touch controls, pointer normalization, controller mappings, and migration of
-  shared menus, popups, and combat selection remain future Phase 1 slices.
+  forwarded mouse clicks, mouse-emulated touch, and native `FINGERDOWN`
+  presses. Native touch coordinates are converted from SDL's normalized space;
+  a paired native/mouse event for the same tap is dispatched only once. It
+  provides move/turn, interact, map/menu, and message-log paging without
+  changing normal desktop controls or layouts.
+- `--remote-playtest-input-diagnostics` may be combined with the overlay flag
+  during local hardware investigation. It prints the relevant event type and
+  pointer fields only for supported dungeon press events.
+- This overlay is confined to dungeon exploration. Menus, popups, combat, and
+  targeting do not yet support touch playtesting. Controller mappings and the
+  migration of those shared screens remain future Phase 1 slices.
 
 Out of scope:
 

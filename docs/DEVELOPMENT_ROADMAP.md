@@ -224,3 +224,8 @@ audit is recorded in
 [`EQUIPMENT_ITEMS_ECONOMY_DESIGN_GATES.md`](EQUIPMENT_ITEMS_ECONOMY_DESIGN_GATES.md);
 the next slice must approve starter access, route guidance, and class-equipment
 needs before changing shop availability.
+
+## Playtest Findings
+- Level up should show a brilliant light surrounding the player
+- Full restoration (like when looting a relic) should appear as a wash over of green/blue energy
+- Barghest was nerfed too much; instead of scaling power, increase endurance for a longer fight
