@@ -60,35 +60,52 @@ class TownScreenBase:
 
         # Load background once
         self.background = None
+        self._background_is_native_fallback = False
         self._npc_portrait_surface_cache = {}
         self._popup_background_draw_func = None
         self._load_background()
 
     def _load_background(self):
-        """Load and scale the town background image."""
-        bg_path = PYGAME_ASSETS_DIR / "backgrounds" / "town.png"
-        if os.path.exists(bg_path):
+        """Load a native or downscaled town background without upscaling source art."""
+        bg_path = self._background_asset_path(getattr(self, "background_image", "town.png"))
+        if bg_path is not None:
             try:
                 bg_image = pygame.image.load(bg_path)
-                # Scale to fit screen while maintaining aspect ratio
+                # The supplied town art is 1024x768.  Downscaling a larger
+                # asset is fine; enlarging this source creates a falsely
+                # soft fullscreen image, so retain it at native size instead.
                 bg_width, bg_height = bg_image.get_size()
-                scale_x = self.width / bg_width
-                scale_y = self.height / bg_height
-                scale = max(scale_x, scale_y)  # Use max to cover entire screen
-
-                new_width = int(bg_width * scale)
-                new_height = int(bg_height * scale)
-                self.background = pygame.transform.scale(bg_image, (new_width, new_height))
+                if bg_width >= self.width and bg_height >= self.height:
+                    scale = min(self.width / bg_width, self.height / bg_height)
+                    new_size = (int(bg_width * scale), int(bg_height * scale))
+                    self.background = pygame.transform.smoothscale(bg_image, new_size)
+                else:
+                    self.background = bg_image
+                    self._background_is_native_fallback = True
             except Exception as e:
                 print(f"Warning: Could not load town background: {e}")
                 self.background = None
         else:
-            print(f"Warning: Town background not found at {bg_path}")
+            print("Warning: Town background not found")
+
+    def _background_asset_path(self, filename: str):
+        """Select the largest available documented ``@2x``/``@3x`` background variant."""
+        path = PYGAME_ASSETS_DIR / "backgrounds" / filename
+        ui_scale = getattr(getattr(self.presenter, "layout_metrics", None), "display", None)
+        ui_scale = getattr(ui_scale, "ui_scale", 1.0)
+        suffixes = ["@3x", "@2x", ""] if ui_scale > 2 else ["@2x", ""]
+        for suffix in suffixes:
+            candidate = path.with_name(f"{path.stem}{suffix}{path.suffix}")
+            if os.path.exists(candidate):
+                return candidate
+        return None
 
     def draw_background(self):
         """Draw the town background image."""
         if self.background:
-            # Center the background
+            # Native-size fallback intentionally leaves a dark matte around
+            # unavailable high-resolution town art.
+            self.screen.fill(self.colors.BLACK)
             bg_rect = self.background.get_rect(center=(self.width // 2, self.height // 2))
             self.screen.blit(self.background, bg_rect)
         else:

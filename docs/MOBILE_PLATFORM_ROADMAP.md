@@ -173,16 +173,29 @@ Exit gate:
 
 ## Phase 2 — Logical Canvas And Adaptive Layout
 
-State: `Deferred`
+State: `In Progress — native-resolution dungeon exploration`
+
+Fullscreen now selects the active desktop or virtual-display resolution and
+draws directly to that native Pygame surface. `pygame.SCALED` is not used by
+the migrated rendering path. The 1024x768 reference size is layout vocabulary,
+not a low-resolution frame that is enlarged after drawing. `DisplayConfiguration`
+and `LayoutMetrics` define the render viewport, aspect ratio, breakpoint, and
+native font/primitive measurements. Dungeon exploration, HUD, message area,
+and remote playtest controls use those metrics for 4:3, landscape, and
+extra-wide landscape layouts.
+
+Menus, popups, combat, and targeting remain legacy fixed-layout screens in
+this slice. They draw directly to the native surface (and therefore do not use
+whole-frame scaling), but their placement has not yet been adaptively migrated.
 
 Purpose: make the desktop UI robust at different window sizes and establish the
 coordinate model required by Android.
 
 Scope:
 
-- Define canonical logical canvas dimensions and one centralized display scaler.
-- Support fit/letterbox behavior, logical-to-physical pointer conversion, and
-  safe-area insets without stretching game art.
+- Keep one reference layout vocabulary and native-pixel display configuration;
+  do not use a logical canvas as a raster render target.
+- Use identity native-pointer coordinates for migrated fullscreen screens.
 - Make font sizes, row heights, panels, and hit targets derive from the logical
   layout rather than from one-off physical-pixel constants.
 - Convert reusable popup, menu, combat, dungeon HUD, and Character Menu layout
@@ -199,8 +212,29 @@ Exit gate:
 
 - The smoke route remains legible and clickable at every supported desktop
   resolution.
-- Hit testing uses logical coordinates after scaling.
-- No migrated screen depends on its caller having a 1024x768 physical display.
+- Hit testing uses the active native render coordinates.
+- No migrated screen depends on its caller having a 1024x768 physical display
+  or enlarges a completed 1024x768 game frame.
+
+### Raster Asset Policy And Streaming Note
+
+- Larger source art may be downscaled once and cached for a viewport. Existing
+  low-resolution art is never treated as a lossless fullscreen asset; filtering
+  cannot restore detail lost from an upscaled source.
+- `town.png` is currently only 1024x768. At a larger viewport, town screens
+  intentionally show it at native size with a dark matte rather than enlarge
+  it. A high-resolution town-background variant is required before full-bleed
+  town art can return.
+- `dungeon.png` is also 1024x768 and is used only by the dungeon loading
+  screen; it follows the same native-size fallback. The first-person dungeon
+  view is rendered from individual projected textures and native Pygame
+  primitives, not from an enlarged completed 1024x768 frame. Resolution
+  variants should use the same asset name plus a documented resolution suffix
+  when high-resolution source art is supplied.
+- A 1366x768 Sunshine host stream can still be enlarged by a 2340x1080 phone.
+  That transport/client scaling is separate from in-game rendering. When
+  available, manually test with a 1920x1080 virtual or native Sunshine host to
+  verify the game itself draws text and controls at 1080p before streaming.
 
 ## Phase 3 — Screen Runtime And Modal Migration
 

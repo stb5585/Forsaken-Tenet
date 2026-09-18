@@ -15,6 +15,7 @@ import pygame
 from src.core.events import EventType, get_event_bus
 from src.ui_pygame.gui.mouse_helpers import hit_index, is_left_click, mouse_position
 
+from ..display_scaling import DisplayConfiguration, LayoutMetrics
 from .interface import GamePresenter
 
 # Import asset managers
@@ -90,21 +91,25 @@ class FloatingText:
 class PygamePresenter(GamePresenter):
     """Pygame-based graphical presenter for combat."""
 
-    def __init__(self, width: int = 1024, height: int = 768):
+    def __init__(self, width: int = 1024, height: int = 768, *, fullscreen: bool = False):
         """Initialize Pygame presenter."""
         pygame.init()
         pygame.font.init()
 
-        self.width = width
-        self.height = height
-        self.screen = pygame.display.set_mode((width, height))
+        self.fullscreen = fullscreen
+        if fullscreen:
+            width, height = self._desktop_render_size((width, height))
+            self.screen = pygame.display.set_mode((width, height), pygame.FULLSCREEN)
+        else:
+            self.screen = pygame.display.set_mode((width, height))
+        self._refresh_display_configuration()
         pygame.display.set_caption("The Forsaken Tenet - Combat")
 
         # Fonts
-        self.title_font = pygame.font.Font(None, 48)
-        self.large_font = pygame.font.Font(None, 36)
-        self.normal_font = pygame.font.Font(None, 24)
-        self.small_font = pygame.font.Font(None, 18)
+        self.title_font = pygame.font.Font(None, self.layout_metrics.font_size(48))
+        self.large_font = pygame.font.Font(None, self.layout_metrics.font_size(36))
+        self.normal_font = pygame.font.Font(None, self.layout_metrics.font_size(24))
+        self.small_font = pygame.font.Font(None, self.layout_metrics.font_size(18))
 
         # Clock for FPS control
         self.clock = pygame.time.Clock()
@@ -144,6 +149,39 @@ class PygamePresenter(GamePresenter):
 
         # Debug mode
         self.debug_mode = False  # Default debug mode, can be overridden by game launcher
+
+    def pointer_position(self, event) -> tuple[int, int] | None:
+        """Return native render coordinates for a mouse or forwarded pointer event."""
+        position = getattr(event, "pos", None)
+        if position is None:
+            return None
+        return self.layout_metrics.pointer_position((int(position[0]), int(position[1])))
+
+    @staticmethod
+    def _desktop_render_size(fallback: tuple[int, int]) -> tuple[int, int]:
+        """Return the active desktop or virtual-display resolution for fullscreen."""
+        try:
+            desktop_sizes = pygame.display.get_desktop_sizes()
+        except pygame.error:
+            return fallback
+        return desktop_sizes[0] if desktop_sizes else fallback
+
+    def _refresh_display_configuration(self) -> None:
+        """Synchronize native render dimensions and reusable layout metrics."""
+        self.width, self.height = self.screen.get_size()
+        self.display_configuration = DisplayConfiguration.for_viewport(
+            fullscreen=self.fullscreen,
+            render_size=(self.width, self.height),
+            physical_viewport=(self.width, self.height),
+        )
+        self.layout_metrics = LayoutMetrics(self.display_configuration)
+
+    def handle_display_event(self, event) -> bool:
+        """Refresh native display metrics after a fullscreen-size notification."""
+        if getattr(event, "type", None) not in {pygame.VIDEORESIZE, pygame.WINDOWSIZECHANGED}:
+            return False
+        self._refresh_display_configuration()
+        return True
 
     def _subscribe_to_events(self):
         """Subscribe to combat events for animations."""

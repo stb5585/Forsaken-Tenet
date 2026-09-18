@@ -477,15 +477,9 @@ def test_background_loading_loading_screen_and_popup_background(monkeypatch, cap
     manager, presenter, _player, _game = _make_manager(monkeypatch)
 
     source = DummySurface((200, 100))
-    scaled_sizes = []
     monkeypatch.setattr("src.ui_pygame.gui.dungeon_manager.pygame.image.load", lambda _path: source)
-    monkeypatch.setattr(
-        "src.ui_pygame.gui.dungeon_manager.pygame.transform.scale",
-        lambda image, size: scaled_sizes.append((image.get_size(), size)) or DummySurface(size),
-    )
     bg = dungeon_manager.DungeonManager._load_dungeon_background(manager)
-    assert scaled_sizes == [((200, 100), (960, 480))]
-    assert bg.get_size() == (960, 480)
+    assert bg is source
 
     manager._cached_frame = "frame"
     assert manager._get_popup_background() == "frame"

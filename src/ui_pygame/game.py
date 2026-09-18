@@ -123,14 +123,16 @@ class PygameGame:
         debug_mode=False,
         remote_playtest_controls=False,
         remote_playtest_input_diagnostics=False,
+        fullscreen=False,
     ):
         pygame.init()
-        self.presenter = PygamePresenter()
+        self.presenter = PygamePresenter(fullscreen=fullscreen)
         self.presenter.game = self  # Expose game to presenter for managers (bounties, etc.)
         self.event_bus = self.presenter.event_bus  # Use the same event bus as presenter
         self.debug_mode = debug_mode
         self.remote_playtest_controls = remote_playtest_controls
         self.remote_playtest_input_diagnostics = remote_playtest_input_diagnostics
+        self.fullscreen = fullscreen
         self._random_combat = True
         self.load_files = SaveManager.list_saves()
         self.races_dict = races_dict
@@ -1412,6 +1414,9 @@ def main() -> int:
         action="store_true",
         help="Print dungeon touch/mouse press events (requires --remote-playtest-controls)",
     )
+    parser.add_argument(
+        "--fullscreen", action="store_true", help="Use the landscape logical fullscreen display"
+    )
     args = parser.parse_args()
 
     install_signal_handlers()
@@ -1429,6 +1434,8 @@ def main() -> int:
         if args.remote_playtest_input_diagnostics and not args.remote_playtest_controls:
             parser.error("--remote-playtest-input-diagnostics requires --remote-playtest-controls")
         game_kwargs = {"debug_mode": args.debug}
+        if args.fullscreen:
+            game_kwargs["fullscreen"] = True
         if args.remote_playtest_controls:
             game_kwargs["remote_playtest_controls"] = True
             if args.remote_playtest_input_diagnostics:

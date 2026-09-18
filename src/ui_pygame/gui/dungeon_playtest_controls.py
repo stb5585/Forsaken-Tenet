@@ -33,12 +33,16 @@ class DungeonPlaytestControls:
         self._last_press: tuple[str, tuple[int, int], int] | None = None
 
     @staticmethod
-    def button_layout(width: int, height: int, hud_x: int) -> tuple[PlaytestControlButton, ...]:
+    def button_layout(
+        width: int, height: int, hud_x: int, *, metrics=None
+    ) -> tuple[PlaytestControlButton, ...]:
         """Build non-overlapping control targets above the dungeon message area."""
-        button_size = max(56, min(84, (height - _MESSAGE_AREA_HEIGHT) // 7))
-        gap = max(8, button_size // 7)
-        margin = max(12, button_size // 4)
-        content_bottom = height - _MESSAGE_AREA_HEIGHT - margin
+        unit = metrics.unit if metrics is not None else round
+        message_height = unit(_MESSAGE_AREA_HEIGHT)
+        button_size = max(unit(56), min(unit(108), (height - message_height) // 6))
+        gap = max(unit(8), button_size // 7)
+        margin = max(unit(12), button_size // 4)
+        content_bottom = height - message_height - margin
         top_row_y = content_bottom - (button_size * 2) - gap
         bottom_row_y = content_bottom - button_size
         left_x = margin
@@ -111,7 +115,10 @@ class DungeonPlaytestControls:
     def _buttons(self) -> tuple[PlaytestControlButton, ...]:
         screen = self.presenter.screen
         width, height = screen.get_size()
-        return self.button_layout(width, height, int(width * 0.65))
+        metrics = getattr(self.presenter, "layout_metrics", None)
+        hud_fraction = metrics.dungeon_hud_fraction if metrics is not None else 0.35
+        hud_x = width - int(width * hud_fraction)
+        return self.button_layout(width, height, hud_x, metrics=metrics)
 
     def command_at(self, position: tuple[int, int]) -> UiCommand | None:
         """Return the command whose visible target contains a screen position."""
@@ -158,6 +165,9 @@ class DungeonPlaytestControls:
             )
         if event_type == pygame.MOUSEBUTTONDOWN and getattr(event, "button", None) == 1:
             position = getattr(event, "pos", None)
+            pointer_position = getattr(self.presenter, "pointer_position", None)
+            if callable(pointer_position):
+                position = pointer_position(event)
             if position is None:
                 position = (getattr(event, "x", -1), getattr(event, "y", -1))
             return "mouse", (round(float(position[0])), round(float(position[1])))
@@ -193,12 +203,18 @@ class DungeonPlaytestControls:
     def render(self) -> None:
         """Draw translucent, touch-sized controls over the current dungeon frame."""
         screen = self.presenter.screen
-        font = pygame.font.Font(None, max(16, min(24, screen.get_height() // 32)))
+        metrics = getattr(self.presenter, "layout_metrics", None)
+        font_size = metrics.font_size(24) if metrics is not None else 24
+        font = pygame.font.Font(None, font_size)
         for button in self._buttons():
             button_surface = pygame.Surface(button.rect.size, pygame.SRCALPHA)
             button_surface.fill((*button.accent_color, 185))
             screen.blit(button_surface, button.rect)
-            pygame.draw.rect(screen, (225, 225, 225), button.rect, 2, border_radius=8)
+            border_width = metrics.stroke(2) if metrics is not None else 2
+            border_radius = metrics.unit(8) if metrics is not None else 8
+            pygame.draw.rect(
+                screen, (225, 225, 225), button.rect, border_width, border_radius=border_radius
+            )
             if button.command in {
                 UiCommand.DUNGEON_TURN_LEFT,
                 UiCommand.DUNGEON_MOVE_FORWARD,

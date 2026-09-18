@@ -460,6 +460,11 @@ class DungeonExplorationMixin:
 
             # Handle events
             for event in pygame.event.get():
+                handle_display_event = getattr(self.presenter, "handle_display_event", None)
+                if callable(handle_display_event) and handle_display_event(event):
+                    self._cached_view = None
+                    self._mark_view_dirty()
+                    continue
                 if event.type == pygame.QUIT:
                     self.running = False
                     self.player_char.quit = True

@@ -134,25 +134,19 @@ def _make_shop(monkeypatch, *, in_town=True, level=12, background_image="town.pn
     )
 
 
-def test_load_background_scales_image_and_constructor_sets_rects(monkeypatch):
+def test_load_background_keeps_low_resolution_image_native_and_constructor_sets_rects(monkeypatch):
     presenter = _make_presenter()
     source = SimpleNamespace(get_size=lambda: (200, 100))
-    scaled_sizes = []
 
     monkeypatch.setattr("os.path.exists", lambda _path: True)
     monkeypatch.setattr("src.ui_pygame.gui.shop_screen.pygame.image.load", lambda _path: source)
-    monkeypatch.setattr(
-        "src.ui_pygame.gui.shop_screen.pygame.transform.scale",
-        lambda image, size: scaled_sizes.append((image.get_size(), size))
-        or SimpleNamespace(get_size=lambda: size),
-    )
 
     screen = shop_screen.ShopScreen(
         presenter, _make_player(), "Welcome", background_image="dungeon.png"
     )
 
-    assert scaled_sizes == [((200, 100), (960, 480))]
-    assert screen.background.get_size() == (960, 480)
+    assert screen.background is source
+    assert screen._background_is_native_fallback is True
     assert screen.options_list == ["Buy", "Sell", "Quests", "Leave"]
     assert screen.top_rect.size == (640, 40)
     assert screen.options_rect.size == (213, 120)

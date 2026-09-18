@@ -132,6 +132,10 @@ def test_release_guard_allows_input_after_buffered_keys_clear(monkeypatch):
         "src.ui_pygame.gui.input_guards.pygame.key.get_pressed",
         lambda: next(pressed_states),
     )
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.input_guards.pygame.mouse.get_pressed",
+        lambda: (False, False, False),
+    )
 
     assert release_guard_allows_input(True, False) is False
     assert release_guard_allows_input(True, False) is True
@@ -152,9 +156,29 @@ def test_release_guard_pumps_events_before_reading_key_state(monkeypatch):
         "src.ui_pygame.gui.input_guards.pygame.key.get_pressed",
         lambda: [1] if held["value"] else [],
     )
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.input_guards.pygame.mouse.get_pressed",
+        lambda: (False, False, False),
+    )
 
     assert release_guard_allows_input(True, False) is True
     assert pump_calls == [True]
+
+
+def test_release_guard_waits_for_mouse_button_release(monkeypatch):
+    """A popup must not accept the mouse-down event that opened it."""
+    mouse_states = iter([(True, False, False), (False, False, False)])
+    monkeypatch.setattr("src.ui_pygame.gui.input_guards.pygame.event.pump", lambda: None)
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.input_guards.pygame.key.get_pressed", lambda: []
+    )
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.input_guards.pygame.mouse.get_pressed",
+        lambda: next(mouse_states),
+    )
+
+    assert release_guard_allows_input(True, False) is False
+    assert release_guard_allows_input(True, False) is True
 
 
 def test_shared_input_guard_prepare_and_event_release(monkeypatch):
@@ -591,6 +615,10 @@ def test_quantity_popup_can_flush_and_wait_for_key_release(monkeypatch):
         "src.ui_pygame.gui.confirmation_popup.pygame.key.get_pressed",
         lambda: next(pressed_states, []),
     )
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.confirmation_popup.pygame.mouse.get_pressed",
+        lambda: (False, False, False),
+    )
     event_batches = iter(
         [
             [_event(pygame.KEYDOWN, pygame.K_RETURN)],
@@ -648,6 +676,10 @@ def test_code_entry_popup_can_flush_and_wait_for_key_release(monkeypatch):
     monkeypatch.setattr(
         "src.ui_pygame.gui.confirmation_popup.pygame.key.get_pressed",
         lambda: next(pressed_states, []),
+    )
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.confirmation_popup.pygame.mouse.get_pressed",
+        lambda: (False, False, False),
     )
     event_batches = iter(
         [

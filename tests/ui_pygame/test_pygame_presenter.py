@@ -145,7 +145,7 @@ def _mouse_event(event_type, pos, button=1):
     return SimpleNamespace(type=event_type, pos=pos, button=button)
 
 
-def _install_presenter_fakes(monkeypatch):
+def _install_presenter_fakes(monkeypatch, *, fullscreen=False):
     event_bus = DummyEventBus()
     sound_manager = DummySoundManager()
     display_screen = DummyScreen((640, 480))
@@ -157,6 +157,7 @@ def _install_presenter_fakes(monkeypatch):
     flip_calls = []
     captions = []
     quit_calls = []
+    mode_calls = []
 
     monkeypatch.setattr(pygame_presenter, "SOUND_AVAILABLE", True)
     monkeypatch.setattr(pygame_presenter, "get_event_bus", lambda: event_bus)
@@ -165,9 +166,17 @@ def _install_presenter_fakes(monkeypatch):
     monkeypatch.setattr(
         "src.ui_pygame.presentation.pygame_presenter.pygame.font.init", lambda: None
     )
+    def fake_set_mode(size, *flags):
+        mode_calls.append((size, flags))
+        display_screen._size = size
+        return display_screen
+
     monkeypatch.setattr(
-        "src.ui_pygame.presentation.pygame_presenter.pygame.display.set_mode",
-        lambda size: display_screen,
+        "src.ui_pygame.presentation.pygame_presenter.pygame.display.set_mode", fake_set_mode
+    )
+    monkeypatch.setattr(
+        "src.ui_pygame.presentation.pygame_presenter.pygame.display.get_desktop_sizes",
+        lambda: [(1920, 1080)],
     )
     monkeypatch.setattr(
         "src.ui_pygame.presentation.pygame_presenter.pygame.display.set_caption",
@@ -206,7 +215,7 @@ def _install_presenter_fakes(monkeypatch):
         lambda: quit_calls.append(True),
     )
 
-    presenter = pygame_presenter.PygamePresenter(width=640, height=480)
+    presenter = pygame_presenter.PygamePresenter(width=640, height=480, fullscreen=fullscreen)
     return SimpleNamespace(
         presenter=presenter,
         event_bus=event_bus,
@@ -215,6 +224,7 @@ def _install_presenter_fakes(monkeypatch):
         flip_calls=flip_calls,
         captions=captions,
         quit_calls=quit_calls,
+        mode_calls=mode_calls,
         title_font=title_font,
         large_font=large_font,
         normal_font=normal_font,
@@ -288,6 +298,14 @@ def test_presenter_initializes_subscriptions_and_basic_event_handlers(monkeypatc
     assert "Hero is victorious!" in presenter.combat_log
     assert "Hero fled from combat!" in presenter.combat_log
     assert "Hero was defeated..." in presenter.combat_log
+
+
+def test_presenter_fullscreen_uses_native_desktop_surface_without_scaled_flag(monkeypatch):
+    bundle = _install_presenter_fakes(monkeypatch, fullscreen=True)
+
+    assert bundle.mode_calls == [((1920, 1080), (pygame.FULLSCREEN,))]
+    assert bundle.presenter.display_configuration.render_size == (1920, 1080)
+    assert bundle.presenter.layout_metrics.font_size(24) == 34
 
 
 def test_presenter_background_helpers_and_cleanup(monkeypatch):

@@ -5,6 +5,7 @@ from types import SimpleNamespace
 import pygame
 
 from src.ui_common.input import UiCommand
+from src.ui_pygame.display_scaling import DisplayConfiguration, LayoutMetrics
 from src.ui_pygame.gui.dungeon_playtest_controls import DungeonPlaytestControls
 
 
@@ -173,3 +174,20 @@ def test_render_draws_visible_button_surface() -> None:
     controls.render()
 
     assert screen.get_at((forward.rect.left + 6, forward.rect.top + 6)).a > 0
+
+
+def test_native_1080p_layout_scales_targets_and_mouse_hit_testing() -> None:
+    pygame.font.init()
+    screen = pygame.Surface((1920, 1080), pygame.SRCALPHA)
+    metrics = LayoutMetrics(
+        DisplayConfiguration.for_viewport(fullscreen=True, render_size=screen.get_size())
+    )
+    controls = DungeonPlaytestControls(SimpleNamespace(screen=screen, layout_metrics=metrics))
+    forward = next(
+        button for button in controls._buttons() if button.command is UiCommand.DUNGEON_MOVE_FORWARD
+    )
+
+    assert forward.rect.width > 108
+    assert controls.command_from_event(
+        SimpleNamespace(type=pygame.MOUSEBUTTONDOWN, button=1, pos=forward.rect.center), now_ms=100
+    ) is UiCommand.DUNGEON_MOVE_FORWARD
