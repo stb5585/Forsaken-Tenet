@@ -118,13 +118,19 @@ class PygameGame:
         },
     }
 
-    def __init__(self, debug_mode=False, remote_playtest_controls=False):
+    def __init__(
+        self,
+        debug_mode=False,
+        remote_playtest_controls=False,
+        remote_playtest_input_diagnostics=False,
+    ):
         pygame.init()
         self.presenter = PygamePresenter()
         self.presenter.game = self  # Expose game to presenter for managers (bounties, etc.)
         self.event_bus = self.presenter.event_bus  # Use the same event bus as presenter
         self.debug_mode = debug_mode
         self.remote_playtest_controls = remote_playtest_controls
+        self.remote_playtest_input_diagnostics = remote_playtest_input_diagnostics
         self._random_combat = True
         self.load_files = SaveManager.list_saves()
         self.races_dict = races_dict
@@ -326,6 +332,8 @@ class PygameGame:
         manager_kwargs = {}
         if getattr(self, "remote_playtest_controls", False):
             manager_kwargs["remote_playtest_controls"] = True
+            if getattr(self, "remote_playtest_input_diagnostics", False):
+                manager_kwargs["remote_playtest_input_diagnostics"] = True
         self.dungeon_manager = DungeonManager(
             self.presenter, self.player_char, self, **manager_kwargs
         )
@@ -1399,6 +1407,11 @@ def main() -> int:
         action="store_true",
         help="Enable on-screen dungeon controls for touch and remote playtesting",
     )
+    parser.add_argument(
+        "--remote-playtest-input-diagnostics",
+        action="store_true",
+        help="Print dungeon touch/mouse press events (requires --remote-playtest-controls)",
+    )
     args = parser.parse_args()
 
     install_signal_handlers()
@@ -1413,9 +1426,13 @@ def main() -> int:
 
     game = None
     try:
+        if args.remote_playtest_input_diagnostics and not args.remote_playtest_controls:
+            parser.error("--remote-playtest-input-diagnostics requires --remote-playtest-controls")
         game_kwargs = {"debug_mode": args.debug}
         if args.remote_playtest_controls:
             game_kwargs["remote_playtest_controls"] = True
+            if args.remote_playtest_input_diagnostics:
+                game_kwargs["remote_playtest_input_diagnostics"] = True
         game = PygameGame(**game_kwargs)
         if args.character_menu:
             game.player_char = game.create_default_character(name=args.preview_name)

@@ -12,7 +12,7 @@ from src.core.combat.action_interface import (
 )
 from src.ui_pygame.assets.ability_icon_manager import get_ability_icon_manager
 
-from ..confirmation_popup import ConfirmationPopup
+from ..confirmation_popup import ConfirmationPopup, draw_popup_close_button, popup_close_clicked
 from ..input_guards import (
     prepare_guarded_input,
     release_guard_allows_input,
@@ -359,6 +359,7 @@ class CharacterEquipmentMixin:
             )
             self.draw_semi_transparent_panel(panel, alpha=235)
             pygame.draw.rect(self.screen, self.colors.GOLD, panel, 2)
+            draw_popup_close_button(self.screen, panel, self.small_font)
             self._draw_text(
                 "Learned Abilities",
                 self.large_font,
@@ -367,7 +368,7 @@ class CharacterEquipmentMixin:
                 panel.top + 14,
             )
             self._draw_text(
-                "Drag an icon to a shortcut slot · Enter assign · Backspace clear · Esc close",
+                "Drag an icon to a shortcut slot · Enter assign · Backspace clear · Esc or x close",
                 self.small_font,
                 self.colors.LIGHT_GRAY,
                 panel.left + 18,
@@ -550,6 +551,15 @@ class CharacterEquipmentMixin:
                 input_armed = update_input_armed_from_event(event, True, input_armed)
                 if event.type == pygame.KEYDOWN and not input_armed:
                     continue
+                if (
+                    is_left_click(event)
+                    and input_armed
+                    and (
+                        popup_close_clicked(event, panel)
+                        or not panel.collidepoint(mouse_position(event) or (-1, -1))
+                    )
+                ):
+                    return
                 if event.type == pygame.KEYDOWN:
                     if event.key in (pygame.K_ESCAPE, pygame.K_BACKSPACE):
                         if event.key == pygame.K_BACKSPACE:

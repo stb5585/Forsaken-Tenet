@@ -10,6 +10,8 @@ import pygame
 from src.ui_common.input import UiCommand
 
 _MESSAGE_AREA_HEIGHT = 100
+_PRESS_DEBOUNCE_MS = 250
+_DUPLICATE_PRESS_DISTANCE_PX = 8
 
 
 @dataclass(frozen=True)
@@ -25,8 +27,10 @@ class PlaytestControlButton:
 class DungeonPlaytestControls:
     """Render and hit-test touch targets over the dungeon exploration view."""
 
-    def __init__(self, presenter: Any):
+    def __init__(self, presenter: Any, *, input_diagnostics: bool = False):
         self.presenter = presenter
+        self.input_diagnostics = input_diagnostics
+        self._last_press: tuple[str, tuple[int, int], int] | None = None
 
     @staticmethod
     def button_layout(width: int, height: int, hud_x: int) -> tuple[PlaytestControlButton, ...]:
@@ -50,19 +54,19 @@ class DungeonPlaytestControls:
         return (
             PlaytestControlButton(
                 UiCommand.DUNGEON_TURN_LEFT,
-                "TURN L",
+                "",
                 pygame.Rect(left_x, top_row_y, button_size, button_size),
                 (72, 134, 190),
             ),
             PlaytestControlButton(
                 UiCommand.DUNGEON_MOVE_FORWARD,
-                "FWD",
+                "",
                 pygame.Rect(center_x, top_row_y, button_size, button_size),
                 (77, 156, 102),
             ),
             PlaytestControlButton(
                 UiCommand.DUNGEON_TURN_RIGHT,
-                "TURN R",
+                "",
                 pygame.Rect(right_x, top_row_y, button_size, button_size),
                 (72, 134, 190),
             ),
@@ -74,7 +78,7 @@ class DungeonPlaytestControls:
             ),
             PlaytestControlButton(
                 UiCommand.DUNGEON_TURN_AROUND,
-                "TURN 180",
+                "",
                 pygame.Rect(center_x, bottom_row_y, button_size, button_size),
                 (72, 134, 190),
             ),
@@ -116,18 +120,75 @@ class DungeonPlaytestControls:
                 return button.command
         return None
 
-    def command_from_event(self, event: Any) -> UiCommand | None:
-        """Normalize mouse and touch presses into an on-screen control command."""
-        if event.type == pygame.MOUSEBUTTONDOWN and getattr(event, "button", None) == 1:
-            return self.command_at(getattr(event, "pos", (-1, -1)))
-        if event.type == pygame.FINGERDOWN:
+    def command_from_event(self, event: Any, *, now_ms: int | None = None) -> UiCommand | None:
+        """Normalize native and mouse-emulated touch presses into a control command.
+
+        Native ``FINGERDOWN`` coordinates are normalized by SDL. Mouse presses,
+        including touch presses emulated by SDL or Moonlight, use window pixels.
+        Same-location presses are debounced to avoid click-through or duplicate
+        actions caused by a single physical press.
+        """
+        press = self._press_from_event(event)
+        if press is None:
+            return None
+
+        source, position = press
+        self._diagnose_press(event, source, position)
+        command = self.command_at(position)
+        if command is None:
+            return None
+
+        press_time = pygame.time.get_ticks() if now_ms is None else now_ms
+        if self._is_duplicate_press(source, position, press_time):
+            return None
+        self._last_press = (source, position, press_time)
+        return command
+
+    def _press_from_event(self, event: Any) -> tuple[str, tuple[int, int]] | None:
+        """Extract a screen-space press position from supported Pygame events."""
+        event_type = getattr(event, "type", None)
+        if event_type == pygame.FINGERDOWN:
             width, height = self.presenter.screen.get_size()
-            position = (
-                round(getattr(event, "x", -1.0) * width),
-                round(getattr(event, "y", -1.0) * height),
+            return (
+                "finger",
+                (
+                    round(float(getattr(event, "x", -1.0)) * width),
+                    round(float(getattr(event, "y", -1.0)) * height),
+                ),
             )
-            return self.command_at(position)
+        if event_type == pygame.MOUSEBUTTONDOWN and getattr(event, "button", None) == 1:
+            position = getattr(event, "pos", None)
+            if position is None:
+                position = (getattr(event, "x", -1), getattr(event, "y", -1))
+            return "mouse", (round(float(position[0])), round(float(position[1])))
         return None
+
+    def _is_duplicate_press(self, source: str, position: tuple[int, int], now_ms: int) -> bool:
+        """Return whether a recent same-location physical press was already handled."""
+        if self._last_press is None:
+            return False
+        _last_source, last_position, last_time = self._last_press
+        if now_ms - last_time > _PRESS_DEBOUNCE_MS:
+            return False
+        return (
+            abs(position[0] - last_position[0]) <= _DUPLICATE_PRESS_DISTANCE_PX
+            and abs(position[1] - last_position[1]) <= _DUPLICATE_PRESS_DISTANCE_PX
+        )
+
+    def _diagnose_press(self, event: Any, source: str, position: tuple[int, int]) -> None:
+        """Print concise, opt-in event data for local touchscreen investigation."""
+        if not self.input_diagnostics:
+            return
+        fields = {
+            name: getattr(event, name)
+            for name in ("pos", "x", "y", "button", "touch", "finger_id", "touch_id")
+            if hasattr(event, name)
+        }
+        print(
+            "Dungeon playtest input: "
+            f"type={pygame.event.event_name(getattr(event, 'type', pygame.NOEVENT))} "
+            f"source={source} screen_position={position} fields={fields}"
+        )
 
     def render(self) -> None:
         """Draw translucent, touch-sized controls over the current dungeon frame."""
@@ -138,5 +199,43 @@ class DungeonPlaytestControls:
             button_surface.fill((*button.accent_color, 185))
             screen.blit(button_surface, button.rect)
             pygame.draw.rect(screen, (225, 225, 225), button.rect, 2, border_radius=8)
-            label = font.render(button.label, True, (255, 255, 255))
-            screen.blit(label, label.get_rect(center=button.rect.center))
+            if button.command in {
+                UiCommand.DUNGEON_TURN_LEFT,
+                UiCommand.DUNGEON_MOVE_FORWARD,
+                UiCommand.DUNGEON_TURN_RIGHT,
+                UiCommand.DUNGEON_TURN_AROUND,
+            }:
+                self._draw_direction_arrow(screen, button)
+            else:
+                label = font.render(button.label, True, (255, 255, 255))
+                screen.blit(label, label.get_rect(center=button.rect.center))
+
+    @staticmethod
+    def _draw_direction_arrow(screen: pygame.Surface, button: PlaytestControlButton) -> None:
+        """Draw a font-independent directional arrow for a navigation target."""
+        direction = {
+            UiCommand.DUNGEON_TURN_LEFT: (-1, 0),
+            UiCommand.DUNGEON_MOVE_FORWARD: (0, -1),
+            UiCommand.DUNGEON_TURN_RIGHT: (1, 0),
+            UiCommand.DUNGEON_TURN_AROUND: (0, 1),
+        }[button.command]
+        dx, dy = direction
+        center_x, center_y = button.rect.center
+        shaft_length = max(14, min(button.rect.width, button.rect.height) // 3)
+        head_size = max(9, shaft_length // 2)
+        start = (center_x - dx * shaft_length // 2, center_y - dy * shaft_length // 2)
+        end = (center_x + dx * shaft_length // 2, center_y + dy * shaft_length // 2)
+        perpendicular = (-dy, dx)
+        head = [
+            end,
+            (
+                end[0] - dx * head_size + perpendicular[0] * head_size,
+                end[1] - dy * head_size + perpendicular[1] * head_size,
+            ),
+            (
+                end[0] - dx * head_size - perpendicular[0] * head_size,
+                end[1] - dy * head_size - perpendicular[1] * head_size,
+            ),
+        ]
+        pygame.draw.line(screen, (255, 255, 255), start, end, width=5)
+        pygame.draw.polygon(screen, (255, 255, 255), head)

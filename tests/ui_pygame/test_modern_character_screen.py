@@ -2854,7 +2854,11 @@ def test_abilities_workspace_splits_icons_and_accepts_drag_to_shortcut(monkeypat
                     button=1,
                     pos=slot_center,
                 ),
-                pygame.event.Event(pygame.KEYDOWN, key=pygame.K_ESCAPE),
+                pygame.event.Event(
+                    pygame.MOUSEBUTTONDOWN,
+                    button=1,
+                    pos=(panel.right - 20, panel.top + 18),
+                ),
             ]
         ]
     )

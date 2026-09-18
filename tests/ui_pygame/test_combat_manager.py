@@ -1721,6 +1721,31 @@ def test_select_item_spell_and_skill_cover_empty_cancel_and_selection_paths(monk
     selected_item = manager._select_item(player, enemy)
     assert selected_item.name == "Scroll of Ice"
 
+    player.inventory = {
+        f"Potion {index}": [SimpleNamespace(name=f"Potion {index}", subtyp="Health")]
+        for index in range(4)
+    }
+    item_options = [f"Potion {index} (1)" for index in range(4)]
+    fourth_item_pos = manager._selection_menu_option_rects(item_options, 1)[2][1].center
+    event_batches = iter(
+        [
+            [SimpleNamespace(type=pygame.MOUSEWHEEL, y=-3)],
+            [SimpleNamespace(type=pygame.MOUSEBUTTONDOWN, button=1, pos=fourth_item_pos)],
+        ]
+    )
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.combat_manager.pygame.event.get", lambda: next(event_batches, [])
+    )
+    selected_item = manager._select_item(player, enemy)
+    assert selected_item.name == "Potion 3"
+
+    back_pos = manager._selection_menu_back_rect().center
+    event_batches = iter([[SimpleNamespace(type=pygame.MOUSEBUTTONDOWN, button=1, pos=back_pos)]])
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.combat_manager.pygame.event.get", lambda: next(event_batches, [])
+    )
+    assert manager._select_item(player, enemy) is None
+
     event_batches = iter(
         [
             [SimpleNamespace(type=pygame.KEYUP, key=pygame.K_ESCAPE)],
@@ -2075,6 +2100,45 @@ def test_runic_steal_and_contract_pickers_support_mouse_confirm(monkeypatch):
     assert manager._select_contract_intent(player, enemy) == "Guard"
 
 
+def test_all_actions_supports_mouse_wheel_scrolling_and_selection(monkeypatch):
+    manager = _make_manager(monkeypatch)
+    player = _make_player()
+    enemy = _make_enemy()
+    entries = tuple(
+        SimpleNamespace(display_label=f"Action {index}", description=f"Description {index}")
+        for index in range(4)
+    )
+    renders = []
+    manager._render_combat_frame = lambda *_args, **_kwargs: None
+    manager._render_selection_menu = (
+        lambda _title, _options, selected, scroll_offset=0: renders.append(
+            (selected, scroll_offset)
+        )
+    )
+    manager._clear_pending_input = lambda: True
+    monkeypatch.setattr(
+        combat_manager.lifecycle,
+        "combat_interface_snapshot",
+        lambda *_args: SimpleNamespace(all_actions=entries),
+    )
+    monkeypatch.setattr("src.ui_pygame.gui.combat_manager.pygame.display.flip", lambda: None)
+    fourth_action_pos = manager._selection_menu_option_rects(
+        [entry.display_label for entry in entries], 1
+    )[2][1].center
+    event_batches = iter(
+        [
+            [SimpleNamespace(type=pygame.MOUSEWHEEL, y=-3)],
+            [SimpleNamespace(type=pygame.MOUSEBUTTONDOWN, button=1, pos=fourth_action_pos)],
+        ]
+    )
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.combat_manager.pygame.event.get", lambda: next(event_batches, [])
+    )
+
+    assert manager._select_all_action(player, enemy) is entries[3]
+    assert renders[-1] == (3, 1)
+
+
 def test_render_selection_menu_refresh_background_and_pause_helpers(monkeypatch):
     manager = _make_manager(monkeypatch)
     player = _make_player()
@@ -2113,9 +2177,9 @@ def test_render_selection_menu_refresh_background_and_pause_helpers(monkeypatch)
     assert fitted_option.endswith("...")
     assert medium_font.size(fitted_option)[0] <= 462
     assert "Selected option description" in small_font.render_calls
+    assert "Back" in small_font.render_calls
     assert (
-        "Up/Down or W/S: Navigate | PgUp/PgDn: Scroll | Enter: Select | Esc: Cancel"
-        in small_font.render_calls
+        "Wheel: Scroll | PgUp/PgDn: Scroll | Enter: Select | Esc: Cancel" in small_font.render_calls
     )
     assert draw_calls
 

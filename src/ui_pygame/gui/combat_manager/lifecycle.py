@@ -891,6 +891,11 @@ class CombatLifecycleMixin:
                     elif key in (pygame.K_RETURN, pygame.K_SPACE):
                         return entries[selected]
                     scroll_offset = self._scroll_offset_for_selection(selected, scroll_offset)
+                elif event.type == pygame.MOUSEWHEEL:
+                    selected = max(0, min(len(entries) - 1, selected - getattr(event, "y", 0)))
+                    scroll_offset = self._scroll_offset_for_selection(selected, scroll_offset)
+                elif self._selection_menu_back_clicked(event, input_armed):
+                    return None
                 elif event.type in (pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN):
                     selected, scroll_offset, confirmed = self._selection_menu_mouse_update(
                         event,

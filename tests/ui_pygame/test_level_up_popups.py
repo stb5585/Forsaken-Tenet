@@ -109,7 +109,7 @@ def test_level_up_popup_prepares_draws_and_shows(monkeypatch):
     )
     popup.draw_popup()
     assert "LEVEL UP!" in presenter.title_font.render_calls
-    assert "Press any key to continue..." in presenter.small_font.render_calls
+    assert "Click or press any key to continue..." in presenter.small_font.render_calls
     assert draw_calls
 
     presenter.get_background_surface = lambda: "bg-surface"
@@ -134,6 +134,13 @@ def test_level_up_popup_prepares_draws_and_shows(monkeypatch):
     bg_calls = []
     popup.show(background_draw_func=lambda: bg_calls.append(True))
     assert bg_calls
+
+    popup = level_up_popup.LevelUpPopup(presenter, level_info)
+    event_batches = iter([[SimpleNamespace(type=pygame.MOUSEBUTTONDOWN, button=1, pos=(1, 1))]])
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.level_up_popup.pygame.event.get", lambda: next(event_batches, [])
+    )
+    popup.show(background_draw_func=lambda: bg_calls.append(True))
 
     presenter.get_background_surface = lambda: "bg-default"
     popup = level_up_popup.LevelUpPopup(presenter, level_info)

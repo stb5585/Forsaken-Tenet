@@ -69,6 +69,11 @@ class AbilitySelectionMixin:
                     elif event.key in [pygame.K_RETURN, pygame.K_SPACE]:
                         return items[selected][1]
                     scroll_offset = self._scroll_offset_for_selection(selected, scroll_offset)
+                elif event.type == pygame.MOUSEWHEEL:
+                    selected = max(0, min(len(items) - 1, selected - getattr(event, "y", 0)))
+                    scroll_offset = self._scroll_offset_for_selection(selected, scroll_offset)
+                elif self._selection_menu_back_clicked(event, input_armed):
+                    return None
                 elif event.type in (pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN):
                     selected, scroll_offset, confirmed = self._selection_menu_mouse_update(
                         event,
@@ -163,6 +168,8 @@ class AbilitySelectionMixin:
                     elif event.key in [pygame.K_RETURN, pygame.K_SPACE]:
                         return entries[selected][0]
                     scroll_offset = self._scroll_offset_for_selection(selected, scroll_offset)
+                elif self._selection_menu_back_clicked(event, input_armed):
+                    return None
                 elif event.type in (pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN):
                     selected, scroll_offset, confirmed = self._selection_menu_mouse_update(
                         event,
@@ -257,6 +264,8 @@ class AbilitySelectionMixin:
                         scroll_offset = selected
                     elif selected >= scroll_offset + max_visible:
                         scroll_offset = selected - max_visible + 1
+                elif self._selection_menu_back_clicked(event, input_armed):
+                    return None
                 elif event.type in (pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN):
                     selected, scroll_offset, confirmed = self._selection_menu_mouse_update(
                         event,
@@ -316,6 +325,8 @@ class AbilitySelectionMixin:
                         selected,
                         scroll_offset,
                     )
+                elif self._selection_menu_back_clicked(event, input_armed):
+                    return None
                 elif event.type in (pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN):
                     selected, scroll_offset, confirmed = self._selection_menu_mouse_update(
                         event,

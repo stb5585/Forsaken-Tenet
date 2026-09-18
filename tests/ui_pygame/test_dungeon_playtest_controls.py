@@ -39,9 +39,14 @@ def test_layout_keeps_controls_above_the_message_area_and_non_overlapping() -> N
         for index, first in enumerate(buttons)
         for second in buttons[index + 1 :]
     )
+    labels = {button.command: button.label for button in buttons}
+    assert labels[UiCommand.DUNGEON_TURN_LEFT] == ""
+    assert labels[UiCommand.DUNGEON_MOVE_FORWARD] == ""
+    assert labels[UiCommand.DUNGEON_TURN_RIGHT] == ""
+    assert labels[UiCommand.DUNGEON_TURN_AROUND] == ""
 
 
-def test_control_hit_testing_supports_mouse_and_normalized_touch_coordinates() -> None:
+def test_control_hit_testing_supports_native_touch_and_mouse_event_shapes() -> None:
     controls = _controls()
     forward = next(
         button
@@ -51,17 +56,107 @@ def test_control_hit_testing_supports_mouse_and_normalized_touch_coordinates() -
     center = forward.rect.center
 
     assert controls.command_at(center) is UiCommand.DUNGEON_MOVE_FORWARD
+    mouse_event = SimpleNamespace(type=pygame.MOUSEBUTTONDOWN, button=1, pos=center)
+    mouse_event_without_pos = SimpleNamespace(
+        type=pygame.MOUSEBUTTONDOWN, button=1, x=center[0], y=center[1], touch=True
+    )
+    native_touch_event = SimpleNamespace(
+        type=pygame.FINGERDOWN,
+        x=center[0] / 1024,
+        y=center[1] / 768,
+        finger_id=4,
+        touch_id=1,
+    )
+
+    for event in (mouse_event, mouse_event_without_pos, native_touch_event):
+        assert _controls().command_from_event(event, now_ms=100) is UiCommand.DUNGEON_MOVE_FORWARD
+
+
+def test_control_press_deduplicates_native_touch_then_mouse_emulation() -> None:
+    controls = _controls()
+    center = next(
+        button.rect.center
+        for button in controls.button_layout(1024, 768, 665)
+        if button.command is UiCommand.DUNGEON_MOVE_FORWARD
+    )
+
     assert (
         controls.command_from_event(
-            SimpleNamespace(type=pygame.MOUSEBUTTONDOWN, button=1, pos=center)
+            SimpleNamespace(type=pygame.FINGERDOWN, x=center[0] / 1024, y=center[1] / 768),
+            now_ms=100,
         )
         is UiCommand.DUNGEON_MOVE_FORWARD
     )
     assert (
         controls.command_from_event(
-            SimpleNamespace(type=pygame.FINGERDOWN, x=center[0] / 1024, y=center[1] / 768)
+            SimpleNamespace(type=pygame.MOUSEBUTTONDOWN, button=1, pos=center), now_ms=110
+        )
+        is None
+    )
+
+
+def test_control_press_deduplicates_mouse_emulation_then_native_touch() -> None:
+    controls = _controls()
+    center = next(
+        button.rect.center
+        for button in controls.button_layout(1024, 768, 665)
+        if button.command is UiCommand.DUNGEON_MOVE_FORWARD
+    )
+
+    assert (
+        controls.command_from_event(
+            SimpleNamespace(type=pygame.MOUSEBUTTONDOWN, button=1, pos=center), now_ms=100
         )
         is UiCommand.DUNGEON_MOVE_FORWARD
+    )
+    assert (
+        controls.command_from_event(
+            SimpleNamespace(type=pygame.FINGERDOWN, x=center[0] / 1024, y=center[1] / 768),
+            now_ms=110,
+        )
+        is None
+    )
+
+
+def test_control_press_debounces_repeated_mouse_clicks() -> None:
+    controls = _controls()
+    center = next(
+        button.rect.center
+        for button in controls.button_layout(1024, 768, 665)
+        if button.command is UiCommand.DUNGEON_TURN_LEFT
+    )
+    mouse_event = SimpleNamespace(type=pygame.MOUSEBUTTONDOWN, button=1, pos=center)
+
+    assert controls.command_from_event(mouse_event, now_ms=100) is UiCommand.DUNGEON_TURN_LEFT
+    assert controls.command_from_event(mouse_event, now_ms=200) is None
+    assert controls.command_from_event(mouse_event, now_ms=400) is UiCommand.DUNGEON_TURN_LEFT
+
+
+def test_control_press_does_not_suppress_distinct_mouse_click() -> None:
+    controls = _controls()
+    forward = next(
+        button.rect.center
+        for button in controls.button_layout(1024, 768, 665)
+        if button.command is UiCommand.DUNGEON_MOVE_FORWARD
+    )
+    turn_left = next(
+        button.rect.center
+        for button in controls.button_layout(1024, 768, 665)
+        if button.command is UiCommand.DUNGEON_TURN_LEFT
+    )
+
+    assert (
+        controls.command_from_event(
+            SimpleNamespace(type=pygame.FINGERDOWN, x=forward[0] / 1024, y=forward[1] / 768),
+            now_ms=100,
+        )
+        is UiCommand.DUNGEON_MOVE_FORWARD
+    )
+    assert (
+        controls.command_from_event(
+            SimpleNamespace(type=pygame.MOUSEBUTTONDOWN, button=1, pos=turn_left), now_ms=110
+        )
+        is UiCommand.DUNGEON_TURN_LEFT
     )
 
 

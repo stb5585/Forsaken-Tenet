@@ -149,6 +149,12 @@ class LevelUpPopup:
                     if not input_armed:
                         continue
                     waiting = False
+                elif (
+                    event.type == pygame.MOUSEBUTTONDOWN
+                    and getattr(event, "button", None) == 1
+                    and input_armed
+                ):
+                    waiting = False
 
             self.presenter.clock.tick(30)
 
@@ -203,7 +209,9 @@ class LevelUpPopup:
                 y += 30
 
         # Draw instruction
-        instruction_text = self.small_font.render("Press any key to continue...", True, self.GRAY)
+        instruction_text = self.small_font.render(
+            "Click or press any key to continue...", True, self.GRAY
+        )
         instruction_rect = instruction_text.get_rect(
             center=(self.popup_rect.centerx, self.popup_rect.bottom - 20)
         )
