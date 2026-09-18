@@ -37,7 +37,9 @@ class RendererCoreMixin:
 
     def _get_viewport_size(self) -> tuple[int, int]:
         screen_w, screen_h = self.screen.get_size()
-        return int(screen_w * 0.65), screen_h
+        metrics = getattr(self.presenter, "layout_metrics", None)
+        view_fraction = metrics.dungeon_view_fraction if metrics is not None else 0.65
+        return int(screen_w * view_fraction), screen_h
 
     def render(self, player_char, world_dict) -> None:
         self.textures.ensure_loaded()

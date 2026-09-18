@@ -2847,6 +2847,13 @@ def test_abilities_workspace_splits_icons_and_accepts_drag_to_shortcut(monkeypat
                 pygame.event.Event(
                     pygame.MOUSEBUTTONDOWN,
                     button=1,
+                    pos=(panel.left - 1, panel.top - 1),
+                )
+            ],
+            [
+                pygame.event.Event(
+                    pygame.MOUSEBUTTONDOWN,
+                    button=1,
                     pos=skill_card_center,
                 ),
                 pygame.event.Event(
@@ -2859,7 +2866,7 @@ def test_abilities_workspace_splits_icons_and_accepts_drag_to_shortcut(monkeypat
                     button=1,
                     pos=(panel.right - 20, panel.top + 18),
                 ),
-            ]
+            ],
         ]
     )
     monkeypatch.setattr(

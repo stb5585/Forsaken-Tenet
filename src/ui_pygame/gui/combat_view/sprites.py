@@ -112,7 +112,9 @@ class CombatSpriteMixin:
 
     def _enemy_dungeon_combat_sprite_size(self, enemy) -> tuple[int, int]:
         """Return the foreground combat sprite size for the dungeon-backed combat view."""
-        edge = max(1, int(320 * self._enemy_combat_sprite_scale(enemy)))
+        metrics = getattr(self.presenter, "layout_metrics", None)
+        base_edge = metrics.unit(320) if metrics is not None else 320
+        edge = max(1, int(base_edge * self._enemy_combat_sprite_scale(enemy)))
         return (edge, edge)
 
     def _enemy_encounter_sprite_size(

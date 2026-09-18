@@ -24,7 +24,7 @@ from .gui.barracks import BarracksManager
 from .gui.character_naming import CharacterNamingScreen
 from .gui.church import ChurchManager
 from .gui.class_selection import ClassSelectionScreen
-from .gui.confirmation_popup import ConfirmationPopup, confirm_yes_no
+from .gui.confirmation_popup import ChoicePopup, ConfirmationPopup, confirm_yes_no
 from .gui.dungeon_manager import DungeonManager
 from .gui.inn import InnManager
 from .gui.load_game import LoadGameScreen
@@ -123,14 +123,17 @@ class PygameGame:
         debug_mode=False,
         remote_playtest_controls=False,
         remote_playtest_input_diagnostics=False,
+        fullscreen=False,
     ):
         pygame.init()
-        self.presenter = PygamePresenter()
+        presenter_kwargs = {"fullscreen": True} if fullscreen else {}
+        self.presenter = PygamePresenter(**presenter_kwargs)
         self.presenter.game = self  # Expose game to presenter for managers (bounties, etc.)
         self.event_bus = self.presenter.event_bus  # Use the same event bus as presenter
         self.debug_mode = debug_mode
         self.remote_playtest_controls = remote_playtest_controls
         self.remote_playtest_input_diagnostics = remote_playtest_input_diagnostics
+        self.fullscreen = fullscreen
         self._random_combat = True
         self.load_files = SaveManager.list_saves()
         self.races_dict = races_dict
@@ -472,12 +475,36 @@ class PygameGame:
                     self.run()
                     self._stop_music(fade_ms=250)
             elif menu_options[choice] == "Settings":
-                popup = ConfirmationPopup(
-                    self.presenter, "Settings menu coming soon!", show_buttons=False
-                )
-                popup.show(**self._popup_show_kwargs())
+                if self.show_display_settings():
+                    main_menu = MainMenuScreen(self.presenter)
             elif menu_options[choice] == "Exit":
                 self.running = False
+
+    def show_display_settings(self) -> bool:
+        """Let players select a native fullscreen or windowed render resolution."""
+        choices = (
+            ("Windowed 1024 x 768", False, (1024, 768)),
+            ("Windowed 1366 x 768", False, (1366, 768)),
+            ("Windowed 1920 x 1080", False, (1920, 1080)),
+            ("Fullscreen (active display)", True, None),
+        )
+        labels = [choice[0] for choice in choices] + ["Back"]
+        changed = False
+        while True:
+            # Keep resolution selection in the established modal visual
+            # language instead of dropping to the legacy full-screen menu.
+            selection = ChoicePopup(
+                self.presenter,
+                "Display Settings",
+                labels,
+                "Choose how the game is rendered. Changes apply immediately.",
+            ).show()
+            if selection is None or selection == len(choices):
+                return changed
+            _label, fullscreen, resolution = choices[selection]
+            self.presenter.apply_display_mode(fullscreen=fullscreen, resolution=resolution)
+            self.fullscreen = fullscreen
+            changed = True
 
     def new_game(self):
         """Create a new character."""
@@ -685,6 +712,7 @@ class PygameGame:
 
         options.append("Character Menu")
         options.append("Statistics")
+        options.append("Settings")
         options.append("Quit to Main Menu")
 
         # Create and use the new town menu screen
@@ -791,6 +819,12 @@ class PygameGame:
                         town_screen.draw_menu_panel(options),
                     )
                 )
+
+            elif choice_label == "Settings":
+                if self.show_display_settings():
+                    # A display mode change replaces the native Pygame surface.
+                    # Rebuild the town view so it uses the new dimensions.
+                    town_screen = TownMenuScreen(self.presenter)
 
     def _enter_dungeon_from_town(self) -> str:
         """Place the player at the dungeon entrance and enter exploration."""
@@ -1412,6 +1446,9 @@ def main() -> int:
         action="store_true",
         help="Print dungeon touch/mouse press events (requires --remote-playtest-controls)",
     )
+    parser.add_argument(
+        "--fullscreen", action="store_true", help="Use the landscape logical fullscreen display"
+    )
     args = parser.parse_args()
 
     install_signal_handlers()
@@ -1429,6 +1466,8 @@ def main() -> int:
         if args.remote_playtest_input_diagnostics and not args.remote_playtest_controls:
             parser.error("--remote-playtest-input-diagnostics requires --remote-playtest-controls")
         game_kwargs = {"debug_mode": args.debug}
+        if args.fullscreen:
+            game_kwargs["fullscreen"] = True
         if args.remote_playtest_controls:
             game_kwargs["remote_playtest_controls"] = True
             if args.remote_playtest_input_diagnostics:

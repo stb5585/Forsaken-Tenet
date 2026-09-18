@@ -201,6 +201,34 @@ def test_town_menu_navigation_and_debug_level(monkeypatch):
     assert screen.navigate(["Shops", "Inn", "Quit"]) == 1
 
 
+def test_town_menu_ignores_a_followup_click_inside_pointer_cooldown(monkeypatch):
+    presenter = _make_presenter()
+    presenter._town_menu_pointer_armed_at = 200
+    monkeypatch.setattr(
+        town_menu.TownMenuScreen, "_load_background", lambda self: setattr(self, "background", None)
+    )
+    screen = town_menu.TownMenuScreen(presenter)
+    monkeypatch.setattr(screen, "draw_background", lambda: None)
+    monkeypatch.setattr(screen, "draw_menu_panel", lambda _options: None)
+    monkeypatch.setattr("src.ui_pygame.gui.town_menu.pygame.display.flip", lambda: None)
+    monkeypatch.setattr("src.ui_pygame.gui.input_guards.pygame.key.get_pressed", lambda: [])
+    click_pos = screen.option_rects(["Shops"])[0].center
+    times = iter([100, 201, 201])
+    monkeypatch.setattr("src.ui_pygame.gui.town_menu.pygame.time.get_ticks", lambda: next(times))
+    event_batches = iter(
+        [
+            [SimpleNamespace(type=pygame.MOUSEBUTTONDOWN, button=1, pos=click_pos)],
+            [SimpleNamespace(type=pygame.MOUSEBUTTONDOWN, button=1, pos=click_pos)],
+        ]
+    )
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.town_menu.pygame.event.get", lambda: next(event_batches, [])
+    )
+
+    assert screen.navigate(["Shops"]) == 0
+    assert presenter._town_menu_pointer_armed_at == 381
+
+
 def test_town_menu_quit_event_raises(monkeypatch):
     presenter = _make_presenter()
     monkeypatch.setattr(

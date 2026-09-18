@@ -349,39 +349,46 @@ class CharacterEquipmentMixin:
         dragged_action = None
         dragged_position = None
         input_armed = prepare_guarded_input(flush_events=True, require_key_release=True)
+        metrics = getattr(self.presenter, "layout_metrics", None)
+        unit = metrics.unit if metrics is not None else int
         while True:
             self.draw_all(player_char, do_flip=False)
+            panel_margin = unit(24)
+            panel_padding = unit(18)
+            header_height = unit(80)
+            row_height = unit(45)
+            row_gap = unit(5)
             panel = pygame.Rect(
-                self.content_rect.left + 24,
-                self.content_rect.top + 24,
-                self.content_rect.width - 48,
-                self.content_rect.height - 48,
+                self.content_rect.left + panel_margin,
+                self.content_rect.top + panel_margin,
+                self.content_rect.width - (panel_margin * 2),
+                self.content_rect.height - (panel_margin * 2),
             )
             self.draw_semi_transparent_panel(panel, alpha=235)
             pygame.draw.rect(self.screen, self.colors.GOLD, panel, 2)
             draw_popup_close_button(self.screen, panel, self.small_font)
             self._draw_text(
-                "Learned Abilities",
+                "Action Layout",
                 self.large_font,
                 self.colors.GOLD,
-                panel.left + 18,
-                panel.top + 14,
+                panel.left + panel_padding,
+                panel.top + unit(14),
             )
             self._draw_text(
-                "Drag an icon to a shortcut slot · Enter assign · Backspace clear · Esc or x close",
+                "Drag an icon to a shortcut slot · Enter assign · Backspace clear · Esc or X close",
                 self.small_font,
                 self.colors.LIGHT_GRAY,
-                panel.left + 18,
-                panel.top + 48,
-                panel.width - 36,
+                panel.left + panel_padding,
+                panel.top + unit(48),
+                panel.width - (panel_padding * 2),
             )
             catalog_rect = pygame.Rect(
-                panel.left + 18,
-                panel.top + 80,
-                panel.width - 36,
-                panel.height - 220,
+                panel.left + panel_padding,
+                panel.top + header_height,
+                panel.width - (panel_padding * 2),
+                panel.height - unit(220),
             )
-            gap = 14
+            gap = unit(14)
             column_width = (catalog_rect.width - gap) // 2
             categories = {
                 "Skill": [
@@ -397,7 +404,7 @@ class CharacterEquipmentMixin:
             }
             action_rows = []
             icon_manager = get_ability_icon_manager()
-            visible_count = max(1, (catalog_rect.height - 34) // 50)
+            visible_count = max(1, (catalog_rect.height - unit(34)) // (row_height + row_gap))
             for column, category in enumerate(("Skill", "Spell")):
                 column_rect = pygame.Rect(
                     catalog_rect.left + column * (column_width + gap),
@@ -410,9 +417,9 @@ class CharacterEquipmentMixin:
                     f"{category}s",
                     self.normal_font,
                     self.colors.GOLD,
-                    column_rect.left + 8,
-                    column_rect.top + 7,
-                    column_rect.width - 16,
+                    column_rect.left + unit(8),
+                    column_rect.top + unit(7),
+                    column_rect.width - unit(16),
                 )
                 entries = categories[category]
                 selected_in_category = next(
@@ -430,9 +437,14 @@ class CharacterEquipmentMixin:
                     elif selected_in_category >= offset + visible_count:
                         offset = selected_in_category - visible_count + 1
                 category_offsets[category] = offset
-                y = column_rect.top + 32
+                y = column_rect.top + unit(32)
                 for index, action in entries[offset : offset + visible_count]:
-                    rect = pygame.Rect(column_rect.left + 6, y, column_rect.width - 12, 45)
+                    rect = pygame.Rect(
+                        column_rect.left + unit(6),
+                        y,
+                        column_rect.width - unit(12),
+                        row_height,
+                    )
                     action_rows.append((index, category, rect))
                     fill = self.colors.HIGHLIGHT_BG if index == selected_action else (29, 29, 35)
                     pygame.draw.rect(self.screen, fill, rect, border_radius=4)
@@ -443,39 +455,40 @@ class CharacterEquipmentMixin:
                         2 if index == selected_action else 1,
                         border_radius=4,
                     )
+                    icon_size = unit(34)
                     icon = pygame.transform.smoothscale(
                         icon_manager.get_icon(action.icon_key),
-                        (34, 34),
+                        (icon_size, icon_size),
                     )
-                    self.screen.blit(icon, (rect.left + 6, rect.top + 5))
+                    self.screen.blit(icon, (rect.left + unit(6), rect.top + unit(5)))
                     label = action.display_name.replace(f"{category}: ", "")
                     self._draw_text(
                         label,
                         self.small_font,
                         self.colors.WHITE,
-                        rect.left + 46,
-                        rect.top + 7,
-                        rect.width - 52,
+                        rect.left + unit(46),
+                        rect.top + unit(7),
+                        rect.width - unit(52),
                     )
-                    y += 50
+                    y += row_height + row_gap
 
             slot_rows = []
-            slot_y = panel.bottom - 116
+            slot_y = panel.bottom - unit(116)
             self._draw_text(
                 "Combat Shortcuts",
                 self.normal_font,
                 self.colors.GOLD,
-                panel.left + 18,
-                slot_y - 25,
-                panel.width - 36,
+                panel.left + panel_padding,
+                slot_y - unit(25),
+                panel.width - (panel_padding * 2),
             )
-            slot_width = max(72, (panel.width - 48) // 6)
+            slot_width = max(unit(72), (panel.width - unit(48)) // 6)
             for slot in shortcut_presentations(player_char):
                 rect = pygame.Rect(
-                    panel.left + 18 + slot.index * slot_width,
+                    panel.left + panel_padding + slot.index * slot_width,
                     slot_y,
-                    slot_width - 5,
-                    88,
+                    slot_width - unit(5),
+                    unit(88),
                 )
                 slot_rows.append(rect)
                 if slot.index == selected_slot:
@@ -491,16 +504,19 @@ class CharacterEquipmentMixin:
                     str(slot.index + 1),
                     self.small_font,
                     self.colors.GOLD,
-                    rect.left + 6,
-                    rect.top + 5,
-                    18,
+                    rect.left + unit(6),
+                    rect.top + unit(5),
+                    unit(18),
                 )
                 if slot.action is not None:
+                    icon_size = unit(36)
                     icon = pygame.transform.smoothscale(
                         icon_manager.get_icon(slot.action.icon_key),
-                        (36, 36),
+                        (icon_size, icon_size),
                     )
-                    self.screen.blit(icon, icon.get_rect(centerx=rect.centerx, top=rect.top + 8))
+                    self.screen.blit(
+                        icon, icon.get_rect(centerx=rect.centerx, top=rect.top + unit(8))
+                    )
                     label = slot.action.display_name.replace("Spell: ", "").replace("Skill: ", "")
                 else:
                     label = "Empty"
@@ -508,9 +524,9 @@ class CharacterEquipmentMixin:
                     label,
                     self.small_font,
                     self.colors.WHITE if slot.action is not None else self.colors.GRAY,
-                    rect.left + 5,
-                    rect.top + 51,
-                    rect.width - 10,
+                    rect.left + unit(5),
+                    rect.top + unit(51),
+                    rect.width - unit(10),
                 )
             hovered_description = ""
             try:
@@ -522,21 +538,26 @@ class CharacterEquipmentMixin:
                     hovered_description = str(actions[index].description or "")
                     break
             if hovered_description:
-                tooltip = pygame.Rect(panel.left + 18, slot_y - 70, panel.width - 36, 38)
+                tooltip = pygame.Rect(
+                    panel.left + panel_padding,
+                    slot_y - unit(70),
+                    panel.width - (panel_padding * 2),
+                    unit(38),
+                )
                 pygame.draw.rect(self.screen, (20, 20, 26), tooltip, border_radius=4)
                 pygame.draw.rect(self.screen, self.colors.BORDER_COLOR, tooltip, 1, border_radius=4)
                 self._draw_text(
                     hovered_description,
                     self.small_font,
                     self.colors.LIGHT_GRAY,
-                    tooltip.left + 8,
-                    tooltip.top + 9,
-                    tooltip.width - 16,
+                    tooltip.left + unit(8),
+                    tooltip.top + unit(9),
+                    tooltip.width - unit(16),
                 )
             if dragged_action is not None and dragged_position is not None:
                 drag_icon = pygame.transform.smoothscale(
                     icon_manager.get_icon(actions[dragged_action].icon_key),
-                    (42, 42),
+                    (unit(42), unit(42)),
                 )
                 drag_icon.set_alpha(210)
                 self.screen.blit(drag_icon, drag_icon.get_rect(center=dragged_position))
@@ -551,14 +572,7 @@ class CharacterEquipmentMixin:
                 input_armed = update_input_armed_from_event(event, True, input_armed)
                 if event.type == pygame.KEYDOWN and not input_armed:
                     continue
-                if (
-                    is_left_click(event)
-                    and input_armed
-                    and (
-                        popup_close_clicked(event, panel)
-                        or not panel.collidepoint(mouse_position(event) or (-1, -1))
-                    )
-                ):
+                if is_left_click(event) and input_armed and popup_close_clicked(event, panel):
                     return
                 if event.type == pygame.KEYDOWN:
                     if event.key in (pygame.K_ESCAPE, pygame.K_BACKSPACE):

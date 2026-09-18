@@ -33,19 +33,22 @@ class ProgressionTreeMixin:
             return []
         explicit_column_count = math.ceil(max(status.node.position[0] for status in statuses) + 1)
         column_count = max(1, len(branches), explicit_column_count)
-        lane_width = (rect.width - 24) // column_count
-        self._tree_column_origin = rect.left + 12 + lane_width // 2
+        metrics = getattr(getattr(self, "presenter", None), "layout_metrics", None)
+        unit = metrics.unit if metrics is not None else int
+        margin = unit(12)
+        lane_width = (rect.width - (margin * 2)) // column_count
+        self._tree_column_origin = rect.left + margin + lane_width // 2
         self._tree_lane_width = lane_width
-        graph_top = rect.top + 42
+        graph_top = rect.top + unit(42)
         graph_bottom = rect.bottom - self.TREE_WARNING_HEIGHT
-        cell_height = 50
+        cell_height = unit(50)
         max_row = max(status.node.position[1] for status in statuses)
         available_height = graph_bottom - graph_top
-        row_step = 58
+        row_step = unit(58)
         if max_row:
             row_step = min(
                 row_step,
-                max(52, (available_height - cell_height) // max_row),
+                max(unit(52), (available_height - cell_height) // max_row),
             )
         self._tree_row_step = row_step
         visible_rows = max(
@@ -62,18 +65,18 @@ class ProgressionTreeMixin:
             min(self.tree_scroll_row, max(0, max_row - visible_rows + 1)),
         )
         self._tree_viewport = pygame.Rect(
-            rect.left + 4,
+            rect.left + unit(4),
             graph_top,
-            rect.width - 8,
+            rect.width - unit(8),
             graph_bottom - graph_top,
         )
         result: list[pygame.Rect] = []
         icon_rects: list[pygame.Rect] = []
         for status in statuses:
             column, row = status.node.position
-            center_x = int(rect.left + 12 + column * lane_width + lane_width // 2)
+            center_x = int(rect.left + margin + column * lane_width + lane_width // 2)
             y = graph_top + (row - self.tree_scroll_row) * row_step
-            cell_width = max(64, min(144, lane_width - 8))
+            cell_width = max(unit(64), min(unit(144), lane_width - unit(8)))
             cell = pygame.Rect(
                 center_x - cell_width // 2,
                 y,
@@ -81,7 +84,8 @@ class ProgressionTreeMixin:
                 cell_height,
             )
             result.append(cell)
-            icon_rects.append(pygame.Rect(center_x - 16, y, 32, 32))
+            icon_size = unit(32)
+            icon_rects.append(pygame.Rect(center_x - icon_size // 2, y, icon_size, icon_size))
         self.node_icon_rects = icon_rects
         return result
 
@@ -487,7 +491,7 @@ class ProgressionTreeMixin:
                 icon.fill((145, 145, 145, 190), special_flags=pygame.BLEND_RGBA_MULT)
             elif status.state == NodeState.CLOSED:
                 icon.fill((150, 70, 70, 175), special_flags=pygame.BLEND_RGBA_MULT)
-            self.screen.blit(icon, icon_rect)
+            self.screen.blit(pygame.transform.smoothscale(icon, icon_rect.size), icon_rect)
             state_color = self._node_display_color(
                 status,
                 is_pending,

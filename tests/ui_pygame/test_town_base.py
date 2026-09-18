@@ -4,11 +4,11 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
 from types import SimpleNamespace
 
 import pygame
 
+from src.ui_pygame.display_scaling import DisplayConfiguration, LayoutMetrics
 from src.ui_pygame.gui import town_base
 
 os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
@@ -59,24 +59,58 @@ def _make_presenter(*, debug_mode=False, screen=None):
     )
 
 
-def test_load_background_scales_image_to_cover_screen(monkeypatch):
+def test_load_background_does_not_upscale_low_resolution_art(monkeypatch):
     presenter = _make_presenter()
     source = pygame.Surface((200, 100))
-    scaled_sizes = []
-
     monkeypatch.setattr("src.ui_pygame.gui.town_base.os.path.exists", lambda _path: True)
     monkeypatch.setattr("src.ui_pygame.gui.town_base.pygame.image.load", lambda _path: source)
 
-    def fake_scale(image, size):
+    base = town_base.TownScreenBase(presenter)
+
+    assert base.background is source
+    assert base._background_is_native_fallback is True
+
+
+def test_load_background_caches_downscaled_larger_art(monkeypatch):
+    presenter = _make_presenter()
+    source = pygame.Surface((1280, 960))
+    scaled_sizes = []
+    monkeypatch.setattr("src.ui_pygame.gui.town_base.os.path.exists", lambda _path: True)
+    monkeypatch.setattr("src.ui_pygame.gui.town_base.pygame.image.load", lambda _path: source)
+
+    def fake_smoothscale(image, size):
         scaled_sizes.append((image.get_size(), size))
         return pygame.Surface(size)
 
-    monkeypatch.setattr("src.ui_pygame.gui.town_base.pygame.transform.scale", fake_scale)
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.town_base.pygame.transform.smoothscale", fake_smoothscale
+    )
+    base = town_base.TownScreenBase(presenter)
+
+    assert scaled_sizes == [((1280, 960), (640, 480))]
+    assert base._background_is_native_fallback is False
+
+
+def test_load_background_prefers_available_high_resolution_variant(monkeypatch):
+    presenter = _make_presenter()
+    presenter.layout_metrics = LayoutMetrics(
+        DisplayConfiguration.for_viewport(fullscreen=True, render_size=(1920, 1080))
+    )
+    loaded_paths = []
+    source = pygame.Surface((1920, 1080))
+
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.town_base.os.path.exists", lambda path: str(path).endswith("town@2x.png")
+    )
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.town_base.pygame.image.load",
+        lambda path: loaded_paths.append(str(path)) or source,
+    )
 
     base = town_base.TownScreenBase(presenter)
 
-    assert scaled_sizes == [((200, 100), (960, 480))]
-    assert base.background.get_size() == (960, 480)
+    assert loaded_paths[-1].endswith("town@2x.png")
+    assert base._background_is_native_fallback is False
 
 
 def test_load_background_handles_missing_and_load_failures(monkeypatch, capsys):

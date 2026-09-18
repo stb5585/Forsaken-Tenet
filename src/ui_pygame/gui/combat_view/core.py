@@ -24,12 +24,11 @@ class CombatViewCoreMixin:
     def __init__(self, screen, presenter):
         self.screen = screen
         self.presenter = presenter
-        self.screen_width = screen.get_width()
-        self.screen_height = screen.get_height()
-
-        # Define combat view area (left 2/3 for combat, right 1/3 for HUD)
-        self.combat_width = int(self.screen_width * 2 / 3)
-        self.combat_height = self.screen_height
+        self.screen_width = 0
+        self.screen_height = 0
+        self.combat_width = 0
+        self.combat_height = 0
+        self.refresh_layout()
 
         # Colors
         self.colors = {
@@ -100,6 +99,30 @@ class CombatViewCoreMixin:
         self.enemy_combat_sprite_manager = get_enemy_combat_sprite_manager()
         self.enemy_token_manager = get_enemy_token_manager()
         self.player_token_manager = get_player_token_manager()
+
+    def refresh_layout(self) -> None:
+        """Refresh native combat bounds after a display-resolution change."""
+        self.screen = getattr(self.presenter, "screen", self.screen)
+        get_size = getattr(self.screen, "get_size", None)
+        if callable(get_size):
+            self.screen_width, self.screen_height = get_size()
+        else:
+            self.screen_width = self.screen.get_width()
+            self.screen_height = self.screen.get_height()
+        metrics = getattr(self.presenter, "layout_metrics", None)
+        view_fraction = metrics.dungeon_view_fraction if metrics is not None else 0.65
+        self.dungeon_view_width = int(self.screen_width * view_fraction)
+        self.combat_width = (
+            self.dungeon_view_width if metrics is not None else int(self.screen_width * 2 / 3)
+        )
+        self.combat_height = self.screen_height
+
+    def native_unit(self, reference_pixels: int, minimum: int = 1) -> int:
+        """Convert a reference combat dimension to the active native size."""
+        metrics = getattr(self.presenter, "layout_metrics", None)
+        if metrics is None:
+            return max(minimum, reference_pixels)
+        return metrics.unit(reference_pixels, minimum=minimum)
 
     def _get_sprite_animator(self, enemy):
         """Get or create animator for this enemy instance."""

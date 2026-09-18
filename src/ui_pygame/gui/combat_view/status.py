@@ -408,10 +408,10 @@ class CombatStatusMixin:
         if not icons:
             return
 
-        font = pygame.font.Font(None, 16)
-        icon_w = 38
-        icon_h = 26
-        padding = 6
+        font = pygame.font.Font(None, self.native_unit(16))
+        icon_w = self.native_unit(38)
+        icon_h = self.native_unit(26)
+        padding = self.native_unit(6)
         per_row = max(1, max_width // (icon_w + padding))
         visible_icons = compact_status_icons(icons, per_row, max_rows)
 
@@ -430,18 +430,35 @@ class CombatStatusMixin:
                 stack_count = status_icon_stack_count(label)
                 if stack_count > 1:
                     badge_text = str(stack_count)
-                    badge_font = pygame.font.Font(None, 15)
+                    badge_font = pygame.font.Font(None, self.native_unit(15))
                     badge_surf = badge_font.render(badge_text, True, (255, 255, 255))
-                    badge_radius = max(7, badge_surf.get_width() // 2 + 4)
-                    badge_center = (rect.right - badge_radius + 2, rect.top + badge_radius - 1)
+                    badge_radius = max(
+                        self.native_unit(7), badge_surf.get_width() // 2 + self.native_unit(4)
+                    )
+                    badge_center = (
+                        rect.right - badge_radius + self.native_unit(2),
+                        rect.top + badge_radius - self.native_unit(1),
+                    )
                     pygame.draw.circle(self.screen, (22, 22, 28), badge_center, badge_radius)
-                    pygame.draw.circle(self.screen, (240, 210, 92), badge_center, badge_radius, 1)
+                    pygame.draw.circle(
+                        self.screen,
+                        (240, 210, 92),
+                        badge_center,
+                        badge_radius,
+                        self.native_unit(1),
+                    )
                     badge_rect = badge_surf.get_rect(center=badge_center)
                     self.screen.blit(badge_surf, badge_rect)
             else:
-                pygame.draw.rect(self.screen, color, rect, border_radius=4)
-                pygame.draw.rect(self.screen, (20, 20, 20), rect, 1, border_radius=4)
-                fitted_label = fit_status_icon_label(font, label, icon_w - 6)
+                pygame.draw.rect(self.screen, color, rect, border_radius=self.native_unit(4))
+                pygame.draw.rect(
+                    self.screen,
+                    (20, 20, 20),
+                    rect,
+                    self.native_unit(1),
+                    border_radius=self.native_unit(4),
+                )
+                fitted_label = fit_status_icon_label(font, label, icon_w - self.native_unit(6))
                 text_surf = font.render(fitted_label, True, (255, 255, 255))
                 text_rect = text_surf.get_rect(center=rect.center)
                 self.screen.blit(text_surf, text_rect)

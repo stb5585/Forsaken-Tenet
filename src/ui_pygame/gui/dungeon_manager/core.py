@@ -92,7 +92,14 @@ class DungeonCoreMixin:
         self._cached_view = None  # pygame.Surface
         self._cached_frame = None  # pygame.Surface
         self._next_anim_tick = 0
-        self._anim_interval_ms = 120  # torch flicker / subtle view effects
+        metrics = getattr(self.presenter, "layout_metrics", None)
+        ui_scale = getattr(getattr(metrics, "display", None), "ui_scale", 1.0)
+        # Ambient torch redraws used to happen eight times per second on the
+        # fixed canvas. At a native 1080p viewport that is several times the
+        # fill/projection work, so keep input-driven frames immediate while
+        # reducing only the nonessential idle animation cadence.
+        self._anim_interval_ms = 250 if ui_scale > 1.0 else 120
+        self._touch_log_last_y: int | None = None
 
         # Load dungeon background for in-dungeon popups and character menu.
         self._load_dungeon_background()
@@ -311,8 +318,10 @@ class DungeonCoreMixin:
             scaled_sprite.set_alpha(alpha)
 
             # Center sprite on the dungeon view area (not the entire screen)
-            # Dungeon view is 65% of width on the left side
-            view_width = int(self.presenter.width * 0.65)
+            # Center in the responsive native-pixel dungeon viewport.
+            metrics = getattr(self.presenter, "layout_metrics", None)
+            view_fraction = metrics.dungeon_view_fraction if metrics is not None else 0.65
+            view_width = int(self.presenter.width * view_fraction)
             sprite_rect = scaled_sprite.get_rect(
                 center=(view_width // 2, self.presenter.height // 2)
             )
@@ -470,27 +479,48 @@ class DungeonCoreMixin:
             return self._dungeon_background
 
         self._dungeon_background_loaded = True
-        bg_path = PYGAME_ASSETS_DIR / "backgrounds" / "dungeon.png"
+        bg_path = self._background_asset_path("dungeon.png")
 
-        if bg_path.exists():
+        if bg_path is not None:
             try:
                 bg_image = pygame.image.load(bg_path).convert()
                 bg_width, bg_height = bg_image.get_size()
-                scale_x = self.presenter.width / bg_width
-                scale_y = self.presenter.height / bg_height
-                scale = max(scale_x, scale_y)
-
-                new_width = int(bg_width * scale)
-                new_height = int(bg_height * scale)
-                self._dungeon_background = pygame.transform.scale(bg_image, (new_width, new_height))
+                if "@" in bg_path.stem and bg_width >= 1024:
+                    scale = max(
+                        self.presenter.width / bg_width,
+                        self.presenter.height / bg_height,
+                    )
+                    new_size = (int(bg_width * scale), int(bg_height * scale))
+                    self._dungeon_background = pygame.transform.smoothscale(bg_image, new_size)
+                elif bg_width >= self.presenter.width and bg_height >= self.presenter.height:
+                    scale = min(self.presenter.width / bg_width, self.presenter.height / bg_height)
+                    new_size = (int(bg_width * scale), int(bg_height * scale))
+                    self._dungeon_background = pygame.transform.smoothscale(bg_image, new_size)
+                else:
+                    # Loading-screen art has no high-resolution variant yet.
+                    # Keep the source native rather than presenting soft
+                    # upscaled art on a larger fullscreen viewport.
+                    self._dungeon_background = bg_image
             except Exception as exc:
                 print(f"Warning: Could not load dungeon background: {exc}")
                 self._dungeon_background = None
         else:
-            print(f"Warning: Dungeon background not found at {bg_path}")
+            print("Warning: Dungeon background not found")
             self._dungeon_background = None
 
         return self._dungeon_background
+
+    def _background_asset_path(self, filename: str):
+        """Select the largest available documented ``@2x``/``@3x`` background variant."""
+        path = PYGAME_ASSETS_DIR / "backgrounds" / filename
+        ui_scale = getattr(getattr(self.presenter, "layout_metrics", None), "display", None)
+        ui_scale = getattr(ui_scale, "ui_scale", 1.0)
+        suffixes = ["@3x", "@2x", ""] if ui_scale > 2 else ["@2x", ""]
+        for suffix in suffixes:
+            candidate = path.with_name(f"{path.stem}{suffix}{path.suffix}")
+            if candidate.exists():
+                return candidate
+        return None
 
     def _show_dungeon_loading_screen(self, message: str, duration: float = 1.25):
         """Display a short fake-loading screen with progress bar."""

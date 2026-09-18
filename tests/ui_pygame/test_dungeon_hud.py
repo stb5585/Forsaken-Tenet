@@ -66,6 +66,9 @@ class RecordingScreen:
     def get_height(self):
         return self._size[1]
 
+    def get_size(self):
+        return self._size
+
 
 def _make_hud(monkeypatch):
     title_font = RecordingFont()

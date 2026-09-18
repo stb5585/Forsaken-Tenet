@@ -92,6 +92,33 @@ def test_cleanup_clears_background_provider_when_presenter_cleanup_fails(monkeyp
     assert quit_calls == [True]
 
 
+def test_display_settings_uses_popup_and_applies_selected_native_mode(monkeypatch):
+    """The display selector remains an in-style modal and applies immediately."""
+    game = pygame_game.PygameGame.__new__(pygame_game.PygameGame)
+    applied = []
+    game.presenter = SimpleNamespace(
+        apply_display_mode=lambda **kwargs: applied.append(kwargs),
+    )
+    game.fullscreen = False
+    selections = iter([1, 4])
+    popup_calls = []
+
+    class FakeChoicePopup:
+        def __init__(self, _presenter, title, options, header_message):
+            popup_calls.append((title, tuple(options), header_message))
+
+        def show(self):
+            return next(selections)
+
+    monkeypatch.setattr(pygame_game, "ChoicePopup", FakeChoicePopup)
+
+    assert game.show_display_settings() is True
+    assert applied == [{"fullscreen": False, "resolution": (1366, 768)}]
+    assert game.fullscreen is False
+    assert popup_calls[0][0] == "Display Settings"
+    assert popup_calls[0][1][-1] == "Back"
+
+
 def test_init_build_character_and_default_character(monkeypatch):
     class FakePresenter:
         def __init__(self):
@@ -530,6 +557,7 @@ def test_main_menu_load_game_show_intro_warp_point_save_and_character_info(monke
     monkeypatch.setattr(pygame_game, "MainMenuScreen", FakeMenu)
     game.new_game = lambda: None
     game.load_game = lambda: None
+    game.show_display_settings = lambda: False
     game.run = lambda: run_calls.append(True)
     run_calls = []
     game.main_menu()
@@ -538,14 +566,6 @@ def test_main_menu_load_game_show_intro_warp_point_save_and_character_info(monke
     assert popup_kwargs[-1]["flush_events"] is True
     assert popup_kwargs[-1]["require_key_release"] is True
     assert any("Settings" in opts for opts in menu_calls)
-    settings_calls = [
-        kwargs
-        for message, kwargs in popup_show_calls
-        if "settings menu coming soon" in message.lower()
-    ]
-    assert settings_calls
-    assert settings_calls[-1]["flush_events"] is True
-    assert settings_calls[-1]["require_key_release"] is True
     assert game.running is False
     assert stop_calls == [{"fade_ms": 250}]
     assert music_calls == [("menu", {})]
@@ -885,6 +905,7 @@ def test_gameplay_statistics_popup_and_town_menu_entry(monkeypatch):
     assert game.town_menu() == "quit"
     assert stats_calls
     assert any("Statistics" in options for options in options_seen)
+    assert any("Settings" in options for options in options_seen)
     assert all("Progression" not in options for options in options_seen)
     assert all("Explore Town" not in options for options in options_seen)
     assert popup_kwargs[-1]["flush_events"] is True

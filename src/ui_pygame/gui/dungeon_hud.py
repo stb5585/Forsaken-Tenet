@@ -37,22 +37,9 @@ class DungeonHUD:
     def __init__(self, presenter):
         self.presenter = presenter
         self.screen = presenter.screen
-        self.width = presenter.width
-        self.height = presenter.height
-
-        # HUD takes up right side (35% of screen)
-        self.hud_width = int(self.width * 0.35)
-        self.hud_x = self.width - self.hud_width
-        self.hud_rect = pygame.Rect(self.hud_x, 0, self.hud_width, self.height)
-
-        # Font sizes
-        self.title_font = pygame.font.Font(None, 32)
-        self.stat_font = pygame.font.Font(None, 28)
-        self.small_font = pygame.font.Font(None, 20)
-        self.small_bold_font = pygame.font.Font(None, 20)
-        set_bold = getattr(self.small_bold_font, "set_bold", None)
-        if callable(set_bold):
-            set_bold(True)
+        self.width = 0
+        self.height = 0
+        self._refresh_layout()
 
         # Colors
         self.bg_color = (25, 25, 30)
@@ -63,6 +50,27 @@ class DungeonHUD:
         self.exp_color = (100, 200, 100)
         self.status_colors = STATUS_ICON_COLORS
         self.last_minimap_rect: pygame.Rect | None = None
+
+    def _refresh_layout(self) -> None:
+        """Reflow the native-pixel dungeon HUD after a viewport-size change."""
+        self.screen = self.presenter.screen
+        width, height = self.screen.get_size()
+        if (width, height) == (self.width, self.height):
+            return
+        self.width, self.height = width, height
+        metrics = getattr(self.presenter, "layout_metrics", None)
+        hud_fraction = metrics.dungeon_hud_fraction if metrics is not None else 0.35
+        self.hud_width = int(self.width * hud_fraction)
+        self.hud_x = self.width - self.hud_width
+        self.hud_rect = pygame.Rect(self.hud_x, 0, self.hud_width, self.height)
+        font_size = metrics.font_size if metrics is not None else int
+        self.title_font = pygame.font.Font(None, font_size(32))
+        self.stat_font = pygame.font.Font(None, font_size(28))
+        self.small_font = pygame.font.Font(None, font_size(20))
+        self.small_bold_font = pygame.font.Font(None, font_size(20))
+        set_bold = getattr(self.small_bold_font, "set_bold", None)
+        if callable(set_bold):
+            set_bold(True)
 
     def render_hud(
         self,
@@ -80,6 +88,7 @@ class DungeonHUD:
             enemy: The enemy being fought (if in combat)
             active_summon: The currently summoned combat ally, when active
         """
+        self._refresh_layout()
         # Background
         pygame.draw.rect(self.screen, self.bg_color, self.hud_rect)
         pygame.draw.line(
@@ -944,6 +953,13 @@ class DungeonHUD:
         x_margin = self.hud_x + 20
         panel_width = self.hud_width - 40
         feature_height = feature_height or self._combat_feature_height()
+        if not combat_resources and not self._is_living_active_summon(active_summon):
+            fallback_lines = self._combat_feature_lines(player_char, enemy, active_summon)
+            if len(fallback_lines) == 1 and fallback_lines[0][0] == "Focus":
+                label, value, color = fallback_lines[0]
+                compact = self.small_font.render(f"{label}: {value}", True, color)
+                self.screen.blit(compact, (x_margin, y_offset))
+                return
         title = self.stat_font.render("Combat Focus", True, (150, 150, 255))
         self.screen.blit(title, (x_margin, y_offset))
         panel_rect = pygame.Rect(x_margin, y_offset + 30, panel_width, feature_height - 30)

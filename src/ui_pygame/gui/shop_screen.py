@@ -11,7 +11,6 @@ from textwrap import wrap
 import pygame
 
 from src.core import items as items_module
-from src.paths import PYGAME_ASSETS_DIR
 from src.ui_pygame.assets.item_render_manager import get_item_render_manager
 
 from .input_guards import (
@@ -61,27 +60,6 @@ class ShopScreen(TownScreenBase):
 
         # Calculate window positions for the multi-panel shop layout.
         self.calculate_window_rects()
-
-    def _load_background(self):
-        """Load and scale the background image (town or dungeon)."""
-        bg_path = PYGAME_ASSETS_DIR / "backgrounds" / self.background_image
-        if bg_path.exists():
-            try:
-                bg_image = pygame.image.load(bg_path)
-                # Scale to fit screen while maintaining aspect ratio
-                bg_width, bg_height = bg_image.get_size()
-                scale_x = self.width / bg_width
-                scale_y = self.height / bg_height
-                scale = max(scale_x, scale_y)  # Use max to cover entire screen
-
-                new_width = int(bg_width * scale)
-                new_height = int(bg_height * scale)
-                self.background = pygame.transform.scale(bg_image, (new_width, new_height))
-            except Exception as e:
-                print(f"Warning: Could not load background {self.background_image}: {e}")
-                self.background = None
-        else:
-            print(f"Warning: Background not found at {bg_path}")
 
     def set_options(self, options_list, reset_cursor=True):
         """Replace options and optionally reset the selection index."""
