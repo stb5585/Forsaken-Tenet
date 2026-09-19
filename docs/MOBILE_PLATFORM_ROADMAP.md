@@ -153,6 +153,10 @@ Current implementation:
 - `--remote-playtest-input-diagnostics` may be combined with the overlay flag
   during local hardware investigation. It prints the relevant event type and
   pointer fields only for supported dungeon press events.
+- `--remote-playtest-performance-diagnostics` may be combined with the overlay
+  flag to report scene, HUD/overlay, and display-present timings plus
+  projection-cache hit/miss activity. It is a local measurement aid, not
+  telemetry.
 - This overlay is confined to dungeon exploration. Menus, popups, combat, and
   targeting do not yet support touch playtesting. Controller mappings and the
   migration of those shared screens remain future Phase 1 slices.
@@ -254,10 +258,13 @@ Exit gate:
   Progression-tree nodes and combat status/timeline badges, use native layout
   metrics. Other character and town menus still need a deliberate touch-target
   migration before they can be called mobile-ready.
-- Native high-resolution exploration throttles idle ambient redraws to four
-  per second. Movement, mouse, touch, and keyboard changes still invalidate
-  and draw immediately. Broader profiling and screen-by-screen modal migration
-  remain later work.
+- Exploration no longer rebuilds the full 3D scene solely for cosmetic idle
+  animation. Movement, mouse, touch, keyboard, damage-flash, and other actual
+  state changes still invalidate and draw immediately. The cached vignette is
+  allocation/fill cleanup only; it does not address the principal native
+  software/PIL perspective-projection cost. Use performance diagnostics on the
+  target Sunshine host to determine whether projection-cache misses align with
+  movement stalls before adding a complete-scene cache or precomputing panels.
 - In-place dungeon combat now follows the dungeon viewport width for enemy
   sprites and battlefield overlays. Its former right-column enemy info card is
   intentionally suppressed because it overlapped the responsive dungeon HUD;

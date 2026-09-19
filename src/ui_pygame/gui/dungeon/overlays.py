@@ -15,6 +15,7 @@ class OverlayRenderer:
         self._damage_flash_duration = 1
         self._damage_flash_alpha = 0
         self._damage_flash_color = (255, 32, 16)
+        self._vignette_cache: dict[tuple[int, int], tuple[pygame.Surface, pygame.Surface]] = {}
 
     @property
     def screen(self) -> pygame.Surface:
@@ -63,6 +64,13 @@ class OverlayRenderer:
         if width <= 0 or height <= 0:
             return
 
+        cached = self._vignette_cache.get((width, height))
+        if cached is not None:
+            vignette, divider = cached
+            self.screen.blit(divider, (width - divider.get_width(), 0))
+            self.screen.blit(vignette, (0, 0))
+            return
+
         vignette = pygame.Surface((width, height), pygame.SRCALPHA)
         color = (8, 8, 12)
         min_dim = min(width, height)
@@ -97,6 +105,7 @@ class OverlayRenderer:
         divider = pygame.Surface((6, height), pygame.SRCALPHA)
         for offset, alpha in ((0, 72), (1, 54), (2, 36), (3, 24), (4, 12)):
             pygame.draw.rect(divider, (6, 6, 10, alpha), pygame.Rect(offset, 0, 1, height))
+        self._vignette_cache[(width, height)] = (vignette, divider)
         self.screen.blit(divider, (width - divider.get_width(), 0))
 
         self.screen.blit(vignette, (0, 0))

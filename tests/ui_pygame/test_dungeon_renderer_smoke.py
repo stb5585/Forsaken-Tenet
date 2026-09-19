@@ -377,6 +377,20 @@ def test_dungeon_renderer_applies_soft_vignette_to_viewport():
     pygame.quit()
 
 
+def test_dungeon_renderer_reuses_vignette_surfaces_for_unchanged_viewport():
+    pygame.init()
+    screen = pygame.display.set_mode((640, 480))
+    presenter = DummyPresenter(width=640, height=480, screen=screen)
+    renderer = DungeonRenderer(presenter)
+
+    renderer.overlays.render_vignette()
+    cached_vignette = renderer.overlays._vignette_cache[(416, 480)]
+    renderer.overlays.render_vignette()
+
+    assert renderer.overlays._vignette_cache[(416, 480)] is cached_vignette
+    pygame.quit()
+
+
 def test_dungeon_renderer_applies_low_health_vignette_only_when_critical():
     pygame.init()
     screen = pygame.display.set_mode((640, 480))
@@ -984,6 +998,20 @@ def test_texture_library_limits_projected_surface_cache():
     }
     assert all(cache_key[0] != (128, 128) for cache_key in textures._projected_cache)
 
+    pygame.quit()
+
+
+def test_texture_library_reports_and_resets_projected_cache_activity():
+    pygame.init()
+    pygame.display.set_mode((1, 1))
+    textures = TextureLibrary()
+    quad = Quad(((0.0, 0.0), (64.0, 0.0), (64.0, 64.0), (0.0, 64.0)))
+
+    textures.get_projected_surface("d1:center_floor", "floor", quad, 0.0, (128, 128))
+    textures.get_projected_surface("d1:center_floor", "floor", quad, 0.0, (128, 128))
+
+    assert textures.consume_projected_cache_activity() == (1, 1)
+    assert textures.consume_projected_cache_activity() == (0, 0)
     pygame.quit()
 
 
