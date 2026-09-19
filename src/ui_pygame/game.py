@@ -123,6 +123,7 @@ class PygameGame:
         debug_mode=False,
         remote_playtest_controls=False,
         remote_playtest_input_diagnostics=False,
+        remote_playtest_performance_diagnostics=False,
         fullscreen=False,
     ):
         pygame.init()
@@ -133,6 +134,7 @@ class PygameGame:
         self.debug_mode = debug_mode
         self.remote_playtest_controls = remote_playtest_controls
         self.remote_playtest_input_diagnostics = remote_playtest_input_diagnostics
+        self.remote_playtest_performance_diagnostics = remote_playtest_performance_diagnostics
         self.fullscreen = fullscreen
         self._random_combat = True
         self.load_files = SaveManager.list_saves()
@@ -337,6 +339,8 @@ class PygameGame:
             manager_kwargs["remote_playtest_controls"] = True
             if getattr(self, "remote_playtest_input_diagnostics", False):
                 manager_kwargs["remote_playtest_input_diagnostics"] = True
+            if getattr(self, "remote_playtest_performance_diagnostics", False):
+                manager_kwargs["remote_playtest_performance_diagnostics"] = True
         self.dungeon_manager = DungeonManager(
             self.presenter, self.player_char, self, **manager_kwargs
         )
@@ -1447,6 +1451,11 @@ def main() -> int:
         help="Print dungeon touch/mouse press events (requires --remote-playtest-controls)",
     )
     parser.add_argument(
+        "--remote-playtest-performance-diagnostics",
+        action="store_true",
+        help="Print periodic dungeon render/cache timings (requires --remote-playtest-controls)",
+    )
+    parser.add_argument(
         "--fullscreen", action="store_true", help="Use the landscape logical fullscreen display"
     )
     args = parser.parse_args()
@@ -1465,6 +1474,10 @@ def main() -> int:
     try:
         if args.remote_playtest_input_diagnostics and not args.remote_playtest_controls:
             parser.error("--remote-playtest-input-diagnostics requires --remote-playtest-controls")
+        if args.remote_playtest_performance_diagnostics and not args.remote_playtest_controls:
+            parser.error(
+                "--remote-playtest-performance-diagnostics requires --remote-playtest-controls"
+            )
         game_kwargs = {"debug_mode": args.debug}
         if args.fullscreen:
             game_kwargs["fullscreen"] = True
@@ -1472,6 +1485,8 @@ def main() -> int:
             game_kwargs["remote_playtest_controls"] = True
             if args.remote_playtest_input_diagnostics:
                 game_kwargs["remote_playtest_input_diagnostics"] = True
+            if args.remote_playtest_performance_diagnostics:
+                game_kwargs["remote_playtest_performance_diagnostics"] = True
         game = PygameGame(**game_kwargs)
         if args.character_menu:
             game.player_char = game.create_default_character(name=args.preview_name)

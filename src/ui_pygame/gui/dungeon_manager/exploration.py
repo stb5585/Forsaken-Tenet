@@ -2,6 +2,7 @@
 
 import sys
 import traceback
+from time import perf_counter
 
 import pygame
 
@@ -448,9 +449,6 @@ class DungeonExplorationMixin:
         clock = pygame.time.Clock()
         self.running = True
 
-        # Initialize animation timer (torch flicker, subtle post-effects, etc.)
-        self._next_anim_tick = pygame.time.get_ticks() + self._anim_interval_ms
-
         # Initialize cry timer for floor 2 quest
         self._last_cry_time = 0
         self._cry_interval = 8000  # Check every 8 seconds
@@ -511,12 +509,7 @@ class DungeonExplorationMixin:
                 self.running = False
                 break
 
-            # Periodic animation refresh (even if the player doesn't move)
             now = pygame.time.get_ticks()
-            if now >= self._next_anim_tick:
-                self._mark_view_dirty()
-                self._next_anim_tick = now + self._anim_interval_ms
-
             # Check for random cries on floor 2 during "Something to Cry About" quest
             if now >= self._last_cry_time + self._cry_interval:
                 self._check_random_cry()
@@ -528,8 +521,13 @@ class DungeonExplorationMixin:
 
             # Only redraw when something changed.
             if self.view_dirty or self.ui_dirty or self._cached_view is None:
+                frame_started = perf_counter()
                 self._render()
+                before_flip = perf_counter()
                 pygame.display.flip()
+                record_ui_and_present = getattr(self.renderer, "record_ui_and_present", None)
+                if callable(record_ui_and_present):
+                    record_ui_and_present(before_flip - frame_started, perf_counter() - before_flip)
 
             # Keep event loop responsive; redraws are conditional.
             clock.tick(60)
@@ -669,7 +667,10 @@ class DungeonExplorationMixin:
             if callable(show_display_settings) and show_display_settings():
                 # The display surface has been recreated.  Rebuild cached
                 # view state and the responsive dungeon collaborators.
-                self.renderer = DungeonRenderer(self.presenter)
+                renderer_kwargs = {}
+                if getattr(self.game, "remote_playtest_performance_diagnostics", False):
+                    renderer_kwargs["performance_diagnostics"] = True
+                self.renderer = DungeonRenderer(self.presenter, **renderer_kwargs)
                 self.hud = DungeonHUD(self.presenter)
                 self._cached_view = None
                 self._cached_frame = None

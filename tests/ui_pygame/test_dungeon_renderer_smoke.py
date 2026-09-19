@@ -1001,6 +1001,20 @@ def test_texture_library_limits_projected_surface_cache():
     pygame.quit()
 
 
+def test_texture_library_reports_and_resets_projected_cache_activity():
+    pygame.init()
+    pygame.display.set_mode((1, 1))
+    textures = TextureLibrary()
+    quad = Quad(((0.0, 0.0), (64.0, 0.0), (64.0, 64.0), (0.0, 64.0)))
+
+    textures.get_projected_surface("d1:center_floor", "floor", quad, 0.0, (128, 128))
+    textures.get_projected_surface("d1:center_floor", "floor", quad, 0.0, (128, 128))
+
+    assert textures.consume_projected_cache_activity() == (1, 1)
+    assert textures.consume_projected_cache_activity() == (0, 0)
+    pygame.quit()
+
+
 def test_texture_library_describes_floor_slot_ids():
     textures = TextureLibrary()
 

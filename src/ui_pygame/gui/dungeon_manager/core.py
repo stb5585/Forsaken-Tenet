@@ -34,6 +34,7 @@ class DungeonCoreMixin:
         *,
         remote_playtest_controls: bool = False,
         remote_playtest_input_diagnostics: bool = False,
+        remote_playtest_performance_diagnostics: bool = False,
     ):
         self.presenter = presenter
         self.player_char = player_char
@@ -44,7 +45,10 @@ class DungeonCoreMixin:
         self._dungeon_background_loaded = False
 
         # Initialize renderer and HUD
-        self.renderer = DungeonRenderer(presenter)
+        renderer_kwargs = {}
+        if remote_playtest_performance_diagnostics:
+            renderer_kwargs["performance_diagnostics"] = True
+        self.renderer = DungeonRenderer(presenter, **renderer_kwargs)
         self.hud = DungeonHUD(presenter)
 
         # Initialize combat manager
@@ -91,14 +95,6 @@ class DungeonCoreMixin:
         self._render_error_logged = False
         self._cached_view = None  # pygame.Surface
         self._cached_frame = None  # pygame.Surface
-        self._next_anim_tick = 0
-        metrics = getattr(self.presenter, "layout_metrics", None)
-        ui_scale = getattr(getattr(metrics, "display", None), "ui_scale", 1.0)
-        # Ambient torch redraws used to happen eight times per second on the
-        # fixed canvas. At a native 1080p viewport that is several times the
-        # fill/projection work, so keep input-driven frames immediate while
-        # reducing only the nonessential idle animation cadence.
-        self._anim_interval_ms = 250 if ui_scale > 1.0 else 120
         self._touch_log_last_y: int | None = None
 
         # Load dungeon background for in-dungeon popups and character menu.

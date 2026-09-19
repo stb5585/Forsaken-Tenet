@@ -205,6 +205,8 @@ class TextureLibrary:
         self._textures: dict[str, pygame.Surface] = {}
         self._projected_cache: OrderedDict[tuple, ProjectedSurface] = OrderedDict()
         self._projected_cache_limit = max(1, int(projected_cache_limit))
+        self._projected_cache_hits = 0
+        self._projected_cache_misses = 0
         self._panel_texture_cache: dict[tuple, pygame.Surface] = {}
         self._special_base_textures: dict[str, pygame.Surface] = {}
         self._special_scaled_cache: dict[tuple[str, int], pygame.Surface] = {}
@@ -270,6 +272,13 @@ class TextureLibrary:
             "remaining": max(0, self._projected_cache_limit - size),
             "full": size >= self._projected_cache_limit,
         }
+
+    def consume_projected_cache_activity(self) -> tuple[int, int]:
+        """Return and reset projected-surface cache hits and misses."""
+        activity = (self._projected_cache_hits, self._projected_cache_misses)
+        self._projected_cache_hits = 0
+        self._projected_cache_misses = 0
+        return activity
 
     def get_diagnostics(self) -> dict[str, int | bool | dict[str, int]]:
         """Return compact texture-library state for renderer/debug checks."""
@@ -1062,8 +1071,11 @@ class TextureLibrary:
         )
         projected = self._projected_cache.get(cache_key)
         if projected is not None:
+            self._projected_cache_hits += 1
             self._projected_cache.move_to_end(cache_key)
             return projected
+
+        self._projected_cache_misses += 1
 
         projected = project_texture_to_quad(
             self.get_panel_texture(panel_id, texture_key),
