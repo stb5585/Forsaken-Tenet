@@ -723,10 +723,14 @@ class DungeonExplorationMixin:
         )
 
         # Layout
-        panel_width = self.presenter.width // 2
-        panel_height = self.presenter.height // 2
-        panel_x = (self.presenter.width - panel_width) // 2
-        panel_y = (self.presenter.height - panel_height) // 2
+        # Presenter reference dimensions do not change for every native
+        # fullscreen mode.  Modal geometry and its dimmer must instead follow
+        # the active Pygame surface or a lower band remains undimmed.
+        screen_width, screen_height = screen.get_size()
+        panel_width = screen_width // 2
+        panel_height = screen_height // 2
+        panel_x = (screen_width - panel_width) // 2
+        panel_y = (screen_height - panel_height) // 2
         panel_rect = pygame.Rect(panel_x, panel_y, panel_width, panel_height)
 
         def option_rects() -> list[pygame.Rect]:
@@ -746,7 +750,7 @@ class DungeonExplorationMixin:
         def draw():
             # Draw background dimmed
             screen.blit(background, (0, 0))
-            overlay = pygame.Surface((self.presenter.width, self.presenter.height), pygame.SRCALPHA)
+            overlay = pygame.Surface((screen_width, screen_height), pygame.SRCALPHA)
             overlay.fill((0, 0, 0, 180))
             screen.blit(overlay, (0, 0))
 

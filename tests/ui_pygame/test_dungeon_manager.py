@@ -1473,6 +1473,28 @@ def test_dungeon_popup_menu_selects_option_with_mouse_click(monkeypatch):
 
     assert manager._popup_menu("Menu", ["A", "B"]) == 1
 
+
+def test_dungeon_popup_menu_dimmer_uses_active_surface_size(monkeypatch):
+    manager, presenter, _player, _game = _make_manager(monkeypatch)
+    presenter.width, presenter.height = (1024, 768)
+    presenter.screen.size = (1366, 768)
+    surface_sizes = []
+    events = iter([[SimpleNamespace(type=pygame.KEYDOWN, key=pygame.K_ESCAPE)]])
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.dungeon_manager.pygame.event.get", lambda: next(events, [])
+    )
+    monkeypatch.setattr("src.ui_pygame.gui.dungeon_manager.pygame.display.flip", lambda: None)
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.dungeon_manager.pygame.draw.rect", lambda *_args, **_kwargs: None
+    )
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.dungeon_manager.pygame.Surface",
+        lambda size, *_args: surface_sizes.append(size) or DummySurface(size),
+    )
+
+    assert manager._popup_menu("Menu", ["A"]) is None
+    assert surface_sizes == [(1366, 768)]
+
     move_calls = []
     manager.move_forward = lambda: move_calls.append("forward")
     manager.turn_left = lambda: move_calls.append("left")

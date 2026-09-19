@@ -377,6 +377,20 @@ def test_dungeon_renderer_applies_soft_vignette_to_viewport():
     pygame.quit()
 
 
+def test_dungeon_renderer_reuses_vignette_surfaces_for_unchanged_viewport():
+    pygame.init()
+    screen = pygame.display.set_mode((640, 480))
+    presenter = DummyPresenter(width=640, height=480, screen=screen)
+    renderer = DungeonRenderer(presenter)
+
+    renderer.overlays.render_vignette()
+    cached_vignette = renderer.overlays._vignette_cache[(416, 480)]
+    renderer.overlays.render_vignette()
+
+    assert renderer.overlays._vignette_cache[(416, 480)] is cached_vignette
+    pygame.quit()
+
+
 def test_dungeon_renderer_applies_low_health_vignette_only_when_critical():
     pygame.init()
     screen = pygame.display.set_mode((640, 480))
