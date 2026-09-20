@@ -14,13 +14,13 @@ roadmap pass:
 - The supported visual frontend lives under `src/ui_pygame/`.
 - Terminal development remains available through tests, simulators, reports,
   and diagnostic tools rather than a second playable frontend.
-- Ability data is substantially migrated to YAML under
-  `src/core/data/abilities/`.
+- All catalog abilities use typed YAML-backed identities under
+  `src/core/data/abilities/`; the completeness validator reports no legacy
+  abilities.
 - All 49 authored class ability trees and the critical class-kit closure pass
   are complete.
-- Foundational gameplay refactors are the active planning lane. Broad manual
-  playtesting is deferred until combat timing, targeting, multi-enemy scope,
-  and the combat action interface stabilize.
+- The foundational gameplay refactor is complete. Post-foundation reliability
+  hardening and broad manual playtesting are the active planning lane.
 - Completed class-kit scope and deferred deep-kit gates are tracked in
   [docs/CLASS_KIT_DESIGN_GATES.md](docs/CLASS_KIT_DESIGN_GATES.md).
 - Combat architecture and balance decisions are specified in

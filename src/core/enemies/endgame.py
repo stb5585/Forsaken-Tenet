@@ -2119,13 +2119,12 @@ class Devil(Fiend):
         if mod == "heal":
             class_mod += self.spell_mod
             heal_mod = self.stats.wisdom * self.level.pro_level
-            magic_mod += self.stat_effects["Magic"].extra * self.stat_effects["Magic"].active
+            heal_mod += self.stat_effects["Magic"].extra * self.stat_effects["Magic"].active
             return max(0, heal_mod + class_mod + self.combat.magic)
         if mod == "resist":
             if ultimate and typ == "Physical":  # ultimate weapons bypass Physical resistance
                 return -0.25
-            if typ in self.resistance:
-                res_mod = self.resistance[typ]
+            res_mod = self.resistance.get(typ, 0)
             if self.flying:
                 if typ == "Wind":
                     res_mod = -0.25

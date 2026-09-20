@@ -16,6 +16,7 @@ from .actions import (
     ActionReference,
     ActionReferenceKind,
 )
+from .combatants import Combatant, CombatStats
 from .presentation import (
     CombatResourcePresentation,
     EnvironmentalEffectPresentation,
@@ -37,6 +38,8 @@ __all__ = [
     "ActionReference",
     "ActionReferenceKind",
     "CombatResourcePresentation",
+    "Combatant",
+    "CombatStats",
     "EnvironmentalEffectPresentation",
     "PrimaryIntent",
     "TargetingPolicy",

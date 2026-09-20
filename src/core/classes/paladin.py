@@ -465,14 +465,11 @@ def protection_block_bonus(character: Any) -> float:
         bonus += 0.03 * int(state["aura"].get("stacks", 1) or 1) * aura_multiplier(character)
     if state["interpose"].get("turns") and not state["interpose"].get("spent"):
         bonus += 0.35
-    try:
-        from . import promotion_kits
+    from . import promotion_kits
 
-        guard = promotion_kits.combat_state(character).get("oath_protection_guard")
-        if isinstance(guard, dict) and int(guard.get("turns", 0) or 0) > 0:
-            bonus += float(guard.get("block_bonus", 0.0) or 0.0)
-    except Exception:
-        pass
+    guard = promotion_kits.combat_state(character).get("oath_protection_guard")
+    if isinstance(guard, dict) and int(guard.get("turns", 0) or 0) > 0:
+        bonus += float(guard.get("block_bonus", 0.0) or 0.0)
     return bonus
 
 
@@ -483,14 +480,11 @@ def protection_mitigation_bonus(character: Any) -> float:
         bonus += 0.05 * int(state["aura"].get("stacks", 1) or 1) * aura_multiplier(character)
     if state["interpose"].get("turns") and not state["interpose"].get("spent"):
         bonus += 0.35
-    try:
-        from . import promotion_kits
+    from . import promotion_kits
 
-        guard = promotion_kits.combat_state(character).get("oath_protection_guard")
-        if isinstance(guard, dict) and int(guard.get("turns", 0) or 0) > 0:
-            bonus += float(guard.get("mitigation_bonus", 0.0) or 0.0)
-    except Exception:
-        pass
+    guard = promotion_kits.combat_state(character).get("oath_protection_guard")
+    if isinstance(guard, dict) and int(guard.get("turns", 0) or 0) > 0:
+        bonus += float(guard.get("mitigation_bonus", 0.0) or 0.0)
     return bonus
 
 

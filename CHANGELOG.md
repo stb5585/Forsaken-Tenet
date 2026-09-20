@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+### Repository Reliability Hardening
+
+- Fixed the Devil's Regen modifier crash and uninitialized resistance fallback,
+  with direct final-boss regression coverage.
+- Made foundational combat annotations runtime-resolvable, rejected non-JSON
+  save state instead of stringifying it, and isolated raw quest-cache data from
+  runtime reward compilation.
+- Removed silent fallbacks from Soul Vessel, player gold bonuses, and shield
+  block mechanics; replaced quadratic loot flattening; and throttled the
+  empty-chest acknowledgement loop.
+- Stabilized the Warlock familiar specialization regression by controlling its
+  spell-contact roll instead of relying on random contact.
+- Reconciled active roadmap, mobile, GUI, ability, save-history, and tool
+  documentation with the current implementation.
+
 ### Foundational Gameplay Baseline
 
 - Completed the foundational gameplay refactor: immutable ability slugs and
@@ -103,9 +118,9 @@
 
 ### Promotion Stabilization
 
-- Recorded pre-release saves as disposable development artifacts, removed
-  format versions and legacy migration machinery, and retained atomic writes
-  for current saves.
+- Recorded pre-release saves as disposable development artifacts, established
+  the version-1 current-save boundary, removed historical migration machinery,
+  and retained atomic writes for current saves.
 - Added portable checkout/frozen resource paths and platform user-data paths,
   moved runtime maps into package data, and introduced a PyInstaller onedir
   build with a headless frozen-resource smoke test.

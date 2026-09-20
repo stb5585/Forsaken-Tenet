@@ -5,6 +5,7 @@ Data loader utility for loading JSON game data files.
 from __future__ import annotations
 
 import json
+from copy import deepcopy
 from typing import TYPE_CHECKING
 
 from src.paths import CORE_DATA_DIR
@@ -136,7 +137,10 @@ def get_quests() -> dict[str, Any]:
         "Spell Upgrade": "Spell Upgrade",
     }
 
-    quests_data = load_json_data("quests.json")
+    # Reward resolution replaces JSON strings with runtime classes. Keep the
+    # cached raw document immutable so other callers cannot observe compiled
+    # quest state or mutate future reads through the shared cache.
+    quests_data = deepcopy(load_json_data("quests.json"))
 
     # Resolve reward strings to item classes
     def resolve_rewards(reward_list):
@@ -152,10 +156,10 @@ def get_quests() -> dict[str, Any]:
 
     # Recursively traverse quest structure and resolve rewards
     def process_quests(quests_dict):
-        for npc, quest_types in quests_dict.items():
-            for quest_type, quest_levels in quest_types.items():
-                for level, quest_dict_inner in quest_levels.items():
-                    for quest_name, quest_data in quest_dict_inner.items():
+        for quest_types in quests_dict.values():
+            for quest_levels in quest_types.values():
+                for quest_dict_inner in quest_levels.values():
+                    for quest_data in quest_dict_inner.values():
                         if "Reward" in quest_data:
                             quest_data["Reward"] = resolve_rewards(quest_data["Reward"])
         return quests_dict

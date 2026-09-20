@@ -260,6 +260,10 @@ def test_each_warlock_familiar_specialization_modifier_reaches_its_shared_hook(
         "src.core.data.data_driven_abilities.base.random.randint",
         lambda low, _high: low,
     )
+    monkeypatch.setattr(
+        "src.core.data.data_driven_abilities.base.random.random",
+        lambda: 0.0,
+    )
     result = spell.cast(warlock, corrupted, fam=True)
     assert result.damage > int(warlock.check_mod("magic") * spell.dmg_mod)
 

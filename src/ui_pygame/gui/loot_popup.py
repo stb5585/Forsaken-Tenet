@@ -136,6 +136,7 @@ class LootPopup:
             flush_events=flush_events,
             require_key_release=require_key_release,
         )
+        clock = pygame.time.Clock()
 
         while waiting:
             input_armed = release_guard_allows_input(require_key_release, input_armed)
@@ -151,6 +152,7 @@ class LootPopup:
             background_draw_func()
             self._render_empty_chest(chest_type)
             pygame.display.flip()
+            clock.tick(60)
 
     def _render_loot_popup(self, items, chest_type):
         """Render the loot popup with items."""

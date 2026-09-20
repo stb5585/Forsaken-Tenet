@@ -67,3 +67,25 @@ def test_acolyte_no_crash_when_no_mana():
 
     msg = devil.familiar_turn(player)
     assert msg == ""
+
+
+def test_devil_can_cast_regen_with_magic_bonus_active():
+    """The final boss's heal modifier must not reference an uninitialized value."""
+    from src.core.enemies import Devil
+
+    devil = Devil()
+    devil.health.current = int(devil.health.max * 0.5)
+    devil.stat_effects["Magic"].active = True
+    devil.stat_effects["Magic"].extra = 12
+
+    result = devil.spellbook["Spells"]["Regen"].cast(devil)
+
+    assert result is not None
+    assert devil.magic_effects["Regen"].active is True
+
+
+def test_devil_unknown_resistance_defaults_to_neutral():
+    """Unexpected damage labels must remain neutral instead of crashing combat."""
+    from src.core.enemies import Devil
+
+    assert Devil().check_mod("resist", typ="Non-elemental") == 0

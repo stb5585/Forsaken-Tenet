@@ -2,6 +2,7 @@
 
 import os
 import random
+from itertools import chain
 
 from .. import items
 from ..classes import ability_mechanics, archdruid, bard, footpad, paladin
@@ -14,7 +15,7 @@ from .config import BASIC_BESTIARY_ACTIONS, RESISTANCE_DISPLAY_ORDER
 class PlayerInventoryMixin:
     def loot(self, enemy, tile):
         loot_message = ""
-        items = sum(enemy.inventory.values(), [])
+        items = list(chain.from_iterable(enemy.inventory.values()))
         resolved_items = []
         rare = [False] * len(items)
         drop = [False] * len(items)
@@ -22,21 +23,13 @@ class PlayerInventoryMixin:
         if enemy.gold > 0:
             gold = int(enemy.gold)
             # Gnome Charity (virtue): charisma has a stronger effect on gold outcomes.
-            try:
-                if getattr(getattr(self, "race", None), "name", None) == "Gnome":
-                    from ..constants import GNOME_GOLD_CHARISMA_MULTIPLIER
+            if getattr(getattr(self, "race", None), "name", None) == "Gnome":
+                from ..constants import GNOME_GOLD_CHARISMA_MULTIPLIER
 
-                    eff_cha = int(
-                        getattr(self.stats, "charisma", 0) * GNOME_GOLD_CHARISMA_MULTIPLIER
-                    )
-                    bonus_pct = min(0.25, max(0.0, eff_cha * 0.01))  # up to +25%
-                    gold = max(0, int(gold * (1.0 + bonus_pct)))
-            except Exception:
-                pass
-            try:
-                gold = max(0, int(gold * paladin.redemption_reward_multiplier(self)))
-            except Exception:
-                pass
+                eff_cha = int(getattr(self.stats, "charisma", 0) * GNOME_GOLD_CHARISMA_MULTIPLIER)
+                bonus_pct = min(0.25, max(0.0, eff_cha * 0.01))  # up to +25%
+                gold = max(0, int(gold * (1.0 + bonus_pct)))
+            gold = max(0, int(gold * paladin.redemption_reward_multiplier(self)))
             if getattr(enemy, "_pious_bounty_gold", False):
                 gold *= 10
             loot_message += f"{enemy.name} dropped {gold} gold.\n"
@@ -60,7 +53,7 @@ class PlayerInventoryMixin:
                 quest_found = False
                 # Check both Main and Side quests
                 for quest_type in ["Main", "Side"]:
-                    for quest_name, info in self.quest_dict.get(quest_type, {}).items():
+                    for info in self.quest_dict.get(quest_type, {}).values():
                         try:
                             quest_what = info["What"]
                             # Handle different types of 'What': class, instance, or string

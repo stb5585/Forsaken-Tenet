@@ -2,21 +2,17 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
+from typing import Any
 
+from ..contracts.combatants import Combatant
 from .targeting import TargetScope
-
-if TYPE_CHECKING:
-    from typing import Any
-
-    from src.core.character import Character
 
 
 @dataclass
 class CombatResult:
     action: str
-    actor: Character | None = None
-    target: Character | None = None
+    actor: Combatant | None = None
+    target: Combatant | None = None
     hit: bool | None = None
     crit: float | None = None
     dodge: bool | None = None

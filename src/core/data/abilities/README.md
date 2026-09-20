@@ -55,8 +55,8 @@ compatibility inputs; new code must not persist them.
 ## Progression Ownership
 
 Combat YAML defines what an ability does; it does not define when a player
-learns it. `src/core/progression_manifest.py` and
-`src/core/progression.py` own class-authored specialization paths,
+learns it. `src/core/progression_manifests/` and `src/core/progression/` own
+class-authored specialization paths,
 prerequisites, talents, rating nodes, promotion gates, point costs, explicit
 positions, and semantic icon keys. Trees can expose multiple independent
 first-tier nodes. Ordinary abilities, talents, combat ratings, and primary
@@ -382,14 +382,14 @@ abilities/<domain>.py (class Foo)
 
 | File | Role |
 |---|---|
-| `ability_loader.py` | YAML parsing, `EffectFactory`, `AbilityFactory`, type routing |
-| `data_driven_abilities.py` | 12 `DataDriven*` classes that implement ability behavior |
-| `effects/common.py` | Reusable conditional, status, resource, and scaling effects |
-| `effects/enemy.py` | Enemy- and spell-specific effects |
-| `effects/skills.py` | Equipment and player skill effects |
-| `effects/special.py` | Advanced and bespoke ability effects |
-| `effects/summon.py` | Summon companion ultimate effects |
-| `effects/composite.py` | Backward-compatible re-exports for legacy imports |
+| `src/core/data/ability_loader/` | YAML parsing, effect construction, ability factories, and type routing |
+| `src/core/data/data_driven_abilities/` | Focused `DataDriven*` behavior classes by action family |
+| `src/core/effects/common.py` | Reusable conditional, status, resource, and scaling effects |
+| `src/core/effects/enemy.py` | Enemy- and spell-specific effects |
+| `src/core/effects/skills.py` | Equipment and player skill effects |
+| `src/core/effects/special.py` | Advanced and bespoke ability effects |
+| `src/core/effects/summon.py` | Summon companion ultimate effects |
+| `src/core/effects/composite.py` | Backward-compatible re-exports for legacy imports |
 | `effects/__init__.py` | Public effect exports |
 | `abilities/` | Ability base types, focused wrapper modules, and progression catalogs |
 | `abilities/__init__.py` | Public ability exports only |
