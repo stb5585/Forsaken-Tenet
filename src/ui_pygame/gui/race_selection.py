@@ -9,6 +9,7 @@ from .input_guards import (
     release_guard_allows_input,
     update_input_armed_from_event,
 )
+from .menu_layout import menu_unit, touch_target_height
 from .mouse_helpers import hit_index, is_left_click, mouse_position
 
 
@@ -50,13 +51,13 @@ class RaceSelectionScreen:
     def option_rects(self, options: list[str] | None = None) -> list[pygame.Rect]:
         """Return clickable rectangles for visible race rows."""
         options = options if options is not None else self.races
-        line_height = 40
+        line_height = touch_target_height(self.presenter)
         return [
             pygame.Rect(
-                self.list_rect.left + 5,
-                self.list_rect.top + 20 + i * line_height - 2,
-                self.list_rect.width - 10,
-                line_height - 4,
+                self.list_rect.left + menu_unit(self.presenter, 5),
+                self.list_rect.top + menu_unit(self.presenter, 20) + i * line_height,
+                self.list_rect.width - menu_unit(self.presenter, 10),
+                line_height,
             )
             for i, _option in enumerate(options[:10])
         ]
@@ -321,14 +322,12 @@ class RaceSelectionScreen:
             return
 
         # Draw race list
-        x = self.list_rect.left + 20
-        y = self.list_rect.top + 20
-        line_height = 40
+        x = self.list_rect.left + menu_unit(self.presenter, 20)
 
         max_visible = 10
         option_rects = self.option_rects()
         for i, race_name in enumerate(self.races[:max_visible]):
-            y = self.list_rect.top + 20 + i * line_height
+            y = option_rects[i].centery
 
             # Highlight selected
             if i == self.current_selection:
@@ -340,7 +339,7 @@ class RaceSelectionScreen:
                 color = self.WHITE
 
             text = self.normal_font.render(race_name, True, color)
-            self.screen.blit(text, (x, y))
+            self.screen.blit(text, text.get_rect(left=x, centery=y))
 
     def draw_all(self):
         """Draw all UI elements."""

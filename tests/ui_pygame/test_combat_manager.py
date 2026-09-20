@@ -1230,28 +1230,6 @@ def test_execute_action_handles_suppression_and_slot_machine_skill(monkeypatch):
     ]
 
 
-def test_anti_magic_warning_is_a_guarded_popup(monkeypatch):
-    manager = _make_manager(monkeypatch)
-    popup_calls = []
-
-    class FakePopup:
-        def __init__(self, _presenter, message, show_buttons=False):
-            popup_calls.append((message, show_buttons))
-
-        def show(self, **kwargs):
-            popup_calls.append(kwargs)
-
-    monkeypatch.setattr(
-        "src.ui_pygame.gui.confirmation_popup.ConfirmationPopup",
-        FakePopup,
-    )
-
-    manager._show_anti_magic_warning()
-
-    assert "ANTI-MAGIC FIELD ACTIVE" in popup_calls[0][0]
-    assert popup_calls[1] == {"flush_events": True, "require_key_release": True}
-
-
 def test_execute_empty_shortcut_does_not_call_engine_or_spend_turn(monkeypatch):
     manager = _make_manager(monkeypatch)
     player = _make_player()

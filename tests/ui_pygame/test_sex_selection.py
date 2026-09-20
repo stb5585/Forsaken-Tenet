@@ -84,6 +84,14 @@ def test_sex_selection_draws_options(monkeypatch):
     assert draw_calls
 
 
+def test_sex_selection_options_expand_to_native_touch_targets():
+    presenter = _make_presenter()
+    presenter.width, presenter.height = (1920, 1080)
+    screen = sex_selection.SexSelectionScreen(presenter)
+
+    assert all(rect.height >= 72 for rect in screen.option_rects())
+
+
 def test_sex_selection_navigation_and_cancel(monkeypatch):
     presenter = _make_presenter()
     screen = sex_selection.SexSelectionScreen(presenter)

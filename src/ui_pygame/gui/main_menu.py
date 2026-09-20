@@ -11,6 +11,7 @@ from .input_guards import (
     release_guard_allows_input,
     update_input_armed_from_event,
 )
+from .menu_layout import menu_unit, menu_viewport_size, touch_target_height
 from .mouse_helpers import hit_index, is_left_click, mouse_position
 
 
@@ -47,20 +48,29 @@ class MainMenuScreen:
     def option_rects(self, options: list[str] | None = None) -> list[pygame.Rect]:
         """Return clickable rectangles for the current menu options."""
         options = options if options is not None else self.options
-        menu_width = min(360, self.width - 80)
-        line_height = 40
-        menu_height = max(1, len(options)) * line_height + 28
-        self.width // 2 - menu_width // 2
-        menu_y = self.height - menu_height - 54
+        width, height = menu_viewport_size(self.presenter)
+        target_height = touch_target_height(self.presenter)
+        row_gap = menu_unit(self.presenter, 8, minimum=6)
+        menu_width = min(menu_unit(self.presenter, 480), width - menu_unit(self.presenter, 48))
+        line_height = target_height + row_gap
+        menu_height = max(1, len(options)) * line_height + menu_unit(self.presenter, 28)
+        menu_y = height - menu_height - menu_unit(self.presenter, 36)
         rects = []
         for i, option in enumerate(options):
             text_width, text_height = self.normal_font.size(option)
-            option_width = min(menu_width - 24, max(128, text_width + 42))
-            option_height = max(30, text_height + 12)
+            option_width = min(
+                menu_width - menu_unit(self.presenter, 24),
+                max(menu_unit(self.presenter, 180), text_width + menu_unit(self.presenter, 42)),
+            )
+            option_height = max(target_height, text_height + menu_unit(self.presenter, 16))
             rects.append(
                 pygame.Rect(
-                    self.width // 2 - option_width // 2,
-                    menu_y + 14 + i * line_height + text_height // 2 - option_height // 2,
+                    width // 2 - option_width // 2,
+                    menu_y
+                    + menu_unit(self.presenter, 14)
+                    + i * line_height
+                    + text_height // 2
+                    - option_height // 2,
                     option_width,
                     option_height,
                 )
@@ -110,11 +120,14 @@ class MainMenuScreen:
 
     def draw_menu(self):
         """Draw the menu options."""
-        menu_width = min(360, self.width - 80)
-        line_height = 40
-        menu_height = max(1, len(self.options)) * line_height + 28
-        menu_x = self.width // 2 - menu_width // 2
-        menu_y = self.height - menu_height - 54
+        width, height = menu_viewport_size(self.presenter)
+        target_height = touch_target_height(self.presenter)
+        row_gap = menu_unit(self.presenter, 8, minimum=6)
+        menu_width = min(menu_unit(self.presenter, 480), width - menu_unit(self.presenter, 48))
+        line_height = target_height + row_gap
+        menu_height = max(1, len(self.options)) * line_height + menu_unit(self.presenter, 28)
+        menu_x = width // 2 - menu_width // 2
+        menu_y = height - menu_height - menu_unit(self.presenter, 36)
 
         panel = pygame.Surface((menu_width, menu_height), pygame.SRCALPHA)
         panel.fill((0, 0, 0, 150))
@@ -122,7 +135,7 @@ class MainMenuScreen:
 
         option_rects = self.option_rects()
         for i, option in enumerate(self.options):
-            y = menu_y + 14 + i * line_height
+            y = menu_y + menu_unit(self.presenter, 14) + i * line_height
             text = self.normal_font.render(
                 option, True, self.BLACK if i == self.current_option else self.WHITE
             )
@@ -131,10 +144,10 @@ class MainMenuScreen:
             if i == self.current_option:
                 pygame.draw.rect(self.screen, self.WHITE, option_rects[i])
                 pygame.draw.rect(self.screen, self.GOLD, option_rects[i], 1)
-                text_rect = text.get_rect(centerx=self.width // 2, top=y)
+                text_rect = text.get_rect(centerx=width // 2, top=y)
                 self.screen.blit(text, text_rect)
             else:
-                text_rect = text.get_rect(centerx=self.width // 2, top=y)
+                text_rect = text.get_rect(centerx=width // 2, top=y)
                 self.screen.blit(text, text_rect)
 
     def draw(self):

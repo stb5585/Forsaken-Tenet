@@ -96,6 +96,14 @@ def test_shop_selection_draw_menu_panel(monkeypatch):
     assert draw_rect_calls
 
 
+def test_shop_selection_options_expand_to_native_touch_targets():
+    presenter = _make_presenter()
+    presenter.width, presenter.height = (1920, 1080)
+    screen = shop_selection.ShopSelectionScreen(presenter)
+
+    assert all(rect.height >= 72 for rect in screen.option_rects(["Blacksmith", "Jeweler"]))
+
+
 def test_shop_selection_navigate_selects_wraps_and_cancels(monkeypatch):
     presenter = _make_presenter()
     screen = shop_selection.ShopSelectionScreen(presenter)

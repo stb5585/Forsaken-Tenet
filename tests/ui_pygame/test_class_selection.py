@@ -154,6 +154,14 @@ def test_class_selection_draw_and_set_classes(monkeypatch):
     assert "No classes available" in presenter.normal_font.render_calls
 
 
+def test_class_selection_options_expand_to_native_touch_targets():
+    presenter = _make_presenter()
+    presenter.width, presenter.height = (1920, 1080)
+    screen = class_selection.ClassSelectionScreen(presenter)
+
+    assert all(rect.height >= 72 for rect in screen.option_rects(["Warrior", "Mage"]))
+
+
 def test_class_selection_navigation_and_quit(monkeypatch):
     presenter = _make_presenter()
     screen = class_selection.ClassSelectionScreen(presenter)
