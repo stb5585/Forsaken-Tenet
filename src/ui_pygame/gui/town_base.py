@@ -116,7 +116,11 @@ class TownScreenBase:
 
     def draw_background(self):
         """Draw the town background image."""
-        width, height = self.screen.get_size()
+        get_size = getattr(self.screen, "get_size", None)
+        if callable(get_size):
+            width, height = get_size()
+        else:
+            width, height = self.width, self.height
         if self.background:
             # The legacy 1024x768 fallback intentionally leaves a dark matte
             # rather than claiming it is lossless fullscreen art.  Responsive
