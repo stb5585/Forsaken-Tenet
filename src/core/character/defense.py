@@ -39,7 +39,8 @@ class CharacterDefenseMixin:
         """
         msg = ""
         absorbed = False
-        from ..classes import ability_mechanics
+        from ..classes import ability_mechanics, paladin, promotion_kits
+        from ..events.event_bus import EventType, create_combat_event, get_event_bus
 
         if cover:
             msg += (
@@ -76,12 +77,7 @@ class CharacterDefenseMixin:
                 if cross_block is not None
                 else defender.check_mod("shield", enemy=self) / 100
             )
-            try:
-                from ..classes import paladin
-
-                blk_chance += paladin.protection_block_bonus(defender)
-            except Exception:
-                pass
+            blk_chance += paladin.protection_block_bonus(defender)
             if blk_chance > random.random():
                 blk_per = (
                     cross_block[1]
@@ -104,71 +100,51 @@ class CharacterDefenseMixin:
                 )
                 if "Shield Block" in defender.spellbook["Skills"]:
                     blk_per *= 1.25
-                try:
-                    from ..classes import paladin
-
-                    blk_per += paladin.protection_mitigation_bonus(defender)
-                except Exception:
-                    pass
-                try:
-                    from ..classes import promotion_kits
-
-                    if int(
-                        promotion_kits.combat_state(defender).get(
-                            "stronghold_turns",
-                            0,
-                        )
-                        or 0
-                    ):
-                        blk_per += 0.30
-                except Exception:
-                    pass
+                blk_per += paladin.protection_mitigation_bonus(defender)
+                if int(
+                    promotion_kits.combat_state(defender).get(
+                        "stronghold_turns",
+                        0,
+                    )
+                    or 0
+                ):
+                    blk_per += 0.30
                 if blk_per > 0:
                     blk_per = min(1, blk_per)
                     incoming_damage = damage
                     damage = int(damage * (1 - blk_per))
                     blocked_damage = max(0, incoming_damage - damage)
-                    try:
-                        from ..events.event_bus import EventType, create_combat_event, get_event_bus
-
-                        event_bus = get_event_bus()
-                        event_bus.emit(
-                            create_combat_event(
-                                EventType.BLOCK,
-                                actor=defender,
-                                target=self,
-                                damage_blocked=blocked_damage,
-                                **self._weapon_event_metadata(att),
-                            )
+                    event_bus = get_event_bus()
+                    event_bus.emit(
+                        create_combat_event(
+                            EventType.BLOCK,
+                            actor=defender,
+                            target=self,
+                            damage_blocked=blocked_damage,
+                            **self._weapon_event_metadata(att),
                         )
-                    except Exception:
-                        pass
+                    )
                     blocked_pct = round(blk_per * 100)
                     if blocked_pct > 0:
                         msg += (
                             f"{defender.name} blocks {self.name}'s attack and mitigates "
                             f"{blocked_pct} percent of the damage.\n"
                         )
-                        try:
-                            from ..classes import promotion_kits
-
-                            resolve_gain = max(
-                                5,
-                                min(15, blocked_damage // 5),
-                            )
-                            msg += promotion_kits.build_resolve(
-                                defender,
-                                resolve_gain,
-                                "a successful block",
-                            )
-                            msg += promotion_kits.record_devotion_block(defender)
-                            msg += promotion_kits.add_aspect(
-                                defender,
-                                "Stone",
-                                incoming=True,
-                            )
-                        except Exception:
-                            pass
+                        resolve_gain = max(
+                            5,
+                            min(15, blocked_damage // 5),
+                        )
+                        msg += promotion_kits.build_resolve(
+                            defender,
+                            resolve_gain,
+                            "a successful block",
+                        )
+                        msg += promotion_kits.record_devotion_block(defender)
+                        msg += promotion_kits.add_aspect(
+                            defender,
+                            "Stone",
+                            incoming=True,
+                        )
                     if (
                         cross_block is not None
                         and damage <= 0

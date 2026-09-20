@@ -1,6 +1,6 @@
 # Mobile And Multi-Platform Roadmap
 
-Status: `In Progress — Phase 1 semantic-input foundation`
+Status: `In Progress — Phase 2 native-resolution and adaptive-layout migration`
 
 This document defines the eventual path from the current desktop Pygame game to
 a supported desktop-and-Android release. It deliberately begins with frontend
@@ -34,11 +34,12 @@ The current architecture is a strong starting point: `src/core/` is independent
 of Pygame and owns the game rules, persistence, content, and combat state. The
 supported frontend is Pygame under `src/ui_pygame/`.
 
-The frontend is not yet mobile-ready. It currently assumes a 1024x768 desktop
-surface, has keyboard-first flows, and contains nested screen/modal loops that
-poll Pygame events directly. Mouse support is broad but is not equivalent to a
-complete touch UX. The runtime asset set is also large enough that Android
-package size, load time, and bitmap memory need explicit ownership.
+The frontend is not yet mobile-ready. Dungeon exploration and its shared layout
+metrics render at native resolution, but many remaining screens still use the
+1024x768 reference geometry, keyboard-first flows, and nested screen/modal
+loops that poll Pygame events directly. Mouse support is broad but is not
+equivalent to a complete touch UX. The runtime asset set is also large enough
+that Android package size, load time, and bitmap memory need explicit ownership.
 
 These are presentation and delivery problems, not a reason to rewrite core
 gameplay. They should be addressed in bounded layers, with each layer retaining
@@ -88,7 +89,7 @@ support.
 
 ## Phase 0 — Baseline And Ownership
 
-State: `Deferred`
+State: `In Progress — audit inventory captured; formal platform matrix and smoke route remain`
 
 Purpose: establish an evidence-backed baseline before presentation behavior is
 changed.

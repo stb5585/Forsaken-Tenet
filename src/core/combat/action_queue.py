@@ -13,12 +13,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import TYPE_CHECKING
+from typing import Any, Callable
 
-if TYPE_CHECKING:
-    from typing import Any, Callable
-
-    from character import Character
+from ..contracts.combatants import Combatant
 
 
 class ActionPriority(Enum):
@@ -63,9 +60,9 @@ class ScheduledAction:
         metadata: Additional data for logging/analytics
     """
 
-    actor: Character
+    actor: Combatant
     action_type: ActionType
-    target: Character | None
+    target: Combatant | None
     priority: ActionPriority
     callback: Callable[..., Any]
     delay: int = 0
@@ -114,10 +111,10 @@ class ActionQueue:
 
     def schedule(
         self,
-        actor: Character,
+        actor: Combatant,
         action_type: ActionType,
         callback: Callable[..., Any],
-        target: Character | None = None,
+        target: Combatant | None = None,
         priority: ActionPriority = ActionPriority.NORMAL,
         delay: int = 0,
         speed_modifier: float = 1.0,
@@ -213,11 +210,11 @@ class ActionQueue:
         """Advance to the next round."""
         self.current_round += 1
 
-    def get_actions_for(self, actor: Character) -> list[ScheduledAction]:
+    def get_actions_for(self, actor: Combatant) -> list[ScheduledAction]:
         """Get all queued actions for a specific actor."""
         return [action for action in self.queue if action.actor == actor]
 
-    def cancel_actions_for(self, actor: Character) -> int:
+    def cancel_actions_for(self, actor: Combatant) -> int:
         """
         Cancel all queued actions for a specific actor.
         Useful for stun, death, etc.
@@ -240,13 +237,13 @@ class TurnManager:
     - Turn cycling
     """
 
-    def __init__(self, participants: list[Character]):
+    def __init__(self, participants: list[Combatant]):
         self.participants = participants
         self.action_queue = ActionQueue()
-        self.turn_order: list[Character] = []
+        self.turn_order: list[Combatant] = []
         self.current_turn_index: int = 0
 
-    def determine_turn_order(self) -> list[Character]:
+    def determine_turn_order(self) -> list[Combatant]:
         """
         Determine the turn order for this round based on speed.
 
@@ -264,13 +261,13 @@ class TurnManager:
         self.current_turn_index = 0
         return turn_order
 
-    def get_current_actor(self) -> Character | None:
+    def get_current_actor(self) -> Combatant | None:
         """Get the character whose turn it is."""
         if not self.turn_order or self.current_turn_index >= len(self.turn_order):
             return None
         return self.turn_order[self.current_turn_index]
 
-    def next_turn(self) -> Character | None:
+    def next_turn(self) -> Combatant | None:
         """
         Advance to the next character's turn.
 
@@ -297,7 +294,7 @@ class TurnManager:
 
 # Example usage and integration helpers
 def create_attack_action(
-    actor: Character, target: Character, attack_callback: Callable[..., Any], fast: bool = False
+    actor: Combatant, target: Combatant, attack_callback: Callable[..., Any], fast: bool = False
 ) -> ScheduledAction:
     """
     Helper to create a standard attack action.
@@ -325,8 +322,8 @@ def create_attack_action(
 
 
 def create_spell_action(
-    actor: Character,
-    target: Character,
+    actor: Combatant,
+    target: Combatant,
     spell_callback: Callable[..., Any],
     cast_time: int = 0,
 ) -> ScheduledAction:

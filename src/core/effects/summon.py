@@ -7,9 +7,8 @@ from typing import TYPE_CHECKING
 from .base import Effect
 
 if TYPE_CHECKING:
-    from character import Character
-
-    from src.core.combat.combat_result import CombatResult
+    from ..character import Character
+    from ..combat.combat_result import CombatResult
 
 
 class TitanicSlamEffect(Effect):

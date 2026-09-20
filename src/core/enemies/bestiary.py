@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from itertools import chain
+
 from .base import Enemy
 from .catalog import (
     BOSS_DROP_ENEMY_NAMES,
@@ -65,7 +67,7 @@ def bestiary_drop_hints(enemy: Enemy | None, *, boss: bool = False) -> list[str]
     rows: list[str] = []
     seen: set[str] = set()
     inventory = getattr(enemy, "inventory", {}) or {}
-    for drop_entry in sum(inventory.values(), []):
+    for drop_entry in chain.from_iterable(inventory.values()):
         item = _item_from_drop_entry(drop_entry)
         if item is None:
             continue

@@ -1,8 +1,16 @@
 #!/usr/bin/env python3
 """Coverage for shared story content loaded from core data."""
 
+from copy import deepcopy
+
 from src.core import main_story
-from src.core.data.data_loader import clear_cache, get_intro_story, get_quests, get_special_events
+from src.core.data.data_loader import (
+    clear_cache,
+    get_intro_story,
+    get_quests,
+    get_special_events,
+    load_json_data,
+)
 
 
 def test_new_game_intro_story_content_is_shared_and_spoiler_safe():
@@ -16,6 +24,17 @@ def test_new_game_intro_story_content_is_shared_and_spoiler_safe():
         assert expected in intro_text
     for spoiler in ("Vesperion", "Voluntas", "busboy", "Hooded Figure", "true final"):
         assert spoiler not in intro_text
+
+
+def test_quest_resolution_does_not_mutate_cached_raw_json():
+    """Compiling quest rewards must not leak runtime classes into the JSON cache."""
+    clear_cache()
+    raw_quests = load_json_data("quests.json")
+    original = deepcopy(raw_quests)
+
+    get_quests()
+
+    assert load_json_data("quests.json") == original
 
 
 def test_story_polish_content_keys_are_present_and_spoiler_scoped():

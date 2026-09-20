@@ -1,6 +1,6 @@
 # The Forsaken Tenet Development Roadmap
 
-*Updated: September 8, 2026*
+*Updated: September 20, 2026*
 
 This roadmap contains the current priority, completed baseline summaries needed
 for sequencing, ordered candidates, and deferred decision gates. Detailed
@@ -72,6 +72,65 @@ Package-barrel cleanup, asset optimization/LFS evaluation, and public-release
 infrastructure (platform builds, release attachments, provenance, and branch
 protection) are separate infrastructure initiatives. Do not bundle them into
 numeric combat tuning.
+
+### September 2026 Repository Audit Hardening
+
+Status: `Active — Safe Corrections Landed; Decision Gates Retained`
+
+The post-foundation repository audit covered gameplay correctness, persistence,
+runtime contracts, frontend loops, stale code, assets, static-analysis scope,
+and active documentation. The current bounded implementation completed the
+following work without choosing new combat or compatibility behavior:
+
+- Fixed the Devil's reachable Regen crash and neutral fallback for unrecognized
+  damage types, with direct final-boss regressions.
+- Made foundational event, result, action-queue, and base-effect annotations
+  runtime-resolvable through a dependency-free combatant protocol; broader
+  effect-module annotation cleanup remains incremental.
+- Stopped atomic saves from stringifying unsupported runtime objects and kept
+  failed writes from replacing the prior save.
+- Isolated raw cached quest JSON from runtime reward compilation.
+- Removed silent exception suppression from Soul Vessel, player gold bonuses,
+  and shield-block class-kit/event rules, preserving their existing tested
+  behavior.
+- Replaced quadratic inventory flattening in loot and Bestiary presentation,
+  and throttled the confirmed busy loop in the empty-chest popup.
+- Made the Warlock familiar specialization regression deterministic by fixing
+  its previously uncontrolled spell-contact roll.
+- Reconciled the root status, mobile status, ability ownership, GUI launch, save
+  history, and tracked-tools documentation with the current repository.
+
+The remaining audit work is deliberately split by whether a behavior decision
+is required.
+
+Decision gates:
+
+- Define whether ultimate Physical resistance bypass means neutral resistance
+  or the current enemy-side 25% vulnerability, then unify Player and Character
+  behavior and add symmetric regressions.
+- Approve the current-save failure policy and stable item/class/race/quest
+  registries before replacing reflective deserialization and empty-equipment
+  fallbacks.
+- Confirm the public compatibility surface before deleting the tutorial,
+  standalone sex/stat screens, generic sprite manager/generator, console/null
+  presenters, composite-effect facade, or completed taxonomy migration tool.
+- Approve removal of the remaining legacy string-action boundary for forced UI
+  actions and simulator fallbacks.
+
+Bounded implementation backlog:
+
+- Continue replacing the remaining broad gameplay exceptions subsystem by
+  subsystem with focused regressions; the post-slice audit counts 407 broad
+  handlers, including 273 whose body is only `pass` or `continue`.
+- Add frame limiting to the remaining modal loops, then converge them behind
+  the Phase 3 screen runtime rather than multiplying local event owners.
+- Extend runtime annotation resolution and strict mypy coverage beyond the
+  current stable contracts, and stage selected Ruff correctness rules after
+  triage.
+- Decompose the largest combat, status, serializer, and Pygame functions behind
+  preserved behavior tests.
+- Establish distribution asset budgets and an injected-RNG migration plan for
+  deterministic simulation-sensitive systems.
 
 ## Completed Evidence — Multi-Enemy Pilot 3 Rebenchmark
 

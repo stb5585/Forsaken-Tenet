@@ -117,7 +117,7 @@ class SaveManager:
         tmp_filepath = f"{filepath}.tmp"
         try:
             with open(tmp_filepath, "w", encoding="utf-8") as file_obj:
-                json.dump(data, file_obj, indent=2, default=str)
+                json.dump(data, file_obj, indent=2)
                 file_obj.flush()
                 os.fsync(file_obj.fileno())
             os.replace(tmp_filepath, filepath)

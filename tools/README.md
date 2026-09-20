@@ -76,22 +76,6 @@ changing classes, races, abilities, items, enemies, or quests:
 ./.venv/bin/python tools/dev_tools.py [command] --help
 ```
 
-## modify_save.py
-
-Utility script for modifying save files.
-
-### Usage
-
-Edit the script to specify:
-- `save_file` - Path to save file to modify
-- Player attribute modifications
-
-```bash
-./.venv/bin/python tools/modify_save.py
-```
-
-**⚠️ Warning**: Always backup save files before modifying!
-
 ## Running from Different Directories
 
 Both tools expect to be run from the project root directory. If you need to run from elsewhere:

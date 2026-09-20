@@ -42,12 +42,9 @@ class CharacterUtilityMixin:
 
     def is_alive(self) -> bool:
         if self.health.current <= 0:
-            try:
-                from ..classes import demonologist
+            from ..classes import demonologist
 
-                demonologist.try_soul_vessel(self)
-            except Exception:
-                pass
+            demonologist.try_soul_vessel(self)
         return self.health.current > 0
 
     def modify_inventory(

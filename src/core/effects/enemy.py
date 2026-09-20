@@ -5,9 +5,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from character import Character
-
-    from src.core.combat.combat_result import CombatResult
+    from ..character import Character
+    from ..combat.combat_result import CombatResult
 
 
 class PowerUpActivateEffect:

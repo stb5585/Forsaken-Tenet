@@ -8,6 +8,8 @@ import sys
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).parents[2]))
 
 from src.core import abilities, companions, enemies, items, quest_progress, thieves_guild
@@ -743,6 +745,18 @@ def test_save_manager_failed_atomic_write_preserves_existing_save(monkeypatch, t
     with open(save_dir / "hero.save", "r") as file_obj:
         saved_data = json.load(file_obj)
     assert saved_data["name"] == "Stable"
+
+
+def test_atomic_writer_rejects_non_json_state_without_replacing_save(tmp_path):
+    """Unsupported runtime objects must not be stringified into the save schema."""
+    save_path = tmp_path / "hero.save"
+    save_path.write_text('{"name": "Stable"}', encoding="utf-8")
+
+    with pytest.raises(TypeError):
+        SaveManager._write_json_atomic(str(save_path), {"unsupported": object()})
+
+    assert json.loads(save_path.read_text(encoding="utf-8")) == {"name": "Stable"}
+    assert not (tmp_path / "hero.save.tmp").exists()
 
 
 def test_save_manager_file_round_trip_restores_mutable_tile_state(monkeypatch, tmp_path):

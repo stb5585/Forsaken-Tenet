@@ -14,17 +14,14 @@ from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import TYPE_CHECKING, Any, Callable
+from typing import Any, Callable
 
-if TYPE_CHECKING:
-    from character import Character
+from ..combat.combat_result import CombatResult
+from ..contracts.combatants import Combatant
 
-    from src.core.combat.combat_result import CombatResult
-
-
-_COMBAT_EVENT_CONTEXT: ContextVar[dict[str, Any]] = ContextVar(
+_COMBAT_EVENT_CONTEXT: ContextVar[dict[str, Any] | None] = ContextVar(
     "combat_event_context",
-    default={},
+    default=None,
 )
 logger = logging.getLogger(__name__)
 
@@ -32,7 +29,7 @@ logger = logging.getLogger(__name__)
 @contextmanager
 def combat_event_context(**data: Any):
     """Attach encounter/action identity to combat events emitted in this scope."""
-    merged = dict(_COMBAT_EVENT_CONTEXT.get())
+    merged = dict(_COMBAT_EVENT_CONTEXT.get() or {})
     merged.update(data)
     token = _COMBAT_EVENT_CONTEXT.set(merged)
     try:
@@ -129,8 +126,8 @@ class CombatEvent(GameEvent):
     Additional attributes specific to combat.
     """
 
-    actor: Character | None = None
-    target: Character | None = None
+    actor: Combatant | None = None
+    target: Combatant | None = None
     result: CombatResult | None = None
 
     def __post_init__(self):
@@ -346,8 +343,8 @@ def reset_event_bus() -> None:
 # Event creation helpers
 def create_combat_event(
     event_type: EventType,
-    actor: Character,
-    target: Character | None = None,
+    actor: Combatant,
+    target: Combatant | None = None,
     result: CombatResult | None = None,
     **kwargs,
 ) -> CombatEvent:
@@ -366,7 +363,7 @@ def create_combat_event(
     """
     import time
 
-    data = dict(_COMBAT_EVENT_CONTEXT.get())
+    data = dict(_COMBAT_EVENT_CONTEXT.get() or {})
     data.update(kwargs)
     return CombatEvent(
         type=event_type,

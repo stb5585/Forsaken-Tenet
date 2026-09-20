@@ -212,6 +212,7 @@ def test_show_empty_chest_and_background_helper(monkeypatch):
     popup._show_empty_chest("Ancient Chest")
     assert render_calls == ["Ancient Chest", "Ancient Chest"]
     assert bundle.flip_calls
+    assert bundle.clocks[0].ticks == [60, 60]
 
     popup.presenter = SimpleNamespace(get_background_surface=lambda: "bg")
     assert popup._get_background_surface() == "bg"
