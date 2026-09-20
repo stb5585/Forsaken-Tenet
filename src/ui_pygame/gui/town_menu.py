@@ -11,6 +11,7 @@ from .input_guards import (
     release_guard_allows_input,
     update_input_armed_from_event,
 )
+from .menu_layout import menu_unit, menu_viewport_size, touch_target_height
 from .mouse_helpers import hit_index, is_left_click, mouse_position
 from .town_base import TownScreenBase
 
@@ -61,25 +62,34 @@ class TownMenuScreen(TownScreenBase):
 
     def option_rects(self, options) -> list[pygame.Rect]:
         """Return clickable rectangles for the visible town options."""
-        panel_width = 400
-        panel_x = self.width - panel_width
-        options_start_y = 150
-        line_height = 50
+        width, height = menu_viewport_size(self.presenter)
+        panel_width = min(menu_unit(self.presenter, 400), width - menu_unit(self.presenter, 48))
+        panel_x = width - panel_width
+        options_start_y = menu_unit(self.presenter, 130)
+        instruction_height = menu_unit(self.presenter, 118)
+        available_height = max(1, height - options_start_y - instruction_height)
+        desired_height = touch_target_height(self.presenter) + menu_unit(self.presenter, 6)
+        line_height = max(
+            menu_unit(self.presenter, 42),
+            min(desired_height, available_height // max(1, len(options))),
+        )
+        row_height = max(menu_unit(self.presenter, 38), line_height - menu_unit(self.presenter, 4))
         return [
             pygame.Rect(
-                panel_x + 20,
-                options_start_y + i * line_height - 5,
-                panel_width - 40,
-                line_height - 10,
+                panel_x + menu_unit(self.presenter, 20),
+                options_start_y + i * line_height,
+                panel_width - menu_unit(self.presenter, 40),
+                row_height,
             )
             for i, _option in enumerate(options)
         ]
 
     def draw_menu_panel(self, options):
         """Draw the semi-transparent menu panel with options."""
-        panel_width = 400
-        panel_height = self.height
-        panel_x = self.width - panel_width
+        width, height = menu_viewport_size(self.presenter)
+        panel_width = min(menu_unit(self.presenter, 400), width - menu_unit(self.presenter, 48))
+        panel_height = height
+        panel_x = width - panel_width
         panel_y = 0
 
         # Create semi-transparent overlay
@@ -95,12 +105,9 @@ class TownMenuScreen(TownScreenBase):
         self.screen.blit(title_text, title_rect)
 
         # Options list
-        options_start_y = 150
-        line_height = 50
-
         option_rects = self.option_rects(options)
         for i, option in enumerate(options):
-            y = options_start_y + i * line_height
+            y = option_rects[i].centery
 
             # Highlight selected option
             if i == self.current_selection:
@@ -113,7 +120,9 @@ class TownMenuScreen(TownScreenBase):
 
             # Option text
             option_text = self.normal_font.render(option, True, color)
-            option_rect = option_text.get_rect(left=panel_x + 40, centery=y + 15)
+            option_rect = option_text.get_rect(
+                left=panel_x + menu_unit(self.presenter, 40), centery=y
+            )
             self.screen.blit(option_text, option_rect)
 
         self.draw_location_detail(options)
@@ -139,12 +148,15 @@ class TownMenuScreen(TownScreenBase):
         if not detail:
             return
 
-        panel_margin = 24
+        width, height = menu_viewport_size(self.presenter)
+        panel_width = min(menu_unit(self.presenter, 400), width - menu_unit(self.presenter, 48))
+        menu_left = width - panel_width
+        panel_margin = menu_unit(self.presenter, 24)
         detail_rect = pygame.Rect(
             panel_margin,
-            self.height - 150,
-            max(260, self.width - 400 - (panel_margin * 2)),
-            112,
+            height - menu_unit(self.presenter, 150),
+            min(menu_unit(self.presenter, 576), menu_left - (panel_margin * 2)),
+            menu_unit(self.presenter, 112),
         )
         self.draw_semi_transparent_panel(detail_rect, alpha=170)
         pygame.draw.rect(self.screen, self.colors.BORDER_COLOR, detail_rect, 2)

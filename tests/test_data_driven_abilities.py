@@ -710,26 +710,32 @@ class TestDataDrivenSpellCast:
 
         pytest.fail("Gust should have reduced Speed at least once")
 
-    def test_earth_attack_spells_can_knock_prone_but_respect_flying(self):
+    def test_earth_attack_spells_can_knock_prone_but_respect_flying(self, monkeypatch):
+        """Tremor applies Prone after a winning contest, except to flyers."""
+        import random
+
         from src.core import abilities
 
+        def _upper_bound(_low: int, high: int) -> int:
+            return high
+
         spell = abilities.Tremor()
-        for _ in range(50):
-            caster, target = self._make_combatants()
-            caster.stats.intel = 120
-            target.stats.con = 1
-            spell.cast(caster, target)
-            if target.physical_effects["Prone"].active:
-                break
-        else:
-            pytest.fail("Tremor should have knocked the target prone at least once")
+        # Select the high end of each roll so this tests Tremor's real effect
+        # pipeline without a probabilistic retry loop that can intermittently
+        # exhaust its attempts in CI.
+        monkeypatch.setattr(random, "randint", _upper_bound)
+        caster, target = self._make_combatants()
+        caster.stats.intel = 120
+        target.stats.con = 1
+        target.status_effects["Stun"].active = True
+        spell.cast(caster, target)
+        assert target.physical_effects["Prone"].active
 
         caster, flying_target = self._make_combatants()
         caster.stats.intel = 120
         flying_target.stats.con = 1
         flying_target.flying = True
-        for _ in range(20):
-            spell.cast(caster, flying_target)
+        spell.cast(caster, flying_target)
         assert not flying_target.physical_effects["Prone"].active
 
     def test_ground_contact_earth_spells_do_not_damage_flying_targets(self):

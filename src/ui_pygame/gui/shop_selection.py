@@ -9,6 +9,7 @@ from .input_guards import (
     release_guard_allows_input,
     update_input_armed_from_event,
 )
+from .menu_layout import menu_unit, menu_viewport_size, touch_target_height
 from .mouse_helpers import hit_index, is_left_click, mouse_position
 from .town_base import TownScreenBase
 
@@ -25,16 +26,24 @@ class ShopSelectionScreen(TownScreenBase):
 
     def option_rects(self, options) -> list[pygame.Rect]:
         """Return clickable rectangles for the visible shop options."""
-        panel_width = 400
-        panel_x = self.width - panel_width
-        options_start_y = 150
-        line_height = 50
+        width, height = menu_viewport_size(self.presenter)
+        panel_width = min(menu_unit(self.presenter, 400), width - menu_unit(self.presenter, 48))
+        panel_x = width - panel_width
+        options_start_y = menu_unit(self.presenter, 130)
+        instruction_height = menu_unit(self.presenter, 118)
+        available_height = max(1, height - options_start_y - instruction_height)
+        desired_height = touch_target_height(self.presenter) + menu_unit(self.presenter, 6)
+        line_height = max(
+            menu_unit(self.presenter, 42),
+            min(desired_height, available_height // max(1, len(options))),
+        )
+        row_height = max(menu_unit(self.presenter, 38), line_height - menu_unit(self.presenter, 4))
         return [
             pygame.Rect(
-                panel_x + 20,
-                options_start_y + i * line_height - 5,
-                panel_width - 40,
-                line_height - 10,
+                panel_x + menu_unit(self.presenter, 20),
+                options_start_y + i * line_height,
+                panel_width - menu_unit(self.presenter, 40),
+                row_height,
             )
             for i, _option in enumerate(options)
         ]
@@ -42,9 +51,10 @@ class ShopSelectionScreen(TownScreenBase):
     def draw_menu_panel(self, options):
         """Draw the semi-transparent menu panel with options."""
         # Menu panel on the right side
-        panel_width = 400
-        panel_height = self.height
-        panel_x = self.width - panel_width
+        width, height = menu_viewport_size(self.presenter)
+        panel_width = min(menu_unit(self.presenter, 400), width - menu_unit(self.presenter, 48))
+        panel_height = height
+        panel_x = width - panel_width
         panel_y = 0
 
         # Create semi-transparent overlay
@@ -60,12 +70,9 @@ class ShopSelectionScreen(TownScreenBase):
         self.screen.blit(title_text, title_rect)
 
         # Options list
-        options_start_y = 150
-        line_height = 50
-
         option_rects = self.option_rects(options)
         for i, option in enumerate(options):
-            y = options_start_y + i * line_height
+            y = option_rects[i].centery
 
             # Highlight selected option
             if i == self.current_selection:
@@ -78,17 +85,19 @@ class ShopSelectionScreen(TownScreenBase):
 
             # Option text
             option_text = self.normal_font.render(option, True, color)
-            option_rect = option_text.get_rect(left=panel_x + 40, centery=y + 15)
+            option_rect = option_text.get_rect(
+                left=panel_x + menu_unit(self.presenter, 40), centery=y
+            )
             self.screen.blit(option_text, option_rect)
 
         # Instructions at bottom
         instructions = ["UP/DOWN: Navigate", "ENTER: Select", "ESC: Back"]
-        instructions_y = self.height - 120
+        instructions_y = height - menu_unit(self.presenter, 120)
         for instruction in instructions:
             instr_text = self.small_font.render(instruction, True, self.colors.GRAY)
             instr_rect = instr_text.get_rect(centerx=panel_x + panel_width // 2, top=instructions_y)
             self.screen.blit(instr_text, instr_rect)
-            instructions_y += 25
+            instructions_y += menu_unit(self.presenter, 25)
 
     def navigate(
         self,

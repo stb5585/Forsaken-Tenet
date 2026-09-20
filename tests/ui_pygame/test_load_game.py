@@ -332,8 +332,8 @@ def test_load_game_scrolls_visible_save_window(monkeypatch):
 
     assert screen.navigate(screen.save_files) == "11.save"
     assert screen.current_selection == 11
-    assert screen.scroll_offset == 2
-    assert screen.visible_save_data()[0]["file"] == "2.save"
+    assert screen.scroll_offset == 11 - screen.max_visible_saves() + 1
+    assert screen.visible_save_data()[0]["file"] == f"{screen.scroll_offset}.save"
 
     click_pos = screen.save_row_rects()[3].center
     event_batches = iter(
@@ -345,7 +345,17 @@ def test_load_game_scrolls_visible_save_window(monkeypatch):
         "src.ui_pygame.gui.load_game.pygame.event.get", lambda: next(event_batches, [])
     )
 
-    assert screen.navigate(screen.save_files) == "5.save"
+    assert screen.navigate(screen.save_files) == f"{screen.scroll_offset + 3}.save"
+
+
+def test_load_game_rows_use_touch_target_height(monkeypatch):
+    presenter = _make_presenter()
+    presenter.width, presenter.height = (1920, 1080)
+    screen = load_game.LoadGameScreen(presenter)
+    screen.save_data = [{"name": "Hero", "level": 1, "file": "hero.save"}]
+
+    assert screen.save_row_rects()[0].height >= 70
+    assert screen.max_visible_saves() <= 10
 
 
 def test_load_game_navigation_deletes_selected_save(monkeypatch):

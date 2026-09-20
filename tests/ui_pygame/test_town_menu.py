@@ -145,6 +145,7 @@ def test_town_menu_navigation_and_debug_level(monkeypatch):
         "src.ui_pygame.gui.town_menu.pygame.event.get", lambda: next(event_batches, [])
     )
     assert screen.navigate(["Shops", "Inn", "Quit"]) == 1
+
     assert debug_calls == [True]
 
     event_batches = iter(
@@ -199,6 +200,41 @@ def test_town_menu_navigation_and_debug_level(monkeypatch):
         "src.ui_pygame.gui.town_menu.pygame.event.get", lambda: next(event_batches, [])
     )
     assert screen.navigate(["Shops", "Inn", "Quit"]) == 1
+
+
+def test_town_menu_options_expand_to_native_touch_targets(monkeypatch):
+    presenter = _make_presenter()
+    presenter.width, presenter.height = (1920, 1080)
+    monkeypatch.setattr(
+        town_menu.TownMenuScreen, "_load_background", lambda self: setattr(self, "background", None)
+    )
+    screen = town_menu.TownMenuScreen(presenter)
+
+    assert all(rect.height >= 72 for rect in screen.option_rects(["Shops", "Inn", "Quit"]))
+
+
+def test_town_location_detail_stays_clear_of_responsive_menu_panel(monkeypatch):
+    presenter = _make_presenter()
+    presenter.width, presenter.height = (1920, 1080)
+    monkeypatch.setattr(
+        town_menu.TownMenuScreen, "_load_background", lambda self: setattr(self, "background", None)
+    )
+    screen = town_menu.TownMenuScreen(presenter)
+    panel_calls = []
+    monkeypatch.setattr(
+        screen,
+        "draw_semi_transparent_panel",
+        lambda rect, alpha=180: panel_calls.append((rect, alpha)),
+    )
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.town_menu.pygame.draw.rect", lambda *_args, **_kwargs: None
+    )
+
+    screen.draw_location_detail(["Statistics"])
+
+    detail_rect = panel_calls[0][0]
+    sidebar_left = 1920 - round(400 * min(1920 / 1024, 1080 / 768))
+    assert detail_rect.right < sidebar_left
 
 
 def test_town_menu_ignores_a_followup_click_inside_pointer_cooldown(monkeypatch):

@@ -155,10 +155,6 @@ class CombatLifecycleMixin:
 
         # Determine who goes first (engine handles initiative)
         first, _ = self.engine.start_battle()
-        if getattr(player_char, "anti_magic_active", False):
-            self.combat_view.add_combat_message(
-                "An anti-magic field suppresses spells and standard skills in this encounter."
-            )
         if player_char.encumbered:
             self.combat_view.add_combat_message("You are ENCUMBERED! Enemy strikes first!")
 
@@ -166,9 +162,6 @@ class CombatLifecycleMixin:
             self.combat_view.add_combat_message(f"{player_char.name} has the initiative!")
         else:
             self.combat_view.add_combat_message(f"{first.name} has the initiative!")
-        if getattr(player_char, "anti_magic_active", False):
-            self._show_anti_magic_warning()
-
         clock = pygame.time.Clock()
         fled = False
         singleton = len(encounter.members) == 1
@@ -297,19 +290,6 @@ class CombatLifecycleMixin:
 
         # Combat ended - show result
         return self._handle_combat_end(player_char, primary_enemy, fled)
-
-    def _show_anti_magic_warning(self) -> None:
-        """Present one blocking warning after combat art is ready, before turns begin."""
-        from ..confirmation_popup import ConfirmationPopup
-
-        popup = ConfirmationPopup(
-            self.presenter,
-            "ANTI-MAGIC FIELD ACTIVE\n\n"
-            "Spells and standard skills are suppressed in this encounter.\n\n"
-            "The field remains marked above the combat controls.",
-            show_buttons=False,
-        )
-        popup.show(flush_events=True, require_key_release=True)
 
     def _prepare_enemy_combat_assets(self, enemy: Character) -> None:
         """Warm the current enemy's combat sprites before the first combat frame."""

@@ -188,9 +188,15 @@ native font/primitive measurements. Dungeon exploration, HUD, message area,
 and remote playtest controls use those metrics for 4:3, landscape, and
 extra-wide landscape layouts.
 
-Most menus, popups, and targeting remain legacy fixed-layout screens in this
-slice. They draw directly to the native surface (and therefore do not use
-whole-frame scaling), but their placement has not yet been adaptively migrated.
+The main menu, Town of Silvana menu, shop chooser, load-game save list, and
+race/class/sex creation lists now share native layout measurements with
+practical 54-reference-pixel touch rows (never below 48 native pixels). Their
+rows, spacing, and hit targets grow from display metrics rather than from
+completed-frame scaling, while preserving ordinary keyboard and mouse
+navigation. Most specialty menus, popups, and targeting remain legacy
+fixed-layout screens in this slice. They draw directly to the native surface
+(and therefore do not use whole-frame scaling), but their placement and
+touch-target density have not yet been adaptively migrated.
 In-place dungeon combat is the limited exception: its battlefield, enemy
 sprite, action-card icons, turn ribbon, and timeline badges use the active
 native metrics. Its broader side-panel layout is still a later migration.

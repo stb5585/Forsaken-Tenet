@@ -4,6 +4,7 @@ Centralizes common functionality, colors, fonts, and background management.
 """
 
 import os
+from math import ceil
 
 import pygame
 
@@ -81,7 +82,7 @@ class TownScreenBase:
                     # avoids the black frame introduced by centering a wide
                     # landscape source inside an equally wide display.
                     scale = max(self.width / bg_width, self.height / bg_height)
-                    new_size = (int(bg_width * scale), int(bg_height * scale))
+                    new_size = (ceil(bg_width * scale), ceil(bg_height * scale))
                     self.background = pygame.transform.smoothscale(bg_image, new_size)
                 elif bg_width >= self.width and bg_height >= self.height:
                     scale = min(self.width / bg_width, self.height / bg_height)
@@ -115,12 +116,17 @@ class TownScreenBase:
 
     def draw_background(self):
         """Draw the town background image."""
+        get_size = getattr(self.screen, "get_size", None)
+        if callable(get_size):
+            width, height = get_size()
+        else:
+            width, height = self.width, self.height
         if self.background:
             # The legacy 1024x768 fallback intentionally leaves a dark matte
             # rather than claiming it is lossless fullscreen art.  Responsive
             # variants use cover scaling and fill the display.
             self.screen.fill(self.colors.BLACK)
-            bg_rect = self.background.get_rect(center=(self.width // 2, self.height // 2))
+            bg_rect = self.background.get_rect(center=(width // 2, height // 2))
             self.screen.blit(self.background, bg_rect)
         else:
             # Fallback: solid color

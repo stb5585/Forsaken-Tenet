@@ -179,6 +179,19 @@ def test_main_menu_draw_and_navigation(monkeypatch):
     )
 
 
+def test_main_menu_options_expand_to_native_touch_targets(monkeypatch):
+    presenter = _make_presenter()
+    presenter.width, presenter.height = (1920, 1080)
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.main_menu.pygame.image.load",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(FileNotFoundError()),
+    )
+    screen = main_menu.MainMenuScreen(presenter)
+    screen.options = ["New Game", "Load Game", "Quit"]
+
+    assert all(rect.height >= 72 for rect in screen.option_rects())
+
+
 def test_main_menu_quit_event_raises_system_exit(monkeypatch):
     presenter = _make_presenter()
     monkeypatch.setattr(

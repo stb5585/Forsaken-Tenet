@@ -629,7 +629,8 @@ class CombatOverlayMixin:
             return None
 
     def _render_environmental_effect_banner(self, effects) -> None:
-        """Show persistent, reusable world-modifier feedback above combat controls."""
+        """Show world modifiers not already represented by the persistent HUD."""
+        effects = [effect for effect in effects if effect.label != "Anti-Magic Field"]
         if not effects:
             return
         view_width = self.dungeon_view_width

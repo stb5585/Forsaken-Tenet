@@ -3,6 +3,7 @@
 import logging
 import random
 import sys
+from math import ceil
 from pathlib import Path
 
 import pygame
@@ -486,7 +487,7 @@ class DungeonCoreMixin:
                         self.presenter.width / bg_width,
                         self.presenter.height / bg_height,
                     )
-                    new_size = (int(bg_width * scale), int(bg_height * scale))
+                    new_size = (ceil(bg_width * scale), ceil(bg_height * scale))
                     self._dungeon_background = pygame.transform.smoothscale(bg_image, new_size)
                 elif bg_width >= self.presenter.width and bg_height >= self.presenter.height:
                     scale = min(self.presenter.width / bg_width, self.presenter.height / bg_height)
@@ -522,6 +523,7 @@ class DungeonCoreMixin:
         """Display a short fake-loading screen with progress bar."""
         bg = self._load_dungeon_background()
         screen = self.presenter.screen
+        width, height = screen.get_size()
         clock = pygame.time.Clock()
 
         start_ms = pygame.time.get_ticks()
@@ -533,29 +535,25 @@ class DungeonCoreMixin:
 
             # Draw background + dim overlay
             if bg:
-                bg_rect = bg.get_rect(
-                    center=(self.presenter.width // 2, self.presenter.height // 2)
-                )
+                bg_rect = bg.get_rect(center=(width // 2, height // 2))
                 screen.blit(bg, bg_rect)
             else:
                 screen.fill((0, 0, 0))
 
-            overlay = pygame.Surface((self.presenter.width, self.presenter.height), pygame.SRCALPHA)
+            overlay = pygame.Surface((width, height), pygame.SRCALPHA)
             overlay.fill((0, 0, 0, 170))
             screen.blit(overlay, (0, 0))
 
             # Title text
             text = self.presenter.title_font.render(message, True, (255, 255, 255))
-            text_rect = text.get_rect(
-                center=(self.presenter.width // 2, self.presenter.height // 2 - 40)
-            )
+            text_rect = text.get_rect(center=(width // 2, height // 2 - 40))
             screen.blit(text, text_rect)
 
             # Progress bar
-            bar_width = self.presenter.width // 2
+            bar_width = width // 2
             bar_height = 24
-            bar_x = (self.presenter.width - bar_width) // 2
-            bar_y = self.presenter.height // 2 + 10
+            bar_x = (width - bar_width) // 2
+            bar_y = height // 2 + 10
 
             border_rect = pygame.Rect(bar_x, bar_y, bar_width, bar_height)
             fill_rect = pygame.Rect(
@@ -569,9 +567,7 @@ class DungeonCoreMixin:
             percent_text = self.presenter.small_font.render(
                 f"{int(progress * 100)}%", True, (255, 255, 255)
             )
-            percent_rect = percent_text.get_rect(
-                center=(self.presenter.width // 2, bar_y + bar_height + 16)
-            )
+            percent_rect = percent_text.get_rect(center=(width // 2, bar_y + bar_height + 16))
             screen.blit(percent_text, percent_rect)
 
             pygame.display.flip()

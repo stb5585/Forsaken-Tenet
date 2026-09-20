@@ -13,6 +13,7 @@ from .input_guards import (
     release_guard_allows_input,
     update_input_armed_from_event,
 )
+from .menu_layout import menu_unit, touch_target_height
 from .mouse_helpers import hit_index, is_left_click, mouse_position
 
 
@@ -177,7 +178,7 @@ class LoadGameScreen:
         # Draw list header
         x = self.file_list_rect.left + 10
         y = self.file_list_rect.top + 10
-        line_height = 40
+        line_height = touch_target_height(self.presenter)
 
         header = self.small_font.render("Save Files", True, self.GOLD)
         self.screen.blit(header, (x, y))
@@ -224,7 +225,10 @@ class LoadGameScreen:
 
     def max_visible_saves(self) -> int:
         """Return the number of save rows rendered in the current panel."""
-        return 10
+        row_height = touch_target_height(self.presenter)
+        header_height = row_height + menu_unit(self.presenter, 20)
+        footer_height = menu_unit(self.presenter, 48)
+        return max(1, (self.file_list_rect.height - header_height - footer_height) // row_height)
 
     def max_scroll_offset(self) -> int:
         """Return the highest valid save-list scroll offset."""
@@ -266,16 +270,21 @@ class LoadGameScreen:
 
     def save_row_rects(self) -> list[pygame.Rect]:
         """Return clickable rectangles for visible save rows."""
-        line_height = 40
+        line_height = touch_target_height(self.presenter)
         rects = []
         for i, _data in enumerate(self.visible_save_data()):
-            y = self.file_list_rect.top + 50 + i * line_height
+            y = (
+                self.file_list_rect.top
+                + line_height
+                + menu_unit(self.presenter, 10)
+                + i * line_height
+            )
             rects.append(
                 pygame.Rect(
                     self.file_list_rect.left + 5,
                     y - 2,
                     self.file_list_rect.width - 10,
-                    line_height - 4,
+                    line_height - menu_unit(self.presenter, 4),
                 )
             )
         return rects
