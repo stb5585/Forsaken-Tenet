@@ -29,6 +29,7 @@ from .models import (
     PRIMARY_ATTRIBUTES,
     RATING_PAYLOADS,
     RESOURCE_NODE_AMOUNTS,
+    AbilityTree,
     AbilityTreeNode,
     GrowthResult,
     LevelUpResult,
@@ -249,7 +250,14 @@ def validate_trees() -> tuple[str, ...]:
         visiting: set[str] = set()
         visited: set[str] = set()
 
-        def visit(node_id: str) -> None:
+        def visit(
+            node_id: str,
+            *,
+            tree: AbilityTree = tree,
+            node_map: dict[str, AbilityTreeNode] = node_map,
+            visiting: set[str] = visiting,
+            visited: set[str] = visited,
+        ) -> None:
             if node_id in visiting:
                 errors.append(f"{tree.id}: prerequisite cycle at {node_id}")
                 return

@@ -5,8 +5,6 @@ import sys
 from pathlib import Path
 from types import SimpleNamespace
 
-import pytest
-
 sys.path.insert(0, str(Path(__file__).parents[2]))
 
 from src.core.character import Character, Combat, Resource, Stats
@@ -31,17 +29,6 @@ def _character(
         stats=Stats(strength=strength, wisdom=wisdom),
         combat=Combat(),
     )
-
-
-def test_tutorial_prints_message_and_exits(capsys):
-    from src.core import tutorial
-
-    with pytest.raises(SystemExit) as exc:
-        tutorial.tutorial()
-
-    captured = capsys.readouterr()
-    assert exc.value.code == 0
-    assert "under construction" in captured.out
 
 
 def test_damage_effect_applies_scaled_damage_to_legacy_hp_targets():

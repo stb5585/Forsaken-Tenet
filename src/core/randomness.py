@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import random as _stdlib_random
+from collections.abc import Iterator
 from contextlib import contextmanager
 from contextvars import ContextVar, Token
 from typing import Any, Protocol
@@ -44,7 +45,7 @@ def reset_random_source(token: Token[RandomSource | None]) -> None:
 
 
 @contextmanager
-def using_random_source(source: RandomSource):
+def using_random_source(source: RandomSource) -> Iterator[RandomSource]:
     """Route gameplay draws through ``source`` for the context lifetime."""
     token = set_random_source(source)
     try:

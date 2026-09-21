@@ -66,7 +66,7 @@ class PlayerDataSerializer:
 
     @staticmethod
     def _deserialize_action_bar(payload: object) -> tuple[ActionReference | None, ...]:
-        """Parse and normalize exactly six version-1 shortcut slots."""
+        """Parse and normalize exactly six canonical shortcut slots."""
         if payload is None:
             entries: list[object] = []
         elif isinstance(payload, list):

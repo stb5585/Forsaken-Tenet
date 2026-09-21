@@ -11,7 +11,7 @@ sys.path.insert(0, str(Path(__file__).parents[2]))
 from src.core import items
 from src.core.character import armor_resistance_modifier
 from src.core.combat.combat_result import CombatResult
-from src.core.effects.composite import StatusApplyEffect
+from src.core.effects.common import StatusApplyEffect
 from tests.test_framework import TestGameState
 
 _BASE_ITEM_CLASSES = {

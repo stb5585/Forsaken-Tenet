@@ -201,18 +201,18 @@ structural work.
   Defend, Items, All Actions, and Flee remain fixed system commands; contextual
   actions such as Cancel Charge appear only when legal. Unavailable learned
   actions remain visible with a reason.
-- Versioned saves begin at `schema_version: 1`. Unmarked saves are rejected
+- Current versioned saves use `schema_version: 2`. Unmarked and version-1 saves are rejected
   with a new-game-required message; no migration is provided for this
   pre-release reset.
 - Public contracts introduce typed `AbilityDefinition`, `AbilityTaxonomy`,
   `TargetingPolicy`, `ActionDefinition`, `ActionReference`,
   `ActionAvailability`, timeline entry, visibility state, and combat-resource
   presentation models. Canonical intents carry an action ID and target IDs;
-  the legacy string adapter is temporary and must have no internal users at
-  milestone closure.
+  combat execution accepts canonical `ActionIntent` values; the legacy string
+  execution adapter has been removed.
 - Actor-relative scopes include `SINGLE_OPPONENT` and `ALL_OPPONENTS`.
   Deprecated enemy-named aliases exist only at the public compatibility
-  boundary. Version-1 saves persist shortcut references, but combat timelines,
+  boundary. Version-2 saves persist shortcut references, but combat timelines,
   visibility observations, encounters, and mid-combat state remain runtime
   only.
 
@@ -353,8 +353,8 @@ not alter action legality or engine targeting.
 Current slice status:
 
 - Decision and characterization: complete in `8e64224`.
-- Core contracts: complete; typed models, v1 save rejection, migration
-  validation, and compatibility adapters are established.
+- Core contracts: complete; typed models, v2 registry-backed saves, atomic
+  invalid-data rejection, and explicit no-v1-migration behavior are established.
 - Ability migration: complete; all 197 definitions have canonical IDs,
   taxonomy, aliases, targeting policy, and registered traits. CI rejects any
   incomplete definition and new saves serialize ability slugs.
@@ -397,9 +397,9 @@ Current slice status:
   generation remains singleton. The default-on rollout kill switch, 15% gate,
   source exclusions, and roster/timeline/intent/resolution telemetry are in
   place for a future evidence-qualified pair; no local balance tuning was made.
-- Closure: complete; internal engine, simulator, and Pygame consumers use
-  `ActionIntent.action_id` directly, leaving legacy command construction only
-  at the public compatibility boundary. The regenerated singleton/Pilot 3
+- Closure: complete; internal engine, simulator, and Pygame combat consumers use
+  `ActionIntent.action_id` and the string execution boundary is removed. The
+  regenerated singleton/Pilot 3
   evidence is committed, the playtest queue is rebased onto this baseline, and
   dungeon rest remains deferred by the approved decision.
 

@@ -74,11 +74,12 @@ design approval; it is not part of stabilization.
 
 ## Saves
 
-Save files are stamped with root `schema_version: 1`. Unmarked pre-foundation
-saves and saves with another version remain visible with an explanatory status
-but cannot be loaded; this deliberate pre-release reset has no migration path.
-Version 1 stores six typed action-bar slots as ability-slug or item-token
-references. Missing item inventory never deletes the assignment. Combat
+Save files are stamped with root `schema_version: 2`. Unmarked, version-1, and
+unknown-version saves remain visible with an explanatory status but cannot be
+loaded; this deliberate pre-release reset has no migration path. Version 2
+uses canonical registries and stores six typed action-bar slots as ability-slug
+or item-ID references. Unknown IDs reject the entire load without rewriting the
+file. Missing item inventory never deletes the assignment. Combat
 timelines, visibility observations, encounters, and mid-combat state remain
 runtime-only.
 

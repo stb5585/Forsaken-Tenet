@@ -881,7 +881,7 @@ class TestNewEffectTypes:
     def test_dynamic_status_dot(self):
         """DynamicStatusDotEffect should be creatable from EffectFactory."""
         from src.core.data.ability_loader import EffectFactory
-        from src.core.effects.composite import DynamicStatusDotEffect
+        from src.core.effects.common import DynamicStatusDotEffect
 
         e = EffectFactory.create(
             {
@@ -9848,7 +9848,7 @@ class TestBatch19DragonBreathYAML:
     )
     def test_has_breath_damage_effect(self, cls_name, element):
         from src.core import abilities
-        from src.core.effects.composite import BreathDamageEffect
+        from src.core.effects.enemy import BreathDamageEffect
 
         ab = getattr(abilities, cls_name)()
         assert any(isinstance(e, BreathDamageEffect) for e in ab._effects)
@@ -9863,7 +9863,7 @@ class TestBatch19DragonBreathYAML:
     )
     def test_element_matches(self, cls_name, element):
         from src.core import abilities
-        from src.core.effects.composite import BreathDamageEffect
+        from src.core.effects.enemy import BreathDamageEffect
 
         ab = getattr(abilities, cls_name)()
         breath_eff = [e for e in ab._effects if isinstance(e, BreathDamageEffect)][0]

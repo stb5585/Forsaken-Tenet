@@ -1,5 +1,15 @@
 # Development Tools
 
+## Asset Budget
+
+Validate the committed aggregate and per-file asset limits used by CI:
+
+```bash
+./.venv/bin/python tools/check_asset_budget.py
+```
+
+The thresholds and asset root are defined in `tools/asset_budget.json`.
+
 ## dev_tools.py
 
 Command-line interface for testing and developing game systems.

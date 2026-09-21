@@ -40,7 +40,7 @@ contracts belong in their owner documents.
 Status: `Complete — Foundational Baseline Established`
 
 [`FOUNDATIONAL_REFACTOR_PLAN.md`](FOUNDATIONAL_REFACTOR_PLAN.md) records the
-completed contract: immutable ability slugs and taxonomy, version-1 saves,
+completed contract: immutable ability slugs and taxonomy, version-2 saves,
 one-roll contact, virtual readiness, core concealment and targeting, the
 action interface, and bounded multi-enemy support. Its committed reports are
 the baseline for all subsequent evidence. Ordinary random encounters remain
@@ -75,7 +75,7 @@ numeric combat tuning.
 
 ### September 2026 Repository Audit Hardening
 
-Status: `Active — Safe Corrections Landed; Decision Gates Retained`
+Status: `Complete — Approved Follow-ups Landed; Residual Backlog Tracked`
 
 The post-foundation repository audit covered gameplay correctness, persistence,
 runtime contracts, frontend loops, stale code, assets, static-analysis scope,
@@ -100,37 +100,40 @@ following work without choosing new combat or compatibility behavior:
 - Reconciled the root status, mobile status, ability ownership, GUI launch, save
   history, and tracked-tools documentation with the current repository.
 
-The remaining audit work is deliberately split by whether a behavior decision
-is required.
+The approved follow-up delivered schema-version 2 registries and atomic invalid
+save rejection, neutral (`0.0`) ultimate Physical resistance, typed combat
+intents and explicit forced-action cancellation, context-local deterministic
+randomness for combat-reachable core draws, and narrow exception handling in
+save/progression/combat/simulator paths. Version-1 saves are intentionally
+rejected with a restart message.
 
-Decision gates:
+The Pygame frontend now has a typed screen stack, normalized pointer/text/key
+input, a 60 FPS owner clock, and a single direct event-queue boundary. Legacy
+blocking screens use the centralized compatibility event source while their
+state-by-state conversion continues. Verified-unused tutorial, standalone
+sex/stat screens, generic sprite tools, alternate presenters, composite-effect
+facade, and the completed taxonomy migration script were removed.
 
-- Define whether ultimate Physical resistance bypass means neutral resistance
-  or the current enemy-side 25% vulnerability, then unify Player and Character
-  behavior and add symmetric regressions.
-- Approve the current-save failure policy and stable item/class/race/quest
-  registries before replacing reflective deserialization and empty-equipment
-  fallbacks.
-- Confirm the public compatibility surface before deleting the tutorial,
-  standalone sex/stat screens, generic sprite manager/generator, console/null
-  presenters, composite-effect facade, or completed taxonomy migration tool.
-- Approve removal of the remaining legacy string-action boundary for forced UI
-  actions and simulator fallbacks.
+CI now checks Ruff B004/B023/B039, strict types for the new stable contracts,
+and a committed asset budget: a 240,718,690-byte baseline, 5 MiB aggregate
+allowance, and 4 MiB per-file cap.
 
 Bounded implementation backlog:
 
-- Continue replacing the remaining broad gameplay exceptions subsystem by
-  subsystem with focused regressions; the post-slice audit counts 407 broad
-  handlers, including 273 whose body is only `pass` or `continue`.
-- Add frame limiting to the remaining modal loops, then converge them behind
-  the Phase 3 screen runtime rather than multiplying local event owners.
+- Triage noncritical broad exception handlers outside saves, progression,
+  combat resolution, simulator policy, and migrated runtime observers.
+- Convert the centralized legacy `show()`/`navigate()` loops to native
+  `ScreenRuntime` states, prioritizing save/load, town/dungeon/combat, level-up,
+  story, and ending transitions; then remove `get_events()` compatibility use.
 - Extend runtime annotation resolution and strict mypy coverage beyond the
   current stable contracts, and stage selected Ruff correctness rules after
   triage.
-- Decompose the largest combat, status, serializer, and Pygame functions behind
-  preserved behavior tests.
-- Establish distribution asset budgets and an injected-RNG migration plan for
-  deterministic simulation-sensitive systems.
+- Decompose unrelated large combat, status, serializer, and Pygame functions
+  only behind preserved behavior tests.
+- Migrate remaining non-core/global random sites as they become
+  simulation-reachable; the combat simulator and core draws are isolated now.
+- Perceptually review asset recompression before changing any shipped image or
+  audio; the budget gate prevents unreviewed growth but does not optimize.
 
 ## Completed Evidence — Multi-Enemy Pilot 3 Rebenchmark
 
