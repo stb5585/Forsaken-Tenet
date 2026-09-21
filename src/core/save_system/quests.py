@@ -1,222 +1,185 @@
-"""Quest and quest-item serialization."""
+"""Strict quest and quest-reference serialization."""
+
+from __future__ import annotations
+
+from typing import Any
 
 from .. import items
+from ..identity import ENEMY_TYPES
+from .errors import SaveValidationError
 from .item_serialization import ItemSerializer
+from .quest_identity import QUEST_IDS_BY_NAME, QUEST_NAMES_BY_ID
 
 
 class QuestDataSerializer:
-    """Serializes/deserializes quest data with proper item handling."""
+    """Serialize quest state with canonical quest, enemy, and item IDs."""
 
     @staticmethod
-    def _deserialize_item_reference(item_data):
-        """Resolve quest item references from serialized dicts or legacy strings."""
-        if isinstance(item_data, dict):
-            return ItemSerializer.deserialize(item_data)
-
-        if not isinstance(item_data, str) or not item_data:
-            return item_data
-
-        if hasattr(items, item_data):
-            item_class = getattr(items, item_data)
-            if hasattr(item_class, "__call__"):
-                try:
-                    return item_class()
-                except Exception:
-                    return item_data
-
-        for attr_name in dir(items):
-            attr = getattr(items, attr_name)
-            if not hasattr(attr, "__call__"):
-                continue
+    def _serialize_item_reference(value: object, *, path: str) -> object:
+        if isinstance(value, type) and issubclass(value, items.Item):
             try:
-                instance = attr()
-            except Exception:
-                continue
-            if getattr(instance, "name", None) == item_data:
-                return instance
-
-        return item_data
+                value = value()
+            except (TypeError, ValueError) as exc:
+                raise SaveValidationError(path, f"could not construct reward item: {exc}") from exc
+        if isinstance(value, items.Item):
+            return ItemSerializer.serialize(value)
+        if isinstance(value, str):
+            return value
+        raise SaveValidationError(path, f"unsupported quest item reference: {type(value).__name__}")
 
     @staticmethod
-    def serialize_quest_dict(quest_dict: dict) -> dict:
-        """Convert quest_dict with item objects to serializable format."""
-        serialized = {}
+    def _deserialize_item_reference(value: object, *, path: str) -> object:
+        if isinstance(value, dict):
+            return ItemSerializer.deserialize(value, path=path)
+        if isinstance(value, str):
+            return value
+        raise SaveValidationError(path, "expected an item object or string token")
 
-        for quest_type, quests_by_category in quest_dict.items():
-            serialized[quest_type] = {}
+    @staticmethod
+    def serialize_quest_dict(quest_dict: dict[str, Any]) -> dict[str, Any]:
+        """Convert runtime quest state into schema-version-2 data."""
+        if not isinstance(quest_dict, dict):
+            raise SaveValidationError("quest_dict", "expected an object")
+        serialized: dict[str, Any] = {}
 
-            if quest_type == "Bounty":
-                # Bounty format: {enemy_name: [bounty_data, count, completed]}
-                for quest_name, quest_info in quests_by_category.items():
-                    if isinstance(quest_info, list) and len(quest_info) >= 3:
-                        bounty_data, count, completed = quest_info[0], quest_info[1], quest_info[2]
-                        # Serialize bounty data if it contains items/enemies
-                        serialized_bounty = dict(bounty_data)
+        for category, quests in quest_dict.items():
+            if not isinstance(quests, dict):
+                raise SaveValidationError(f"quest_dict.{category}", "expected an object")
+            if category == "Bounty":
+                serialized[category] = QuestDataSerializer._serialize_bounties(quests)
+                continue
+            if category not in {"Main", "Side"}:
+                serialized[category] = dict(quests)
+                continue
 
-                        # Serialize enemy to just its name
-                        if "enemy" in serialized_bounty and serialized_bounty["enemy"]:
-                            enemy = serialized_bounty["enemy"]
-                            if hasattr(enemy, "name"):
-                                serialized_bounty["enemy"] = enemy.name
-                            # else: already a string, keep as-is
-
-                        # Serialize reward item
-                        if "reward" in serialized_bounty and serialized_bounty["reward"]:
-                            serialized_bounty["reward"] = ItemSerializer.serialize(
-                                serialized_bounty["reward"]()
-                            )
-
-                        serialized[quest_type][quest_name] = [serialized_bounty, count, completed]
-                    else:
-                        serialized[quest_type][quest_name] = quest_info
-            else:
-                # Main/Side quests: {quest_name: quest_data}
-                for quest_name, quest_data in quests_by_category.items():
-                    if isinstance(quest_data, dict):
-                        serialized_quest = dict(quest_data)
-
-                        # Serialize item class in 'What' field for Collect quests FIRST
-                        # (before other processing to ensure it's properly handled)
-                        if "What" in serialized_quest and serialized_quest.get("Type") == "Collect":
-                            what = serialized_quest["What"]
-                            if isinstance(what, type):
-                                try:
-                                    instance = what()
-                                    serialized_quest["What"] = ItemSerializer.serialize(instance)
-                                except Exception:
-                                    serialized_quest["What"] = what.__name__
-                            elif isinstance(what, str):
-                                # Already a string, leave it
-                                pass
-                            elif hasattr(what, "name"):
-                                # It's an instance, serialize it
-                                serialized_quest["What"] = ItemSerializer.serialize(what)
-
-                        # Serialize item classes in 'Reward' field
-                        if "Reward" in serialized_quest:
-                            reward = serialized_quest["Reward"]
-                            if isinstance(reward, list):
-                                # Convert item classes to serialized form
-                                serialized_rewards = []
-                                for r in reward:
-                                    if isinstance(r, str):
-                                        serialized_rewards.append(
-                                            r
-                                        )  # Keep string keywords like 'Gold'
-                                    elif isinstance(r, type):
-                                        # It's a class, serialize by instantiating
-                                        try:
-                                            instance = r()
-                                            serialized_rewards.append(
-                                                ItemSerializer.serialize(instance)
-                                            )
-                                        except Exception:
-                                            serialized_rewards.append(r.__name__)
-                                    else:
-                                        # It's an instance or something else
-                                        serialized_rewards.append(ItemSerializer.serialize(r))
-                                serialized_quest["Reward"] = serialized_rewards
-                            elif reward == "Gold":
-                                pass  # Leave as-is
-                            elif isinstance(reward, type):
-                                serialized_quest["Reward"] = ItemSerializer.serialize(reward())
-
-                        serialized[quest_type][quest_name] = serialized_quest
-                    else:
-                        serialized[quest_type][quest_name] = quest_data
-
+            encoded: dict[str, Any] = {}
+            for quest_name, quest_data in quests.items():
+                quest_id = QUEST_IDS_BY_NAME.get(quest_name)
+                if quest_id is None:
+                    raise SaveValidationError(
+                        f"quest_dict.{category}", f"unknown authored quest: {quest_name!r}"
+                    )
+                if not isinstance(quest_data, dict):
+                    raise SaveValidationError(
+                        f"quest_dict.{category}.{quest_id}", "expected an object"
+                    )
+                record = dict(quest_data)
+                if record.get("Type") == "Collect" and "What" in record:
+                    record["What"] = QuestDataSerializer._serialize_item_reference(
+                        record["What"], path=f"quest_dict.{category}.{quest_id}.What"
+                    )
+                if "Reward" in record:
+                    reward = record["Reward"]
+                    values = reward if isinstance(reward, list) else [reward]
+                    record["Reward"] = [
+                        QuestDataSerializer._serialize_item_reference(
+                            value,
+                            path=f"quest_dict.{category}.{quest_id}.Reward[{index}]",
+                        )
+                        for index, value in enumerate(values)
+                    ]
+                encoded[quest_id] = record
+            serialized[category] = encoded
         return serialized
 
     @staticmethod
-    def deserialize_quest_dict(serialized: dict) -> dict:
-        """Reconstruct quest_dict with proper item objects from serialized format."""
-        quest_dict = {}
+    def _serialize_bounties(quests: dict[str, Any]) -> dict[str, Any]:
+        encoded: dict[str, Any] = {}
+        for quest_info in quests.values():
+            if not isinstance(quest_info, list) or len(quest_info) < 3:
+                raise SaveValidationError("quest_dict.Bounty", "expected [data, count, completed]")
+            bounty_data = quest_info[0]
+            if not isinstance(bounty_data, dict):
+                raise SaveValidationError("quest_dict.Bounty.data", "expected an object")
+            enemy = bounty_data.get("enemy")
+            try:
+                enemy_id = ENEMY_TYPES.id_for(enemy)
+            except KeyError as exc:
+                raise SaveValidationError("quest_dict.Bounty.enemy_id", str(exc)) from exc
+            record = dict(bounty_data)
+            record["enemy_id"] = enemy_id
+            record.pop("enemy", None)
+            reward = record.get("reward")
+            if reward is not None:
+                record["reward"] = QuestDataSerializer._serialize_item_reference(
+                    reward, path=f"quest_dict.Bounty.{enemy_id}.reward"
+                )
+            encoded[enemy_id] = [record, quest_info[1], quest_info[2]]
+        return encoded
 
-        for quest_type, quests_by_category in serialized.items():
-            quest_dict[quest_type] = {}
-
-            if quest_type == "Bounty":
-                # Bounty format: {enemy_name: [bounty_data, count, completed]}
-                for quest_name, quest_info in quests_by_category.items():
-                    if isinstance(quest_info, list) and len(quest_info) >= 3:
-                        bounty_data, count, completed = quest_info[0], quest_info[1], quest_info[2]
-                        # Deserialize bounty data if it contains items/enemies
-                        deserialized_bounty = dict(bounty_data)
-
-                        # Deserialize enemy from name
-                        if "enemy" in deserialized_bounty and deserialized_bounty["enemy"]:
-                            enemy_name_or_str = deserialized_bounty["enemy"]
-                            if isinstance(enemy_name_or_str, str):
-                                # Extract just the name if it's a full string representation
-                                # (e.g., "Alligator | Health: 87/87 | Mana: 28/28" -> "Alligator")
-                                enemy_name = enemy_name_or_str.split(" | ")[0].strip()
-
-                                # Reconstruct enemy from name
-                                from .. import enemies as enemies_module
-
-                                if hasattr(enemies_module, enemy_name):
-                                    enemy_class = getattr(enemies_module, enemy_name)
-                                    deserialized_bounty["enemy"] = enemy_class()
-                                else:
-                                    # Keep as string if we can't find the class
-                                    deserialized_bounty["enemy"] = enemy_name
-
-                        # Deserialize reward item
-                        if "reward" in deserialized_bounty and deserialized_bounty["reward"]:
-                            if isinstance(deserialized_bounty["reward"], dict):
-                                # It's serialized, deserialize it to get the item class
-                                item_class_name = deserialized_bounty["reward"].get("class")
-                                if item_class_name:
-                                    # Convert to callable class reference
-                                    from .. import items as items_module
-
-                                    if hasattr(items_module, item_class_name):
-                                        deserialized_bounty["reward"] = getattr(
-                                            items_module, item_class_name
-                                        )
-                                    else:
-                                        # Fallback: keep as None if class not found
-                                        deserialized_bounty["reward"] = None
-                            else:
-                                # It's already an item class or callable
-                                deserialized_bounty["reward"] = deserialized_bounty["reward"]
-                        quest_dict[quest_type][quest_name] = [deserialized_bounty, count, completed]
-                    else:
-                        quest_dict[quest_type][quest_name] = quest_info
-            else:
-                # Main/Side quests: {quest_name: quest_data}
-                for quest_name, quest_data in quests_by_category.items():
-                    if isinstance(quest_data, dict):
-                        deserialized_quest = dict(quest_data)
-
-                        # Deserialize item classes in 'Reward' field
-                        if "Reward" in deserialized_quest:
-                            reward = deserialized_quest["Reward"]
-                            if isinstance(reward, list):
-                                deserialized_rewards = []
-                                for r in reward:
-                                    if isinstance(r, str):
-                                        deserialized_rewards.append(r)  # Keep string keywords
-                                    elif isinstance(r, dict):
-                                        # It's serialized, deserialize it
-                                        deserialized_rewards.append(ItemSerializer.deserialize(r))
-                                    else:
-                                        deserialized_rewards.append(r)
-                                deserialized_quest["Reward"] = deserialized_rewards
-
-                        # Deserialize item class in 'What' field for Collect quests
-                        if (
-                            "What" in deserialized_quest
-                            and deserialized_quest.get("Type") == "Collect"
-                        ):
-                            deserialized_quest["What"] = (
-                                QuestDataSerializer._deserialize_item_reference(
-                                    deserialized_quest["What"]
-                                )
-                            )
-
-                        quest_dict[quest_type][quest_name] = deserialized_quest
-                    else:
-                        quest_dict[quest_type][quest_name] = quest_data
-
+    @staticmethod
+    def deserialize_quest_dict(serialized: dict[str, Any]) -> dict[str, Any]:
+        """Reconstruct quest state after validating every persisted identity."""
+        if not isinstance(serialized, dict):
+            raise SaveValidationError("quest_dict", "expected an object")
+        quest_dict: dict[str, Any] = {}
+        for category, quests in serialized.items():
+            if not isinstance(quests, dict):
+                raise SaveValidationError(f"quest_dict.{category}", "expected an object")
+            if category == "Bounty":
+                quest_dict[category] = QuestDataSerializer._deserialize_bounties(quests)
+                continue
+            if category not in {"Main", "Side"}:
+                quest_dict[category] = dict(quests)
+                continue
+            decoded: dict[str, Any] = {}
+            for quest_id, quest_data in quests.items():
+                quest_name = QUEST_NAMES_BY_ID.get(quest_id)
+                if quest_name is None:
+                    raise SaveValidationError(
+                        f"quest_dict.{category}", f"unknown quest id: {quest_id!r}"
+                    )
+                if not isinstance(quest_data, dict):
+                    raise SaveValidationError(
+                        f"quest_dict.{category}.{quest_id}", "expected an object"
+                    )
+                record = dict(quest_data)
+                if record.get("Type") == "Collect" and "What" in record:
+                    record["What"] = QuestDataSerializer._deserialize_item_reference(
+                        record["What"], path=f"quest_dict.{category}.{quest_id}.What"
+                    )
+                if "Reward" in record:
+                    reward = record["Reward"]
+                    if not isinstance(reward, list):
+                        raise SaveValidationError(
+                            f"quest_dict.{category}.{quest_id}.Reward", "expected a list"
+                        )
+                    record["Reward"] = [
+                        QuestDataSerializer._deserialize_item_reference(
+                            value,
+                            path=f"quest_dict.{category}.{quest_id}.Reward[{index}]",
+                        )
+                        for index, value in enumerate(reward)
+                    ]
+                decoded[quest_name] = record
+            quest_dict[category] = decoded
         return quest_dict
+
+    @staticmethod
+    def _deserialize_bounties(quests: dict[str, Any]) -> dict[str, Any]:
+        decoded: dict[str, Any] = {}
+        for enemy_id, quest_info in quests.items():
+            path = f"quest_dict.Bounty.{enemy_id}"
+            if not isinstance(quest_info, list) or len(quest_info) < 3:
+                raise SaveValidationError(path, "expected [data, count, completed]")
+            if not isinstance(quest_info[0], dict):
+                raise SaveValidationError(f"{path}.data", "expected an object")
+            try:
+                enemy_type = ENEMY_TYPES.resolve(enemy_id)
+                enemy = enemy_type()
+            except KeyError as exc:
+                raise SaveValidationError(path, str(exc)) from exc
+            except (TypeError, ValueError) as exc:
+                raise SaveValidationError(path, f"could not construct enemy: {exc}") from exc
+            record = dict(quest_info[0])
+            persisted_enemy_id = record.pop("enemy_id", enemy_id)
+            if persisted_enemy_id != enemy_id:
+                raise SaveValidationError(f"{path}.enemy_id", "does not match bounty key")
+            record["enemy"] = enemy
+            if record.get("reward") is not None:
+                reward = QuestDataSerializer._deserialize_item_reference(
+                    record["reward"], path=f"{path}.reward"
+                )
+                record["reward"] = type(reward) if isinstance(reward, items.Item) else reward
+            decoded[enemy.name] = [record, quest_info[1], quest_info[2]]
+        return decoded

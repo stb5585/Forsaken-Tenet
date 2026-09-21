@@ -5,6 +5,7 @@ from __future__ import annotations
 from textwrap import wrap
 
 from .. import items
+from ..identity import CLASS_TYPES
 
 
 class Job:
@@ -14,6 +15,13 @@ class Job:
     equipment lists the items the player_char starts out with for the selected base class.
     restrictions list the allowable item types the class can equip.
     """
+
+    class_id: str
+
+    def __init_subclass__(cls, *, class_id: str | None = None, **kwargs: object) -> None:
+        """Register every job type at definition time for strict persistence."""
+        super().__init_subclass__(**kwargs)
+        cls.class_id = CLASS_TYPES.register(cls, class_id)
 
     def __init__(
         self,

@@ -2123,7 +2123,7 @@ class Devil(Fiend):
             return max(0, heal_mod + class_mod + self.combat.magic)
         if mod == "resist":
             if ultimate and typ == "Physical":  # ultimate weapons bypass Physical resistance
-                return -0.25
+                return 0.0
             res_mod = self.resistance.get(typ, 0)
             if self.flying:
                 if typ == "Wind":

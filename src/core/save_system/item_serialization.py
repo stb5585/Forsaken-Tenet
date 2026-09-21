@@ -3,34 +3,17 @@
 from __future__ import annotations
 
 import re
-from functools import lru_cache
 from typing import TYPE_CHECKING
 
 from src.paths import CORE_DATA_DIR
 
-from .. import abilities, items
+from .. import items
 from ..data.ability_loader import AbilityFactory
-from ..data.ability_schema import validate_ability_directory
+from ..identity import ITEM_TYPES
+from .errors import SaveValidationError
 
 if TYPE_CHECKING:
     from typing import Any
-
-
-@lru_cache(maxsize=1)
-def _ability_identity_maps() -> tuple[dict[str, str], dict[str, tuple[str, ...]]]:
-    """Return validated legacy-token-to-slug and slug-to-alias maps."""
-    report = validate_ability_directory(require_complete=True)
-    if not report.valid:
-        details = "; ".join(f"{issue.ability_id}: {issue.message}" for issue in report.issues)
-        raise RuntimeError(f"ability identity registry is invalid: {details}")
-    aliases_to_ids: dict[str, str] = {}
-    ids_to_aliases: dict[str, tuple[str, ...]] = {}
-    for definition in report.definitions:
-        ids_to_aliases[definition.ability_id] = definition.aliases
-        for alias in definition.aliases:
-            if alias.isidentifier():
-                aliases_to_ids[alias] = definition.ability_id
-    return aliases_to_ids, ids_to_aliases
 
 
 class ItemSerializer:
@@ -39,14 +22,19 @@ class ItemSerializer:
     @staticmethod
     def serialize(item: Any) -> dict[str, Any]:
         """Convert item object to data dict."""
-        if item is None or not hasattr(item, "name"):
-            return {"name": "None", "typ": "None", "subtyp": "None"}
+        if item is None or not isinstance(item, items.Item):
+            raise SaveValidationError("item", "expected a registered Item instance")
+
+        try:
+            item_id = ITEM_TYPES.id_for(item)
+        except KeyError as exc:
+            raise SaveValidationError("item.item_id", str(exc)) from exc
 
         data = {
+            "item_id": item_id,
             "name": item.name,
             "typ": getattr(item, "typ", "Unknown"),
             "subtyp": getattr(item, "subtyp", "None"),
-            "class": item.__class__.__name__,
         }
         if item.__class__.__name__ == "InscribedSpellScroll":
             data["spell_class_name"] = getattr(item, "spell_class_name", "MagicMissile")
@@ -62,84 +50,58 @@ class ItemSerializer:
         return data
 
     @staticmethod
-    def deserialize(data: dict[str, Any]) -> Any:
+    def deserialize(data: dict[str, Any], *, path: str = "item") -> Any:
         """Reconstruct item from data dict."""
-        # Normalize typ for Accessory items (Ring/Pendant)
-        typ = data.get("typ", "Weapon")
-        if typ == "Accessory":
-            # Determine if Ring or Pendant from class name
-            class_name = data.get("class", "")
-            if "Ring" in class_name:
-                typ = "Ring"
-            elif "Pendant" in class_name:
-                typ = "Pendant"
-            else:
-                typ = "Ring"  # Default to Ring
+        if not isinstance(data, dict):
+            raise SaveValidationError(path, "expected an object")
+        item_id = data.get("item_id")
+        if not isinstance(item_id, str) or not item_id:
+            raise SaveValidationError(f"{path}.item_id", "expected a non-empty string")
+        try:
+            item_class = ITEM_TYPES.resolve(item_id)
+        except KeyError as exc:
+            raise SaveValidationError(f"{path}.item_id", str(exc)) from exc
 
-        if data.get("name") == "None" or data.get("subtyp") == "None":
-            return items.remove_equipment(typ)
-
-        # Try to find and instantiate the item class
-        item_class_name = data.get("class")
-        if item_class_name and hasattr(items, item_class_name):
-            try:
-                item_class = getattr(items, item_class_name)
-                # Don't try to instantiate abstract base classes
-                if item_class_name not in [
-                    "Item",
-                    "Weapon",
-                    "OffHand",
-                    "Armor",
-                    "Helmet",
-                    "Accessory",
-                ]:
-                    if item_class_name == "InscribedSpellScroll":
-                        return item_class(
-                            data.get("spell_class_name", "MagicMissile"),
-                            charges=data.get("charges"),
-                        )
-                    if (
-                        item_class_name in {"LockpickKit", "WaterBladder", "ThrowingDaggers"}
-                        or data.get("subtyp") == "Crossbow Bolts"
-                    ):
-                        default_charges = (
-                            10 if item_class_name in {"WaterBladder", "ThrowingDaggers"} else 3
-                        )
-                        return item_class(charges=data.get("charges", default_charges))
-                    return item_class()
-            except Exception:
-                pass
-
-        # Fallback: create empty equipment
-        return items.remove_equipment(typ)
+        try:
+            if item_id == "inscribed_spell_scroll":
+                spell_class_name = data.get("spell_class_name")
+                if not isinstance(spell_class_name, str) or not spell_class_name:
+                    raise SaveValidationError(
+                        f"{path}.spell_class_name", "expected a non-empty string"
+                    )
+                return item_class(spell_class_name, charges=data.get("charges"))
+            if (
+                item_id in {"lockpick_kit", "water_bladder", "throwing_daggers"}
+                or data.get("subtyp") == "Crossbow Bolts"
+            ):
+                default_charges = 10 if item_id in {"water_bladder", "throwing_daggers"} else 3
+                return item_class(charges=data.get("charges", default_charges))
+            return item_class()
+        except SaveValidationError:
+            raise
+        except (TypeError, ValueError) as exc:
+            raise SaveValidationError(path, f"could not construct {item_id!r}: {exc}") from exc
 
 
 class AbilitySerializer:
-    """Serializes YAML abilities by stable slug with legacy read adapters."""
+    """Serializes abilities exclusively by stable slug."""
 
     @staticmethod
     def serialize(ability: Any) -> str:
-        """Convert an ability to its canonical slug or legacy class token."""
+        """Convert an ability to its canonical slug."""
         if ability is None:
             return ""
         from ..abilities.catalog import ensure_catalog_ability_identity
 
         ensure_catalog_ability_identity(ability)
-        if getattr(ability, "ability_id", None):
-            return str(ability.ability_id)
-        legacy_token = str(getattr(ability, "_class_name", ability.__class__.__name__))
-        aliases_to_ids, _ = _ability_identity_maps()
-        return aliases_to_ids.get(legacy_token, legacy_token)
+        ability_id = getattr(ability, "ability_id", None)
+        if not isinstance(ability_id, str) or not ability_id:
+            raise SaveValidationError("ability", "ability has no canonical identity")
+        return ability_id
 
     @staticmethod
     def deserialize(name: str) -> Any | None:
-        """Reconstruct an ability from a slug, class token, or display name.
-
-        Supports:
-        - Canonical slugs: 'heal_2' (preferred)
-        - Class names: 'Heal', 'Heal2', 'Heal3' (unambiguous)
-        - Display names: 'Heal' (ambiguous, returns first match)
-        """
+        """Reconstruct an ability from its canonical slug."""
         if not name:
             return None
 
@@ -149,39 +111,12 @@ class AbilitySerializer:
         if catalog_ability is not None:
             return catalog_ability
 
-        if re.fullmatch(r"[a-z][a-z0-9_]*", name):
-            yaml_path = CORE_DATA_DIR / "abilities" / f"{name}.yaml"
-            if yaml_path.is_file():
-                _, ids_to_aliases = _ability_identity_maps()
-                for alias in ids_to_aliases.get(name, ()):
-                    if alias.isidentifier() and hasattr(abilities, alias):
-                        try:
-                            ability = getattr(abilities, alias)()
-                            if getattr(ability, "ability_id", None) is None:
-                                ability.ability_id = name
-                            return ability
-                        except Exception:
-                            continue
-                return AbilityFactory.create_from_yaml(yaml_path)
-
-        # Temporary compatibility adapter for version-1 development saves.
-        if hasattr(abilities, name):
-            try:
-                attr = getattr(abilities, name)
-                if hasattr(attr, "__call__"):
-                    return attr()
-            except Exception:
-                pass
-
-        # Fallback to display name lookup (may be ambiguous)
-        for attr_name in dir(abilities):
-            attr = getattr(abilities, attr_name)
-            if hasattr(attr, "__call__"):
-                try:
-                    instance = attr()
-                    if hasattr(instance, "name") and instance.name == name:
-                        return instance
-                except Exception:
-                    pass
-
-        return None
+        if not re.fullmatch(r"[a-z][a-z0-9_]*", name):
+            raise SaveValidationError("ability", f"invalid ability id: {name!r}")
+        yaml_path = CORE_DATA_DIR / "abilities" / f"{name}.yaml"
+        if not yaml_path.is_file():
+            raise SaveValidationError("ability", f"unknown ability id: {name!r}")
+        try:
+            return AbilityFactory.create_from_yaml(yaml_path)
+        except (KeyError, TypeError, ValueError) as exc:
+            raise SaveValidationError("ability", f"could not construct {name!r}: {exc}") from exc

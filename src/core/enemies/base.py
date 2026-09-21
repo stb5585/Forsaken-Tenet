@@ -10,6 +10,7 @@ from .. import items
 from ..character import Character, Combat, Resource, Stats, StatusEffect
 from ..combat.action_queue import ActionPriority
 from ..constants import ENEMY_LOW_HEALTH_THRESHOLD
+from ..identity import ENEMY_TYPES
 
 AbilityFactory = Callable[[], object]
 
@@ -54,6 +55,13 @@ class Enemy(Character):
     enemy_typ: defines the base type template used for enemy
     picture(str): file that contains the ascii art for the enemy
     """
+
+    enemy_id: str
+
+    def __init_subclass__(cls, *, enemy_id: str | None = None, **kwargs: object) -> None:
+        """Register every enemy type at definition time for strict persistence."""
+        super().__init_subclass__(**kwargs)
+        cls.enemy_id = ENEMY_TYPES.register(cls, enemy_id)
 
     _DEBUFF_REAPPLY_RULES = {
         "Enfeeble": {"stat_all": ["Attack", "Defense"]},

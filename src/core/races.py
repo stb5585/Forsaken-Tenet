@@ -6,6 +6,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from textwrap import wrap
 
+from .identity import RACE_TYPES
+
 
 # ── Racial traits (7 sins / 7 virtues) ───────────────────────────────
 @dataclass(frozen=True)
@@ -24,6 +26,13 @@ class Race:
     Class restriction lists the available classes for each race
     Resistance describes each race's resistances to magic
     """
+
+    race_id: str
+
+    def __init_subclass__(cls, *, race_id: str | None = None, **kwargs: object) -> None:
+        """Register every race type at definition time for strict persistence."""
+        super().__init_subclass__(**kwargs)
+        cls.race_id = RACE_TYPES.register(cls, race_id)
 
     def __init__(
         self,

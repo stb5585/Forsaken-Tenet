@@ -5,11 +5,13 @@ from __future__ import annotations
 from dataclasses import asdict
 from typing import TYPE_CHECKING
 
-from .. import items, main_story, quest_progress, thieves_guild
+from .. import main_story, quest_progress, thieves_guild
 from .. import town as town_core
 from ..character import Combat, Level, Resource, Stats
 from ..classes import bard, promotion_kits, transformation
 from ..contracts import ActionReference
+from ..identity import CLASS_TYPES, RACE_TYPES
+from .errors import SaveValidationError
 from .item_serialization import AbilitySerializer, ItemSerializer
 from .models import SAVE_SCHEMA_VERSION, CombatData, LevelData, ResourceData, StatsData
 from .quests import QuestDataSerializer
@@ -217,8 +219,8 @@ class PlayerDataSerializer:
                 getattr(player, "action_bar_autofill_complete", False)
             ),
             # Character attributes
-            "class_name": canonical["cls"].name if canonical["cls"] else None,
-            "race_name": player.race.name if player.race else None,
+            "class_id": CLASS_TYPES.id_for(canonical["cls"]) if canonical["cls"] else None,
+            "race_id": RACE_TYPES.id_for(player.race) if player.race else None,
             "sex": getattr(player, "sex", "Male"),
             "portrait_variant": PlayerDataSerializer._portrait_variant(
                 getattr(player, "portrait_variant", 0)
@@ -332,9 +334,32 @@ class PlayerDataSerializer:
             data: Serialized player data dictionary
             skip_tiles: If True, skip loading world tiles (for transform feature)
         """
-        from .. import classes, races
         from ..player import Player, normalize_gameplay_stats
         from ..progression import ProgressionState, award_experience
+
+        if not isinstance(data, dict):
+            raise SaveValidationError("save", "expected an object")
+        class_id = data.get("class_id")
+        race_id = data.get("race_id")
+        if not isinstance(class_id, str) or not class_id:
+            raise SaveValidationError("class_id", "expected a non-empty string")
+        if not isinstance(race_id, str) or not race_id:
+            raise SaveValidationError("race_id", "expected a non-empty string")
+        try:
+            class_type = CLASS_TYPES.resolve(class_id)
+        except KeyError as exc:
+            raise SaveValidationError("class_id", str(exc)) from exc
+        try:
+            race_type = RACE_TYPES.resolve(race_id)
+        except KeyError as exc:
+            raise SaveValidationError("race_id", str(exc)) from exc
+        try:
+            restored_class = class_type()
+            restored_race = race_type()
+        except (TypeError, ValueError) as exc:
+            raise SaveValidationError(
+                "identity", f"could not construct character identity: {exc}"
+            ) from exc
 
         # Create fresh character
         health = Resource(data["health"]["max"], data["health"]["current"])
@@ -399,44 +424,24 @@ class PlayerDataSerializer:
         )
         player.action_bar_autofill_complete = bool(data.get("action_bar_autofill_complete", False))
 
-        # Restore class and race
-        if data.get("class_name"):
-            for cls_attr in dir(classes):
-                cls_obj = getattr(classes, cls_attr)
-                if hasattr(cls_obj, "__call__"):
-                    try:
-                        instance = cls_obj()
-                        if hasattr(instance, "name") and instance.name == data["class_name"]:
-                            player.cls = instance
-                            break
-                    except Exception:
-                        pass
-
-        if data.get("race_name"):
-            for race_attr in dir(races):
-                race_obj = getattr(races, race_attr)
-                if hasattr(race_obj, "__call__"):
-                    try:
-                        instance = race_obj()
-                        if hasattr(instance, "name") and instance.name == data["race_name"]:
-                            player.race = instance
-                            break
-                    except Exception:
-                        pass
+        # Restore the identity only after every persisted ID has been validated.
+        player.cls = restored_class
+        player.race = restored_race
 
         player.transform_type = player.cls
         player.progression = ProgressionState.from_dict(data["progression"])
         award_experience(player, 0)
 
         # Restore equipment
-        for slot, item_data in data["equipment"].items():
-            player.equipment[slot] = ItemSerializer.deserialize(item_data)
-        player.equipment.setdefault("Weapon", items.NoWeapon())
-        player.equipment.setdefault("OffHand", items.NoOffHand())
-        player.equipment.setdefault("Armor", items.NoArmor())
-        player.equipment.setdefault("Helmet", items.NoHelmet())
-        player.equipment.setdefault("Ring", items.NoRing())
-        player.equipment.setdefault("Pendant", items.NoPendant())
+        required_slots = {"Weapon", "OffHand", "Armor", "Helmet", "Ring", "Pendant"}
+        equipment_data = data["equipment"]
+        missing_slots = required_slots.difference(equipment_data)
+        if missing_slots:
+            raise SaveValidationError(
+                "equipment", f"missing required slots: {', '.join(sorted(missing_slots))}"
+            )
+        for slot, item_data in equipment_data.items():
+            player.equipment[slot] = ItemSerializer.deserialize(item_data, path=f"equipment.{slot}")
 
         # Restore inventory
         for item_name, item_list in data["inventory"].items():

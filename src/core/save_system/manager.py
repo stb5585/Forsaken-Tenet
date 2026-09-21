@@ -7,6 +7,7 @@ from typing import TypedDict
 
 from src.paths import USER_SAVE_DIR, USER_TEMP_DIR
 
+from .errors import SaveValidationError
 from .models import (
     SAVE_SCHEMA_VERSION,
     SaveCompatibilityStatus,
@@ -15,8 +16,8 @@ from .models import (
 from .player import PlayerDataSerializer
 
 PRE_FOUNDATION_SAVE_MESSAGE = (
-    "This save predates save schema version 1 and is incompatible with the "
-    "foundational gameplay update. Start a new game."
+    "This save predates save schema version 2 and is incompatible with the "
+    "strict identity update. Start a new game."
 )
 
 
@@ -193,6 +194,10 @@ class SaveManager:
                 skip_tiles=skip_tiles,
             )
             result = SaveLoadResult(player, code=SaveLoadCode.SUCCESS)
+            SaveManager.last_load_result = result
+            return result
+        except SaveValidationError as e:
+            result = SaveLoadResult(None, f"Save data is invalid: {e}", SaveLoadCode.INVALID_DATA)
             SaveManager.last_load_result = result
             return result
         except (

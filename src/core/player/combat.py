@@ -550,11 +550,9 @@ class PlayerCombatMixin:
             total_heal = int(total_heal * promotion_kits.xenid_caster_multiplier(self, "healing"))
             return max(0, total_heal)
         if mod == "resist":
-            res_mod = 0
             if ultimate and typ == "Physical":  # ultimate weapons bypass Physical resistance
-                res_mod -= 1
-            if typ in self.resistance:
-                res_mod = self.resistance[typ]
+                return 0.0
+            res_mod = self.resistance.get(typ, 0)
             if typ == "Death" and int(getattr(self, "resist_death_steps", 0) or 0) > 0:
                 res_mod += 0.50
             if typ == "Poison":
