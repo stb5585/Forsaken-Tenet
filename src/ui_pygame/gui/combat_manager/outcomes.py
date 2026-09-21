@@ -6,6 +6,8 @@ import sys
 
 import pygame
 
+from src.ui_pygame.screen_runtime import get_events
+
 from ..combat_view.animator import DEATH_ANIMATION_FRAMES
 from ..enemy_presentation import is_invisible_target, player_has_sight
 from .constants import (
@@ -42,7 +44,7 @@ class CombatOutcomeMixin:
         # Render current state and pause before enemy acts (with animation updates)
         enemy_clock = pygame.time.Clock()
         for _ in range(ENEMY_PRE_ACTION_HOLD_FRAMES):
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
@@ -179,7 +181,7 @@ class CombatOutcomeMixin:
                 # Render updated state and show result (with animation updates)
                 result_clock = pygame.time.Clock()
                 for _ in range(ENEMY_RESULT_HOLD_FRAMES):
-                    for event in pygame.event.get():
+                    for event in get_events():
                         if event.type == pygame.QUIT:
                             pygame.quit()
                             sys.exit(0)
@@ -482,7 +484,7 @@ class CombatOutcomeMixin:
                     self._render_combat_frame(player_char, enemy, [], -1)
                     pygame.display.flip()
                     clock.tick(60)
-                    for event in pygame.event.get():
+                    for event in get_events():
                         if event.type == pygame.QUIT:
                             pygame.quit()
                             sys.exit(0)
@@ -643,7 +645,7 @@ class CombatOutcomeMixin:
         pause_clock = pygame.time.Clock()
         elapsed = 0
         while elapsed < duration_ms:
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)

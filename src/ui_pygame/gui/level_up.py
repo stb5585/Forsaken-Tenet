@@ -2,6 +2,8 @@
 
 import pygame
 
+from src.ui_pygame.screen_runtime import get_events
+
 from .level_up_popup import LevelUpPopup
 
 
@@ -107,6 +109,6 @@ class LevelUpScreen:
         """Wait for the player to press a key or close the window."""
         waiting = True
         while waiting:
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type in (pygame.QUIT, pygame.KEYDOWN):
                     waiting = False

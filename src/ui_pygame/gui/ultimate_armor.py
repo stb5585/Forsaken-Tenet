@@ -8,6 +8,7 @@ import time
 import pygame
 
 from src.core import items
+from src.ui_pygame.screen_runtime import get_events
 
 
 class UltimateArmorShop:
@@ -128,7 +129,7 @@ class UltimateArmorShop:
 
         while time.time() - start_time < duration:
             # Check for quit events
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     return
 

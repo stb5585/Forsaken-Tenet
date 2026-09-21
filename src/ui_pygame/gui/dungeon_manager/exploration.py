@@ -11,6 +11,7 @@ from src.core.abilities import detects_encounter
 from src.core.player import DIRECTIONS
 from src.ui_common.input import UiCommand
 from src.ui_pygame.input_adapter import dungeon_command_for_key
+from src.ui_pygame.screen_runtime import get_events
 
 from ..dungeon_hud import DungeonHUD
 from ..dungeon_renderer import DungeonRenderer
@@ -459,7 +460,7 @@ class DungeonExplorationMixin:
                 break
 
             # Handle events
-            for event in pygame.event.get():
+            for event in get_events():
                 handle_display_event = getattr(self.presenter, "handle_display_event", None)
                 if callable(handle_display_event) and handle_display_event(event):
                     self._cached_view = None
@@ -617,7 +618,7 @@ class DungeonExplorationMixin:
             panel_rect = self.hud.render_enlarged_minimap_modal(self.player_char)
             pygame.display.flip()
 
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     self.running = False
                     self.player_char.quit = True
@@ -781,7 +782,7 @@ class DungeonExplorationMixin:
         while True:
             draw()
             input_armed = release_guard_allows_input(require_key_release, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()

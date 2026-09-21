@@ -22,6 +22,7 @@ from src.ui_pygame.gui.enemy_presentation import (
     is_invisible_target,
     player_has_sight,
 )
+from src.ui_pygame.screen_runtime import get_events
 
 from ..input_guards import release_guard_allows_input
 from ..mouse_helpers import hit_index, is_left_click, mouse_position
@@ -139,7 +140,7 @@ class CombatLifecycleMixin:
         # Show initial combat screen with brief transition delay (with animation updates)
         init_clock = pygame.time.Clock()
         for _ in range(COMBAT_START_TRANSITION_FRAMES):
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
@@ -274,7 +275,7 @@ class CombatLifecycleMixin:
 
             # Small delay between turns (with animation updates)
             for _ in range(POST_TURN_DELAY_FRAMES):
-                for event in pygame.event.get():
+                for event in get_events():
                     if event.type == pygame.QUIT:
                         pygame.quit()
                         sys.exit(0)
@@ -502,7 +503,7 @@ class CombatLifecycleMixin:
                 self.combat_view.reload_enemy_sprite(enemy)
                 self.combat_view.enemy_visual_offset = (offset_x, 0)
                 for _ in range(5):
-                    for event in pygame.event.get():
+                    for event in get_events():
                         if event.type == pygame.QUIT:
                             pygame.quit()
                             sys.exit(0)
@@ -614,7 +615,7 @@ class CombatLifecycleMixin:
 
             # Handle input
             input_armed = release_guard_allows_input(True, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
@@ -851,7 +852,7 @@ class CombatLifecycleMixin:
             )
             pygame.display.flip()
             input_armed = release_guard_allows_input(True, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)

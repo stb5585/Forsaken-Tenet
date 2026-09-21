@@ -4,6 +4,8 @@ Character creation screen for class selection.
 
 import pygame
 
+from src.ui_pygame.screen_runtime import get_events
+
 from .input_guards import (
     prepare_guarded_input,
     release_guard_allows_input,
@@ -429,7 +431,7 @@ class ClassSelectionScreen:
             self.draw_all()
 
             input_armed = release_guard_allows_input(require_key_release, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     import sys

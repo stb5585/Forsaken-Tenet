@@ -13,6 +13,7 @@ from src.core.classes import (
     demonologist,
     promotion_kits,
 )
+from src.ui_pygame.screen_runtime import get_events
 
 from ..input_guards import release_guard_allows_input
 
@@ -49,7 +50,7 @@ class ClassMechanicSelectionMixin:
             pygame.display.flip()
 
             input_armed = release_guard_allows_input(True, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
@@ -108,7 +109,7 @@ class ClassMechanicSelectionMixin:
             )
             pygame.display.flip()
             input_armed = release_guard_allows_input(True, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
@@ -182,7 +183,7 @@ class ClassMechanicSelectionMixin:
             pygame.display.flip()
 
             input_armed = release_guard_allows_input(True, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
@@ -242,7 +243,7 @@ class ClassMechanicSelectionMixin:
             pygame.display.flip()
 
             input_armed = release_guard_allows_input(True, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
@@ -308,7 +309,7 @@ class ClassMechanicSelectionMixin:
             pygame.display.flip()
 
             input_armed = release_guard_allows_input(True, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
@@ -384,7 +385,7 @@ class ClassMechanicSelectionMixin:
             pygame.display.flip()
 
             input_armed = release_guard_allows_input(True, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
@@ -465,7 +466,7 @@ class ClassMechanicSelectionMixin:
             pygame.display.flip()
 
             input_armed = release_guard_allows_input(True, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)

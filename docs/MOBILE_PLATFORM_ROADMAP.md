@@ -279,7 +279,7 @@ Exit gate:
 
 ## Phase 3 — Screen Runtime And Modal Migration
 
-State: `Deferred`
+State: `In Progress — runtime and event-owner foundation complete`
 
 Purpose: replace nested event loops with an explicit screen stack and a single
 top-level frame/update loop. This reduces input bugs on desktop and makes pause,
@@ -315,6 +315,13 @@ Exit gate:
   removal owner.
 - Focused regression tests cover stack navigation and at least the primary
   combat, dungeon, menu, and save transitions.
+
+September 2026 status: `ScreenRuntime` now owns the sole direct event-queue
+read, the 60 FPS clock, normalized key/text/pointer payloads, and tested
+push/replace/pop/quit semantics. Existing blocking flows consume events through
+the centralized compatibility boundary. Their conversion into native stack
+states—and transition tests for the complete representative route—remains the
+Phase 3 exit work.
 
 ## Phase 4 — Resource, Save, And Distribution Readiness
 

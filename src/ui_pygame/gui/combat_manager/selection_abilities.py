@@ -11,6 +11,7 @@ from src.core.classes import (
     promotion_kits,
 )
 from src.core.combat.battle_engine import STOLEN_SCROLL_CHOICE_PREFIX
+from src.ui_pygame.screen_runtime import get_events
 
 from ..input_guards import release_guard_allows_input
 
@@ -48,7 +49,7 @@ class AbilitySelectionMixin:
             pygame.display.flip()
 
             input_armed = release_guard_allows_input(True, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
@@ -147,7 +148,7 @@ class AbilitySelectionMixin:
             pygame.display.flip()
 
             input_armed = release_guard_allows_input(True, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
@@ -237,7 +238,7 @@ class AbilitySelectionMixin:
 
             # Handle input
             input_armed = release_guard_allows_input(True, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
@@ -301,7 +302,7 @@ class AbilitySelectionMixin:
             pygame.display.flip()
 
             input_armed = release_guard_allows_input(True, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)

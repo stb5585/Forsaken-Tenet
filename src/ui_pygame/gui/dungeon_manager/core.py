@@ -8,6 +8,8 @@ from pathlib import Path
 
 import pygame
 
+from src.ui_pygame.screen_runtime import get_events
+
 from src.core import map_tiles
 from src.core.data.data_loader import get_special_events
 from src.paths import PYGAME_ASSETS_DIR
@@ -327,7 +329,7 @@ class DungeonCoreMixin:
             pygame.display.flip()
 
             # Check for quit events
-            for _ in pygame.event.get(pygame.QUIT):
+            for _ in get_events(pygame.QUIT):
                 pygame.quit()
                 sys.exit()
 
@@ -573,7 +575,7 @@ class DungeonCoreMixin:
             pygame.display.flip()
 
             # Keep window responsive
-            for event in pygame.event.get(pygame.QUIT):
+            for event in get_events(pygame.QUIT):
                 pygame.quit()
                 sys.exit()
 

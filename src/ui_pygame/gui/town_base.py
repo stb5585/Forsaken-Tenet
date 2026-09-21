@@ -11,6 +11,7 @@ import pygame
 from src.paths import PYGAME_ASSETS_DIR
 from src.ui_common.text import wrap_text_to_width
 from src.ui_pygame.assets.npc_art_manager import get_npc_art_manager
+from src.ui_pygame.screen_runtime import get_events
 
 from .mouse_helpers import is_left_click
 
@@ -297,7 +298,7 @@ class TownScreenBase:
                 draw_content_formatted(full_lines)
                 pygame.display.flip()
 
-                for event in pygame.event.get():
+                for event in get_events():
                     if event.type == pygame.QUIT:
                         pygame.quit()
                         import sys
@@ -311,7 +312,7 @@ class TownScreenBase:
             try:
                 pygame.event.clear(pygame.KEYDOWN)
             except Exception:
-                for _ in pygame.event.get():
+                for _ in get_events():
                     pass
             wrapped_lines = wrapped_text_lines()
             displayed_lines = []
@@ -338,7 +339,7 @@ class TownScreenBase:
                     time.sleep(0.02)
 
                     # Skip current dialogue on SPACE/ENTER/ESC or left click.
-                    for event in pygame.event.get():
+                    for event in get_events():
                         if event.type == pygame.QUIT:
                             pygame.quit()
                             import sys
@@ -369,7 +370,7 @@ class TownScreenBase:
                 draw_content_formatted(displayed_lines)
                 pygame.display.flip()
 
-                for event in pygame.event.get():
+                for event in get_events():
                     if event.type == pygame.QUIT:
                         pygame.quit()
                         import sys

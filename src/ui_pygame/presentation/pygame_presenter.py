@@ -14,6 +14,7 @@ import pygame
 
 from src.core.events import EventType, get_event_bus
 from src.ui_pygame.gui.mouse_helpers import hit_index, is_left_click, mouse_position
+from src.ui_pygame.screen_runtime import get_events
 
 from ..display_scaling import DisplayConfiguration, LayoutMetrics
 from .interface import GamePresenter
@@ -128,9 +129,6 @@ class PygamePresenter(GamePresenter):
         self.floating_texts: list[FloatingText] = []
         self.shake_intensity = 0
         self.shake_duration = 0
-
-        # Sprite manager
-        self.sprite_manager = None  # Temporarily disable sprite manager usage
 
         # Event system
         self.event_bus = get_event_bus()
@@ -307,20 +305,9 @@ class PygamePresenter(GamePresenter):
 
     def _draw_character(self, character: Character, x: int, y: int, is_player: bool = True):
         """Draw a character sprite with health/mana bars."""
-        # Get character sprite
-        sprite = None
-        if self.sprite_manager:
-            sprite = self.sprite_manager.get_character_sprite(character)
-
-        if sprite:
-            # Draw actual sprite
-            sprite_rect = sprite.get_rect(center=(x, y - 20))
-            self.screen.blit(sprite, sprite_rect)
-        else:
-            # Fallback: Draw placeholder rectangle
-            char_rect = pygame.Rect(x - 50, y - 50, 100, 100)
-            color = BLUE if is_player else RED
-            pygame.draw.rect(self.screen, color, char_rect, 2)
+        char_rect = pygame.Rect(x - 50, y - 50, 100, 100)
+        color = BLUE if is_player else RED
+        pygame.draw.rect(self.screen, color, char_rect, 2)
 
         # Name
         name_text = self.normal_font.render(character.name, True, WHITE)
@@ -378,17 +365,7 @@ class PygamePresenter(GamePresenter):
         active_statuses = [
             name for name, effect in character.status_effects.items() if effect.active
         ]
-        if active_statuses and self.sprite_manager:
-            # Draw status icons
-            icon_x = x - (len(active_statuses) * 18)
-            for status_name in active_statuses[:4]:  # Show up to 4 icons
-                icon = self.sprite_manager.get_status_icon(status_name)
-                if icon:
-                    icon_rect = icon.get_rect(center=(icon_x, status_y + 10))
-                    self.screen.blit(icon, icon_rect)
-                    icon_x += 36
-        elif active_statuses:
-            # Fallback: Text display
+        if active_statuses:
             status_text = self.small_font.render(", ".join(active_statuses[:3]), True, GOLD)
             status_rect = status_text.get_rect(centerx=x, top=status_y)
             self.screen.blit(status_text, status_rect)
@@ -457,7 +434,7 @@ class PygamePresenter(GamePresenter):
     def render_combat(self, player: Character, enemy: Character, **kwargs):
         """Render the combat screen."""
         # Handle Pygame events
-        for event in pygame.event.get():
+        for event in get_events():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 return
@@ -609,7 +586,7 @@ class PygamePresenter(GamePresenter):
                     for idx in range(scroll_offset, end)
                 ]
 
-                for event in pygame.event.get():
+                for event in get_events():
                     if event.type == pygame.QUIT:
                         pygame.quit()
                         import sys
@@ -751,7 +728,7 @@ class PygamePresenter(GamePresenter):
                     y += 60
 
             # Handle events
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     import sys
@@ -965,7 +942,7 @@ class PygamePresenter(GamePresenter):
             unlock_time = pygame.time.get_ticks() + min_display_ms
             waiting = True
             while waiting:
-                for event in pygame.event.get():
+                for event in get_events():
                     if event.type == pygame.QUIT:
                         pygame.quit()
                         import sys
@@ -1130,7 +1107,7 @@ class PygamePresenter(GamePresenter):
         unlock_time = pygame.time.get_ticks() + min_display_ms
         waiting = True
         while waiting:
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     import sys
@@ -1194,7 +1171,7 @@ class PygamePresenter(GamePresenter):
                 progress = min(1.0, elapsed_ms / duration_ms)
 
             # Handle window events to keep UI responsive
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     import sys
@@ -1310,7 +1287,7 @@ class PygamePresenter(GamePresenter):
         """Get player action through menu."""
         selected = 0
         while True:
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
@@ -1332,7 +1309,7 @@ class PygamePresenter(GamePresenter):
         text = default
 
         while True:
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
@@ -1378,7 +1355,7 @@ class PygamePresenter(GamePresenter):
         # Wait for key press
         waiting = True
         while waiting:
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     waiting = False
                 if event.type == pygame.KEYDOWN:

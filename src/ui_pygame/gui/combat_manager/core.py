@@ -17,6 +17,7 @@ from src.core.combat.battle_engine import BattleEngine
 from src.core.combat.battle_logger import BattleLogger
 from src.core.player import LIMINAL_GAP_ENTRY_FACING, LIMINAL_GAP_ENTRY_POS, Player
 from src.paths import DEBUG_LOGS_DIR
+from src.ui_pygame.screen_runtime import get_events
 
 from ..combat_view.view import CombatView
 from ..input_guards import (
@@ -744,7 +745,7 @@ class CombatManagerCoreMixin:
         self.combat_view.trigger_smoke_screen_visual(target)
         clock = pygame.time.Clock()
         for _ in range(frames):
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
@@ -919,7 +920,7 @@ class CombatManagerCoreMixin:
         for reveal_idx in range(1, 4):
             frames = 18 + reveal_idx * 8
             for _ in range(frames):
-                for event in pygame.event.get():
+                for event in get_events():
                     if event.type == pygame.QUIT:
                         pygame.quit()
                         sys.exit(0)
@@ -929,7 +930,7 @@ class CombatManagerCoreMixin:
         input_armed = prepare_guarded_input(flush_events=False, require_key_release=True)
         waiting = True
         while waiting:
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)

@@ -9,6 +9,7 @@ import pygame
 from src.core.classes import (
     ability_mechanics,
 )
+from src.ui_pygame.screen_runtime import get_events
 
 from ..character_naming import CompanionNamingScreen
 from ..input_guards import release_guard_allows_input
@@ -49,7 +50,7 @@ class SpecialSelectionMixin:
             )
             pygame.display.flip()
             input_armed = release_guard_allows_input(True, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
@@ -117,7 +118,7 @@ class SpecialSelectionMixin:
             pygame.display.flip()
 
             input_armed = release_guard_allows_input(True, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
@@ -200,7 +201,7 @@ class SpecialSelectionMixin:
             pygame.display.flip()
 
             input_armed = release_guard_allows_input(True, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
@@ -254,7 +255,7 @@ class SpecialSelectionMixin:
             pygame.display.flip()
 
             input_armed = release_guard_allows_input(True, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
