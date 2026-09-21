@@ -118,7 +118,9 @@ def normalize_event(event: pygame.event.Event) -> ScreenInput | None:
     return None
 
 
-def _poll_pygame_events(event_types: int | tuple[int, ...] | None = None) -> list[pygame.event.Event]:
+def _poll_pygame_events(
+    event_types: int | tuple[int, ...] | None = None,
+) -> list[pygame.event.Event]:
     """Read the process event queue; this is the sole direct polling boundary."""
     if event_types is None:
         return list(pygame.event.get())

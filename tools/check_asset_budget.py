@@ -100,7 +100,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     for path, size in result.oversized_files:
         print(f"oversized: {path.relative_to(REPOSITORY_ROOT)} ({size:,} bytes)")
     if result.total_bytes > budget.total_limit_bytes:
-        print(f"asset total exceeds budget by {result.total_bytes - budget.total_limit_bytes:,} bytes")
+        print(
+            f"asset total exceeds budget by {result.total_bytes - budget.total_limit_bytes:,} bytes"
+        )
         return 1
     return 1 if result.oversized_files else 0
 
