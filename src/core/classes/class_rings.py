@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import copy
-import random
 from typing import Any
+
+from src.core.randomness import gameplay_random as random
 
 LEGACY_CLASS_NAMES = (
     "Berserker",

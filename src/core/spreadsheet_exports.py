@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import csv
 import inspect
-import random
 import re
 from collections import defaultdict
 from collections.abc import Callable, Iterable, Sequence
@@ -12,6 +11,8 @@ from io import StringIO
 from pathlib import Path
 from typing import Any
 from unittest.mock import patch
+
+from src.core.randomness import gameplay_random as random
 
 from . import abilities, companions, enemies, items
 from .classes.astromancer import LEARNABLE_SPELL_RANKS

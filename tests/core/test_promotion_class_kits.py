@@ -575,7 +575,7 @@ def test_winged_pounce_requires_form_essence_and_expires_after_enemy_turn(monkey
         "weapon_damage",
         lambda *_args, **_kwargs: ("miss\n", False, False),
     )
-    engine.execute_action("Attack")
+    engine.execute_intent(engine.prepare_intent("Attack"))
     assert character.flying is False
 
 

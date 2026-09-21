@@ -72,7 +72,7 @@ def test_enemy_flee_is_recorded_without_ending_combat_as_player_flee():
     engine.attacker = enemy
     engine.defender = player
 
-    result = engine.execute_action("Flee")
+    result = engine.execute_intent(engine.prepare_intent("Flee"))
 
     assert result.fled is False
     assert engine.flee is False
@@ -95,7 +95,7 @@ def test_escaped_single_enemy_awards_no_victory_rewards(monkeypatch):
     starting_experience = player.level.exp
     starting_gold = player.gold
 
-    engine.execute_action("Flee")
+    engine.execute_intent(engine.prepare_intent("Flee"))
     outcome = engine.end_battle()
 
     assert outcome.result == "victory"
@@ -143,7 +143,7 @@ def test_enemy_smoke_screen_bypasses_aggressive_pursuit(monkeypatch):
         ),
     )
 
-    result = engine.execute_action("Use Skill", "Smoke Screen")
+    result = engine.execute_intent(engine.prepare_intent("Use Skill", "Smoke Screen"))
 
     assert result.fled is False
     assert engine.encounter.primary_member.resolution == EnemyResolution.ESCAPED

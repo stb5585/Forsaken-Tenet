@@ -1,9 +1,8 @@
 """Player exploration, navigation, travel, and death behavior."""
 
-import random
-
 import numpy
 
+from src.core.randomness import gameplay_random as random
 from src.paths import MAP_FILES_DIR
 
 from .. import thieves_guild

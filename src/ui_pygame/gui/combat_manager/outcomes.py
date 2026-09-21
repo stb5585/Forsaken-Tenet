@@ -57,22 +57,25 @@ class CombatOutcomeMixin:
         # Check for forced actions (charging skills, jump)
         forced = self.engine.get_forced_action()
         if forced:
-            if forced.action == "Cancelled":
+            if forced.cancelled:
                 for line in forced.cancel_message.strip().split("\n"):
                     if line.strip():
                         self.combat_view.add_combat_message(line)
                 self._flush_result_frame(player_char, enemy)
                 return None
 
+            intent = forced.intent
+            assert intent is not None
+
             enemy_name_before = enemy.name
             enemy_hp_before = enemy.health.current
             player_hp_before = player_char.health.current
             player_stun_before = bool(player_char.status_effects["Stun"].active)
 
-            result = self.engine.execute_action(forced.action, choice=forced.choice)
+            result = self.engine.execute_intent(intent)
             self._announce_new_resolutions(result)
             self._record_bestiary_ability_if_visible(
-                player_char, enemy, forced.choice or forced.action
+                player_char, enemy, intent.choice or intent.engine_action
             )
             for line in result.message.strip().split("\n"):
                 if line.strip():
@@ -88,7 +91,7 @@ class CombatOutcomeMixin:
             damage_to_player = max(0, player_hp_before - player_char.health.current)
             if damage_to_player > 0:
                 self._show_combat_damage_effect(
-                    "player", forced.action, forced.choice, result.message, damage_to_player
+                    "player", intent.engine_action, intent.choice, result.message, damage_to_player
                 )
                 self._flush_result_frame(player_char, enemy)
             else:
@@ -127,8 +130,9 @@ class CombatOutcomeMixin:
                     def slot_cb(_u, _t):
                         return self._show_slot_machine_reveal(player_char, enemy)
 
-            result = self.engine.execute_action(
-                action_name, choice=choice_name, slot_machine_callback=slot_cb
+            result = self.engine.execute_intent(
+                self.engine.prepare_intent(action_name, choice_name),
+                slot_machine_callback=slot_cb,
             )
             self._announce_new_resolutions(result)
             self._record_bestiary_ability_if_visible(player_char, enemy, choice_name or action_name)

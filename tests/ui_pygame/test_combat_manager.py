@@ -10,6 +10,8 @@ import pytest
 
 from src.core import abilities, enemies, items, main_story
 from src.core.classes import ability_mechanics, class_rings, promotion_kits
+from src.core.combat.battle_engine.models import ForcedAction
+from src.core.combat.targeting import ActionIntent
 from src.ui_pygame.gui import combat_manager
 from src.ui_pygame.gui.combat_manager.outcomes import POST_DEATH_PAUSE_MS
 from src.ui_pygame.gui.combat_view.animator import DEATH_ANIMATION_FRAMES
@@ -62,6 +64,26 @@ class RecordingFont:
 
     def size(self, text):
         return (max(8, len(text) * 8), 24)
+
+
+def _intent_engine(executor, **attributes):
+    """Build a minimal engine double that exposes only the typed action API."""
+
+    def prepare_intent(action, choice=None):
+        return ActionIntent(action_id=action, choice=choice)
+
+    def execute_intent(intent, slot_machine_callback=None):
+        return executor(
+            intent.engine_action,
+            choice=intent.choice,
+            slot_machine_callback=slot_machine_callback,
+        )
+
+    return SimpleNamespace(
+        prepare_intent=prepare_intent,
+        execute_intent=execute_intent,
+        **attributes,
+    )
 
 
 class DummyCombatView:
@@ -1163,7 +1185,7 @@ def test_execute_action_handles_suppression_and_slot_machine_skill(monkeypatch):
         enemy.name = "Goblin King"
         return SimpleNamespace(message="Big hit!\nJackpot!", fled=False)
 
-    manager.engine = SimpleNamespace(execute_action=execute_action)
+    manager.engine = _intent_engine(execute_action)
     result = manager._execute_action("Skills", player, enemy)
 
     assert result == "action_taken"
@@ -1183,7 +1205,7 @@ def test_execute_action_handles_suppression_and_slot_machine_skill(monkeypatch):
         assert slot_machine_callback is None
         return SimpleNamespace(message="Hero summons Patagon.", fled=False)
 
-    manager.engine = SimpleNamespace(execute_action=execute_summon)
+    manager.engine = _intent_engine(execute_summon)
     enemy.health.current = 11
     assert manager._execute_action("Summon", player, enemy) == "action_taken"
     assert manager.combat_view.messages[-1] == "Hero summons Patagon."
@@ -1197,7 +1219,7 @@ def test_execute_action_handles_suppression_and_slot_machine_skill(monkeypatch):
         assert slot_machine_callback is None
         return SimpleNamespace(message="Hero orders their companion: Pack Strike.", fled=False)
 
-    manager.engine = SimpleNamespace(execute_action=execute_companion)
+    manager.engine = _intent_engine(execute_companion)
     assert manager._execute_action("Companion", player, enemy) == "action_taken"
     assert manager.combat_view.messages[-1] == "Hero orders their companion: Pack Strike."
 
@@ -1208,7 +1230,7 @@ def test_execute_action_handles_suppression_and_slot_machine_skill(monkeypatch):
         assert action == "Attack"
         return SimpleNamespace(message="Hero attacks Goblin.", fled=False)
 
-    manager.engine = SimpleNamespace(execute_action=execute_favored_attack)
+    manager.engine = _intent_engine(execute_favored_attack)
     assert manager._execute_action("Attack", player, enemy) == "action_taken"
     assert manager.combat_view.messages == ["Hero attacks Goblin."]
     assert "favored_enemy_bonus_logged" not in promotion_kits.combat_state(player)
@@ -1221,7 +1243,7 @@ def test_execute_action_handles_suppression_and_slot_machine_skill(monkeypatch):
         enemy.health.current -= 5
         return SimpleNamespace(message="Hero attacks Goblin.\nGoblin takes 5 damage.", fled=False)
 
-    manager.engine = SimpleNamespace(execute_action=execute_favored_hit)
+    manager.engine = _intent_engine(execute_favored_hit)
     assert manager._execute_action("Attack", player, enemy) == "action_taken"
     assert manager.combat_view.messages[:3] == [
         "Favored Enemy pressure guides the strike.",
@@ -1235,9 +1257,8 @@ def test_execute_empty_shortcut_does_not_call_engine_or_spend_turn(monkeypatch):
     player = _make_player()
     enemy = _make_enemy()
     engine_calls = []
-    manager.engine = SimpleNamespace(
-        attacker=player,
-        execute_action=lambda *args, **kwargs: engine_calls.append((args, kwargs)),
+    manager.engine = _intent_engine(
+        lambda *args, **kwargs: engine_calls.append((args, kwargs)), attacker=player
     )
 
     assert manager._execute_action("1. Empty", player, enemy) is None
@@ -1302,7 +1323,7 @@ def test_execute_action_tame_skips_damage_animation_and_defers_nickname(monkeypa
         }
         return SimpleNamespace(message="Hero tames Giant Hornet.", fled=False, summon_started=False)
 
-    manager.engine = SimpleNamespace(execute_action=execute_action)
+    manager.engine = _intent_engine(execute_action)
 
     assert manager._execute_action("Tame", player, enemy) == "action_taken"
     assert damage_effects == []
@@ -1364,7 +1385,7 @@ def test_execute_spell_flushes_result_log_before_damage_effect(monkeypatch):
         enemy.health.current = 7
         return SimpleNamespace(message="Hero damages Goblin for 13 hit points.", fled=False)
 
-    manager.engine = SimpleNamespace(execute_action=execute_action)
+    manager.engine = _intent_engine(execute_action)
 
     assert manager._execute_action("Spells", player, enemy) == "action_taken"
     assert order == ["flush", "effect", "flush"]
@@ -2297,7 +2318,7 @@ def test_player_turn_covers_preturn_forced_actions_and_grid_selection(monkeypatc
     assert manager.combat_view.messages[-1] == "Asleep"
     assert flushed_messages[-1][-1] == "Asleep"
 
-    forced = SimpleNamespace(action="Cancelled", cancel_message="Jump failed", choice=None)
+    forced = ForcedAction(cancel_message="Jump failed")
     manager.engine = SimpleNamespace(
         pre_turn=lambda: SimpleNamespace(
             effects_text="", died_from_effects=False, can_act=True, inactive_reason=""
@@ -2308,13 +2329,15 @@ def test_player_turn_covers_preturn_forced_actions_and_grid_selection(monkeypatc
     assert manager.combat_view.messages[-1] == "Jump failed"
 
     enemy.health.current = 12
-    forced = SimpleNamespace(action="Attack", cancel_message="", choice=None)
-    manager.engine = SimpleNamespace(
+    forced = ForcedAction(intent=ActionIntent(action_id="system.attack"))
+    manager.engine = _intent_engine(
+        lambda action, choice=None, slot_machine_callback=None: SimpleNamespace(
+            message="Hit hard", fled=False
+        ),
         pre_turn=lambda: SimpleNamespace(
             effects_text="", died_from_effects=False, can_act=True, inactive_reason=""
         ),
         get_forced_action=lambda: forced,
-        execute_action=lambda action, choice=None: SimpleNamespace(message="Hit hard", fled=False),
         companion_turn=lambda: None,
     )
     assert manager._player_turn(player, enemy) is True
@@ -2574,14 +2597,14 @@ def test_execute_skill_uses_active_summon_spellbook(monkeypatch):
     )
     calls = {}
 
-    manager.engine = SimpleNamespace(
-        attacker=summon,
-        execute_action=lambda action, choice=None, slot_machine_callback=None: calls.update(
+    manager.engine = _intent_engine(
+        lambda action, choice=None, slot_machine_callback=None: calls.update(
             action=action,
             choice=choice,
             slot_machine_callback=slot_machine_callback,
         )
         or SimpleNamespace(message="Patagon uses Throw Rock.\n", fled=False),
+        attacker=summon,
         flee=False,
     )
 
@@ -2668,9 +2691,7 @@ def test_enemy_turn_covers_skip_forced_nothing_and_damage_paths(monkeypatch):
         pre_turn=lambda: SimpleNamespace(
             effects_text="", died_from_effects=False, can_act=True, inactive_reason=""
         ),
-        get_forced_action=lambda: SimpleNamespace(
-            action="Cancelled", cancel_message="Charge broken", choice=None
-        ),
+        get_forced_action=lambda: ForcedAction(cancel_message="Charge broken"),
     )
     assert manager._enemy_turn(player, enemy) is None
     assert manager.combat_view.messages[-1] == "Charge broken"
@@ -2698,14 +2719,14 @@ def test_enemy_turn_covers_skip_forced_nothing_and_damage_paths(monkeypatch):
         enemy.name = "Mage Form"
         return SimpleNamespace(message="Dark blast", fled=False)
 
-    manager.engine = SimpleNamespace(
+    manager.engine = _intent_engine(
+        execute_action,
         pre_turn=lambda: SimpleNamespace(
             effects_text="", died_from_effects=False, can_act=True, inactive_reason=""
         ),
         get_forced_action=lambda: None,
         get_enemy_action=lambda: ("Use Skill", "Hex"),
         show_enemy_details=lambda: True,
-        execute_action=execute_action,
     )
     ability_calls = []
     player.record_bestiary_ability = lambda observed, ability_name: ability_calls.append(
@@ -2778,14 +2799,14 @@ def test_enemy_smoke_screen_flee_keeps_enemy_hidden_for_end_transition(monkeypat
             fled=False,
         )
 
-    manager.engine = SimpleNamespace(
+    manager.engine = _intent_engine(
+        execute_smoke_screen,
         flee=False,
         pre_turn=lambda: SimpleNamespace(
             effects_text="", died_from_effects=False, can_act=True, inactive_reason=""
         ),
         get_forced_action=lambda: None,
         get_enemy_action=lambda: ("Use Skill", "Smoke Screen"),
-        execute_action=execute_smoke_screen,
     )
 
     assert manager._enemy_turn(player, enemy) == "flee"
@@ -2809,17 +2830,17 @@ def test_enemy_smoke_screen_without_flee_does_not_play_smoke_or_hide_enemy(monke
     manager._flush_result_frame = lambda *_args: flushes.append(True)
     manager._play_smoke_screen_visual = lambda _player, _enemy, target: smoke_visuals.append(target)
 
-    manager.engine = SimpleNamespace(
+    manager.engine = _intent_engine(
+        lambda *_args, **_kwargs: SimpleNamespace(
+            message="Smoke Screen requires a weapon.",
+            fled=False,
+        ),
         flee=False,
         pre_turn=lambda: SimpleNamespace(
             effects_text="", died_from_effects=False, can_act=True, inactive_reason=""
         ),
         get_forced_action=lambda: None,
         get_enemy_action=lambda: ("Use Skill", "Smoke Screen"),
-        execute_action=lambda *_args, **_kwargs: SimpleNamespace(
-            message="Smoke Screen requires a weapon.",
-            fled=False,
-        ),
     )
 
     assert manager._enemy_turn(player, enemy) is None
@@ -2856,7 +2877,8 @@ def test_enemy_shapeshift_gets_one_same_turn_followup_action(monkeypatch):
         player.health.current -= 7
         return SimpleNamespace(message="Wolf uses Claw.", fled=False)
 
-    manager.engine = SimpleNamespace(
+    manager.engine = _intent_engine(
+        execute_action,
         flee=False,
         pre_turn=lambda: SimpleNamespace(
             effects_text="", died_from_effects=False, can_act=True, inactive_reason=""
@@ -2864,7 +2886,6 @@ def test_enemy_shapeshift_gets_one_same_turn_followup_action(monkeypatch):
         get_forced_action=lambda: None,
         get_enemy_action=lambda: next(actions),
         show_enemy_details=lambda: False,
-        execute_action=execute_action,
     )
 
     assert manager._enemy_turn(player, enemy) is None

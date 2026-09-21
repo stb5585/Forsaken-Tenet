@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import math
-import random
 from dataclasses import dataclass, replace
 from enum import Enum
-from typing import Protocol
+
+from src.core.randomness import gameplay_random as random
+
+from ..randomness import RandomSource
 
 
 class ContactKind(str, Enum):
@@ -33,11 +35,6 @@ class ModifierClassification(str, Enum):
     DODGE_POINTS = "dodge_points"
     POST_CONTACT = "post_contact"
     NON_CONTACT = "non_contact"
-
-
-class RandomSource(Protocol):
-    def random(self) -> float:
-        """Return a sample in the half-open unit interval."""
 
 
 @dataclass(frozen=True)

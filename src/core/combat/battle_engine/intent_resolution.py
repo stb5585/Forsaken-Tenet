@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-import random
 from copy import deepcopy
 from typing import TYPE_CHECKING
+
+from src.core.randomness import gameplay_random as random
 
 from ...events.event_bus import EventType, create_combat_event
 from ..actor_cycle import PLAYER_ACTOR_ID
@@ -35,9 +36,9 @@ class IntentResolutionMixin:
                     ActionValidationCode.CHARGE_NOT_READY,
                     f"{self.attacker.name}'s charge resolves on a later readiness opportunity.\n",
                 )
-            if intent.action_id == "Cancel Charge":
+            if intent.engine_action == "Cancel Charge":
                 pass
-            elif intent.action_id != pending_charge.get(
+            elif intent.engine_action != pending_charge.get(
                 "action"
             ) or intent.choice != pending_charge.get("choice"):
                 return self._reject_intent(
@@ -45,28 +46,76 @@ class IntentResolutionMixin:
                     f"{self.attacker.name} must resolve or cancel their charge.\n",
                 )
 
-        if intent.action_id == "Cancel Charge" and pending_charge is None:
+        if intent.engine_action == "Cancel Charge" and pending_charge is None:
             return self._reject_intent(
                 ActionValidationCode.NO_CHARGE_TO_CANCEL,
                 f"{self.attacker.name} has no charge to cancel.\n",
             )
 
         forced_action = self.get_forced_action()
+        if forced_action is not None and forced_action.cancelled:
+            return self._reject_intent(
+                ActionValidationCode.FORCED_ACTION_REQUIRED,
+                forced_action.cancel_message or "The forced action was cancelled.\n",
+            )
         cancelling_pending_charge = (
-            intent.action_id == "Cancel Charge" and pending_charge is not None
+            intent.engine_action == "Cancel Charge" and pending_charge is not None
         )
         if (
             forced_action is not None
+            and not forced_action.cancelled
             and not cancelling_pending_charge
-            and (intent.action_id != forced_action.action or intent.choice != forced_action.choice)
+            and forced_action.intent is not None
+            and (
+                intent.engine_action != forced_action.intent.engine_action
+                or intent.choice != forced_action.intent.choice
+            )
         ):
-            required = forced_action.choice or forced_action.action
+            required = forced_action.intent.choice or forced_action.intent.engine_action
             return self._reject_intent(
                 ActionValidationCode.FORCED_ACTION_REQUIRED,
                 f"{self.attacker.name} must perform their forced action: {required}.\n",
             )
 
-        scope = self._target_scope_for_action(intent.action_id, intent.choice)
+        if pending_charge is not None and intent.engine_action == pending_charge.get("action"):
+            pending_target = pending_charge.get("target_id")
+            if pending_target and not intent.target_ids:
+                try:
+                    pending_member = self.encounter.member_by_id(pending_target)
+                except KeyError:
+                    pending_member = None
+                policy = getattr(
+                    pending_charge.get("policy"), "value", pending_charge.get("policy")
+                )
+                if pending_member is None or not pending_member.is_living_hostile:
+                    skill = pending_charge.get("ability")
+                    if skill is not None:
+                        skill.charging = False
+                        if hasattr(skill, "charge_turns"):
+                            skill.charge_turns = 0
+                        if hasattr(skill, "charge_target"):
+                            skill.charge_target = None
+                    self._clear_pending_charge(actor_id, skill)
+                    loss = (
+                        "has no legal focus"
+                        if policy == "retarget_focus"
+                        else "lost its locked target"
+                    )
+                    message = (
+                        f"{getattr(skill, 'name', 'The charged action')} fizzles "
+                        f"because it {loss}.\n"
+                    )
+                    return ActionResult(
+                        message=message,
+                        combat_results=CombatResultGroup(
+                            action=getattr(skill, "name", intent.engine_action),
+                            actor_id=actor_id,
+                            target_scope=TargetScope.SINGLE_ENEMY,
+                            message=message,
+                        ),
+                    )
+
+        scope = self._target_scope_for_action(intent.engine_action, intent.choice)
         targets = self._validated_intent_targets(intent, scope)
         if isinstance(targets, ActionResult):
             return targets
@@ -87,7 +136,7 @@ class IntentResolutionMixin:
                 confused_friendly_fire = True
         self._turn_action_committed = True
 
-        if self._is_hostile_action(intent.action_id, intent.choice, scope):
+        if self._is_hostile_action(intent.engine_action, intent.choice, scope):
             # A hostile committed action identifies the concealed actor, even
             # when its contact roll later misses or it affects an area.
             break_concealment(self.attacker)
@@ -104,7 +153,7 @@ class IntentResolutionMixin:
         ):
             target_ids = (PLAYER_ACTOR_ID,)
         group = CombatResultGroup(
-            action=intent.choice or intent.action_id,
+            action=intent.choice or intent.engine_action,
             actor_id=actor_id,
             target_scope=scope,
             target_ids=target_ids,
@@ -123,7 +172,7 @@ class IntentResolutionMixin:
         try:
             with self._target_resolution_context(member, scope, target_ids):
                 result = self._execute_committed_action(
-                    intent.action_id,
+                    intent.engine_action,
                     intent.choice,
                     slot_machine_callback,
                 )
@@ -159,7 +208,7 @@ class IntentResolutionMixin:
         raw_portion = getattr(self, "_last_combat_result", None)
         if isinstance(raw_portion, CombatResult):
             portion = deepcopy(raw_portion)
-            portion.action = intent.choice or intent.action_id
+            portion.action = intent.choice or intent.engine_action
             portion.actor = self.attacker
             portion.target = member.enemy if member else resolved_target
             portion.actor_id = actor_id
@@ -167,7 +216,7 @@ class IntentResolutionMixin:
             portion.message = result.message
         else:
             portion = CombatResult(
-                action=intent.choice or intent.action_id,
+                action=intent.choice or intent.engine_action,
                 actor=self.attacker,
                 target=member.enemy if member else resolved_target,
                 actor_id=actor_id,

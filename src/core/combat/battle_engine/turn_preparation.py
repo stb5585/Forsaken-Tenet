@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-import random
 from typing import TYPE_CHECKING
+
+from src.core.randomness import gameplay_random as random
 
 from ...classes import (
     ability_mechanics,
@@ -15,6 +16,7 @@ from ...events.event_bus import combat_event_context
 from ..targeting import TargetScope
 from ..visibility import detect, is_concealed, is_revealed_to
 from .models import (
+    ActionIntent,
     ForcedAction,
     PreTurnResult,
 )
@@ -42,7 +44,7 @@ class TurnPreparationMixin:
 
     def _remember_forced_cancellation(self, message: str) -> ForcedAction:
         """Keep a forced cancellation enforceable after its charge state is cleared."""
-        forced = ForcedAction(action="Cancelled", cancel_message=message)
+        forced = ForcedAction(cancel_message=message)
         self._forced_cancellation = forced
         self._forced_cancellation_actor_id = self.current_actor_id or self._actor_id_for(
             self.attacker
@@ -283,17 +285,17 @@ class TurnPreparationMixin:
 
             if jump_choice:
                 self.attacker.class_effects["Jump"].active = False
-                return ForcedAction(action="Use Skill", choice=jump_choice)
+                return ForcedAction(intent=self._forced_intent("Use Skill", jump_choice))
 
         # Ongoing charging ability (e.g. Charge, Crushing Blow, Dragon Breath).
         for skill_name, skill in self.attacker.spellbook.get("Skills", {}).items():
             if getattr(skill, "charging", False):
-                return ForcedAction(action="Use Skill", choice=skill_name)
+                return ForcedAction(intent=self._forced_intent("Use Skill", skill_name))
 
         if self.charging_ability:
             charge_owner, ability_name, _skill_obj = self.charging_ability
             if charge_owner == self.attacker:
-                return ForcedAction(action="Use Skill", choice=ability_name)
+                return ForcedAction(intent=self._forced_intent("Use Skill", ability_name))
 
         # Berserk forces a basic attack unless a higher-priority forced action
         # such as an active Jump or charge-up has already claimed the turn.
@@ -302,9 +304,26 @@ class TurnPreparationMixin:
             berserk, "source", None
         ) == "Frenzy" and "Composed Wrath" in self.attacker.spellbook.get("Skills", {})
         if berserk.active and not composed_wrath:
-            return ForcedAction(action="Attack")
+            return ForcedAction(intent=self._forced_intent("Attack"))
 
         return None
+
+    def _forced_intent(self, action_id: str, choice: str | None = None) -> ActionIntent:
+        """Build the fully targeted intent for an engine-owned forced action."""
+        target_ids: tuple[str, ...] = ()
+        scope = self._target_scope_for_action(action_id, choice)
+        if scope == TargetScope.SINGLE_ENEMY and self.is_player_turn():
+            pending = self._pending_charge(
+                self.current_actor_id or self._actor_id_for(self.attacker)
+            )
+            pending_target = pending.get("target_id") if pending else None
+            legal_ids = {member.combatant_id for member in self.encounter.living_members}
+            if pending_target in legal_ids:
+                target_ids = (str(pending_target),)
+            elif legal_ids:
+                self._refresh_focus()
+                target_ids = (self._focus_target_id,)
+        return ActionIntent(action_id=action_id, choice=choice, target_ids=target_ids)
 
     def get_enemy_action(self) -> tuple[str, str | None]:
         """Ask the enemy AI for its chosen action. Returns (action, choice)."""

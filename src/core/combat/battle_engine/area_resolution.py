@@ -35,22 +35,22 @@ class AreaActionResolutionMixin:
         """Resolve a committed all-enemy cast in authored order."""
         if self._member_for_character(self.attacker) is not None:
             return self._execute_enemy_all_opponents_intent(intent, group)
-        ability = self._ability_for_action(intent.action_id, intent.choice)
-        if intent.action_id not in {"Cast Spell", "Use Skill"} or ability is None:
+        ability = self._ability_for_action(intent.engine_action, intent.choice)
+        if intent.engine_action not in {"Cast Spell", "Use Skill"} or ability is None:
             return self._reject_intent(
                 ActionValidationCode.WRONG_TARGET_SCOPE,
                 "This all-enemy action has no multi-target resolver.\n",
             )
         effective_cost = (
             mage_mechanics.spell_mana_cost(self.attacker, ability)
-            if intent.action_id == "Cast Spell"
+            if intent.engine_action == "Cast Spell"
             else ability.cost
         )
         if self.attacker.mana.current < effective_cost:
             message = f"{self.attacker.name} does not have enough mana to cast {intent.choice}!\n"
             group.add(
                 CombatResult(
-                    action=intent.choice or intent.action_id,
+                    action=intent.choice or intent.engine_action,
                     actor=self.attacker,
                     actor_id=self.current_actor_id,
                     message=message,
@@ -59,7 +59,7 @@ class AreaActionResolutionMixin:
             return ActionResult(message=message, combat_results=group)
 
         threaded_message = ""
-        if self.attacker == self.player and intent.action_id == "Cast Spell":
+        if self.attacker == self.player and intent.engine_action == "Cast Spell":
             _thread_count, threaded_message = astromancer.begin_threaded_spell(
                 self.player,
                 ability,
@@ -67,7 +67,7 @@ class AreaActionResolutionMixin:
         if self.attacker == self.player:
             threaded_message += promotion_kits.prepare_stolen_charge_payoff(
                 self.player,
-                intent.action_id,
+                intent.engine_action,
                 ability,
             )
 
@@ -86,12 +86,12 @@ class AreaActionResolutionMixin:
             promotion_kits.begin_action(
                 self.player,
                 defer_devotion=True,
-                action=intent.action_id,
+                action=intent.engine_action,
                 choice=intent.choice,
                 round_number=self.round_number,
             )
         event_type = (
-            EventType.SPELL_CAST if intent.action_id == "Cast Spell" else EventType.SKILL_USE
+            EventType.SPELL_CAST if intent.engine_action == "Cast Spell" else EventType.SKILL_USE
         )
         self._event_bus.emit(
             create_combat_event(
@@ -100,23 +100,23 @@ class AreaActionResolutionMixin:
                 target=targets[0].enemy if targets else None,
                 **(
                     {"spell_name": intent.choice}
-                    if intent.action_id == "Cast Spell"
+                    if intent.engine_action == "Cast Spell"
                     else {"skill_name": intent.choice}
                 ),
                 ability_name=intent.choice,
-                source="spell" if intent.action_id == "Cast Spell" else "skill",
+                source="spell" if intent.engine_action == "Cast Spell" else "skill",
                 encounter_id=self.encounter.encounter_id,
                 actor_id=self.current_actor_id,
                 target_scope=TargetScope.ALL_ENEMIES.value,
                 expanded_target_ids=list(group.target_ids),
             )
         )
-        verb = "casts" if intent.action_id == "Cast Spell" else "uses"
+        verb = "casts" if intent.engine_action == "Cast Spell" else "uses"
         prefix = f"{self.attacker.name} {verb} {intent.choice}.\n{threaded_message}"
         group.message = prefix
         group_resolver = getattr(
             ability,
-            "cast_group" if intent.action_id == "Cast Spell" else "use_group",
+            "cast_group" if intent.engine_action == "Cast Spell" else "use_group",
             None,
         )
         try:
@@ -152,7 +152,7 @@ class AreaActionResolutionMixin:
                 for member in targets:
                     group.add(
                         CombatResult(
-                            action=intent.choice or intent.action_id,
+                            action=intent.choice or intent.engine_action,
                             actor=self.attacker,
                             target=member.enemy,
                             actor_id=self.current_actor_id,
@@ -165,7 +165,7 @@ class AreaActionResolutionMixin:
         self._record_final_enemy_resolutions()
         if self.attacker == self.player:
             primary_target = targets[0].enemy if targets else None
-            if intent.action_id == "Cast Spell":
+            if intent.engine_action == "Cast Spell":
                 from ...classes import healer
 
                 if "Holy" in {
@@ -217,7 +217,7 @@ class AreaActionResolutionMixin:
             group.message += promotion_kits.pop_messages(self.player)
             for member in targets:
                 group.message += promotion_kits.pop_messages(member.enemy)
-        elif intent.action_id == "Cast Spell":
+        elif intent.engine_action == "Cast Spell":
             learned_result = next(
                 (
                     portion
@@ -241,7 +241,7 @@ class AreaActionResolutionMixin:
             "Action",
             self.attacker,
             target=targets[0].enemy if targets else None,
-            action=intent.action_id,
+            action=intent.engine_action,
             outcome=result.message,
             actor_id=self.current_actor_id,
             target_id=targets[0].combatant_id if targets else None,
@@ -289,11 +289,11 @@ class AreaActionResolutionMixin:
     ) -> ActionResult:
         """Resolve an enemy area action against the one active player-side slot."""
         with self._target_resolution_context(None, TargetScope.ALL_ENEMIES, group.target_ids):
-            result = self._execute_committed_action(intent.action_id, intent.choice)
+            result = self._execute_committed_action(intent.engine_action, intent.choice)
         raw_portion = getattr(self, "_last_combat_result", None)
         if isinstance(raw_portion, CombatResult):
             portion = deepcopy(raw_portion)
-            portion.action = intent.choice or intent.action_id
+            portion.action = intent.choice or intent.engine_action
             portion.actor = self.attacker
             portion.target = self.active_player_character
             portion.actor_id = self.current_actor_id
@@ -301,7 +301,7 @@ class AreaActionResolutionMixin:
             portion.message = result.message
         else:
             portion = CombatResult(
-                action=intent.choice or intent.action_id,
+                action=intent.choice or intent.engine_action,
                 actor=self.attacker,
                 target=self.active_player_character,
                 actor_id=self.current_actor_id,

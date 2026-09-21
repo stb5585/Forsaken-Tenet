@@ -74,7 +74,7 @@ def test_runic_boost_consumes_rune_casts_spell_and_advances_astromancer_cycle(mo
     monkeypatch.setattr("src.core.classes.astromancer.random.random", lambda: 1.0)
     engine = _make_engine(player, enemy)
 
-    result = engine.execute_action("Runic Boost", "Firebolt")
+    result = engine.execute_intent(engine.prepare_intent("Runic Boost", "Firebolt"))
 
     assert "spends one Ember rune" in result.message
     assert player.astromancer_state["runes"]["Ember"] == 0
@@ -96,7 +96,7 @@ def test_runic_boost_kill_can_award_rune(monkeypatch):
     monkeypatch.setattr("src.core.classes.astromancer.random.random", lambda: 0.0)
     engine = _make_engine(player, enemy)
 
-    result = engine.execute_action("Runic Boost", "Firebolt")
+    result = engine.execute_intent(engine.prepare_intent("Runic Boost", "Firebolt"))
 
     assert "claims an Ember rune" in result.message
     assert player.astromancer_state["runes"]["Ember"] == 1
@@ -113,7 +113,7 @@ def test_astral_judgment_kill_does_not_award_rune(monkeypatch):
     monkeypatch.setattr("src.core.classes.astromancer.random.random", lambda: 0.0)
     engine = _make_engine(player, enemy)
 
-    result = engine.execute_action("Use Skill", "Astral Judgment")
+    result = engine.execute_intent(engine.prepare_intent("Use Skill", "Astral Judgment"))
 
     assert "Astral Judgment" in result.message
     assert player.astromancer_state["runes"]["Ember"] == 0

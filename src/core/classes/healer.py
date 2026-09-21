@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import random
+from src.core.randomness import gameplay_random as random
 
 from .. import items
 from .base import Job

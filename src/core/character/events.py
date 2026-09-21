@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-import random
 from typing import TYPE_CHECKING
+
+from src.core.randomness import gameplay_random as random
 
 if TYPE_CHECKING:
     from .core import Character

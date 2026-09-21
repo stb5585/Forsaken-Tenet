@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-import random
 from collections.abc import Callable, Iterable
 from textwrap import wrap
+
+from src.core.randomness import gameplay_random as random
 
 from .. import items
 from ..character import Character, Combat, Resource, Stats, StatusEffect

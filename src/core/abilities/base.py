@@ -9,6 +9,7 @@ from src.paths import CORE_DATA_DIR
 
 from ..combat.combat_result import CombatResult
 from ..combat.targeting import TargetLossPolicy, TargetScope
+from ..identity import ABILITY_TYPES
 
 if TYPE_CHECKING:
     from typing import Any
@@ -56,6 +57,13 @@ class Ability:
         __str__: returns a string representation of the ability
         special_effect: applies a special effect to the ability
     """
+
+    ability_type_id: str
+
+    def __init_subclass__(cls, *, ability_id: str | None = None, **kwargs: object) -> None:
+        """Register runtime ability types for strict persistence."""
+        super().__init_subclass__(**kwargs)
+        cls.ability_type_id = ABILITY_TYPES.register(cls, ability_id)
 
     def __init__(
         self,

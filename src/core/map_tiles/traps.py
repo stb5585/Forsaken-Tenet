@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-import random
 from types import SimpleNamespace
 from typing import Any
+
+from src.core.randomness import gameplay_random as random
 
 from .. import enemies
 from ..classes import footpad

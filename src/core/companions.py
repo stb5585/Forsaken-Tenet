@@ -4,7 +4,8 @@
 from __future__ import annotations
 
 import hashlib
-import random
+
+from src.core.randomness import gameplay_random as random
 
 from . import abilities, items
 from .character import Character, Combat, Resource, Stats

@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import math
-import random
 from typing import Any
+
+from src.core.randomness import gameplay_random as random
 
 from .meters import _preserve_spent_meter, _spend_mp, cap_for, gain_meter
 from .state import (

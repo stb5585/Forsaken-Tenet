@@ -15,8 +15,8 @@ from .. import (
 from .. import town as town_core
 from ..character import Combat, Level, Resource, Stats
 from ..classes import promotion_kits
-from .errors import SaveValidationError
 from .enemy import EnemyStateSerializer
+from .errors import SaveValidationError
 from .item_serialization import AbilitySerializer, ItemSerializer
 from .manager import SaveFileMetadata, SaveLoadResult, SaveManager, json, os
 from .models import (

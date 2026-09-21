@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-import random
 from contextlib import contextmanager
 from typing import TYPE_CHECKING
+
+from src.core.randomness import gameplay_random as random
 
 from ...classes import ability_mechanics, astromancer, bard, footpad, paladin, promotion_kits
 from ...contracts import TimelineEntry
@@ -449,7 +450,10 @@ class BattleEngine(BattleTurnMixin, BattleActionMixin, BattleOutcomeMixin):
         self.attacker = self.player
         self.defender = self._focused_enemy()
         try:
-            result = self.execute_action(action, choice, slot_machine_callback)
+            result = self.execute_intent(
+                self.prepare_intent(action, choice),
+                slot_machine_callback=slot_machine_callback,
+            )
         finally:
             if self.summon_active and self.summon:
                 self.attacker = self.summon

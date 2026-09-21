@@ -1,6 +1,6 @@
 """Player familiar, transformation, combat-end, and special-power behavior."""
 
-import random
+from src.core.randomness import gameplay_random as random
 
 from .. import abilities
 from ..character import armor_resistance_modifier, armor_spell_modifier

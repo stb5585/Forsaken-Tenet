@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-import random
 from dataclasses import replace
 from typing import TYPE_CHECKING
+
+from src.core.randomness import gameplay_random as random
 
 from ..combat.reactions import reaction_result
 from ..constants import (

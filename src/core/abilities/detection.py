@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-import random
 from typing import Any
+
+from src.core.randomness import gameplay_random as random
 
 from ..combat.targeting import TargetScope
 from .base import Spell

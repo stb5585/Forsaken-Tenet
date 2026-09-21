@@ -1,9 +1,10 @@
 ###########################################
 """map manager"""
 
-import random
 from functools import lru_cache
 from textwrap import wrap
+
+from src.core.randomness import gameplay_random as random
 
 from .. import enemies
 from ..player import DIRECTIONS, REALM_OF_CAMBION_LEVEL

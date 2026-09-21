@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-import random
 from typing import TYPE_CHECKING
+
+from src.core.randomness import gameplay_random as random
 
 from ..constants import BASE_FLEE_CHANCE, MAX_FLEE_CHANCE
 from .models import _class_name, armor_resistance_modifier, armor_spell_modifier

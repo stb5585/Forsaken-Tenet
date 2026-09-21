@@ -147,7 +147,7 @@ class TestBattleEngineBasics:
 
         monkeypatch.setattr(player, "weapon_damage", weapon_damage)
 
-        result = engine.execute_action("Attack")
+        result = engine.execute_intent(engine.prepare_intent("Attack"))
         assert "Hit for 7 damage" in result.message
         assert enemy.health.current == 13
         assert result.combat_results.results[0].damage == 7
@@ -168,7 +168,7 @@ class TestBattleEngineBasics:
 
         monkeypatch.setattr(player, "weapon_damage", weapon_damage)
 
-        result = engine.execute_action("Attack")
+        result = engine.execute_intent(engine.prepare_intent("Attack"))
 
         assert enemy.health.current == 8
         assert result.combat_results.results[0].damage == 10
@@ -180,7 +180,7 @@ class TestBattleEngineBasics:
 
         monkeypatch.setattr(player, "flee", lambda _t, smoke=False: (True, "Fled.\n"))
 
-        result = engine.execute_action("Flee")
+        result = engine.execute_intent(engine.prepare_intent("Flee"))
         assert engine.flee is True
         assert result.fled is True
         assert "Fled" in result.message
@@ -289,7 +289,7 @@ class TestBattleEngineBasics:
 
         forced = engine.get_forced_action()
 
-        assert forced.action == "Attack"
+        assert forced.intent is not None and forced.intent.action_id == "system.attack"
 
     def test_get_forced_action_cancels_jump_when_incapacitated(self):
         engine, player, enemy, _tile = self._make_engine()
@@ -305,7 +305,7 @@ class TestBattleEngineBasics:
         finally:
             monkeypatch.undo()
 
-        assert forced.action == "Cancelled"
+        assert forced.cancelled is True
         assert forced.cancel_message == "Jump cancelled.\n"
         assert player.class_effects["Jump"].active is False
 
@@ -322,8 +322,9 @@ class TestBattleEngineBasics:
 
         forced = engine.get_forced_action()
 
-        assert forced.action == "Use Skill"
-        assert forced.choice == "Jump"
+        assert forced.intent is not None
+        assert forced.intent.action_id == "ability.use"
+        assert forced.intent.choice == "Jump"
         assert player.class_effects["Jump"].active is False
 
     def test_get_forced_action_returns_jump_skill_when_ready(self):
@@ -335,8 +336,9 @@ class TestBattleEngineBasics:
 
         forced = engine.get_forced_action()
 
-        assert forced.action == "Use Skill"
-        assert forced.choice == "Sky Jump"
+        assert forced.intent is not None
+        assert forced.intent.action_id == "ability.use"
+        assert forced.intent.choice == "Sky Jump"
 
     def test_charging_skill_resolves_only_on_a_later_owner_opportunity(self, monkeypatch):
         """
@@ -364,12 +366,12 @@ class TestBattleEngineBasics:
         monkeypatch.setattr(player, "weapon_damage", weapon_damage)
 
         # Turn 1: start charging (mana becomes 0).
-        res1 = engine.execute_action("Use Skill", choice="Charge")
+        res1 = engine.execute_intent(engine.prepare_intent("Use Skill", choice="Charge"))
         assert player.mana.current == 0
         assert "is lowering their head" in res1.message or "begins to charge" in res1.message
 
         # The start opportunity cannot also resolve the charge.
-        too_soon = engine.execute_action("Use Skill", choice="Charge")
+        too_soon = engine.execute_intent(engine.prepare_intent("Use Skill", choice="Charge"))
         assert too_soon.committed is False
         assert "later readiness" in too_soon.message
 
@@ -379,7 +381,7 @@ class TestBattleEngineBasics:
         engine.swap_turns()
         while engine.attacker is not player:
             engine.swap_turns()
-        res2 = engine.execute_action("Use Skill", choice="Charge")
+        res2 = engine.execute_intent(engine.prepare_intent("Use Skill", choice="Charge"))
         assert "Hit for 5 damage" in res2.message
 
     def test_charge_cancellation_waits_for_later_owner_opportunity_and_refunds_nothing(self):
@@ -393,10 +395,10 @@ class TestBattleEngineBasics:
         player.spellbook["Skills"]["Charge"] = abilities.Charge()
         assert "Cancel Charge" not in engine.available_actions
 
-        engine.execute_action("Use Skill", choice="Charge")
+        engine.execute_intent(engine.prepare_intent("Use Skill", choice="Charge"))
         mana_after_start = player.mana.current
 
-        too_soon = engine.execute_action("Cancel Charge")
+        too_soon = engine.execute_intent(engine.prepare_intent("Cancel Charge"))
         assert too_soon.committed is False
         assert too_soon.validation_code.name == "CHARGE_NOT_READY"
 
@@ -406,7 +408,7 @@ class TestBattleEngineBasics:
         while engine.attacker is not player:
             engine.swap_turns()
         assert "Cancel Charge" in engine.available_actions
-        cancelled = engine.execute_action("Cancel Charge")
+        cancelled = engine.execute_intent(engine.prepare_intent("Cancel Charge"))
 
         assert cancelled.committed is True
         assert player.mana.current == mana_after_start
@@ -435,7 +437,7 @@ class TestBattleEngineBasics:
         player.status_effects["Silence"].active = True
         player.status_effects["Silence"].duration = 2
 
-        result = engine.execute_action("Use Skill", choice="Jump")
+        result = engine.execute_intent(engine.prepare_intent("Use Skill", choice="Jump"))
 
         assert "cannot use skills because of silence" not in result.message
         assert "Jump hits Goblin" in result.message
@@ -456,7 +458,7 @@ class TestBattleEngineBasics:
 
         player.spellbook["Skills"]["Test Skill"] = DummySkill()
 
-        result = engine.execute_action("Use Skill", choice="Test Skill")
+        result = engine.execute_intent(engine.prepare_intent("Use Skill", choice="Test Skill"))
         assert "uses Test Skill" in result.message
         assert "Skill used" in result.message
 
@@ -480,7 +482,7 @@ class TestBattleEngineBasics:
         monkeypatch.setattr(player, "weapon_damage", weapon_damage)
         player.spellbook["Skills"]["Imbue Weapon"] = abilities.ImbueWeapon()
 
-        result = engine.execute_action("Use Skill", choice="Imbue Weapon")
+        result = engine.execute_intent(engine.prepare_intent("Use Skill", choice="Imbue Weapon"))
 
         assert result.combat_results.results[0].damage == 13
         assert result.combat_results.results[0].extra["damage_instances"] == [13]
@@ -510,7 +512,7 @@ class TestBattleEngineBasics:
             lambda low, high: low,
         )
 
-        result = engine.execute_action("Cast Spell", choice="Magic Missile")
+        result = engine.execute_intent(engine.prepare_intent("Cast Spell", choice="Magic Missile"))
         portion = result.combat_results.results[0]
 
         assert len(portion.extra["damage_instances"]) == 2
@@ -521,7 +523,7 @@ class TestBattleEngineBasics:
         engine.attacker = player
         engine.defender = enemy
 
-        result = engine.execute_action("Cancelled")
+        result = engine.execute_intent(engine.prepare_intent("Cancelled"))
 
         assert result.message == "Hero does nothing.\n"
 
@@ -530,7 +532,7 @@ class TestBattleEngineBasics:
         engine.attacker = player
         player.physical_effects["Disarm"].active = True
 
-        result = engine.execute_action("Pickup Weapon")
+        result = engine.execute_intent(engine.prepare_intent("Pickup Weapon"))
 
         assert player.physical_effects["Disarm"].active is False
         assert "picks up their weapon" in result.message
@@ -544,7 +546,7 @@ class TestBattleEngineBasics:
             player, "enter_defensive_stance", lambda duration, source: f"{source}:{duration}"
         )
 
-        result = engine.execute_action("Defend")
+        result = engine.execute_intent(engine.prepare_intent("Defend"))
 
         assert result.message == "Defend:1"
 
@@ -557,8 +559,8 @@ class TestBattleEngineBasics:
         player.cls.name = "Knight Enchanter"
         player.spellbook["Skills"]["Defensive Release"] = abilities.DefensiveRelease()
 
-        first = engine.execute_action("Defend")
-        second = engine.execute_action("Defend")
+        first = engine.execute_intent(engine.prepare_intent("Defend"))
+        second = engine.execute_intent(engine.prepare_intent("Defend"))
 
         assert "(1/3)" in first.message
         assert "(2/3)" in second.message
@@ -572,11 +574,14 @@ class TestBattleEngineBasics:
         player.abilities_suppressed = lambda: True
         assert (
             "cannot cast spells because of silence"
-            in engine.execute_action("Cast Spell", "Missing").message
+            in engine.execute_intent(engine.prepare_intent("Cast Spell", "Missing")).message
         )
 
         player.abilities_suppressed = lambda: False
-        assert "fumbles the spell" in engine.execute_action("Cast Spell", "Missing").message
+        assert (
+            "fumbles the spell"
+            in engine.execute_intent(engine.prepare_intent("Cast Spell", "Missing")).message
+        )
 
         class DummySpell:
             cost = 3
@@ -587,11 +592,12 @@ class TestBattleEngineBasics:
         player.spellbook["Spells"]["Test Spell"] = DummySpell()
         player.mana.current = 2
         assert (
-            "does not have enough mana" in engine.execute_action("Cast Spell", "Test Spell").message
+            "does not have enough mana"
+            in engine.execute_intent(engine.prepare_intent("Cast Spell", "Test Spell")).message
         )
 
         player.mana.current = 10
-        cast_result = engine.execute_action("Cast Spell", "Test Spell")
+        cast_result = engine.execute_intent(engine.prepare_intent("Cast Spell", "Test Spell"))
         assert "Hero casts Test Spell" in cast_result.message
         assert "Hit Goblin" in cast_result.message
 
@@ -609,20 +615,23 @@ class TestBattleEngineBasics:
                 return f"{self.name} on {target.name if target else 'nobody'}.\n"
 
         player.spellbook["Skills"]["Mana Shield"] = DummySkill("Mana Shield")
-        assert "uses Mana Shield" in engine.execute_action("Use Skill", "Remove Shield").message
+        assert (
+            "uses Mana Shield"
+            in engine.execute_intent(engine.prepare_intent("Use Skill", "Remove Shield")).message
+        )
 
         player.spellbook["Skills"]["Totem"] = DummySkill("Totem")
-        assert "Totem on Goblin" in engine.execute_action("Totem").message
+        assert "Totem on Goblin" in engine.execute_intent(engine.prepare_intent("Totem")).message
 
         summon = TestBattleEngineBasics._make_engine(self)[2]
         summon.name = "Helper"
         player.summons["Helper"] = summon
-        summon_result = engine.execute_action("Summon", "Helper")
+        summon_result = engine.execute_intent(engine.prepare_intent("Summon", "Helper"))
         assert summon_result.summon_started is True
         assert summon_result.summon == summon
         assert engine.attacker == summon
 
-        recall_result = engine.execute_action("Recall")
+        recall_result = engine.execute_intent(engine.prepare_intent("Recall"))
         assert recall_result.summon_recalled is True
         assert "recalls Helper" in recall_result.message
 
@@ -631,8 +640,14 @@ class TestBattleEngineBasics:
         engine.attacker = player
         engine.defender = enemy
 
-        assert "fumbles with their items" in engine.execute_action("Use Item").message
-        assert "can't find Potion" in engine.execute_action("Use Item", "Potion").message
+        assert (
+            "fumbles with their items"
+            in engine.execute_intent(engine.prepare_intent("Use Item")).message
+        )
+        assert (
+            "can't find Potion"
+            in engine.execute_intent(engine.prepare_intent("Use Item", "Potion")).message
+        )
 
         target_names = []
 
@@ -651,11 +666,14 @@ class TestBattleEngineBasics:
 
         item_events = []
         event_bus = get_event_bus()
-        handler = lambda event: item_events.append(event)
+
+        def handler(event):
+            item_events.append(event)
+
         event_bus.subscribe(EventType.ITEM_USE, handler)
 
         try:
-            result = engine.execute_action("Use Item", "Fire Scroll")
+            result = engine.execute_intent(engine.prepare_intent("Use Item", "Fire Scroll"))
         finally:
             event_bus.unsubscribe(EventType.ITEM_USE, handler)
         assert "uses scroll on Goblin" in result.message
@@ -672,9 +690,12 @@ class TestBattleEngineBasics:
             player, "transform", lambda back=False: "back\n" if back else "forward\n"
         )
 
-        assert engine.execute_action("Transform").message == "forward\n"
-        assert engine.execute_action("Untransform").message == "back\n"
-        assert engine.execute_action("Mystery").message == "Hero does nothing.\n"
+        assert engine.execute_intent(engine.prepare_intent("Transform")).message == "forward\n"
+        assert engine.execute_intent(engine.prepare_intent("Untransform")).message == "back\n"
+        assert (
+            engine.execute_intent(engine.prepare_intent("Mystery")).message
+            == "Hero does nothing.\n"
+        )
 
     def test_enemy_charge_does_not_force_player_charge_action(self):
         engine, player, enemy, _tile = self._make_engine()
@@ -699,7 +720,7 @@ class TestBattleEngineBasics:
 
         enemy.spellbook["Skills"]["Charge"] = DummyChargeSkill()
 
-        result = engine.execute_action("Use Skill", choice="Charge")
+        result = engine.execute_intent(engine.prepare_intent("Use Skill", choice="Charge"))
         assert "begins to charge" in result.message
 
         engine.swap_turns()
@@ -709,8 +730,9 @@ class TestBattleEngineBasics:
         engine.swap_turns()
         forced = engine.get_forced_action()
         assert forced is not None
-        assert forced.action == "Use Skill"
-        assert forced.choice == "Charge"
+        assert forced.intent is not None
+        assert forced.intent.action_id == "ability.use"
+        assert forced.intent.choice == "Charge"
 
     def test_end_battle_flee_clears_tile_enemy(self):
         engine, _player, _enemy, tile = self._make_engine()
@@ -753,7 +775,7 @@ class TestBattleEngineBasics:
         engine.start_battle()
         engine.attacker = player
         engine.defender = enemy
-        engine.execute_action("Summon", choice="Patagon")
+        engine.execute_intent(engine.prepare_intent("Summon", choice="Patagon"))
         mana_after_calling = player.mana.current
         patagon = player.summons["Patagon"]
         cacus = player.summons["Cacus"]
@@ -769,7 +791,7 @@ class TestBattleEngineBasics:
 
         engine.attacker = player
         engine.defender = enemy
-        raised = engine.execute_action("Use Skill", choice="Raise Summon")
+        raised = engine.execute_intent(engine.prepare_intent("Use Skill", choice="Raise Summon"))
 
         assert "Patagon returns" in raised.message
         assert player.mana.current == mana_after_calling - 100
@@ -856,7 +878,7 @@ class TestBattleEngineBasics:
         player.status_effects["Silence"].duration = 2
         player.summons["TestSummon"] = enemy
 
-        result = engine.execute_action("Summon", choice="TestSummon")
+        result = engine.execute_intent(engine.prepare_intent("Summon", choice="TestSummon"))
         assert "silenced" in result.message.lower()
         assert result.summon_started is False
 
@@ -868,7 +890,7 @@ class TestBattleEngineBasics:
         summon.name = "Patagon"
         player.summons["Patagon"] = summon
 
-        result = engine.execute_action("Summon", choice="Patagon")
+        result = engine.execute_intent(engine.prepare_intent("Summon", choice="Patagon"))
 
         assert result.summon_started is True
         assert result.summon is summon
@@ -894,7 +916,7 @@ class TestBattleEngineBasics:
         summon.initialize_stats(player)
         player.summons["Patagon"] = summon
 
-        result = engine.execute_action("Summon", choice="Patagon")
+        result = engine.execute_intent(engine.prepare_intent("Summon", choice="Patagon"))
 
         assert result.summon_started is True
         assert engine.available_actions == ["Attack", "Use Skill", "Support"]
@@ -924,7 +946,7 @@ class TestBattleEngineBasics:
         player.summons["Patagon"] = summon
         monkeypatch.setattr("src.core.classes.promotion_kits.random.random", lambda: 0.0)
 
-        engine.execute_action("Summon", choice="Patagon")
+        engine.execute_intent(engine.prepare_intent("Summon", choice="Patagon"))
         enemy.health.current = 0
         outcome = engine.end_battle()
 
@@ -941,7 +963,7 @@ class TestBattleEngineBasics:
         player.summons["Patagon"].initialize_stats(player)
 
         player.mana.current = 7
-        result = engine.execute_action("Summon", choice="Patagon")
+        result = engine.execute_intent(engine.prepare_intent("Summon", choice="Patagon"))
         assert result.summon_started is False
         assert "needs 8 MP" in result.message
 
@@ -950,12 +972,12 @@ class TestBattleEngineBasics:
         player.summons["Kobalos"] = kobalos
         player.mana.current = 50
         player.gold = 99
-        result = engine.execute_action("Summon", choice="Kobalos")
+        result = engine.execute_intent(engine.prepare_intent("Summon", choice="Kobalos"))
         assert result.summon_started is False
         assert "needs 100 gold" in result.message
 
         player.gold = 100
-        result = engine.execute_action("Summon", choice="Kobalos")
+        result = engine.execute_intent(engine.prepare_intent("Summon", choice="Kobalos"))
         assert result.summon_started is True
         assert player.mana.current == 18
         assert player.gold == 0
@@ -975,7 +997,7 @@ class TestBattleEngineBasics:
         player.summons["Patagon"] = summon
         monkeypatch.setattr("src.core.classes.promotion_kits.random.random", lambda: 0.99)
 
-        engine.execute_action("Summon", choice="Patagon")
+        engine.execute_intent(engine.prepare_intent("Summon", choice="Patagon"))
         enemy.health.current = 0
         outcome = engine.end_battle()
 
@@ -993,7 +1015,7 @@ class TestBattleEngineBasics:
         summon.initialize_stats(player)
         player.summons["Patagon"] = summon
 
-        engine.execute_action("Summon", choice="Patagon")
+        engine.execute_intent(engine.prepare_intent("Summon", choice="Patagon"))
 
         assert "Defend" not in engine.summoner_support_actions()
         assert "Recall" in engine.summoner_support_actions()
@@ -1015,7 +1037,7 @@ class TestBattleEngineBasics:
         summon.initialize_stats(player)
         player.summons["Patagon"] = summon
 
-        engine.execute_action("Summon", choice="Patagon")
+        engine.execute_intent(engine.prepare_intent("Summon", choice="Patagon"))
         result = engine.execute_summoner_support_action("Recall")
 
         assert result.summon_recalled is True
@@ -1033,7 +1055,7 @@ class TestBattleEngineBasics:
         summon.initialize_stats(player)
         player.summons["Patagon"] = summon
 
-        engine.execute_action("Summon", choice="Patagon")
+        engine.execute_intent(engine.prepare_intent("Summon", choice="Patagon"))
         assert engine.attacker is summon
         assert engine.available_actions == ["Attack", "Use Skill", "Support"]
 
@@ -1059,12 +1081,12 @@ class TestBattleEngineBasics:
         summon.tunnel = True
         player.summons["Dilong"] = summon
 
-        engine.execute_action("Summon", choice="Dilong")
+        engine.execute_intent(engine.prepare_intent("Summon", choice="Dilong"))
 
         assert engine.available_actions == ["Use Skill", "Support"]
-        blocked = engine.execute_action("Attack")
+        blocked = engine.execute_intent(engine.prepare_intent("Attack"))
         assert "must surface" in blocked.message
-        surfaced = engine.execute_action("Use Skill", choice="Surface")
+        surfaced = engine.execute_intent(engine.prepare_intent("Use Skill", choice="Surface"))
         assert "surfaces" in surfaced.message
         assert summon.tunnel is False
 

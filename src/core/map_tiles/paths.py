@@ -1,6 +1,6 @@
 """Foundational dungeon paths, walls, and terrain tiles."""
 
-import random
+from src.core.randomness import gameplay_random as random
 
 from .. import enemies, items, thieves_guild
 from ..combat import CombatEncounter

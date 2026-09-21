@@ -92,7 +92,7 @@ def test_enemy_sleeping_powder_bypasses_required_monocane_inventory():
     engine.attacker = enemy
     engine.defender = player
 
-    result = engine.execute_action("Use Skill", "Sleeping Powder")
+    result = engine.execute_intent(engine.prepare_intent("Use Skill", "Sleeping Powder"))
 
     assert "does not have a Monocane" not in result.message
     assert "uses Sleeping Powder" in result.message
@@ -107,7 +107,7 @@ def test_player_sleeping_powder_still_requires_monocane_inventory():
     engine.attacker = player
     engine.defender = enemy
 
-    result = engine.execute_action("Use Skill", "Sleeping Powder")
+    result = engine.execute_intent(engine.prepare_intent("Use Skill", "Sleeping Powder"))
 
     assert "Monocane is required." in result.message
 
@@ -190,7 +190,7 @@ def test_resolve_skill_ignores_silence_and_spends_resolve():
     class_rings.ensure_state(player)["data"]["Stalwart Defender"]["guard_meter"] = 15
     player.abilities_suppressed = lambda: True
 
-    result = engine.execute_action("Use Skill", "Brace Wall")
+    result = engine.execute_intent(engine.prepare_intent("Use Skill", "Brace Wall"))
 
     assert "cannot use skills because of silence" not in result.message
     assert "uses Brace Wall" in result.message
@@ -214,8 +214,8 @@ def test_zero_mana_skill_ignores_silence_but_mana_skill_does_not():
         use=lambda _user, target=None: f"{target.name} is struck.\n",
     )
 
-    free_result = engine.execute_action("Use Skill", "Free Technique")
-    mana_result = engine.execute_action("Use Skill", "Mana Technique")
+    free_result = engine.execute_intent(engine.prepare_intent("Use Skill", "Free Technique"))
+    mana_result = engine.execute_intent(engine.prepare_intent("Use Skill", "Mana Technique"))
 
     assert "uses Free Technique" in free_result.message
     assert "Goblin is pressured" in free_result.message
@@ -357,7 +357,7 @@ def test_initial_jump_charge_omits_generic_uses_line():
     jump = FakeChargingJumpSkill()
     player.spellbook["Skills"] = {"Jump": jump}
 
-    result = engine.execute_action("Use Skill", "Jump")
+    result = engine.execute_intent(engine.prepare_intent("Use Skill", "Jump"))
 
     assert "uses Jump" not in result.message
     assert "coiling their legs" in result.message
@@ -370,7 +370,7 @@ def test_continuing_jump_charge_omits_generic_uses_line():
     player.spellbook["Skills"] = {"Jump": jump}
     player.class_effects["Jump"].active = True
 
-    result = engine.execute_action("Use Skill", "Jump")
+    result = engine.execute_intent(engine.prepare_intent("Use Skill", "Jump"))
 
     assert "uses Jump" not in result.message
     assert "continues to gather power" in result.message
@@ -387,15 +387,16 @@ def test_charging_skill_forced_action_takes_priority_over_berserk():
     forced = engine.get_forced_action()
 
     assert forced is not None
-    assert forced.action == "Use Skill"
-    assert forced.choice == "Dragon Breath (Fire)"
+    assert forced.intent is not None
+    assert forced.intent.action_id == "ability.use"
+    assert forced.intent.choice == "Dragon Breath (Fire)"
 
 
 def test_forced_berserk_action_cannot_be_bypassed_by_a_direct_intent():
     engine, player = _make_engine_with_player_attacking()
     player.status_effects["Berserk"].active = True
 
-    blocked = engine.execute_action("Defend")
+    blocked = engine.execute_intent(engine.prepare_intent("Defend"))
 
     assert blocked.committed is False
     assert blocked.validation_code.name == "FORCED_ACTION_REQUIRED"
@@ -408,8 +409,8 @@ def test_forced_jump_cannot_be_bypassed_by_a_direct_intent():
     player.spellbook["Skills"] = {"Jump": jump}
     player.class_effects["Jump"].active = True
 
-    blocked = engine.execute_action("Attack")
-    resolved = engine.execute_action("Use Skill", "Jump")
+    blocked = engine.execute_intent(engine.prepare_intent("Attack"))
+    resolved = engine.execute_intent(engine.prepare_intent("Use Skill", "Jump"))
 
     assert blocked.committed is False
     assert blocked.validation_code.name == "FORCED_ACTION_REQUIRED"
@@ -423,13 +424,13 @@ def test_forced_cancellation_remains_enforceable_after_its_charge_is_cleared():
     player.class_effects["Jump"].active = True
     player.incapacitated = lambda: True
 
-    blocked = engine.execute_action("Attack")
-    cancelled = engine.execute_action("Cancelled")
+    blocked = engine.execute_intent(engine.prepare_intent("Attack"))
+    cancellation = engine.get_forced_action()
 
     assert blocked.committed is False
     assert blocked.validation_code.name == "FORCED_ACTION_REQUIRED"
     assert jump.charging is False
-    assert cancelled.committed is True
+    assert cancellation is not None and cancellation.cancelled
 
 
 def test_resolved_jump_clears_forced_action_and_returns_control():
@@ -440,10 +441,11 @@ def test_resolved_jump_clears_forced_action_and_returns_control():
 
     forced = engine.get_forced_action()
     assert forced is not None
-    assert forced.action == "Use Skill"
-    assert forced.choice == "Jump"
+    assert forced.intent is not None
+    assert forced.intent.action_id == "ability.use"
+    assert forced.intent.choice == "Jump"
 
-    result = engine.execute_action(forced.action, forced.choice)
+    result = engine.execute_intent(forced.intent)
 
     assert "Jump hits" in result.message
     assert jump.use_calls == 1
@@ -463,8 +465,9 @@ def test_unstoppable_jump_resolves_before_berserk_forced_attack():
     forced = engine.get_forced_action()
 
     assert forced is not None
-    assert forced.action == "Use Skill"
-    assert forced.choice == "Jump"
+    assert forced.intent is not None
+    assert forced.intent.action_id == "ability.use"
+    assert forced.intent.choice == "Jump"
 
 
 def test_execute_spell_accepts_data_driven_spell_with_engine_context():
@@ -479,7 +482,7 @@ def test_execute_spell_accepts_data_driven_spell_with_engine_context():
     )
     player.spellbook["Spells"] = {"Test Flame": spell}
 
-    result = engine.execute_action("Cast Spell", "Test Flame")
+    result = engine.execute_intent(engine.prepare_intent("Cast Spell", "Test Flame"))
 
     assert "TestHero casts Test Flame" in result.message
 
@@ -507,7 +510,7 @@ def test_natural_damaging_spell_releases_stolen_charge_once_per_action():
     promotion_kits.combat_state(player)["stolen_charge"] = 2
     enemy.status_effects["Sleep"].active = True
 
-    result = engine.execute_action("Cast Spell", spell.name)
+    result = engine.execute_intent(engine.prepare_intent("Cast Spell", spell.name))
 
     assert result.message.count("commits 2 Stolen Charge") == 1
     assert result.message.count("Stolen Charge releases") == 1
@@ -528,7 +531,7 @@ def test_steal_as_well_stolen_scroll_cast_grants_charge_but_item_theft_does_not(
     scroll = items.InscribedSpellScroll("Firebolt", charges=2)
     player.inventory[scroll.name] = [scroll]
 
-    result = engine.execute_action("Steal As Well", scroll.name)
+    result = engine.execute_intent(engine.prepare_intent("Steal As Well", scroll.name))
 
     assert "gains 1 Stolen Charge from stolen spell scroll" in result.message
     assert promotion_kits.combat_state(player)["stolen_charge"] == 1
@@ -545,7 +548,9 @@ def test_execute_spell_accepts_stolen_scroll_choice_token():
     scroll = items.InscribedSpellScroll("Firebolt", charges=2)
     player.inventory[scroll.name] = [scroll]
 
-    result = engine.execute_action("Cast Spell", f"{STOLEN_SCROLL_CHOICE_PREFIX}{scroll.name}")
+    result = engine.execute_intent(
+        engine.prepare_intent("Cast Spell", f"{STOLEN_SCROLL_CHOICE_PREFIX}{scroll.name}")
+    )
 
     assert f"TestHero uses {scroll.name}" in result.message
     assert "Stolen Charge" in result.message
@@ -563,7 +568,9 @@ def test_execute_spell_consumes_stolen_scroll_when_charges_run_out():
     scroll = items.InscribedSpellScroll("Firebolt", charges=1)
     player.inventory[scroll.name] = [scroll]
 
-    result = engine.execute_action("Cast Spell", f"{STOLEN_SCROLL_CHOICE_PREFIX}{scroll.name}")
+    result = engine.execute_intent(
+        engine.prepare_intent("Cast Spell", f"{STOLEN_SCROLL_CHOICE_PREFIX}{scroll.name}")
+    )
 
     assert "crumbles to dust" in result.message
     assert scroll.name not in player.inventory
@@ -573,7 +580,9 @@ def test_execute_spell_rejects_non_stolen_scroll_choice_token():
     engine, player = _make_engine_with_player_attacking()
     player.inventory["Potion"] = [SimpleNamespace(name="Potion")]
 
-    result = engine.execute_action("Cast Spell", f"{STOLEN_SCROLL_CHOICE_PREFIX}Potion")
+    result = engine.execute_intent(
+        engine.prepare_intent("Cast Spell", f"{STOLEN_SCROLL_CHOICE_PREFIX}Potion")
+    )
 
     assert result.message == "Potion is not a stolen spell scroll.\n"
 
@@ -584,7 +593,7 @@ def test_execute_spell_still_casts_learned_spell_with_matching_scroll_inventory(
     player.spellbook["Spells"] = {"Firebolt": spell}
     player.inventory["Stolen Firebolt Scroll"] = [items.InscribedSpellScroll("Firebolt", charges=2)]
 
-    result = engine.execute_action("Cast Spell", "Firebolt")
+    result = engine.execute_intent(engine.prepare_intent("Cast Spell", "Firebolt"))
 
     assert "TestHero casts Firebolt" in result.message
     assert player.inventory["Stolen Firebolt Scroll"][0].charges == 2
@@ -595,13 +604,13 @@ def test_smoke_screen_requires_and_consumes_smoke_bomb():
     player.spellbook["Skills"] = {"Smoke Screen": abilities.SmokeScreen()}
     player.flee = lambda _enemy, smoke=False: (True, "TestHero vanishes into smoke.\n")
 
-    missing_result = engine.execute_action("Use Skill", "Smoke Screen")
+    missing_result = engine.execute_intent(engine.prepare_intent("Use Skill", "Smoke Screen"))
 
     assert missing_result.message == "Smoke Screen requires a Smoke Bomb.\n"
     assert missing_result.fled is False
 
     player.inventory["Smoke Bomb"] = [items.SmokeBomb()]
-    result = engine.execute_action("Use Skill", "Smoke Screen")
+    result = engine.execute_intent(engine.prepare_intent("Use Skill", "Smoke Screen"))
 
     assert "TestHero uses Smoke Screen." in result.message
     assert "A Smoke Bomb bursts open." in result.message
@@ -629,7 +638,7 @@ def test_take_it_on_the_run_attempts_theft_after_smoke_escape(monkeypatch):
 
     monkeypatch.setattr("src.core.abilities.utility.Steal", FakeSteal)
 
-    result = engine.execute_action("Use Skill", "Smoke Screen")
+    result = engine.execute_intent(engine.prepare_intent("Use Skill", "Smoke Screen"))
 
     assert result.fled is True
     assert "Take It On the Run steals 7 gold" in result.message

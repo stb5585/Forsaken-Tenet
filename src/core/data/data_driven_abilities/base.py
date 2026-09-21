@@ -13,7 +13,6 @@ works transparently with the existing battle engine code.
 
 from __future__ import annotations
 
-import random
 from copy import deepcopy
 from typing import TYPE_CHECKING
 
@@ -25,6 +24,7 @@ from src.core.constants import (
     DAMAGE_VARIANCE_HIGH,
     DAMAGE_VARIANCE_LOW,
 )
+from src.core.randomness import gameplay_random as random
 
 if TYPE_CHECKING:
     from typing import Any

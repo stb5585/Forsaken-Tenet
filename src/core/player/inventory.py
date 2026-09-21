@@ -1,8 +1,9 @@
 """Player inventory, equipment, loot, saving, and Bestiary behavior."""
 
 import os
-import random
 from itertools import chain
+
+from src.core.randomness import gameplay_random as random
 
 from .. import items
 from ..classes import ability_mechanics, archdruid, bard, footpad, paladin

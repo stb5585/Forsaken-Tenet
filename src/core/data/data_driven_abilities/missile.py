@@ -11,12 +11,11 @@ if TYPE_CHECKING:
     from src.core.character import Character
     from src.core.effects.base import Effect
 
-import random
-
 from src.core.abilities import Spell
 from src.core.combat.combat_result import CombatResult, CombatResultGroup
 from src.core.combat.targeting import TargetScope
 from src.core.constants import ARMOR_SCALING_FACTOR, DAMAGE_VARIANCE_HIGH, DAMAGE_VARIANCE_LOW
+from src.core.randomness import gameplay_random as random
 
 
 class DataDrivenMagicMissileSpell(Spell):

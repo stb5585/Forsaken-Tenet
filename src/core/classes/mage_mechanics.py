@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import math
-import random
 from typing import Any
+
+from src.core.randomness import gameplay_random as random
 
 ELEMENTAL_SCHOOLS = ("Fire", "Ice", "Electric", "Wind", "Water", "Earth")
 ENHANCEMENT_BY_SCHOOL = {

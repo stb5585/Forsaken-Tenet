@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-import random
 from typing import Any
 
 import numpy as np
+
+from src.core.randomness import gameplay_random as random
 
 from .accessories import (
     AccuracyRing,
@@ -335,7 +336,7 @@ def _build_rarity_table() -> dict[str, list[type[Item]]]:
     return _rarity_table_cache
 
 
-def random_item(z: int) -> type[Item]:
+def random_item(z: int, *, rng: Any | None = None) -> type[Item]:
     """
     Returns a random item based on the given integer.
     Clamps z to the valid range [1, 8].
@@ -343,7 +344,8 @@ def random_item(z: int) -> type[Item]:
     # Clamp z to valid range to prevent KeyError
     z = max(1, min(z, 8))
     rarity_table = _build_rarity_table()
-    return random.choice(rarity_table[str(z)])
+    source = rng or random
+    return source.choice(rarity_table[str(z)])
 
 
 def remove_equipment(typ: str) -> Item:
