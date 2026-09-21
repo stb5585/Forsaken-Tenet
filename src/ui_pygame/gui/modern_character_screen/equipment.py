@@ -11,6 +11,7 @@ from src.core.combat.action_interface import (
     shortcut_presentations,
 )
 from src.ui_pygame.assets.ability_icon_manager import get_ability_icon_manager
+from src.ui_pygame.screen_runtime import get_events
 
 from ..confirmation_popup import ConfirmationPopup, draw_popup_close_button, popup_close_clicked
 from ..input_guards import (
@@ -563,7 +564,7 @@ class CharacterEquipmentMixin:
                 self.screen.blit(drag_icon, drag_icon.get_rect(center=dragged_position))
             pygame.display.flip()
             input_armed = release_guard_allows_input(True, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     import sys
@@ -694,7 +695,7 @@ class CharacterEquipmentMixin:
             self.ensure_active_tab_visible(player_char)
             self.draw_all(player_char)
             input_armed = release_guard_allows_input(require_key_release, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     import sys

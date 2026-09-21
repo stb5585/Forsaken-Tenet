@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import math
-import random
 from copy import deepcopy
 from typing import Any
+
+from src.core.randomness import gameplay_random as random
 
 from ..combat.combat_result import CombatResult, CombatResultGroup
 from ..combat.targeting import TargetScope

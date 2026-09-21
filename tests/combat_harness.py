@@ -248,13 +248,21 @@ class BattleEngineHarness:
 
         forced = self.engine.get_forced_action()
         if forced:
-            action, choice = forced.action, forced.choice
+            if forced.cancelled:
+                action, choice = "Cancelled", None
+                intent = self.engine.prepare_intent(action, choice)
+            else:
+                assert forced.intent is not None
+                intent = forced.intent
+                action, choice = intent.engine_action, intent.choice
         elif self.engine.is_player_turn():
             action, choice = self._next_player_action()
+            intent = self.engine.prepare_intent(action, choice)
         else:
             action, choice = self.engine.get_enemy_action()
+            intent = self.engine.prepare_intent(action, choice)
 
-        result = self.engine.execute_action(action, choice)
+        result = self.engine.execute_intent(intent)
         companion_message = self.engine.companion_turn()
         post = self.engine.post_turn()
         self.engine.swap_turns()

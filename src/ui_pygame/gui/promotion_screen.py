@@ -4,6 +4,7 @@ import pygame
 
 from src.core.classes import promotion_mechanic_details, promotion_mechanic_tab_label
 from src.core.progression import promotion_combat_bonuses
+from src.ui_pygame.screen_runtime import get_events
 
 from .confirmation_popup import ConfirmationPopup
 from .mouse_helpers import hit_index, is_left_click, mouse_position
@@ -371,7 +372,7 @@ class PromotionScreen(TownScreenBase):
 
         while True:
             self.draw_all()
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     import sys

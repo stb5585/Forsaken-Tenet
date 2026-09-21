@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-import random
 from textwrap import wrap
 from typing import TYPE_CHECKING
+
+from src.core.randomness import gameplay_random as random
 
 from .. import abilities
 from .base import Misc

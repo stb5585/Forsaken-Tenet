@@ -6,8 +6,9 @@ may depend on individual kits; the generic ``meters`` module must not.
 
 from __future__ import annotations
 
-import random
 from typing import Any
+
+from src.core.randomness import gameplay_random as random
 
 from .meters import (
     _apply_breakdown_stack,

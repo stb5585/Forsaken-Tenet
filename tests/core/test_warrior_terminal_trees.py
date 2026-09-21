@@ -176,7 +176,9 @@ def test_composed_wrath_restores_action_choice_during_frenzy():
     engine.attacker = player
     abilities.Frenzy().use(player)
 
-    assert engine.get_forced_action().action == "Attack"
+    forced = engine.get_forced_action()
+    assert forced is not None and forced.intent is not None
+    assert forced.intent.action_id == "system.attack"
 
     player.spellbook["Skills"]["Composed Wrath"] = abilities.ComposedWrath()
 

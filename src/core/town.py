@@ -1,8 +1,9 @@
 ###########################################
 """Town manager"""
 
-import random
 import re
+
+from src.core.randomness import gameplay_random as random
 
 from . import enemies, items
 from .data.data_loader import (

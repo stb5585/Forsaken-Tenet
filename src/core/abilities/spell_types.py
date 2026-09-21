@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-import random
 from typing import TYPE_CHECKING
+
+from src.core.randomness import gameplay_random as random
 
 from ..combat.combat_result import CombatResult, CombatResultGroup
 from ..combat.reactions import execute_reaction, reaction_result

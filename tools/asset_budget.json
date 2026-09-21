@@ -1,0 +1,7 @@
+{
+  "asset_root": "src/ui_pygame/assets",
+  "baseline_bytes": 240718690,
+  "total_allowance_bytes": 5242880,
+  "per_file_limit_bytes": 4194304,
+  "excluded_suffixes": [".py", ".pyc"]
+}

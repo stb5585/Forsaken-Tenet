@@ -12,6 +12,7 @@ from src.core import map_tiles
 from src.core.data.data_loader import get_special_events
 from src.paths import PYGAME_ASSETS_DIR
 from src.ui_pygame.assets.npc_art_manager import get_npc_art_manager
+from src.ui_pygame.screen_runtime import get_events
 
 from ..combat_manager.manager import GUICombatManager
 from ..dungeon_hud import DungeonHUD
@@ -327,7 +328,7 @@ class DungeonCoreMixin:
             pygame.display.flip()
 
             # Check for quit events
-            for _ in pygame.event.get(pygame.QUIT):
+            for _ in get_events(pygame.QUIT):
                 pygame.quit()
                 sys.exit()
 
@@ -573,7 +574,7 @@ class DungeonCoreMixin:
             pygame.display.flip()
 
             # Keep window responsive
-            for event in pygame.event.get(pygame.QUIT):
+            for event in get_events(pygame.QUIT):
                 pygame.quit()
                 sys.exit()
 

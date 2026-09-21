@@ -17,6 +17,7 @@ from src.core.progression import (
     progression_class_name,
 )
 from src.ui_pygame.assets.ability_icon_manager import get_ability_icon_manager
+from src.ui_pygame.screen_runtime import get_events
 
 from .character_naming import CompanionNamingScreen
 from .church import PaladinVowSelectionPopup
@@ -556,7 +557,7 @@ class ProgressionScreen(ProgressionPanelMixin, ProgressionTreeMixin, TownScreenB
         """Run the modal screen until the player returns."""
         while True:
             self.draw_all()
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     return
                 if event.type == pygame.KEYDOWN:

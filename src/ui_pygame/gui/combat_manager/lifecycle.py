@@ -22,6 +22,7 @@ from src.ui_pygame.gui.enemy_presentation import (
     is_invisible_target,
     player_has_sight,
 )
+from src.ui_pygame.screen_runtime import get_events
 
 from ..input_guards import release_guard_allows_input
 from ..mouse_helpers import hit_index, is_left_click, mouse_position
@@ -139,7 +140,7 @@ class CombatLifecycleMixin:
         # Show initial combat screen with brief transition delay (with animation updates)
         init_clock = pygame.time.Clock()
         for _ in range(COMBAT_START_TRANSITION_FRAMES):
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
@@ -274,7 +275,7 @@ class CombatLifecycleMixin:
 
             # Small delay between turns (with animation updates)
             for _ in range(POST_TURN_DELAY_FRAMES):
-                for event in pygame.event.get():
+                for event in get_events():
                     if event.type == pygame.QUIT:
                         pygame.quit()
                         sys.exit(0)
@@ -502,7 +503,7 @@ class CombatLifecycleMixin:
                 self.combat_view.reload_enemy_sprite(enemy)
                 self.combat_view.enemy_visual_offset = (offset_x, 0)
                 for _ in range(5):
-                    for event in pygame.event.get():
+                    for event in get_events():
                         if event.type == pygame.QUIT:
                             pygame.quit()
                             sys.exit(0)
@@ -548,14 +549,17 @@ class CombatLifecycleMixin:
         # Check for forced actions (berserk, charging, jump)
         forced = self.engine.get_forced_action()
         if forced:
-            if forced.action == "Cancelled":
+            if forced.cancelled:
                 for line in forced.cancel_message.strip().split("\n"):
                     if line.strip():
                         self.combat_view.add_combat_message(line)
                 self._flush_result_frame(player_char, enemy)
                 return True
 
-            if forced.action == "Attack":
+            intent = forced.intent
+            assert intent is not None
+
+            if intent.engine_action == "Attack":
                 actor_name = getattr(
                     getattr(self.engine, "attacker", None), "name", player_char.name
                 )
@@ -565,7 +569,7 @@ class CombatLifecycleMixin:
 
             # Execute the forced action via engine
             enemy_hp_before = enemy.health.current
-            result = self.engine.execute_action(forced.action, choice=forced.choice)
+            result = self.engine.execute_intent(intent)
             self._announce_new_resolutions(result)
 
             for line in result.message.strip().split("\n"):
@@ -584,8 +588,8 @@ class CombatLifecycleMixin:
                 )
                 self._show_combat_damage_effect(
                     "enemy",
-                    forced.action,
-                    forced.choice,
+                    intent.engine_action,
+                    intent.choice,
                     result.message,
                     floating_damage,
                 )
@@ -611,7 +615,7 @@ class CombatLifecycleMixin:
 
             # Handle input
             input_armed = release_guard_allows_input(True, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
@@ -848,7 +852,7 @@ class CombatLifecycleMixin:
             )
             pygame.display.flip()
             input_armed = release_guard_allows_input(True, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
@@ -1140,9 +1144,8 @@ class CombatLifecycleMixin:
                 slot_machine_callback=slot_cb,
             )
         else:
-            result = self.engine.execute_action(
-                engine_action,
-                choice=choice,
+            result = self.engine.execute_intent(
+                self.engine.prepare_intent(engine_action, choice),
                 slot_machine_callback=slot_cb,
             )
         self._announce_new_resolutions(result)

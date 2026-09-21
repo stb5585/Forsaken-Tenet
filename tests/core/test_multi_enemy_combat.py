@@ -235,7 +235,7 @@ def test_pending_retarget_action_uses_a_visible_focus_after_target_loss():
         "policy": TargetLossPolicy.RETARGET_FOCUS,
     }
 
-    result = engine.execute_action("Use Skill", charge.name)
+    result = engine.execute_intent(engine.prepare_intent("Use Skill", charge.name))
 
     assert result.committed is True
     assert calls == [enemies[1]]
@@ -485,7 +485,7 @@ def test_locked_charge_fizzles_without_refund_when_target_is_gone():
     engine.swap_turns()
     while engine.attacker is not player:
         engine.swap_turns()
-    released = engine.execute_action("Use Skill", "Charge")
+    released = engine.execute_intent(engine.prepare_intent("Use Skill", "Charge"))
 
     assert "building momentum" in started.message
     assert "fizzles" in released.message

@@ -6,6 +6,7 @@ import pygame
 
 from src.core.save_system import SaveManager
 from src.ui_pygame.assets.portrait_manager import PortraitManager
+from src.ui_pygame.screen_runtime import get_events
 
 from .confirmation_popup import ConfirmationPopup
 from .input_guards import (
@@ -523,7 +524,7 @@ class LoadGameScreen:
             self.draw_all()
 
             input_armed = release_guard_allows_input(require_key_release, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     import sys

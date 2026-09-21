@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-import random
 from typing import Any
+
+from src.core.randomness import gameplay_random as random
 
 from .state import _claim_action, _class_ring_data, class_name, combat_state
 

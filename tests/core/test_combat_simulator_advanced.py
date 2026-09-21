@@ -123,11 +123,12 @@ def _make_fake_engine(*, player_turn=True, start_events=()):
     class FakeBattleEngine:
         last_instance = None
 
-        def __init__(self, player, enemy, tile, logger=None):
+        def __init__(self, player, enemy, tile, logger=None, rng=None):
             self.player = player
             self.enemy = enemy
             self.tile = tile
             self.logger = logger
+            self.rng = rng
             self.attacker = player if player_turn else enemy
             self.defender = enemy if player_turn else player
             self.available_actions = tile.available_actions(player)
@@ -162,10 +163,15 @@ def _make_fake_engine(*, player_turn=True, start_events=()):
         def get_enemy_action(self):
             return "Attack", None
 
-        def execute_action(self, action, choice):
-            self.actions.append((action, choice))
+        def prepare_intent(self, action, choice=None):
+            from src.core.combat import ActionIntent
+
+            return ActionIntent(action_id=action, choice=choice)
+
+        def execute_intent(self, intent):
+            self.actions.append((intent.engine_action, intent.choice))
             self._running = False
-            return SimpleNamespace(message=f"{action}:{choice}")
+            return SimpleNamespace(message=f"{intent.engine_action}:{intent.choice}")
 
         def companion_turn(self):
             return ""
@@ -373,42 +379,26 @@ def test_simulate_battle_default_policy_prefers_high_value_actions(
     assert stats.winner == "draw"
 
 
-def test_simulate_battle_policy_exceptions_fall_back_to_attack(monkeypatch):
+def test_simulate_battle_policy_exceptions_propagate(monkeypatch):
     from src.core.analytics import combat_simulator as sim_mod
 
     player = _make_player()
     enemy = _make_player(name="Goblin")
 
     player_engine = _make_fake_engine(player_turn=True)
-    enemy_engine = _make_fake_engine(player_turn=False)
-
     monkeypatch.setattr("src.core.combat.battle_engine.BattleEngine", player_engine)
     sim = sim_mod.CombatSimulator()
-    stats = sim.simulate_battle(
-        player,
-        enemy,
-        max_turns=1,
-        seed=11,
-        char1_policy=lambda _engine: (_ for _ in ()).throw(RuntimeError("boom")),
-    )
-
-    assert player_engine.last_instance.actions == [("Attack", None)]
-    assert stats.winner == "draw"
-
-    monkeypatch.setattr("src.core.combat.battle_engine.BattleEngine", enemy_engine)
-    stats = sim.simulate_battle(
-        player,
-        enemy,
-        max_turns=1,
-        seed=12,
-        char2_policy=lambda _engine: (_ for _ in ()).throw(RuntimeError("boom")),
-    )
-
-    assert enemy_engine.last_instance.actions == [("Attack", None)]
-    assert stats.winner == "draw"
+    with pytest.raises(RuntimeError, match="boom"):
+        sim.simulate_battle(
+            player,
+            enemy,
+            max_turns=1,
+            seed=11,
+            char1_policy=lambda _engine: (_ for _ in ()).throw(RuntimeError("boom")),
+        )
 
 
-def test_run_simulations_copies_inputs_and_handles_uncopyable_fallback(monkeypatch):
+def test_run_simulations_rejects_uncopyable_inputs(monkeypatch):
     from src.core.analytics.combat_simulator import CombatSimulator
 
     class Uncopyable:
@@ -426,44 +416,32 @@ def test_run_simulations_copies_inputs_and_handles_uncopyable_fallback(monkeypat
 
     enemy = Uncopyable("Boss")
     sim = CombatSimulator()
-    seen = []
+    with pytest.raises(RuntimeError, match="no deepcopy"):
+        sim.run_simulations(make_player, enemy, iterations=2, seed=None)
 
-    def fake_simulate_battle(c1, c2, seed=None):
-        seen.append((c1.name, c2.name, seed, c2 is enemy))
-        return _make_stats(winner=c1.name, loser=c2.name)
-
-    monkeypatch.setattr(sim, "simulate_battle", fake_simulate_battle)
-
-    report = sim.run_simulations(make_player, enemy, iterations=2, seed=None)
-
-    assert factory_calls["players"] == 2
-    assert seen == [
-        ("FactoryHero-1", "Boss", None, True),
-        ("FactoryHero-2", "Boss", None, True),
-    ]
-    assert report.total_battles == 2
-    assert len(report.results) == 2
+    assert factory_calls["players"] == 1
 
 
 def test_run_simulations_seeds_and_deepcopies_when_possible(monkeypatch):
     from src.core.analytics.combat_simulator import CombatSimulator
-
-    seed_calls = []
-    monkeypatch.setattr("random.seed", lambda value: seed_calls.append(value))
 
     player = SimpleNamespace(name="Hero")
     enemy = SimpleNamespace(name="Goblin")
     sim = CombatSimulator()
     seen = []
 
-    def fake_simulate_battle(c1, c2, seed=None):
-        seen.append((c1 is player, c2 is enemy, seed))
+    def fake_simulate_battle(c1, c2, rng=None):
+        seen.append((c1 is player, c2 is enemy, rng.random()))
         return _make_stats(winner="Hero", loser="Goblin")
 
     monkeypatch.setattr(sim, "simulate_battle", fake_simulate_battle)
 
     report = sim.run_simulations(player, enemy, iterations=2, seed=50)
 
-    assert seed_calls == [50, 51]
-    assert seen == [(False, False, 50), (False, False, 51)]
+    import random
+
+    assert seen == [
+        (False, False, random.Random(50).random()),
+        (False, False, random.Random(51).random()),
+    ]
     assert report.total_battles == 2

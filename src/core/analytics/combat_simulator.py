@@ -9,11 +9,17 @@ from __future__ import annotations
 
 import copy
 import json
+import logging
+import random as stdlib_random
 import statistics
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING
+
+from src.core.randomness import RandomSource, using_random_source
+
+logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -25,22 +31,22 @@ if TYPE_CHECKING:
 def _combat_level(ch: object) -> int:
     try:
         lvl = getattr(ch, "level", 1)
-    except Exception:
+    except (AttributeError, RuntimeError, TypeError):
         return 1
     try:
         nested_level = getattr(lvl, "level")
     except AttributeError:
         nested_level = None
-    except Exception:
+    except (AttributeError, RuntimeError, TypeError):
         return 1
     else:
         try:
             return int(nested_level)
-        except Exception:
+        except (TypeError, ValueError):
             return 1
     try:
         return int(lvl)
-    except Exception:
+    except (TypeError, ValueError):
         return 1
 
 
@@ -505,6 +511,35 @@ class CombatSimulator:
         *,
         encounter=None,
         seed: int | None = None,
+        rng: RandomSource | None = None,
+        char1_policy: Callable | None = None,
+        char2_policy: Callable | None = None,
+        include_flee: bool = False,
+    ) -> CombatStats:
+        """Simulate a battle with an isolated deterministic random source."""
+        if seed is not None and rng is not None:
+            raise ValueError("seed and rng are mutually exclusive")
+        source = rng or stdlib_random.Random(seed)
+        with using_random_source(source):
+            return self._simulate_battle(
+                char1,
+                char2,
+                max_turns,
+                encounter=encounter,
+                rng=source,
+                char1_policy=char1_policy,
+                char2_policy=char2_policy,
+                include_flee=include_flee,
+            )
+
+    def _simulate_battle(
+        self,
+        char1: Player,
+        char2: Character | None = None,
+        max_turns: int = 200,
+        *,
+        encounter=None,
+        rng: RandomSource,
         char1_policy: Callable | None = None,
         char2_policy: Callable | None = None,
         include_flee: bool = False,
@@ -517,22 +552,18 @@ class CombatSimulator:
             char2: Legacy singleton enemy-side combatant.
             encounter: Optional runtime hostile roster.
             max_turns: Maximum turns before declaring a draw
-            seed: Optional RNG seed for determinism
-            char1_policy: Optional policy(engine) -> (action, choice)
-            char2_policy: Optional policy(engine) -> (action, choice)
+            rng: Context-local random source used for every gameplay draw.
+            char1_policy: Optional policy(engine) -> ActionIntent.
+            char2_policy: Optional policy(engine) -> ActionIntent.
             include_flee: If True, allow Flee to be selected by policies
 
         Returns:
             Combat statistics from the battle
         """
-        import random
-
-        from src.core.combat import ActionIntent, CombatEncounter, TargetScope
+        from src.core.combat import ActionIntent, CombatEncounter
         from src.core.combat.battle_engine import BattleEngine
         from src.core.events.event_bus import EventType, get_event_bus, reset_event_bus
 
-        if seed is not None:
-            random.seed(seed)
         using_legacy_enemy = encounter is None
         if (char2 is None) == (encounter is None):
             raise ValueError("Supply exactly one of char2 or encounter.")
@@ -615,8 +646,8 @@ class CombatSimulator:
                     target_id = ev.data.get("target_combatant_id") or ev.data.get("target_id")
                     if target_id in member_labels and dmg > 0:
                         damage_by_combatant[member_labels[target_id]] += dmg
-            except Exception:
-                return
+            except (AttributeError, KeyError, TypeError, ValueError) as exc:
+                logger.warning("Ignoring malformed simulator analytics event: %s", exc)
 
         for et in [
             EventType.SPELL_CAST,
@@ -642,17 +673,11 @@ class CombatSimulator:
                     actions.append("Summon")
                     actions.append("Recall")
                 # Totem/Transform are implemented as top-level actions in BattleEngine.
-                try:
-                    if "Totem" in getattr(char1, "spellbook", {}).get("Skills", {}):
-                        actions.append("Totem")
-                except Exception:
-                    pass
-                try:
-                    if "Transform" in getattr(char1, "spellbook", {}).get("Skills", {}):
-                        actions.append("Transform")
-                        actions.append("Untransform")
-                except Exception:
-                    pass
+                if "Totem" in getattr(char1, "spellbook", {}).get("Skills", {}):
+                    actions.append("Totem")
+                if "Transform" in getattr(char1, "spellbook", {}).get("Skills", {}):
+                    actions.append("Transform")
+                    actions.append("Untransform")
                 return actions
 
             def __str__(self) -> str:
@@ -664,12 +689,14 @@ class CombatSimulator:
                 player=char1,
                 enemy=primary_enemy,
                 tile=tile,
+                rng=rng,
             )
         else:
             engine = BattleEngine(
                 player=char1,
                 encounter=encounter,
                 tile=tile,
+                rng=rng,
             )
         engine.start_battle()
 
@@ -680,30 +707,22 @@ class CombatSimulator:
                 return "Attack", None
 
             # Meta-actions (summons/totems) first: these are major class-defining levers.
-            try:
-                if (
-                    attacker == char1
-                    and "Summon" in _engine.available_actions
-                    and getattr(char1, "summons", None)
-                    and not getattr(_engine, "summon_active", False)
-                ):
-                    # Summon the first available companion deterministically.
-                    choice = next(iter(char1.summons.keys()))
-                    return "Summon", choice
-            except Exception:
-                pass
-            try:
-                if (
-                    attacker == char1
-                    and "Totem" in _engine.available_actions
-                    and not (
-                        attacker.magic_effects.get("Totem")
-                        and attacker.magic_effects["Totem"].active
-                    )
-                ):
-                    return "Totem", "Earth"
-            except Exception:
-                pass
+            if (
+                attacker == char1
+                and "Summon" in _engine.available_actions
+                and getattr(char1, "summons", None)
+                and not getattr(_engine, "summon_active", False)
+            ):
+                choice = next(iter(char1.summons.keys()))
+                return "Summon", choice
+            if (
+                attacker == char1
+                and "Totem" in _engine.available_actions
+                and not (
+                    attacker.magic_effects.get("Totem") and attacker.magic_effects["Totem"].active
+                )
+            ):
+                return "Totem", "Earth"
 
             def _is_combat_offense(ab) -> bool:
                 """
@@ -812,11 +831,11 @@ class CombatSimulator:
             # Heal when low (self-targeting heal spells are handled by engine)
             try:
                 hp_pct = attacker.health.current / max(1, attacker.health.max)
-            except Exception:
+            except (AttributeError, TypeError, ZeroDivisionError):
                 hp_pct = 1.0
             try:
                 mp_pct = attacker.mana.current / max(1, attacker.mana.max)
-            except Exception:
+            except (AttributeError, TypeError, ZeroDivisionError):
                 mp_pct = 1.0
 
             # Use items under pressure (keeps simulator closer to real PvE play).
@@ -862,7 +881,7 @@ class CombatSimulator:
                         mp = _best_item("Mana")
                         if mp:
                             return "Use Item", mp
-            except Exception:
+            except (AttributeError, KeyError, TypeError):
                 pass
 
             if (not paired_policy or turns < int(max_turns * 0.6) or max_turns == 1) and (
@@ -914,7 +933,7 @@ class CombatSimulator:
                                 and not defender.can_be_disarmed()
                             ):
                                 return -1e9
-                        except Exception:
+                        except (AttributeError, KeyError, TypeError):
                             return -1e9
                     score = 0.0
                     if _is_damage_ability(ab):
@@ -980,53 +999,38 @@ class CombatSimulator:
                 )
                 forced = engine.get_forced_action()
                 if forced:
-                    action, choice = forced.action, forced.choice
+                    if forced.cancelled:
+                        intent = engine.prepare_intent("Cancelled")
+                    else:
+                        assert forced.intent is not None
+                        intent = forced.intent
                     forced_action = True
                 else:
                     if engine.is_player_turn():
-                        policy = char1_policy or default_policy
-                        try:
-                            selected = policy(engine)
-                            if isinstance(selected, ActionIntent):
-                                action, choice = selected, selected.choice
-                            else:
-                                action, choice = selected
-                        except Exception:
-                            action, choice = "Attack", None
+                        if char1_policy is None:
+                            action, choice = default_policy(engine)
+                            intent = engine.prepare_intent(action, choice)
+                        else:
+                            intent = char1_policy(engine)
+                            if not isinstance(intent, ActionIntent):
+                                raise TypeError("char1_policy must return ActionIntent")
                     else:
                         # By default, let enemies use their real AI (action_stack / priority rules)
                         # rather than the player-centric default_policy.
                         if char2_policy is not None:
-                            try:
-                                selected = char2_policy(engine)
-                                if isinstance(selected, ActionIntent):
-                                    action, choice = selected, selected.choice
-                                else:
-                                    action, choice = selected
-                            except Exception:
-                                action, choice = "Attack", None
+                            intent = char2_policy(engine)
+                            if not isinstance(intent, ActionIntent):
+                                raise TypeError("char2_policy must return ActionIntent")
                         else:
                             action, choice = engine.get_enemy_action()
-                record_action_selection(action, choice)
-                action_name = action.action if isinstance(action, ActionIntent) else str(action)
-                action_choice = action.choice if isinstance(action, ActionIntent) else choice
+                            intent = engine.prepare_intent(action, choice)
+                record_action_selection(intent.action_id, intent.choice)
+                action_name = intent.action_id
+                action_choice = intent.choice
                 action_label = f"{action_name}:{action_choice}" if action_choice else action_name
                 action_label = f"{actor_id}=" f"{action_label}"
                 action_sequence.append(action_label)
-                if not hasattr(engine, "execute_intent"):
-                    action_result = engine.execute_action(action, choice)
-                elif isinstance(action, ActionIntent):
-                    intent = action
-                    action_result = engine.execute_intent(intent)
-                else:
-                    scope = engine.target_scope_for_action(action, choice)
-                    target_ids = (
-                        (engine.focus_target_id,)
-                        if engine.is_player_turn() and scope == TargetScope.SINGLE_ENEMY
-                        else ()
-                    )
-                    intent = ActionIntent(action_id=action, choice=choice, target_ids=target_ids)
-                    action_result = engine.execute_intent(intent)
+                action_result = engine.execute_intent(intent)
                 if not getattr(action_result, "committed", True):
                     invalid_intents += 1
                 action_committed = bool(getattr(action_result, "committed", True))
@@ -1185,52 +1189,27 @@ class CombatSimulator:
 
         base_seed = seed if seed is not None else None
         for i in range(iterations):
-            # Seed *before* constructing factory characters so any randomized
-            # initial stats/equipment are part of the deterministic run.
-            if base_seed is not None:
-                import random
-
-                random.seed(base_seed + i)
-            if callable(char1):
-                c1 = char1()
-            else:
-                try:
-                    c1 = copy.deepcopy(char1)
-                except Exception:
-                    c1 = char1
-
-            if char2 is not None:
-                if callable(char2):
-                    c2 = char2()
-                else:
-                    try:
-                        c2 = copy.deepcopy(char2)
-                    except Exception:
-                        c2 = char2
-                runtime_encounter = None
-            else:
-                c2 = None
-                if callable(encounter):
-                    runtime_encounter = encounter()
-                else:
-                    try:
-                        runtime_encounter = copy.deepcopy(encounter)
-                    except Exception:
-                        runtime_encounter = encounter
-
             sim_seed = None if base_seed is None else (base_seed + i)
-            if c2 is not None:
-                result = self.simulate_battle(
-                    c1,
-                    c2,
-                    seed=sim_seed,
-                )
-            else:
-                result = self.simulate_battle(
-                    c1,
-                    encounter=runtime_encounter,
-                    seed=sim_seed,
-                )
+            source = stdlib_random.Random(sim_seed)
+            with using_random_source(source):
+                if callable(char1):
+                    c1 = char1()
+                else:
+                    c1 = copy.deepcopy(char1)
+
+                if char2 is not None:
+                    c2 = char2() if callable(char2) else copy.deepcopy(char2)
+                    runtime_encounter = None
+                else:
+                    c2 = None
+                    runtime_encounter = (
+                        encounter() if callable(encounter) else copy.deepcopy(encounter)
+                    )
+
+                if c2 is not None:
+                    result = self.simulate_battle(c1, c2, rng=source)
+                else:
+                    result = self.simulate_battle(c1, encounter=runtime_encounter, rng=source)
             results.append(result)
 
         self.results.extend(results)

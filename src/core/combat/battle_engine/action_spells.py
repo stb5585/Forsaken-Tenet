@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import inspect
-import random
 from copy import deepcopy
 from typing import TYPE_CHECKING
+
+from src.core.randomness import gameplay_random as random
 
 from ... import items
 from ...classes import (

@@ -31,9 +31,13 @@ class PreTurnResult:
 class ForcedAction:
     """Represents an automatically-determined action (berserk, charging, jump)."""
 
-    action: str = ""
-    choice: str | None = None
-    cancel_message: str = ""  # non-empty when a charging ability was cancelled
+    intent: ActionIntent | None = None
+    cancel_message: str = ""
+
+    @property
+    def cancelled(self) -> bool:
+        """Return whether the forced turn was consumed by cancellation."""
+        return self.intent is None
 
 
 @dataclass

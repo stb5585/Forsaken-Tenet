@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from ..actor_cycle import PLAYER_ACTOR_ID
 from ..combat_result import CombatResultGroup
@@ -13,9 +13,6 @@ from .models import (
     ActionResult,
     ActionValidationCode,
 )
-
-if TYPE_CHECKING:
-    from collections.abc import Callable
 
 
 class TurnExecutionMixin:
@@ -88,14 +85,13 @@ class TurnExecutionMixin:
         self._clear_pending_charge(actor_id, skill)
         return message or f"{self.attacker.name} cancels their charge.\n"
 
-    def execute_action(
+    def prepare_intent(
         self,
-        action: str,
+        action_id: str,
         choice: str | None = None,
-        slot_machine_callback: Callable | None = None,
-    ) -> ActionResult:
-        """Compatibility adapter for callers that do not construct intents."""
-        scope = self._target_scope_for_action(action, choice)
+    ) -> ActionIntent:
+        """Build an explicitly targeted intent from a selected action ID."""
+        scope = self._target_scope_for_action(action_id, choice)
         target_ids: tuple[str, ...] = ()
         player_side = self.current_actor_id == PLAYER_ACTOR_ID or (
             self.current_actor_id is None and self.is_player_turn()
@@ -142,39 +138,11 @@ class TurnExecutionMixin:
                         skill = pending.get("ability")
                         if skill is not None and hasattr(skill, "charge_target"):
                             skill.charge_target = member.enemy
-                else:
-                    skill = pending.get("ability")
-                    if skill is not None:
-                        skill.charging = False
-                        if hasattr(skill, "charge_turns"):
-                            skill.charge_turns = 0
-                        if hasattr(skill, "charge_target"):
-                            skill.charge_target = None
-                    self._clear_pending_charge(PLAYER_ACTOR_ID, skill)
-                    loss_description = (
-                        "has no legal focus"
-                        if getattr(policy, "value", policy) == "retarget_focus"
-                        else "lost its locked target"
-                    )
-                    message = (
-                        f"{getattr(skill, 'name', 'The charged action')} fizzles "
-                        f"because it {loss_description}.\n"
-                    )
-                    group = CombatResultGroup(
-                        action=getattr(skill, "name", action),
-                        actor_id=PLAYER_ACTOR_ID,
-                        target_scope=TargetScope.SINGLE_ENEMY,
-                        message=message,
-                    )
-                    return ActionResult(message=message, combat_results=group)
-            elif self.attacker.status_effects["Berserk"].active:
+            else:
                 self._refresh_focus()
                 if self.encounter.living_members:
                     target_ids = (self._focus_target_id,)
-        return self.execute_intent(
-            ActionIntent(action_id=action, choice=choice, target_ids=target_ids),
-            slot_machine_callback=slot_machine_callback,
-        )
+        return ActionIntent(action_id=action_id, choice=choice, target_ids=target_ids)
 
     def _ability_for_action(self, action: str, choice: str | None):
         if not choice:

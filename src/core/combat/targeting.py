@@ -4,13 +4,37 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Iterable
 
 from ..contracts.targeting import (
     TargetingPolicy,
 )
 from ..contracts.targeting import TargetLossPolicy as CanonicalTargetLossPolicy
 from ..contracts.targeting import TargetScope as CanonicalTargetScope
+
+_ACTION_IDS = {
+    "Attack": "system.attack",
+    "Defend": "system.defend",
+    "Flee": "system.flee",
+    "Nothing": "system.wait",
+    "Cancel Charge": "system.cancel_charge",
+    "Pickup Weapon": "system.pickup_weapon",
+    "Cast Spell": "ability.cast",
+    "Use Skill": "ability.use",
+    "Use Item": "item.use",
+    "Summon": "companion.summon",
+    "Recall": "companion.recall",
+    "Support": "companion.support",
+    "Companion": "companion.command",
+    "Repertoire": "class.repertoire",
+    "Totem": "class.totem",
+    "Transform": "class.transform",
+    "Untransform": "class.untransform",
+    "Dismiss Form": "class.dismiss_form",
+    "Runic Boost": "class.runic_boost",
+    "Tame": "class.tame",
+    "Steal As Well": "class.steal_as_well",
+}
+_ENGINE_ACTIONS = {action_id: command for command, action_id in _ACTION_IDS.items()}
 
 
 class TargetScope(str, Enum):
@@ -46,45 +70,24 @@ class ActionValidationCode(str, Enum):
     FORCED_ACTION_REQUIRED = "forced_action_required"
 
 
-@dataclass(frozen=True, init=False)
+@dataclass(frozen=True)
 class ActionIntent:
-    """Immutable ID-based action request; the engine owns the actor.
-
-    The ``action`` keyword and :meth:`from_legacy` remain the public
-    compatibility boundary for legacy command strings. Internal callers use
-    ``action_id`` exclusively.
-    """
+    """Immutable ID-based action request; the engine owns the actor."""
 
     action_id: str
-    choice: str | None
-    target_ids: tuple[str, ...]
+    choice: str | None = None
+    target_ids: tuple[str, ...] = ()
 
-    def __init__(
-        self,
-        action_id: str | None = None,
-        choice: str | None = None,
-        target_ids: Iterable[str] = (),
-        *,
-        action: str | None = None,
-    ) -> None:
-        resolved_action_id = action_id if action_id is not None else action
-        if resolved_action_id is None or not resolved_action_id:
+    def __post_init__(self) -> None:
+        if not self.action_id:
             raise ValueError("action_id must not be empty")
-        if action_id is not None and action is not None and action_id != action:
-            raise ValueError("action and action_id cannot disagree")
-        object.__setattr__(self, "action_id", resolved_action_id)
-        object.__setattr__(self, "choice", choice)
-        object.__setattr__(self, "target_ids", tuple(target_ids))
+        object.__setattr__(self, "action_id", _ACTION_IDS.get(self.action_id, self.action_id))
+        object.__setattr__(self, "target_ids", tuple(self.target_ids))
 
-    @classmethod
-    def from_legacy(
-        cls,
-        action: str,
-        choice: str | None = None,
-        target_ids: Iterable[str] = (),
-    ) -> ActionIntent:
-        """Adapt the former command/choice request shape at a public boundary."""
-        return cls(action_id=action, choice=choice, target_ids=target_ids)
+    @property
+    def engine_action(self) -> str:
+        """Return the internal dispatcher command for this canonical ID."""
+        return _ENGINE_ACTIONS.get(self.action_id, self.action_id)
 
 
 def canonical_targeting_policy(

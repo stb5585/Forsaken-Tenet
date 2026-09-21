@@ -105,15 +105,11 @@ def test_ability_factory_uses_canonical_targeting_metadata_at_runtime():
 
 def test_action_intent_uses_canonical_id_without_internal_legacy_accessor():
     canonical = ActionIntent(action_id="system.attack", target_ids=("enemy-a",))
-    legacy = ActionIntent.from_legacy("Attack", target_ids=("enemy-a",))
-    keyword_legacy = ActionIntent(action="Attack", target_ids=("enemy-a",))
 
     assert canonical.action_id == "system.attack"
     assert not hasattr(canonical, "action")
-    assert legacy.action_id == "Attack"
-    assert keyword_legacy == legacy
-    with pytest.raises(ValueError, match="disagree"):
-        ActionIntent(action_id="system.attack", action="Attack")
+    with pytest.raises(ValueError, match="must not be empty"):
+        ActionIntent(action_id="")
 
     adapted = canonical_targeting_policy(
         LegacyTargetScope.ALL_ENEMIES,

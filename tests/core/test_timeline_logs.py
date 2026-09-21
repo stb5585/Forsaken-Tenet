@@ -19,7 +19,7 @@ def test_battle_log_records_the_current_virtual_opportunity():
 
     engine.start_battle()
     ready_at = engine.current_readiness
-    result = engine.execute_action("Defend")
+    result = engine.execute_intent(engine.prepare_intent("Defend"))
 
     event = engine.logger.events[-1]
     assert result.committed is True

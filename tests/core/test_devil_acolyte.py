@@ -4,6 +4,8 @@
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).parents[2]))
 
 
@@ -89,3 +91,15 @@ def test_devil_unknown_resistance_defaults_to_neutral():
     from src.core.enemies import Devil
 
     assert Devil().check_mod("resist", typ="Non-elemental") == 0
+
+
+@pytest.mark.parametrize("physical_resistance", [-0.4, 0.0, 0.75])
+def test_ultimate_physical_damage_ignores_enemy_resistance(physical_resistance):
+    """Ultimate Physical hits do not create resistance or vulnerability."""
+    from src.core.enemies import Devil
+
+    devil = Devil()
+    devil.resistance["Physical"] = physical_resistance
+
+    assert devil.check_mod("resist", typ="Physical") == pytest.approx(physical_resistance)
+    assert devil.check_mod("resist", typ="Physical", ultimate=True) == 0.0

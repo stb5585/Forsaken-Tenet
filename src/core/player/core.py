@@ -1,6 +1,6 @@
 """Concrete Player class composed from focused behavior mixins."""
 
-import random
+from src.core.randomness import gameplay_random as random
 
 from .. import main_story, thieves_guild, town
 from ..character import Character

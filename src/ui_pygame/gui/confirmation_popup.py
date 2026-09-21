@@ -4,6 +4,8 @@ Confirmation popup for character creation decisions.
 
 import pygame
 
+from src.ui_pygame.screen_runtime import get_events
+
 from .input_guards import prepare_guarded_input, release_guard_allows_input
 from .mouse_helpers import hit_index, is_left_click, mouse_position
 
@@ -264,7 +266,7 @@ class ConfirmationPopup:
             # Arm input once all keys are released (prevents buffered input from skipping popups)
             input_armed = release_guard_allows_input(require_key_release, input_armed)
 
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     import sys
@@ -450,7 +452,7 @@ class ChoicePopup:
         while True:
             self.draw_popup(background)
 
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     import sys
@@ -641,7 +643,7 @@ class RewardSelectionPopup:
 
             input_armed = release_guard_allows_input(require_key_release, input_armed)
 
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     import sys
@@ -936,7 +938,7 @@ class QuantityPopup:
 
             input_armed = release_guard_allows_input(require_key_release, input_armed)
 
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     import sys
@@ -1165,7 +1167,7 @@ class CodeEntryPopup:
             self.draw_popup(background_draw_func)
             input_armed = release_guard_allows_input(require_key_release, input_armed)
 
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     import sys

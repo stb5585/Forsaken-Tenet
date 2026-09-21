@@ -39,11 +39,11 @@ the complete inventory with:
 ./.venv/bin/python tools/validate_ability_taxonomy.py --require-complete
 ```
 
-CI runs the same complete-only check. Each aliases list preserves both the
-legacy Python class token and display name; shared display names are valid for
-upgrade families, while shared non-display aliases fail validation. Legacy
-`type` and `subtype` fields below continue to select execution classes during
-the compatibility period; they are not the canonical taxonomy.
+CI runs the same complete-only check. Each aliases list preserves accepted
+read-only inputs such as older Python class tokens and display names; shared
+display names are valid for upgrade families, while shared non-display aliases
+fail validation. The `type` and `subtype` fields below may select execution
+classes, but they are not the canonical taxonomy or persisted identity.
 
 New saves serialize abilities by slug. YAML abilities declare their own slug;
 active Python abilities in the player progression catalogs receive a validated
@@ -389,7 +389,6 @@ abilities/<domain>.py (class Foo)
 | `src/core/effects/skills.py` | Equipment and player skill effects |
 | `src/core/effects/special.py` | Advanced and bespoke ability effects |
 | `src/core/effects/summon.py` | Summon companion ultimate effects |
-| `src/core/effects/composite.py` | Backward-compatible re-exports for legacy imports |
 | `effects/__init__.py` | Public effect exports |
 | `abilities/` | Ability base types, focused wrapper modules, and progression catalogs |
 | `abilities/__init__.py` | Public ability exports only |

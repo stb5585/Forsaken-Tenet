@@ -6,6 +6,7 @@ Displays chest contents with visual flair.
 import pygame
 
 from src.ui_pygame.assets.item_render_manager import get_item_render_manager
+from src.ui_pygame.screen_runtime import get_events
 
 from .input_guards import (
     prepare_guarded_input,
@@ -97,7 +98,7 @@ class LootPopup:
 
         while waiting:
             input_armed = release_guard_allows_input(require_key_release, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     waiting = False
                 input_armed = update_input_armed_from_event(event, require_key_release, input_armed)
@@ -140,7 +141,7 @@ class LootPopup:
 
         while waiting:
             input_armed = release_guard_allows_input(require_key_release, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     waiting = False
                 input_armed = update_input_armed_from_event(event, require_key_release, input_armed)
@@ -354,7 +355,7 @@ class LootPopup:
 
         while waiting:
             input_armed = release_guard_allows_input(require_key_release, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     return False
                 input_armed = update_input_armed_from_event(event, require_key_release, input_armed)

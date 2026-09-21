@@ -10,9 +10,8 @@ if TYPE_CHECKING:
     from src.core.character import Character
     from src.core.effects.base import Effect
 
-import random
-
 from src.core.combat.combat_result import CombatResult
+from src.core.randomness import gameplay_random as random
 
 from .base import _get_heal_spell_class, _get_status_spell_class, _get_support_spell_class
 

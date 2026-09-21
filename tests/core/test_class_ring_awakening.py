@@ -205,7 +205,7 @@ def test_no_healing_duel_fails_when_player_restores_hp():
     engine.attacker = player
     engine.defender = enemy
 
-    result = engine.execute_action("Use Item", "Health Potion")
+    result = engine.execute_intent(engine.prepare_intent("Use Item", "Health Potion"))
     outcome = engine.end_battle()
 
     assert "rejects restored life" in result.message

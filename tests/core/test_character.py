@@ -16,7 +16,12 @@ import pytest
 
 from src.core import abilities, companions, enemies, items
 from src.core.enemies import Goblin
-from src.core.save_system import PlayerDataSerializer, QuestDataSerializer, TileStateSerializer
+from src.core.save_system import (
+    PlayerDataSerializer,
+    QuestDataSerializer,
+    SaveValidationError,
+    TileStateSerializer,
+)
 from tests.test_framework import TestGameState
 
 
@@ -74,6 +79,15 @@ class TestCharacterMethods:
         active, message = char.check_active()
         assert active is True
         assert message == ""
+
+    @pytest.mark.parametrize("physical_resistance", [-0.4, 0.0, 0.75])
+    def test_ultimate_physical_damage_ignores_player_resistance(self, physical_resistance):
+        """Ultimate Physical hits are neutral at the resistance layer."""
+        char = TestGameState.create_player(name="Test", class_name="Warrior", race_name="Human")
+        char.resistance["Physical"] = physical_resistance
+
+        assert char.check_mod("resist", typ="Physical") == pytest.approx(physical_resistance)
+        assert char.check_mod("resist", typ="Physical", ultimate=True) == 0.0
 
     def test_incapacitated_method(self):
         """Test incapacitated method."""
@@ -948,7 +962,7 @@ class TestPlayerUtilityBehaviors:
 
 
 class TestSaveSystemQuestCompatibility:
-    def test_collect_quest_legacy_string_is_deserialized_to_item_instance(self):
+    def test_collect_quest_legacy_name_is_rejected(self):
         quest_dict = {
             "Bounty": {},
             "Main": {},
@@ -962,9 +976,8 @@ class TestSaveSystemQuestCompatibility:
             },
         }
 
-        restored = QuestDataSerializer.deserialize_quest_dict(quest_dict)
-
-        assert restored["Side"]["Rat Trap"]["What"].name == "Rat Tail"
+        with pytest.raises(SaveValidationError, match="unknown quest id"):
+            QuestDataSerializer.deserialize_quest_dict(quest_dict)
 
     def test_collect_quest_serialized_item_round_trips(self):
         quest_dict = {
@@ -1020,8 +1033,8 @@ class TestSaveSystemRoundTrips:
         assert restored.storage["Remedy"][0].name == "Remedy"
 
         serialized["equipment"].pop("Helmet")
-        legacy_restored = PlayerDataSerializer.deserialize(serialized, skip_tiles=True)
-        assert legacy_restored.equipment["Helmet"].name == "No Helmet"
+        with pytest.raises(SaveValidationError, match="missing required slots: Helmet"):
+            PlayerDataSerializer.deserialize(serialized, skip_tiles=True)
 
     def test_quest_serializer_round_trips_rewards_and_bounty_enemy_state(self):
         quest_dict = {

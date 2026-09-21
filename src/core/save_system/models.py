@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 
-SAVE_SCHEMA_VERSION = 1
+SAVE_SCHEMA_VERSION = 2
 
 
 class SaveCompatibilityStatus(str, Enum):
@@ -26,6 +26,7 @@ class SaveLoadCode(str, Enum):
     NOT_FOUND = "not_found"
     INVALID_FILENAME = "invalid_filename"
     INCOMPATIBLE_SCHEMA = "incompatible_schema"
+    INVALID_DATA = "invalid_data"
     UNREADABLE = "unreadable"
 
 

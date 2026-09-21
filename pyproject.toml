@@ -124,7 +124,7 @@ line-length = 100
 target-version = "py312"
 
 [tool.ruff.lint]
-select = ["E4", "E7", "E9", "F"]
+select = ["E4", "E7", "E9", "F", "B004", "B023", "B039"]
 
 [tool.ruff.lint.per-file-ignores]
 # Package initializers intentionally expose compatibility and public APIs.

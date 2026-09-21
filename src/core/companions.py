@@ -4,10 +4,12 @@
 from __future__ import annotations
 
 import hashlib
-import random
+
+from src.core.randomness import gameplay_random as random
 
 from . import abilities, items
 from .character import Character, Combat, Resource, Stats
+from .identity import COMPANION_TYPES
 
 XENID_PAIRS = {
     "Animal": ("Hodag", "Caladrius"),
@@ -26,6 +28,13 @@ class Familiar(Character):
     """
     Base Familiar class
     """
+
+    companion_id: str
+
+    def __init_subclass__(cls, *, companion_id: str | None = None, **kwargs: object) -> None:
+        """Register familiar types for strict persistence."""
+        super().__init_subclass__(**kwargs)
+        cls.companion_id = COMPANION_TYPES.register(cls, companion_id)
 
     def __init__(
         self, name: str, health: Resource, mana: Resource, stats: Stats, combat: Combat
@@ -401,6 +410,13 @@ class Summons(Character):
     Base class for summon creature
     Odd number levels result in ability gain (except 10); even levels gain stat(s)
     """
+
+    companion_id: str
+
+    def __init_subclass__(cls, *, companion_id: str | None = None, **kwargs: object) -> None:
+        """Register summon types for strict persistence."""
+        super().__init_subclass__(**kwargs)
+        cls.companion_id = COMPANION_TYPES.register(cls, companion_id)
 
     def __init__(
         self, name: str, health: Resource, mana: Resource, stats: Stats, combat: Combat

@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import os
-import random
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from typing import NamedTuple
+
+from src.core.randomness import gameplay_random as random
 
 from ..combat.encounter import CombatEncounter
 from .base import Enemy

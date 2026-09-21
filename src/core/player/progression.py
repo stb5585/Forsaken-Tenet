@@ -1,6 +1,6 @@
 """Player leveling, class upgrades, and quest progression."""
 
-import random
+from src.core.randomness import gameplay_random as random
 
 from .. import quest_progress
 
@@ -195,15 +195,12 @@ class PlayerProgressionMixin:
         """
         quest_message = ""
         if enemy is not None:
-            try:
-                from ..classes import wizard
+            from ..classes import wizard
 
-                quest_message += wizard.record_ultimate_quest_defeat(
-                    self,
-                    enemy.name,
-                )
-            except Exception:
-                pass
+            quest_message += wizard.record_ultimate_quest_defeat(
+                self,
+                enemy.name,
+            )
             if enemy.name in self.quest_dict["Bounty"]:
                 if not self.quest_dict["Bounty"][enemy.name][2]:
                     self.quest_dict["Bounty"][enemy.name][1] += 1

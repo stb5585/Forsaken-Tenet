@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
-import random
 from copy import deepcopy
 from dataclasses import dataclass, field
 from statistics import median
 from typing import TYPE_CHECKING, Any, Callable
+
+from src.core.randomness import gameplay_random as random
 
 if TYPE_CHECKING:
     from ..character import Character

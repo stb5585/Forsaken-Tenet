@@ -1,6 +1,6 @@
 """Interactive and Realm of Cambion map tiles."""
 
-import random
+from src.core.randomness import gameplay_random as random
 
 from .. import items
 from ..classes import dragoon, footpad

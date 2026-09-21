@@ -7,6 +7,7 @@ import pygame
 from src.paths import PYGAME_ASSETS_DIR
 from src.ui_pygame.assets.icon_manager import IconManager
 from src.ui_pygame.assets.item_render_manager import get_item_render_manager
+from src.ui_pygame.screen_runtime import get_events
 
 from ..confirmation_popup import draw_popup_close_button, popup_close_clicked
 from ..input_guards import (
@@ -679,7 +680,7 @@ class BasePopupMenu:
                 menu_surface_ref[0] = self.screen.copy()
                 input_armed = release_guard_allows_input(require_key_release, input_armed)
 
-                for event in pygame.event.get():
+                for event in get_events():
                     if event.type == pygame.QUIT:
                         pygame.quit()
                         import sys

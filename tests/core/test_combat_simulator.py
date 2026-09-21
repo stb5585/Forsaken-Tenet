@@ -3,9 +3,13 @@
 Combat simulator tests (Focus Area 6.3).
 """
 
+import random
 import sys
+from copy import deepcopy
 from pathlib import Path
 from types import SimpleNamespace
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parents[2]))
 
@@ -106,6 +110,45 @@ def test_simulator_accepts_explicit_encounter_and_reports_roster_metrics():
     assert stats.consumables_used >= 0
     assert stats.reward_experience >= 0
     assert stats.reward_gold >= 0
+
+
+def test_seeded_simulation_is_repeatable_without_mutating_global_rng():
+    from src.core.analytics.combat_simulator import CombatSimulator
+    from src.core.enemies import Goblin
+    from tests.test_framework import TestGameState
+
+    player = TestGameState.create_player(
+        class_name="Warrior", race_name="Human", health=(150, 150), mana=(50, 50)
+    )
+    enemy = Goblin()
+
+    def simulate():
+        return CombatSimulator().simulate_battle(
+            deepcopy(player), deepcopy(enemy), max_turns=20, seed=99
+        )
+
+    state_before = random.getstate()
+    first = simulate()
+    state_after = random.getstate()
+    second = simulate()
+
+    assert state_after == state_before
+    assert random.getstate() == state_before
+    assert first.winner == second.winner
+    assert first.turns == second.turns
+    assert first.player_hp_remaining == second.player_hp_remaining
+    assert first.total_damage_dealt == second.total_damage_dealt
+    assert first.abilities_used == second.abilities_used
+
+
+def test_simulator_rejects_seed_and_rng_together():
+    from src.core.analytics.combat_simulator import CombatSimulator
+    from src.core.enemies import Goblin
+    from tests.test_framework import TestGameState
+
+    player = TestGameState.create_player(class_name="Warrior", race_name="Human")
+    with pytest.raises(ValueError, match="mutually exclusive"):
+        CombatSimulator().simulate_battle(player, Goblin(), seed=1, rng=random.Random(1))
 
 
 def test_balance_report_empty_results_return_zero_metrics():
@@ -516,9 +559,10 @@ def test_run_simulations_seeds_each_iteration_and_extends_results(monkeypatch):
     sim = CombatSimulator()
     calls = []
 
-    def fake_simulate_battle(char1, char2, seed=None):
-        calls.append((char1["id"], char2["id"], seed))
-        return _make_stat(winner=f"Hero-{seed}", loser="Enemy")
+    def fake_simulate_battle(char1, char2, rng=None):
+        sample = rng.random()
+        calls.append((char1["id"], char2["id"], sample))
+        return _make_stat(winner=f"Hero-{sample}", loser="Enemy")
 
     monkeypatch.setattr(sim, "simulate_battle", fake_simulate_battle)
 
@@ -534,7 +578,9 @@ def test_run_simulations_seeds_each_iteration_and_extends_results(monkeypatch):
 
     report = sim.run_simulations(make_player, make_enemy, iterations=3, seed=50)
 
-    assert [seed for _char1, _char2, seed in calls] == [50, 51, 52]
+    assert [sample for _char1, _char2, sample in calls] == [
+        random.Random(seed).random() for seed in (50, 51, 52)
+    ]
     assert report.total_battles == 3
     assert len(report.results) == 3
     assert len(sim.results) == 3

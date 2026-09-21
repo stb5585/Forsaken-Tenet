@@ -146,7 +146,7 @@ class TestCharacterHelpers:
         saved = PlayerDataSerializer.serialize(druid)
         restored = PlayerDataSerializer.deserialize(saved, skip_tiles=True)
 
-        assert saved["class_name"] == "Druid"
+        assert saved["class_id"] == "druid"
         assert saved["health"]["max"] == normal_health_max
         assert saved["mana"]["max"] == normal_mana_max
         assert restored.cls.name == "Panther"

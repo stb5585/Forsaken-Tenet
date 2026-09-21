@@ -12,6 +12,7 @@ import pygame
 
 from src.core import items as items_module
 from src.ui_pygame.assets.item_render_manager import get_item_render_manager
+from src.ui_pygame.screen_runtime import get_events
 
 from .input_guards import (
     prepare_guarded_input,
@@ -734,7 +735,7 @@ class ShopScreen(TownScreenBase):
             self.draw_all()
 
             input_armed = release_guard_allows_input(require_key_release, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     import sys
@@ -776,7 +777,7 @@ class ShopScreen(TownScreenBase):
             self.draw_all()
 
             input_armed = release_guard_allows_input(require_key_release, input_armed)
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     import sys

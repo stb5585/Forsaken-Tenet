@@ -356,7 +356,7 @@ def test_shadowcaster_terminal_passives_cover_deep_shadow_veil_and_death(
     engine.attacker = shadow
     engine.defender = victim
     shadow.spellbook["Spells"]["Desoul"] = _Desoul()
-    engine.execute_action("Cast Spell", "Desoul")
+    engine.execute_intent(engine.prepare_intent("Cast Spell", "Desoul"))
     assert shadow.shadow_dungeon_darkness_steps == 100
 
 

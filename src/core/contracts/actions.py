@@ -29,12 +29,12 @@ class ActionReference:
             raise ValueError("action_id must be a non-empty normalized identifier")
 
     def to_dict(self) -> dict[str, str]:
-        """Return the version-1 save representation."""
+        """Return the canonical save representation."""
         return {"kind": self.kind.value, "action_id": self.action_id}
 
     @classmethod
     def from_dict(cls, payload: Mapping[str, object]) -> ActionReference:
-        """Parse a version-1 save representation."""
+        """Parse the canonical save representation."""
         raw_kind = payload.get("kind")
         raw_action_id = payload.get("action_id")
         if not isinstance(raw_kind, str) or not isinstance(raw_action_id, str):

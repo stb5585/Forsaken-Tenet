@@ -5,6 +5,8 @@ from __future__ import annotations
 from textwrap import wrap
 from typing import TYPE_CHECKING
 
+from ..identity import ITEM_TYPES
+
 if TYPE_CHECKING:
     from typing import Any
 
@@ -107,6 +109,13 @@ class Item:
     rarity: represented as a value between 0 and 1 and indicates the chance of dropping
     subtyp: the subtype of the item (i.e. Sword would be a subtype of Weapon)
     """
+
+    item_id: str
+
+    def __init_subclass__(cls, *, item_id: str | None = None, **kwargs: object) -> None:
+        """Register every item type at definition time for strict persistence."""
+        super().__init_subclass__(**kwargs)
+        cls.item_id = ITEM_TYPES.register(cls, item_id)
 
     def __init__(self, name: str, description: str, value: int, rarity: float, subtyp: str) -> None:
         self.name = name

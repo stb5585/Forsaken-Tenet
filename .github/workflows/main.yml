@@ -35,6 +35,9 @@ jobs:
       - name: Run Ruff correctness checks
         run: python -m ruff check src
 
+      - name: Enforce asset size budget
+        run: python tools/check_asset_budget.py
+
       - name: Validate ability taxonomy migration
         run: python tools/validate_ability_taxonomy.py --require-complete
 
@@ -49,11 +52,14 @@ jobs:
             src/core/combat/encounter.py \
             src/core/combat/targeting.py \
             src/core/combat/battle_engine/models.py \
+            src/core/identity.py \
+            src/core/randomness.py \
             src/core/contracts \
             src/core/data/ability_schema.py \
             src/core/data/ability_traits.py \
             src/core/progression/models.py \
             src/core/save_system/manager.py \
+            src/ui_pygame/screen_runtime.py \
             src/core/combat/contact.py \
             tools/fit_contact_model.py \
             tools/characterize_foundational_contract.py

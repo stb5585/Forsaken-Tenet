@@ -6,6 +6,8 @@ from dataclasses import asdict
 from typing import TYPE_CHECKING
 
 from ..character import Combat, Level, Resource, Stats
+from ..identity import COMPANION_TYPES
+from .errors import SaveValidationError
 from .item_serialization import AbilitySerializer
 from .models import CombatData, LevelData, ResourceData, StatsData
 
@@ -14,7 +16,7 @@ if TYPE_CHECKING:
 
 
 class SummonSerializer:
-    """Serializes summon roster entries by companion class name."""
+    """Serializes summon roster entries by stable companion ID."""
 
     @staticmethod
     def _serialize_spellbook(spellbook) -> dict[str, dict[str, str]]:
@@ -58,7 +60,7 @@ class SummonSerializer:
     def serialize(summon) -> dict[str, Any]:
         """Convert a summon object to save data."""
         return {
-            "class": summon.__class__.__name__,
+            "companion_id": COMPANION_TYPES.id_for(summon),
             "name": getattr(summon, "name", summon.__class__.__name__),
             "health": asdict(ResourceData(summon.health.max, summon.health.current)),
             "mana": asdict(ResourceData(summon.mana.max, summon.mana.current)),
@@ -101,18 +103,22 @@ class SummonSerializer:
         if not isinstance(data, dict):
             return None
 
-        from .. import companions
-
-        summon_class = getattr(companions, data.get("class", ""), None)
-        if summon_class is None or not hasattr(summon_class, "__call__"):
-            return None
+        companion_id = data.get("companion_id")
+        if not isinstance(companion_id, str) or not companion_id:
+            raise SaveValidationError("summon.companion_id", "expected a non-empty string")
+        try:
+            summon_class = COMPANION_TYPES.resolve(companion_id)
+        except KeyError as exc:
+            raise SaveValidationError("summon.companion_id", str(exc)) from exc
 
         try:
             summon = summon_class()
-        except Exception:
-            return None
+        except (TypeError, ValueError) as exc:
+            raise SaveValidationError(
+                "summon", f"could not construct {companion_id!r}: {exc}"
+            ) from exc
 
-        summon.name = data.get("name", getattr(summon, "name", data.get("class", "")))
+        summon.name = data.get("name", getattr(summon, "name", companion_id))
 
         health = data.get("health", {})
         summon.health = Resource(

@@ -28,20 +28,22 @@ launch, and remote-playtest controls.
 - `src/ui_pygame/presentation/pygame_presenter.py` owns shared presentation and
   event subscriptions.
 - `src/ui_pygame/input_adapter.py` maps supported inputs to semantic commands.
+- `src/ui_pygame/screen_runtime.py` owns direct event polling, normalized
+  screen input, the frame clock, and push/replace/pop/quit transitions.
 - `src/ui_pygame/assets/` contains runtime managers and packaged visual assets.
 - `src/core/events/` exposes UI-agnostic events consumed by presentation code.
 
 The frontend includes the complete playable combat, exploration, character,
 shop, quest, save/load, victory, defeat, and ending flows. Current migration
-work focuses on native/adaptive layout, semantic input coverage, and replacing
-nested modal event loops with the planned screen runtime. See
+work focuses on native/adaptive layout and converting centralized legacy modal
+loops into non-blocking `ScreenRuntime` states. See
 [`docs/MOBILE_PLATFORM_ROADMAP.md`](../../../docs/MOBILE_PLATFORM_ROADMAP.md).
 
 ## Development Rules
 
 - Keep Pygame imports and input decisions out of `src/core/`.
 - Load runtime assets through the specialized managers and paths in `src.paths`;
-  the legacy generic sprite generator/manager is not the active asset path.
+  the unused generic sprite generator/manager has been removed.
 - Preserve keyboard and mouse behavior when adding controller or touch input.
 - Add a frame limiter to any temporary modal loop and prefer the shared screen
   runtime as it becomes available.

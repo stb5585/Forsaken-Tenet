@@ -3,7 +3,7 @@
 Status: `Ready — Foundational Baseline Established`
 
 The foundational gameplay refactor is complete. Broad evidence collection now
-uses the committed baseline: typed ability slugs and version-1 saves,
+uses the committed baseline: typed ability slugs and version-2 saves,
 one-roll fitted contact, virtual-readiness timing, core concealment/targeting,
 the shortcut and All Actions interface, and a singleton ordinary encounter
 catalog. The post-refactor seed-1337 reports are committed at:

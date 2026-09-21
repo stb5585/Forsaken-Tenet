@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import copy
 import math
-import random
 from dataclasses import asdict, replace
 from typing import Any
+
+from src.core.randomness import gameplay_random as random
 
 from .. import abilities
 from ..constants import (
@@ -28,6 +29,7 @@ from .models import (
     PRIMARY_ATTRIBUTES,
     RATING_PAYLOADS,
     RESOURCE_NODE_AMOUNTS,
+    AbilityTree,
     AbilityTreeNode,
     GrowthResult,
     LevelUpResult,
@@ -248,7 +250,14 @@ def validate_trees() -> tuple[str, ...]:
         visiting: set[str] = set()
         visited: set[str] = set()
 
-        def visit(node_id: str) -> None:
+        def visit(
+            node_id: str,
+            *,
+            tree: AbilityTree = tree,
+            node_map: dict[str, AbilityTreeNode] = node_map,
+            visiting: set[str] = visiting,
+            visited: set[str] = visited,
+        ) -> None:
             if node_id in visiting:
                 errors.append(f"{tree.id}: prerequisite cycle at {node_id}")
                 return
@@ -1346,7 +1355,7 @@ def purchase_node(
             promoted_to,
             removed,
         )
-    except Exception as exc:
+    except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as exc:
         _restore_purchase_snapshot(player, snapshot)
         return PurchaseResult(False, f"Purchase failed: {exc}", node.id, state.unspent_points)
 
@@ -1481,7 +1490,7 @@ def apply_progression_plan(
             promoted_to=promoted_to,
             removed_equipment=removed_equipment,
         )
-    except Exception as exc:
+    except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as exc:
         _restore_purchase_snapshot(player, snapshot)
         return PurchaseResult(
             False,

@@ -8,6 +8,7 @@ import sys
 import pygame
 
 from src.core.classes import astromancer
+from src.ui_pygame.screen_runtime import get_events
 
 from ..enemy_presentation import (
     invisible_target_note,
@@ -533,7 +534,7 @@ class CombatRenderingMixin:
         elapsed = 0
         duration_ms = 180
         while elapsed < duration_ms:
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)

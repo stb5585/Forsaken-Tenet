@@ -19,6 +19,7 @@ from src.core.races import races_dict
 from src.core.save_system import SaveManager
 from src.paths import CORE_DATA_DIR, MAP_FILES_DIR, PYGAME_ASSETS_DIR, USER_SAVE_DIR
 from src.ui_pygame.assets.npc_art_manager import get_npc_art_manager
+from src.ui_pygame.screen_runtime import get_events
 
 from .gui.barracks import BarracksManager
 from .gui.character_naming import CharacterNamingScreen
@@ -258,7 +259,7 @@ class PygameGame:
             if elapsed >= duration_ms:
                 break
 
-            for event in pygame.event.get():
+            for event in get_events():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit(0)
@@ -734,7 +735,7 @@ class PygameGame:
                 )
                 popup.show(
                     **self._popup_show_kwargs(
-                        lambda: (
+                        lambda town_screen=town_screen, options=options: (
                             town_screen.draw_background(),
                             town_screen.draw_menu_panel(options),
                         )
@@ -764,7 +765,7 @@ class PygameGame:
                 popup = ConfirmationPopup(self.presenter, "Return to the main menu?")
                 if popup.show(
                     **self._popup_show_kwargs(
-                        lambda: (
+                        lambda town_screen=town_screen, options=options: (
                             town_screen.draw_background(),
                             town_screen.draw_menu_panel(options),
                         )
@@ -794,7 +795,7 @@ class PygameGame:
 
             elif choice_label == "Warp Point":
                 result = self.use_warp_point(
-                    background_draw_func=lambda: (
+                    background_draw_func=lambda town_screen=town_screen, options=options: (
                         town_screen.draw_background(),
                         town_screen.draw_menu_panel(options),
                     )
@@ -804,7 +805,7 @@ class PygameGame:
 
             elif choice_label == "Old Warehouse":
                 self.visit_old_warehouse(
-                    background_draw_func=lambda: (
+                    background_draw_func=lambda town_screen=town_screen, options=options: (
                         town_screen.draw_background(),
                         town_screen.draw_menu_panel(options),
                     )
@@ -818,7 +819,7 @@ class PygameGame:
 
             elif choice_label == "Statistics":
                 self.show_gameplay_statistics(
-                    background_draw_func=lambda: (
+                    background_draw_func=lambda town_screen=town_screen, options=options: (
                         town_screen.draw_background(),
                         town_screen.draw_menu_panel(options),
                     )

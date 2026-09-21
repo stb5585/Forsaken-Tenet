@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-import random
 from typing import TYPE_CHECKING
+
+from src.core.randomness import gameplay_random as random
 
 from ..constants import BASE_FLEE_CHANCE, MAX_FLEE_CHANCE
 from .models import _class_name, armor_resistance_modifier, armor_spell_modifier
@@ -224,7 +225,7 @@ class CharacterUtilityMixin:
             return max(0, heal_mod + class_mod + self.combat.magic)
         if mod == "resist":
             if ultimate and typ == "Physical":  # ultimate weapons bypass Physical resistance
-                return -0.25
+                return 0.0
             res_mod = self.resistance.get(typ, 0)
             if typ == "Death" and int(getattr(self, "resist_death_steps", 0) or 0) > 0:
                 res_mod += 0.50

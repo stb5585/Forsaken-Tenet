@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from .. import enemies
+from ..identity import ENEMY_TYPES
+from .errors import SaveValidationError
 
 if TYPE_CHECKING:
     from typing import Any
@@ -14,24 +15,23 @@ class EnemyStateSerializer:
     """Serializes/deserializes enemy state (for bosses and key enemies)."""
 
     @staticmethod
-    def serialize(enemy) -> dict[str, Any]:
+    def serialize(enemy) -> dict[str, Any] | None:
         """Convert enemy to data dictionary."""
         if not enemy:
             return None
 
-        # Handle case where enemy is a class instead of an instance
+        try:
+            enemy_id = ENEMY_TYPES.id_for(enemy)
+        except KeyError as exc:
+            raise SaveValidationError("enemy.enemy_id", str(exc)) from exc
+
         if isinstance(enemy, type):
-            # It's a class, not an instance - just return the class name
-            return {
-                "name": enemy.__name__,
-                "class_type": enemy.__name__,
-                "is_class": True,
-            }
+            return {"enemy_id": enemy_id, "is_class": True}
 
         # It's an instance
         return {
             "name": getattr(enemy, "name", "Unknown"),
-            "class_type": enemy.__class__.__name__,
+            "enemy_id": enemy_id,
             "is_class": False,
             "health": {
                 "max": getattr(enemy.health, "max", 100) if hasattr(enemy, "health") else 100,
@@ -52,19 +52,23 @@ class EnemyStateSerializer:
         if not enemy_data:
             return None
 
-        enemy_class_name = enemy_data.get("class_type")
-
-        # Get the enemy class from enemies module
-        enemy_class = getattr(enemies, enemy_class_name, None)
-        if not enemy_class:
-            return None
+        enemy_id = enemy_data.get("enemy_id")
+        if not isinstance(enemy_id, str) or not enemy_id:
+            raise SaveValidationError("enemy.enemy_id", "expected a non-empty string")
+        try:
+            enemy_class = ENEMY_TYPES.resolve(enemy_id)
+        except KeyError as exc:
+            raise SaveValidationError("enemy.enemy_id", str(exc)) from exc
 
         # If it was stored as a class, return the class
         if enemy_data.get("is_class"):
             return enemy_class
 
         # Create instance
-        enemy = enemy_class()
+        try:
+            enemy = enemy_class()
+        except (TypeError, ValueError) as exc:
+            raise SaveValidationError("enemy", f"could not construct {enemy_id!r}: {exc}") from exc
 
         # Restore health/mana if present
         if "health" in enemy_data and hasattr(enemy, "health"):

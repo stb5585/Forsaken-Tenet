@@ -23,30 +23,33 @@ from src.core.save_system import (
     SaveCompatibilityStatus,
     SaveLoadCode,
     SaveManager,
+    SaveValidationError,
     TileStateSerializer,
 )
 from tests.test_framework import TestGameState
 
 
-def test_item_serializer_handles_none_and_accessory_deserialization():
-    none_data = ItemSerializer.serialize(None)
+def test_item_serializer_rejects_none_and_round_trips_accessory():
     ring_data = ItemSerializer.serialize(items.PowerRing())
     ring_data["typ"] = "Accessory"
 
-    restored_none = ItemSerializer.deserialize({"name": "None", "typ": "Weapon", "subtyp": "None"})
     restored_ring = ItemSerializer.deserialize(ring_data)
 
-    assert none_data == {"name": "None", "typ": "None", "subtyp": "None"}
-    assert restored_none.subtyp == "None"
+    with pytest.raises(SaveValidationError, match="registered Item"):
+        ItemSerializer.serialize(None)
     assert restored_ring.name == "Power Ring"
 
 
-def test_item_serializer_falls_back_to_empty_equipment_for_unknown_class():
-    restored = ItemSerializer.deserialize(
-        {"name": "Mystery Blade", "typ": "Weapon", "subtyp": "Sword", "class": "MissingItem"}
-    )
-
-    assert restored.subtyp == "None"
+def test_item_serializer_rejects_unknown_id():
+    with pytest.raises(SaveValidationError, match="unknown item id"):
+        ItemSerializer.deserialize(
+            {
+                "item_id": "missing_item",
+                "name": "Mystery Blade",
+                "typ": "Weapon",
+                "subtyp": "Sword",
+            }
+        )
 
 
 def test_item_serializer_uses_canonical_name_not_cosmetic_theme_name():
@@ -75,15 +78,17 @@ def test_item_serializer_round_trips_charge_based_tools():
     assert restored_scroll.charges == 2
 
 
-def test_ability_serializer_supports_class_name_display_name_and_yaml_override():
+def test_ability_serializer_accepts_only_canonical_ids():
     heal = abilities.Heal()
     heal._class_name = "HealYaml"
 
     assert AbilitySerializer.serialize(heal) == "heal"
     assert AbilitySerializer.deserialize("heal_2").ability_id == "heal_2"
-    assert AbilitySerializer.deserialize("Heal2").name == "Heal"
-    assert AbilitySerializer.deserialize("Heal").name == "Heal"
     assert AbilitySerializer.deserialize("") is None
+    with pytest.raises(SaveValidationError, match="invalid ability id"):
+        AbilitySerializer.deserialize("Heal2")
+    with pytest.raises(SaveValidationError, match="invalid ability id"):
+        AbilitySerializer.deserialize("Heal")
 
 
 def test_enemy_state_serializer_round_trips_class_and_instance_state():
@@ -99,10 +104,11 @@ def test_enemy_state_serializer_round_trips_class_and_instance_state():
     assert restored_class is enemies.Goblin
     assert restored_enemy.name == "Goblin"
     assert restored_enemy.health.current == 7
-    assert EnemyStateSerializer.deserialize({"class_type": "MissingEnemy"}) is None
+    with pytest.raises(SaveValidationError, match="enemy_id"):
+        EnemyStateSerializer.deserialize({"enemy_id": "missing_enemy"})
 
 
-def test_tile_state_keeps_legacy_enemy_state_without_runtime_encounter_state():
+def test_tile_state_keeps_strict_enemy_state_without_runtime_encounter_state():
     tile = SimpleNamespace(
         visited=True,
         near=False,
@@ -117,7 +123,7 @@ def test_tile_state_keeps_legacy_enemy_state_without_runtime_encounter_state():
     payload = TileStateSerializer.serialize_tile_state({(1, 2, 3): tile})
     state = payload["(1, 2, 3)"]
 
-    assert state["enemy_state"]["class_type"] == "Goblin"
+    assert state["enemy_state"]["enemy_id"] == "goblin"
     assert "encounter_state" not in state
 
 
@@ -441,7 +447,7 @@ def test_save_manager_rejects_unmarked_save_and_reports_new_game_status(monkeypa
     assert result.error is not None and "Start a new game" in result.error
 
 
-def test_version_one_save_round_trips_typed_action_bar_references(monkeypatch, tmp_path):
+def test_version_two_save_round_trips_typed_action_bar_references(monkeypatch, tmp_path):
     save_dir = tmp_path / "saves"
     tmp_dir = tmp_path / "tmp"
     monkeypatch.setattr(SaveManager, "SAVE_DIR", str(save_dir))
@@ -459,7 +465,7 @@ def test_version_one_save_round_trips_typed_action_bar_references(monkeypatch, t
     payload = json.loads((save_dir / "shortcuts.save").read_text(encoding="utf-8"))
     restored = SaveManager.load_player("shortcuts.save", skip_tiles=True)
 
-    assert payload["schema_version"] == SAVE_SCHEMA_VERSION == 1
+    assert payload["schema_version"] == SAVE_SCHEMA_VERSION == 2
     assert len(payload["action_bar_assignments"]) == 6
     assert restored is not None
     assert restored.action_bar_assignments == (
@@ -470,6 +476,44 @@ def test_version_one_save_round_trips_typed_action_bar_references(monkeypatch, t
         None,
         None,
     )
+
+
+@pytest.mark.parametrize(
+    ("path", "bad_value", "error_fragment"),
+    [
+        (("class_id",), "missing_class", "unknown class id"),
+        (("race_id",), "missing_race", "unknown race id"),
+        (("equipment", "Weapon", "item_id"), "missing_item", "unknown item id"),
+    ],
+)
+def test_version_two_rejects_unknown_registered_ids_atomically(
+    monkeypatch,
+    tmp_path,
+    path,
+    bad_value,
+    error_fragment,
+):
+    save_dir = tmp_path / "saves"
+    monkeypatch.setattr(SaveManager, "SAVE_DIR", str(save_dir))
+    monkeypatch.setattr(SaveManager, "TMP_DIR", str(tmp_path / "tmp"))
+    player = TestGameState.create_player(class_name="Warrior", race_name="Human")
+    assert SaveManager.save_player(player, "invalid-id.save") is True
+
+    save_path = save_dir / "invalid-id.save"
+    payload = json.loads(save_path.read_text(encoding="utf-8"))
+    target = payload
+    for key in path[:-1]:
+        target = target[key]
+    target[path[-1]] = bad_value
+    save_path.write_text(json.dumps(payload), encoding="utf-8")
+    before = save_path.read_text(encoding="utf-8")
+
+    result = SaveManager.load_player_result("invalid-id.save", skip_tiles=True)
+
+    assert result.player is None
+    assert result.code is SaveLoadCode.INVALID_DATA
+    assert result.error is not None and error_fragment in result.error
+    assert save_path.read_text(encoding="utf-8") == before
 
 
 def test_save_manager_round_trip_preserves_old_key_counts(monkeypatch, tmp_path):
@@ -515,7 +559,7 @@ def test_player_data_preserves_and_defaults_thieves_guild_state():
     assert legacy_restored.thieves_guild == thieves_guild.default_state()
 
 
-def test_load_player_fills_missing_equipment_slots(monkeypatch, tmp_path):
+def test_load_player_rejects_missing_equipment_slots(monkeypatch, tmp_path):
     save_dir = tmp_path / "saves"
     tmp_dir = tmp_path / "tmp"
     monkeypatch.setattr(SaveManager, "SAVE_DIR", str(save_dir))
@@ -532,15 +576,13 @@ def test_load_player_fills_missing_equipment_slots(monkeypatch, tmp_path):
         data["equipment"].pop(slot, None)
     save_path.write_text(json.dumps(data), encoding="utf-8")
 
-    restored = SaveManager.load_player("slots.save", skip_tiles=True)
+    before = save_path.read_text(encoding="utf-8")
+    result = SaveManager.load_player_result("slots.save", skip_tiles=True)
 
-    assert restored is not None
-    assert restored.equipment["Weapon"].name == "Bare Hands"
-    assert restored.equipment["OffHand"].name == "No OffHand"
-    assert restored.equipment["Armor"].name == "No Armor"
-    assert restored.equipment["Helmet"].name == "No Helmet"
-    assert restored.equipment["Ring"].name == "No Ring"
-    assert restored.equipment["Pendant"].name == "No Pendant"
+    assert result.player is None
+    assert result.code is SaveLoadCode.INVALID_DATA
+    assert result.error is not None and "missing required slots" in result.error
+    assert save_path.read_text(encoding="utf-8") == before
 
 
 def test_save_manager_describes_save_files_with_schema_status(monkeypatch, tmp_path):

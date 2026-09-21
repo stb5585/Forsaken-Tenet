@@ -170,7 +170,7 @@ def _active_hodag_engine(monkeypatch):
     engine = BattleEngine(player, target, _CombatTile())
     engine.attacker = player
     engine.defender = target
-    summoned = engine.execute_action("Summon", "Hodag")
+    summoned = engine.execute_intent(engine.prepare_intent("Summon", "Hodag"))
     assert summoned.summon_started
     monkeypatch.setattr("src.core.combat.battle_engine.actions.random.randint", lambda _a, _b: 1)
     return engine, player, player.summons["Hodag"], target
@@ -191,7 +191,7 @@ def test_command_is_consumed_by_next_xenid_hit_and_adds_final_damage(monkeypatch
         return "Hodag hits for 40 damage.\n", True, 1
 
     monkeypatch.setattr(hodag, "weapon_damage", weapon_damage)
-    result = engine.execute_action("Attack")
+    result = engine.execute_intent(engine.prepare_intent("Attack"))
 
     assert target.health.current == 950
     assert "Conduit Command adds 10 damage" in result.message
@@ -208,12 +208,12 @@ def test_command_consumes_on_miss_or_non_damage_action(monkeypatch):
         return "Hodag misses.\n", False, 1
 
     monkeypatch.setattr(hodag, "weapon_damage", missed_attack)
-    missed = engine.execute_action("Attack")
+    missed = engine.execute_intent(engine.prepare_intent("Attack"))
     assert "is consumed" in missed.message
     assert target.health.current == target.health.max
 
     engine.execute_summoner_support_action("Use Skill", "Conduit Command")
-    defended = engine.execute_action("Defend")
+    defended = engine.execute_intent(engine.prepare_intent("Defend"))
     assert "is consumed" in defended.message
     assert promotion_kits.combat_state(player)["conduit_command"] is False
 
@@ -265,7 +265,7 @@ def test_command_cleanup_reports_its_lifecycle_reason(reason):
 def test_recall_death_and_combat_end_use_command_cleanup_hooks(monkeypatch):
     engine, player, hodag, _target = _active_hodag_engine(monkeypatch)
     engine.execute_summoner_support_action("Use Skill", "Conduit Command")
-    recalled = engine.execute_action("Recall")
+    recalled = engine.execute_intent(engine.prepare_intent("Recall"))
     assert "expires" in recalled.message
 
     player.active_summon_name = "Hodag"

@@ -8,7 +8,7 @@ from src.core import abilities, items, map_tiles
 from src.core.classes import class_rings, nature_totems, promotion_kits
 from src.core.combat.battle_engine import BattleEngine
 from src.core.combat.combat_result import CombatResult
-from src.core.effects.composite import ElementalStrikeEffect
+from src.core.effects.skills import ElementalStrikeEffect
 from src.core.save_system import PlayerDataSerializer
 from tests.test_framework import TestGameState
 

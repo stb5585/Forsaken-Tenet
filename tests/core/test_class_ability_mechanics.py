@@ -251,7 +251,7 @@ def test_beast_master_companion_action_gates_and_command_resolution(monkeypatch)
     assert "Companion" not in empty_engine._available_actions()
     assert "Tame" in empty_engine._available_actions()
 
-    result = engine.execute_action("Companion", "Pack Strike")
+    result = engine.execute_intent(engine.prepare_intent("Companion", "Pack Strike"))
     assert "orders their companion: Pack Strike" in result.message
     assert ability_mechanics.pending_companion_command(beast) == "Pack Strike"
 
@@ -602,7 +602,7 @@ def test_favored_enemy_skill_marks_enemy_type_through_battle_engine():
     engine.attacker = player
     engine.defender = enemy
 
-    result = engine.execute_action("Use Skill", "Favored Enemy")
+    result = engine.execute_intent(engine.prepare_intent("Use Skill", "Favored Enemy"))
 
     assert "marks" in result.message
     assert ability_mechanics.favorite_enemy_type(player) == enemy.enemy_typ
@@ -669,7 +669,7 @@ def test_tree_of_life_is_growth_mastery_oak_form():
     engine = BattleEngine(player, enemy, tile)
     engine.attacker = player
     engine.defender = enemy
-    assert "cannot attack" in engine.execute_action("Attack").message
+    assert "cannot attack" in engine.execute_intent(engine.prepare_intent("Attack")).message
 
     message = player.effects()
     assert "Tree of Life restores" in message
@@ -814,7 +814,7 @@ def test_mastered_repertoire_is_available_through_the_combat_action():
     engine.defender = enemy
 
     assert "Repertoire" in engine._available_actions()
-    result = engine.execute_action("Repertoire", "Battle Hymn")
+    result = engine.execute_intent(engine.prepare_intent("Repertoire", "Battle Hymn"))
 
     assert "spends 14 MP from mastered repertoire" in result.message
     assert player.mana.current == player.mana.max - 14
