@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from types import SimpleNamespace
 from typing import Any
 
@@ -26,6 +27,33 @@ MAGIC_WARD_SPELLS = (
     (2, "Lightning", "Electric"),
     (3, "Shadow Bolt", "Shadow"),
 )
+
+
+@dataclass(frozen=True)
+class TrapFeedback:
+    """Presentation-neutral damage feedback emitted by a resolved dungeon trap."""
+
+    category: str
+    damage: int
+    trap_type: str
+    source: str
+    element: str | None = None
+
+
+def pop_trap_feedback(player: Any) -> list[TrapFeedback]:
+    """Return and clear transient damaging-trap feedback for a player."""
+    queued = list(getattr(player, "_trap_feedback_queue", ()))
+    player._trap_feedback_queue = []
+    return queued
+
+
+def _queue_trap_feedback(player: Any, feedback: TrapFeedback | None) -> None:
+    if feedback is not None and feedback.damage > 0:
+        queue = getattr(player, "_trap_feedback_queue", None)
+        if queue is None:
+            queue = []
+            player._trap_feedback_queue = queue
+        queue.append(feedback)
 
 
 def find_trap_warning(tile: Any, player: Any, *, rng: Any = random) -> str:
@@ -132,7 +160,9 @@ def _avoidance_severity(player: Any, *, rng: Any) -> tuple[float, str]:
     return severity, message
 
 
-def _tripwire(tile: Any, player: Any, severity: float, *, rng: Any) -> str:
+def _tripwire(
+    tile: Any, player: Any, severity: float, *, rng: Any
+) -> tuple[str, TrapFeedback | None]:
     depth = max(0, int(tile.z))
     raw_damage = rng.randint(8 + (depth * 6), 14 + (depth * 8))
     armor = max(0, int(player.check_mod("armor")))
@@ -141,11 +171,16 @@ def _tripwire(tile: Any, player: Any, severity: float, *, rng: Any) -> str:
     if damage:
         damage = min(damage, max(0, int(player.health.current) - 1))
         player.health.current -= damage
-        return f"A hidden tripwire launches an arrow, dealing {damage} Physical damage."
-    return "A hidden tripwire snaps, but its arrow misses harmlessly."
+        return (
+            f"A hidden tripwire launches an arrow, dealing {damage} Physical damage.",
+            TrapFeedback("physical", damage, "Tripwire", "arrow"),
+        )
+    return "A hidden tripwire snaps, but its arrow misses harmlessly.", None
 
 
-def _magic_ward(tile: Any, player: Any, severity: float, *, rng: Any) -> str:
+def _magic_ward(
+    tile: Any, player: Any, severity: float, *, rng: Any
+) -> tuple[str, TrapFeedback | None]:
     depth = max(0, int(tile.z))
     available = [entry for entry in MAGIC_WARD_SPELLS if entry[0] <= depth]
     _minimum_depth, spell_name, damage_type = rng.choice(available)
@@ -162,7 +197,12 @@ def _magic_ward(tile: Any, player: Any, severity: float, *, rng: Any) -> str:
     message = f"A Magic Ward casts {spell_name}, dealing {damage} {damage_type} damage."
     if reduction_message:
         message += f" {reduction_message.strip()}"
-    return message
+    feedback = (
+        TrapFeedback("magical", damage, "Magic Ward", spell_name, damage_type)
+        if damage > 0
+        else None
+    )
+    return message, feedback
 
 
 def _alert(tile: Any, player: Any, severity: float, *, red: bool, rng: Any) -> str:
@@ -191,14 +231,17 @@ def trigger_tile_trap(tile: Any, player: Any, *, rng: Any = random) -> str:
     tile.trap_triggered = True
     severity, avoidance_message = _avoidance_severity(player, rng=rng)
     if trap_type == "Tripwire":
-        message = _tripwire(tile, player, severity, rng=rng)
+        message, feedback = _tripwire(tile, player, severity, rng=rng)
     elif trap_type == "Magic Ward":
-        message = _magic_ward(tile, player, severity, rng=rng)
+        message, feedback = _magic_ward(tile, player, severity, rng=rng)
     elif trap_type == "Alert":
         message = _alert(tile, player, severity, red=False, rng=rng)
+        feedback = None
     else:
         message = _alert(tile, player, severity, red=True, rng=rng)
+        feedback = None
     if avoidance_message:
         message = f"{avoidance_message} {message}"
     _queue_cambion_message(player, message)
+    _queue_trap_feedback(player, feedback)
     return message

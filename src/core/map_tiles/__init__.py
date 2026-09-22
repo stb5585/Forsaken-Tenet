@@ -187,5 +187,6 @@ from .traps import (
     assign_dungeon_traps,
     disarm_tile_trap,
     find_trap_warning,
+    pop_trap_feedback,
     trigger_tile_trap,
 )

@@ -278,9 +278,15 @@ class DungeonExplorationMixin:
                 self.view_dirty = True
 
         cambion_messages = map_tiles.pop_cambion_messages(self.player_char)
+        trap_feedback = map_tiles.pop_trap_feedback(self.player_char)
+        for feedback in trap_feedback:
+            queue_feedback = getattr(self.renderer, "queue_trap_feedback", None)
+            if callable(queue_feedback):
+                self._play_sfx(queue_feedback(feedback))
+                self.ui_dirty = True
         for message in cambion_messages:
             self.add_message(message)
-        if "Trap" in tile_type and cambion_messages:
+        if "Trap" in tile_type and cambion_messages and not trap_feedback:
             from ..confirmation_popup import ConfirmationPopup
 
             popup = ConfirmationPopup(
@@ -517,7 +523,9 @@ class DungeonExplorationMixin:
                 self._last_cry_time = now
 
             # Keep UI refreshing while a damage flash is active so the fade animates
-            if getattr(self.renderer, "_damage_flash_active", False):
+            if getattr(self.renderer, "_damage_flash_active", False) or getattr(
+                self.renderer, "trap_feedback_active", False
+            ):
                 self.ui_dirty = True
 
             # Only redraw when something changed.
@@ -872,6 +880,13 @@ class DungeonExplorationMixin:
             if not self._render_error_logged:
                 print(f"Damage flash render error: {e}")
                 traceback.print_exc()
+                self._render_error_logged = True
+
+        try:
+            self.renderer.render_trap_feedback()
+        except Exception as e:
+            if not self._render_error_logged:
+                print(f"Trap feedback render error: {e}")
                 self._render_error_logged = True
 
         if self.playtest_controls is not None:
