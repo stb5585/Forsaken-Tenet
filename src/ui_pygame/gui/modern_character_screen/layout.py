@@ -59,23 +59,30 @@ class CharacterLayoutMixin:
         return y
 
     def _draw_panel(self, rect: pygame.Rect, title: str | None = None) -> int:
+        metrics = self.presenter.layout_metrics
         self.draw_semi_transparent_panel(rect, alpha=205)
-        pygame.draw.rect(self.screen, self.colors.BORDER_COLOR, rect, 2)
-        y = rect.top + 14
+        pygame.draw.rect(self.screen, self.colors.BORDER_COLOR, rect, metrics.stroke(2))
+        y = rect.top + metrics.unit(14)
         if title:
             self._draw_text(
-                title, self.large_font, self.colors.GOLD, rect.left + 16, y, rect.width - 32
+                title,
+                self.large_font,
+                self.colors.GOLD,
+                rect.left + metrics.unit(16),
+                y,
+                rect.width - metrics.unit(32),
             )
-            y += self.large_font.get_height() + 10
+            y += self.large_font.get_height() + metrics.unit(10)
         return y
 
     def _draw_divider(self, rect: pygame.Rect, y: int) -> None:
+        inset = self.presenter.layout_metrics.unit(16)
         pygame.draw.line(
             self.screen,
             self.colors.BORDER_COLOR,
-            (rect.left + 16, y),
-            (rect.right - 16, y),
-            1,
+            (rect.left + inset, y),
+            (rect.right - inset, y),
+            self.presenter.layout_metrics.stroke(1),
         )
 
     def draw_tabs(self, player_char=None):
@@ -190,12 +197,13 @@ class CharacterLayoutMixin:
         return y
 
     def draw_character_panel(self, player_char):
+        metrics = self.presenter.layout_metrics
         y = self._draw_panel(self.character_panel_rect, "Character")
         portrait_surface = self.load_portrait(player_char)
         portrait_rows = self.build_portrait_details(player_char)
         initial_portrait = self.portrait_frame_rect(y, portrait_surface)
-        detail_gap = 8
-        detail_bottom_padding = 8
+        detail_gap = metrics.unit(8)
+        detail_bottom_padding = metrics.unit(8)
         detail_height = self._portrait_details_min_height(portrait_rows, initial_portrait.width)
         portrait = self.portrait_frame_rect(
             y,
@@ -203,18 +211,18 @@ class CharacterLayoutMixin:
             reserved_bottom=detail_gap + detail_height + detail_bottom_padding,
         )
         pygame.draw.rect(self.screen, self.colors.DARK_GRAY, portrait)
-        pygame.draw.rect(self.screen, self.colors.BORDER_COLOR, portrait, 2)
+        pygame.draw.rect(self.screen, self.colors.BORDER_COLOR, portrait, metrics.stroke(2))
         if portrait_surface is not None:
             self._draw_fitted_surface(portrait_surface, portrait)
-            pygame.draw.rect(self.screen, self.colors.BORDER_COLOR, portrait, 2)
+            pygame.draw.rect(self.screen, self.colors.BORDER_COLOR, portrait, metrics.stroke(2))
         else:
             self._draw_text(
                 "Portrait",
                 self.small_font,
                 self.colors.GRAY,
-                portrait.left + 10,
+                portrait.left + metrics.unit(10),
                 portrait.centery - self.small_font.get_height() // 2,
-                portrait.width - 20,
+                portrait.width - metrics.unit(20),
             )
 
         detail_y = portrait.bottom + detail_gap
@@ -226,9 +234,9 @@ class CharacterLayoutMixin:
         )
         self._draw_portrait_details(portrait_rows, detail_rect, detail_y)
 
-        info_x = portrait.right + 16
+        info_x = portrait.right + metrics.unit(16)
         info_y = y
-        info_width = self.character_panel_rect.right - info_x - 16
+        info_width = self.character_panel_rect.right - info_x - metrics.unit(16)
         identity_label_font = self.normal_font
         identity_value_font = self.large_font
         for label, value in self.build_character_summary(player_char):
@@ -253,11 +261,14 @@ class CharacterLayoutMixin:
                 info_y,
                 info_width,
             )
-            info_y += identity_value_font.get_height() + 8
+            info_y += identity_value_font.get_height() + metrics.unit(8)
 
-        bar_width = max(140, info_width * 3 // 4)
+        bar_width = max(metrics.unit(140), info_width * 3 // 4)
         bar_rect = pygame.Rect(
-            self.character_panel_rect.right - 16 - bar_width, info_y + 2, bar_width, 18
+            self.character_panel_rect.right - metrics.unit(16) - bar_width,
+            info_y + metrics.unit(2),
+            bar_width,
+            metrics.unit(18),
         )
         pygame.draw.rect(self.screen, self.colors.DARK_GRAY, bar_rect)
         fill_rect = pygame.Rect(
@@ -267,21 +278,23 @@ class CharacterLayoutMixin:
             bar_rect.height,
         )
         pygame.draw.rect(self.screen, self.colors.GREEN, fill_rect)
-        pygame.draw.rect(self.screen, self.colors.BORDER_COLOR, bar_rect, 1)
+        pygame.draw.rect(self.screen, self.colors.BORDER_COLOR, bar_rect, metrics.stroke(1))
         xp_label = self.xp_label(player_char)
         xp_label_width = self.small_font.size(xp_label)[0]
-        xp_label_x = self.character_panel_rect.right - 16 - min(info_width, xp_label_width)
+        xp_label_x = (
+            self.character_panel_rect.right - metrics.unit(16) - min(info_width, xp_label_width)
+        )
         self._draw_text(
             xp_label, self.small_font, self.colors.GRAY, xp_label_x, bar_rect.bottom + 6, info_width
         )
 
         attribute_rows = self.build_core_attributes(player_char)
-        y = bar_rect.bottom + self.small_font.get_height() + 22
+        y = bar_rect.bottom + self.small_font.get_height() + metrics.unit(22)
         attribute_rect = pygame.Rect(
-            info_x - 16,
+            info_x - metrics.unit(16),
             y,
-            self.character_panel_rect.right - info_x + 16,
-            self.character_panel_rect.bottom - y - 16,
+            self.character_panel_rect.right - info_x + metrics.unit(16),
+            self.character_panel_rect.bottom - y - metrics.unit(16),
         )
         attribute_font = self.large_font
         attribute_gap = 8
@@ -311,26 +324,33 @@ class CharacterLayoutMixin:
         )
 
     def draw_combat_panel(self, player_char):
+        metrics = self.presenter.layout_metrics
         y = self._draw_panel(self.combat_panel_rect, "Combat Stats")
         combat_rows = self.build_combat_stats(player_char)
         groups = self.group_resistances(player_char)
         resistance_font = self.small_font
-        resistance_row_gap = 3
+        resistance_row_gap = metrics.unit(3)
         resistance_row_height = resistance_font.get_height() + resistance_row_gap
         resistance_height = (
-            self.large_font.get_height() + 6 + (RESISTANCE_SLOT_COUNT * resistance_row_height)
+            self.large_font.get_height()
+            + metrics.unit(6)
+            + (RESISTANCE_SLOT_COUNT * resistance_row_height)
         )
-        resistance_top = self.combat_panel_rect.bottom - resistance_height - 16
-        available_stat_height = resistance_top - y - 12
-        if available_stat_height >= len(combat_rows) * (self.large_font.get_height() + 4):
+        resistance_top = self.combat_panel_rect.bottom - resistance_height - metrics.unit(16)
+        available_stat_height = resistance_top - y - metrics.unit(12)
+        if available_stat_height >= len(combat_rows) * (
+            self.large_font.get_height() + metrics.unit(4)
+        ):
             stat_font = self.large_font
-            stat_gap = 4
-        elif available_stat_height >= len(combat_rows) * (self.normal_font.get_height() + 3):
+            stat_gap = metrics.unit(4)
+        elif available_stat_height >= len(combat_rows) * (
+            self.normal_font.get_height() + metrics.unit(3)
+        ):
             stat_font = self.normal_font
-            stat_gap = 3
+            stat_gap = metrics.unit(3)
         else:
             stat_font = self.small_font
-            stat_gap = 1
+            stat_gap = metrics.unit(1)
         y = self._draw_character_stat_rows(
             combat_rows,
             self.combat_panel_rect,
@@ -340,15 +360,16 @@ class CharacterLayoutMixin:
             bottom_limit=resistance_top - self.presenter.layout_metrics.unit(12),
         )
 
-        y = max(y + 12, resistance_top)
-        self._draw_divider(self.combat_panel_rect, y - 10)
-        column_gap = 12
-        column_width = (self.combat_panel_rect.width - 32 - column_gap) // 2
+        y = max(y + metrics.unit(12), resistance_top)
+        self._draw_divider(self.combat_panel_rect, y - metrics.unit(10))
+        column_gap = metrics.unit(12)
+        horizontal_padding = metrics.unit(16)
+        column_width = (self.combat_panel_rect.width - (horizontal_padding * 2) - column_gap) // 2
         weakness_rect = pygame.Rect(
-            self.combat_panel_rect.left + 16,
+            self.combat_panel_rect.left + horizontal_padding,
             y,
             column_width,
-            self.combat_panel_rect.bottom - y - 16,
+            self.combat_panel_rect.bottom - y - horizontal_padding,
         )
         resistance_rect = pygame.Rect(
             weakness_rect.right + column_gap, y, column_width, weakness_rect.height
@@ -369,7 +390,7 @@ class CharacterLayoutMixin:
             y,
             resistance_rect.width,
         )
-        group_y = y + self.large_font.get_height() + 6
+        group_y = y + self.large_font.get_height() + metrics.unit(6)
         self._draw_resistance_group(
             groups["weaknesses"],
             weakness_rect,

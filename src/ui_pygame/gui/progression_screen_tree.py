@@ -24,7 +24,8 @@ class ProgressionTreeMixin:
     @staticmethod
     def _node_frame_rect(icon_rect: pygame.Rect) -> pygame.Rect:
         """Return the shared node frame and selection-highlight bounds."""
-        return icon_rect.inflate(4, 4)
+        padding = max(1, round(min(icon_rect.width, icon_rect.height) / 16))
+        return icon_rect.inflate(padding * 2, padding * 2)
 
     def _layout_node_rects(self, rect, statuses, branches):
         """Lay icon nodes at explicit manifest columns and rows."""
@@ -33,8 +34,8 @@ class ProgressionTreeMixin:
             return []
         explicit_column_count = math.ceil(max(status.node.position[0] for status in statuses) + 1)
         column_count = max(1, len(branches), explicit_column_count)
-        metrics = getattr(getattr(self, "presenter", None), "layout_metrics", None)
-        unit = metrics.unit if metrics is not None else int
+        metrics = self.presenter.layout_metrics
+        unit = metrics.unit
         margin = unit(12)
         lane_width = (rect.width - (margin * 2)) // column_count
         self._tree_column_origin = rect.left + margin + lane_width // 2
@@ -76,16 +77,10 @@ class ProgressionTreeMixin:
             column, row = status.node.position
             center_x = int(rect.left + margin + column * lane_width + lane_width // 2)
             y = graph_top + (row - self.tree_scroll_row) * row_step
-            cell_width = max(unit(64), min(unit(144), lane_width - unit(8)))
-            cell = pygame.Rect(
-                center_x - cell_width // 2,
-                y,
-                cell_width,
-                cell_height,
-            )
-            result.append(cell)
             icon_size = unit(32)
-            icon_rects.append(pygame.Rect(center_x - icon_size // 2, y, icon_size, icon_size))
+            icon_rect = pygame.Rect(center_x - icon_size // 2, y, icon_size, icon_size)
+            icon_rects.append(icon_rect)
+            result.append(self._node_frame_rect(icon_rect))
         self.node_icon_rects = icon_rects
         return result
 
@@ -433,7 +428,10 @@ class ProgressionTreeMixin:
         )
         self.screen.blit(
             points_surface,
-            (rect.left + 16, rect.top + 12),
+            (
+                rect.left + self.presenter.layout_metrics.unit(16),
+                rect.top + self.presenter.layout_metrics.unit(12),
+            ),
         )
         if getattr(self, "show_embedded_navigation_helper", False):
             helper = (
@@ -449,8 +447,10 @@ class ProgressionTreeMixin:
             self.screen.blit(
                 helper_surface,
                 (
-                    rect.right - helper_surface.get_width() - 16,
-                    rect.top + 15,
+                    rect.right
+                    - helper_surface.get_width()
+                    - self.presenter.layout_metrics.unit(16),
+                    rect.top + self.presenter.layout_metrics.unit(15),
                 ),
             )
         statuses = self._statuses()

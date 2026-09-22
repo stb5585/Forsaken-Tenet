@@ -13,6 +13,7 @@ from src.core.progression import (
     NodeStatus,
     PurchaseResult,
 )
+from src.ui_pygame.display_scaling import DisplayConfiguration, LayoutMetrics
 from src.ui_pygame.gui import progression_screen
 
 
@@ -28,8 +29,67 @@ def _node():
     )
 
 
-def test_draw_all_accepts_player_from_shared_popup_contract():
+def _layout_screen():
+    """Return an uninitialized screen with production layout metrics."""
     screen = progression_screen.ProgressionScreen.__new__(progression_screen.ProgressionScreen)
+    screen.presenter = SimpleNamespace(
+        layout_metrics=LayoutMetrics(
+            DisplayConfiguration.for_viewport(fullscreen=False, render_size=(1024, 768))
+        )
+    )
+    return screen
+
+
+@pytest.mark.parametrize("size", ((1000, 720), (1920, 1080)))
+def test_progression_layout_rects_fit_panels_without_overlap(size):
+    """Embedded and standalone panels share responsive visible/input bounds."""
+    screen = _layout_screen()
+    screen.presenter = SimpleNamespace(
+        layout_metrics=LayoutMetrics(
+            DisplayConfiguration.for_viewport(fullscreen=False, render_size=size)
+        )
+    )
+    screen.width, screen.height = size
+    screen.normal_font = SimpleNamespace(
+        get_height=lambda: screen.presenter.layout_metrics.unit(22)
+    )
+
+    owner = pygame.Rect(
+        screen.presenter.layout_metrics.unit(18),
+        screen.presenter.layout_metrics.unit(96),
+        size[0] - screen.presenter.layout_metrics.unit(36),
+        size[1] - screen.presenter.layout_metrics.unit(270),
+    )
+    embedded = screen.embedded_layout_rects(owner)
+    standalone = screen.standalone_layout_rects()
+
+    assert all(owner.contains(rect) for rect in embedded.values())
+    assert not embedded["tree"].colliderect(embedded["attributes"])
+    assert not embedded["tree"].colliderect(embedded["details"])
+    assert not embedded["attributes"].colliderect(embedded["details"])
+    assert not embedded["details"].colliderect(embedded["spend"])
+
+    screen_rect = pygame.Rect(0, 0, *size)
+    assert all(screen_rect.contains(rect) for rect in standalone.values())
+    assert not standalone["tree"].colliderect(standalone["attributes"])
+    assert not standalone["tree"].colliderect(standalone["details"])
+
+
+def test_progression_node_hitboxes_match_visible_node_frames():
+    screen = _layout_screen()
+    screen.current_node = 0
+    screen.tree_scroll_row = 0
+    statuses = [NodeStatus(node, NodeState.AVAILABLE) for node in ABILITY_TREES["Warrior"].nodes]
+
+    hitboxes = screen._layout_node_rects(
+        pygame.Rect(20, 100, 700, 500), statuses, ("Arms", "Bulwark")
+    )
+
+    assert hitboxes == [screen._node_frame_rect(icon) for icon in screen.node_icon_rects]
+
+
+def test_draw_all_accepts_player_from_shared_popup_contract():
+    screen = _layout_screen()
     player = object()
     screen.width = 1024
     screen.height = 768
@@ -48,7 +108,7 @@ def test_draw_all_accepts_player_from_shared_popup_contract():
 
 
 def test_blocked_node_selection_does_not_stage_or_open_popup(monkeypatch):
-    screen = progression_screen.ProgressionScreen.__new__(progression_screen.ProgressionScreen)
+    screen = _layout_screen()
     screen._selected_status = lambda: NodeStatus(
         _node(),
         NodeState.BLOCKED,
@@ -68,7 +128,7 @@ def test_blocked_node_selection_does_not_stage_or_open_popup(monkeypatch):
 
 
 def test_available_node_toggles_in_and_out_of_staged_plan():
-    screen = progression_screen.ProgressionScreen.__new__(progression_screen.ProgressionScreen)
+    screen = _layout_screen()
     screen._selected_status = lambda: NodeStatus(_node(), NodeState.AVAILABLE)
 
     screen._toggle_selected_node()
@@ -82,7 +142,7 @@ def test_available_node_toggles_in_and_out_of_staged_plan():
 def test_paladin_promotion_uses_descriptive_vow_popup_and_confirmation(
     monkeypatch,
 ):
-    screen = progression_screen.ProgressionScreen.__new__(progression_screen.ProgressionScreen)
+    screen = _layout_screen()
     screen.presenter = object()
     screen._popup_background = lambda: None
     calls = []
@@ -124,7 +184,7 @@ def test_paladin_promotion_uses_descriptive_vow_popup_and_confirmation(
 def test_canceling_paladin_vow_confirmation_cancels_promotion_choice(
     monkeypatch,
 ):
-    screen = progression_screen.ProgressionScreen.__new__(progression_screen.ProgressionScreen)
+    screen = _layout_screen()
     screen.presenter = object()
     screen._popup_background = lambda: None
 
@@ -437,7 +497,7 @@ def test_talent_layout_uses_explicit_columns_and_flows_down():
             bulwark_promotion,
         )
     ]
-    screen = progression_screen.ProgressionScreen.__new__(progression_screen.ProgressionScreen)
+    screen = _layout_screen()
     panel = pygame.Rect(20, 100, 700, 380)
     screen.current_node = 0
     screen.tree_scroll_row = 0
@@ -457,7 +517,7 @@ def test_talent_layout_uses_explicit_columns_and_flows_down():
 
 
 def test_terminal_weapon_tree_explicit_columns_fit_inside_panel():
-    screen = progression_screen.ProgressionScreen.__new__(progression_screen.ProgressionScreen)
+    screen = _layout_screen()
     panel = pygame.Rect(20, 100, 700, 600)
 
     for class_name in ("Berserker", "Grandmaster of Arms"):
@@ -473,7 +533,7 @@ def test_terminal_weapon_tree_explicit_columns_fit_inside_panel():
 
 
 def test_eight_row_dragoon_tree_fits_standard_panel_without_scrolling():
-    screen = progression_screen.ProgressionScreen.__new__(progression_screen.ProgressionScreen)
+    screen = _layout_screen()
     tree = ABILITY_TREES["Dragoon"]
     statuses = [NodeStatus(node, NodeState.AVAILABLE) for node in tree.nodes]
     panel = pygame.Rect(24, 100, 716, 525)
@@ -491,7 +551,7 @@ def test_eight_row_dragoon_tree_fits_standard_panel_without_scrolling():
     ("Warrior", "Footpad", "Healer", "Pathfinder", "Assassin", "Paladin", "Bard"),
 )
 def test_eight_row_promotion_tree_fits_standard_panel_without_scrolling(class_name):
-    screen = progression_screen.ProgressionScreen.__new__(progression_screen.ProgressionScreen)
+    screen = _layout_screen()
     tree = ABILITY_TREES[class_name]
     statuses = [NodeStatus(node, NodeState.AVAILABLE) for node in tree.nodes]
     panel = pygame.Rect(24, 100, 716, 525)
@@ -511,7 +571,7 @@ def test_eight_row_promotion_tree_fits_standard_panel_without_scrolling(class_na
 def test_mage_line_trees_fit_standard_panel_without_overlap_or_scrolling(
     class_name,
 ):
-    screen = progression_screen.ProgressionScreen.__new__(progression_screen.ProgressionScreen)
+    screen = _layout_screen()
     tree = ABILITY_TREES[class_name]
     statuses = [NodeStatus(node, NodeState.AVAILABLE) for node in tree.nodes]
     panel = pygame.Rect(24, 100, 716, 525)
@@ -966,7 +1026,8 @@ def test_node_highlight_uses_exact_node_frame_bounds():
 
 
 def test_embedded_layout_fills_left_height_and_stacks_right_panels():
-    screen = progression_screen.ProgressionScreen.__new__(progression_screen.ProgressionScreen)
+    screen = _layout_screen()
+    screen.normal_font = SimpleNamespace(get_height=lambda: 22)
     captured = {}
     screen._draw_tree = lambda rect: captured.setdefault("tree", rect.copy())
     screen._draw_attributes = lambda rect: captured.setdefault(
@@ -1006,6 +1067,9 @@ def test_attribute_highlight_previews_increased_value_without_training_text(
         def get_height(self):
             return 14
 
+        def size(self, text):
+            return (len(text) * 8, 14)
+
     class FakeScreen:
         def __init__(self):
             self.surfaces = []
@@ -1013,7 +1077,7 @@ def test_attribute_highlight_previews_increased_value_without_training_text(
         def blit(self, surface, _position):
             self.surfaces.append(surface)
 
-    screen = progression_screen.ProgressionScreen.__new__(progression_screen.ProgressionScreen)
+    screen = _layout_screen()
     screen.screen = FakeScreen()
     screen.normal_font = FakeFont()
     screen.small_font = FakeFont()
@@ -1079,7 +1143,7 @@ def test_details_rendering_never_spills_below_panel(monkeypatch):
             self.surfaces.append(surface)
             self.positions.append(position)
 
-    screen = progression_screen.ProgressionScreen.__new__(progression_screen.ProgressionScreen)
+    screen = _layout_screen()
     screen.screen = FakeScreen()
     screen.small_font = FakeFont()
     screen.colors = SimpleNamespace(
@@ -1139,7 +1203,7 @@ def test_weapon_specialization_requirement_wraps_once_inside_details(monkeypatch
         def blit(self, surface, _position):
             self.surfaces.append(surface)
 
-    screen = progression_screen.ProgressionScreen.__new__(progression_screen.ProgressionScreen)
+    screen = _layout_screen()
     screen.screen = FakeScreen()
     screen.small_font = FakeFont()
     screen.colors = SimpleNamespace(
@@ -1191,7 +1255,7 @@ def test_promotion_details_wrap_blocker_and_omit_tree_warning(monkeypatch):
         def blit(self, _surface, position):
             self.positions.append(position)
 
-    screen = progression_screen.ProgressionScreen.__new__(progression_screen.ProgressionScreen)
+    screen = _layout_screen()
     screen.screen = FakeScreen()
     screen.small_font = FakeFont()
     screen.colors = SimpleNamespace(

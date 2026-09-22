@@ -661,7 +661,9 @@ def test_base_character_stats_render_full_labels_in_separate_columns(monkeypatch
         assert label_rect.right <= value_rect.left
         assert value_rect.right <= panel.right - presenter.layout_metrics.unit(16)
 
-    assert screen.tab_rect.contains(screen.tab_button_rects(player)[0])
+    portrait_rect = screen.portrait_frame_rect(screen.character_panel_rect.top, None)
+    assert screen.character_panel_rect.contains(portrait_rect)
+    assert all(screen.tab_rect.contains(rect) for rect in screen.tab_button_rects(player))
     assert screen.actions_rect.width == screen.content_rect.width
 
 

@@ -36,11 +36,15 @@ class CharacterDataMixin:
             if surface_width > 0 and surface_height > 0:
                 source_width, source_height = surface_width, surface_height
 
-        max_width = min(source_width, max(150, self.character_panel_rect.width // 2 - 12))
+        metrics = self.presenter.layout_metrics
+        max_width = min(
+            source_width,
+            max(metrics.unit(150), self.character_panel_rect.width // 2 - metrics.unit(12)),
+        )
         max_height = min(
             source_height,
             max(
-                120,
+                metrics.unit(120),
                 self.character_panel_rect.height
                 - (y - self.character_panel_rect.top)
                 - reserved_bottom,
@@ -49,7 +53,12 @@ class CharacterDataMixin:
         scale = min(max_width / source_width, max_height / source_height, 1.0)
         portrait_width = max(1, int(source_width * scale))
         portrait_height = max(1, int(source_height * scale))
-        return pygame.Rect(self.character_panel_rect.left + 16, y, portrait_width, portrait_height)
+        return pygame.Rect(
+            self.character_panel_rect.left + metrics.unit(16),
+            y,
+            portrait_width,
+            portrait_height,
+        )
 
     @staticmethod
     def _call_or_attr(player_char, name: str, default: int = 0) -> int:
@@ -485,23 +494,41 @@ class CharacterDataMixin:
 
     def _draw_portrait_details(self, rows: list[tuple[str, str]], rect: pygame.Rect, y: int) -> int:
         font = self.small_font
-        line_gap = 4
+        metrics = self.presenter.layout_metrics
+        line_gap = metrics.unit(4)
         for label, value in rows:
             if y + font.get_height() > rect.bottom:
                 break
-            label_width = min(max(62, font.size(label)[0] + 8), max(62, rect.width // 2))
-            value_width = max(1, rect.width - label_width - 12)
-            self._draw_text(label, font, self.colors.GRAY, rect.left + 4, y, label_width)
+            label_width = min(
+                max(metrics.unit(62), font.size(label)[0] + metrics.unit(8)),
+                max(metrics.unit(62), rect.width // 2),
+            )
+            value_width = max(1, rect.width - label_width - metrics.unit(12))
+            self._draw_text(
+                label,
+                font,
+                self.colors.GRAY,
+                rect.left + metrics.unit(4),
+                y,
+                label_width,
+            )
             if font.size(str(value))[0] <= value_width:
                 value_text = str(value)
-                value_x = rect.right - 4 - font.size(value_text)[0]
+                value_x = rect.right - metrics.unit(4) - font.size(value_text)[0]
                 self._draw_text(value_text, font, self.colors.WHITE, value_x, y, value_width)
                 y += font.get_height() + line_gap
             else:
                 y += font.get_height()
-                full_width = max(1, rect.width - 8)
+                full_width = max(1, rect.width - metrics.unit(8))
                 value_text = str(value)
-                self._draw_text(value_text, font, self.colors.WHITE, rect.left + 4, y, full_width)
+                self._draw_text(
+                    value_text,
+                    font,
+                    self.colors.WHITE,
+                    rect.left + metrics.unit(4),
+                    y,
+                    full_width,
+                )
                 y += font.get_height() + line_gap
             if y > rect.bottom:
                 break
@@ -510,11 +537,15 @@ class CharacterDataMixin:
     def _portrait_details_min_height(self, rows: list[tuple[str, str]], width: int) -> int:
         """Return the height needed for compact portrait metadata rows."""
         font = self.small_font
-        line_gap = 4
+        metrics = self.presenter.layout_metrics
+        line_gap = metrics.unit(4)
         height = 0
         for label, value in rows:
-            label_width = min(max(62, font.size(label)[0] + 8), max(62, width // 2))
-            value_width = max(1, width - label_width - 12)
+            label_width = min(
+                max(metrics.unit(62), font.size(label)[0] + metrics.unit(8)),
+                max(metrics.unit(62), width // 2),
+            )
+            value_width = max(1, width - label_width - metrics.unit(12))
             row_lines = 1 if font.size(str(value))[0] <= value_width else 2
             height += (font.get_height() * row_lines) + line_gap
         return height
