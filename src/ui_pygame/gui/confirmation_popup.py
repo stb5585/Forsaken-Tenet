@@ -934,7 +934,6 @@ class QuantityPopup:
             title_y += title_text.get_height()
 
         # Quantity selector with tens and ones
-        qty_y = self._layout["quantity_y"]
         qty_label = self.normal_font.render("Quantity:", True, self.WHITE)
         label_rect = qty_label.get_rect(
             right=self.digit_rects()[0].left - self.metrics.unit(24),
