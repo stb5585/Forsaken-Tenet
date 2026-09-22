@@ -285,19 +285,19 @@ class InnManager(TownScreenBase):
             return
 
         bounty_screen = LocationMenuScreen(self.presenter, "Turn In Bounty")
-        bounty_options = list(completable) + ["Back"]
+        bounty_options = [(name, 0) for name in completable]
+        bounty_options.append(("Back", 0))
 
-        choice_idx = bounty_screen.navigate(
+        choice_idx = bounty_screen.navigate_with_content(
             bounty_options,
-            reset_cursor=False,
             flush_events=True,
             require_key_release=True,
         )
 
-        if choice_idx is None or bounty_options[choice_idx] == "Back":
+        if choice_idx is None or bounty_options[choice_idx][0] == "Back":
             return
 
-        bounty_name = bounty_options[choice_idx]
+        bounty_name = bounty_options[choice_idx][0]
         bounty_data = self.player_char.quest_dict["Bounty"].get(bounty_name)
         if not bounty_data:
             popup = ConfirmationPopup(

@@ -204,15 +204,13 @@ def test_bounty_accept_turn_in_and_view(monkeypatch):
         def set_option_portraits(self, _npc_names):
             return None
 
-        def navigate(self, options, reset_cursor=False, **_kwargs):
-            if self.title == "Turn In Bounty":
-                return 0
-            return None
-
         def navigate_with_content(self, items, **_kwargs):
             if self.title == "Accept Bounty":
                 return 0
             if self.title == "Active Bounties":
+                return 0
+            if self.title == "Turn In Bounty":
+                assert items == [("Goblin Hunt", 0), ("Back", 0)]
                 return 0
             return None
 
