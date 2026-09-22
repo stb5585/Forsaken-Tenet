@@ -366,6 +366,7 @@ def test_bounty_board_can_abandon_active_bounty(monkeypatch):
     manager = inn.InnManager(presenter, player)
     board_options = []
     board_calls = 0
+    drawn_frames = []
 
     class FakeLocationMenuScreen:
         def __init__(self, _presenter, title):
@@ -389,6 +390,15 @@ def test_bounty_board_can_abandon_active_bounty(monkeypatch):
                 return 0
             return None
 
+        def navigate_with_content(self, options, **_kwargs):
+            if self.title == "Abandon Bounty":
+                assert options == [("Rat Hunt", 0), ("Back", 0)]
+                return 0
+            return None
+
+        def draw_content_selection_frame(self, options, *, do_flip=False):
+            drawn_frames.append((self.title, list(options), do_flip))
+
     monkeypatch.setattr("src.ui_pygame.gui.inn.LocationMenuScreen", FakeLocationMenuScreen)
 
     manager.show_bounty_board()
@@ -398,6 +408,56 @@ def test_bounty_board_can_abandon_active_bounty(monkeypatch):
     assert presenter.game.bounties == {"Fresh Bounty": {"num": 1}}
     assert any("abandon the Rat Hunt bounty" in message for message in FakePopup.messages)
     assert "Abandoned bounty: Rat Hunt" in FakePopup.messages
+    confirmation_background = next(
+        kwargs["background_draw_func"]
+        for message, kwargs in zip(FakePopup.messages, FakePopup.show_kwargs)
+        if message.startswith("Are you sure you want to abandon")
+    )
+    confirmation_background()
+    assert drawn_frames[-1] == ("Abandon Bounty", [("Rat Hunt", 0), ("Back", 0)], False)
+
+
+def test_abandon_bounty_reopens_selection_after_cancel(monkeypatch):
+    player = _make_player(level=20)
+    player.quest_dict["Bounty"] = {
+        "Rat Hunt": [
+            {"enemy": SimpleNamespace(name="Giant Rat"), "num": 3, "gold": 40, "exp": 4},
+            1,
+            False,
+        ]
+    }
+    presenter = _make_presenter()
+    monkeypatch.setattr(
+        inn.InnManager, "_load_background", lambda self: setattr(self, "background", None)
+    )
+    manager = inn.InnManager(presenter, player)
+    calls = []
+
+    class CancelPopup:
+        def __init__(self, *_args, **_kwargs):
+            pass
+
+        def show(self, **_kwargs):
+            return False
+
+    class FakeLocationMenuScreen:
+        def __init__(self, _presenter, _title):
+            pass
+
+        def navigate_with_content(self, options, **_kwargs):
+            calls.append(list(options))
+            return 0 if len(calls) == 1 else options.index(("Back", 0))
+
+        def draw_content_selection_frame(self, _options, *, do_flip=False):
+            assert not do_flip
+
+    monkeypatch.setattr("src.ui_pygame.gui.inn.ConfirmationPopup", CancelPopup)
+    monkeypatch.setattr("src.ui_pygame.gui.inn.LocationMenuScreen", FakeLocationMenuScreen)
+
+    manager.abandon_bounty()
+
+    assert calls == [[("Rat Hunt", 0), ("Back", 0)], [("Rat Hunt", 0), ("Back", 0)]]
+    assert "Rat Hunt" in player.quest_dict["Bounty"]
 
 
 def test_accept_bounty_stays_open_until_no_bounties_remain(monkeypatch):

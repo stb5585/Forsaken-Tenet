@@ -146,8 +146,9 @@ def test_location_menu_draw_helpers(monkeypatch):
     assert draw_rect_calls
 
 
-def test_location_menu_rows_use_their_shared_scaled_rects(monkeypatch):
-    presenter = _make_presenter((1920, 1080))
+@pytest.mark.parametrize("size", ((900, 700), (1080, 1920)))
+def test_bounty_rows_use_shared_measured_rects_at_supported_viewports(monkeypatch, size):
+    presenter = _make_presenter(size)
     screen = location_menu.LocationMenuScreen(presenter, "Accept Bounty")
     screen.options_list = ["Green Slime", "Scarecrow", "Bandit", "Back"]
     screen.current_option = 1
@@ -169,6 +170,65 @@ def test_location_menu_rows_use_their_shared_scaled_rects(monkeypatch):
     assert item_rect.height >= presenter.large_font.get_height() + (
         presenter.layout_metrics.unit(4) * 2
     )
+    assert screen._content_rect().contains(item_rect)
+
+    screen.draw_content(
+        items_data=[
+            (0, "Green Slime", 0, False),
+            (1, "Scarecrow", 0, True),
+            (2, "Bandit", 0, False),
+        ]
+    )
+    selected_row = dict(screen.content_row_rects(3))[1]
+    assert selected_row in draw_calls
+
+
+def test_bounty_content_navigation_uses_responsive_rows_and_scrolls(monkeypatch):
+    presenter = _make_presenter((1080, 1920))
+    screen = location_menu.LocationMenuScreen(presenter, "Accept Bounty")
+    items = [(f"Bounty {index}", 0) for index in range(60)]
+    monkeypatch.setattr(screen, "draw_background", lambda: None)
+    monkeypatch.setattr(screen, "draw_top", lambda: None)
+    monkeypatch.setattr(screen, "draw_options_instructions", lambda: None)
+    monkeypatch.setattr(screen, "draw_npc_portrait", lambda **_kwargs: None)
+    monkeypatch.setattr(screen, "draw_content", lambda **_kwargs: None)
+    monkeypatch.setattr("src.ui_pygame.gui.location_menu.pygame.display.flip", lambda: None)
+
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.location_menu.pygame.event.get",
+        _scripted_events(
+            [
+                [SimpleNamespace(type=pygame.KEYDOWN, key=pygame.K_DOWN)],
+                [SimpleNamespace(type=pygame.KEYDOWN, key=pygame.K_RETURN)],
+            ]
+        ),
+    )
+    assert screen.navigate_with_content(items) == 1
+
+    screen.current_option = 0
+    screen.scroll_offset = 0
+    row_rect = dict(screen.content_row_rects(len(items)))[3]
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.location_menu.pygame.event.get",
+        _scripted_events(
+            [[SimpleNamespace(type=pygame.MOUSEBUTTONDOWN, button=1, pos=row_rect.center)]]
+        ),
+    )
+    assert screen.navigate_with_content(items) == 3
+
+    screen.current_option = 0
+    screen.scroll_offset = 0
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.location_menu.pygame.event.get",
+        _scripted_events(
+            [
+                [SimpleNamespace(type=pygame.KEYDOWN, key=pygame.K_UP)],
+                [SimpleNamespace(type=pygame.KEYDOWN, key=pygame.K_RETURN)],
+            ]
+        ),
+    )
+    assert screen.navigate_with_content(items) == len(items) - 1
+    assert screen.scroll_offset > 0
 
 
 def test_location_menu_draws_static_and_option_portraits(monkeypatch):
