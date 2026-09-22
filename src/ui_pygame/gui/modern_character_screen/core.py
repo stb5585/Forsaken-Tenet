@@ -47,10 +47,11 @@ class CharacterCoreMixin:
 
     def calculate_rects(self):
         """Calculate responsive panel rectangles for the modern layout."""
-        margin = 18
-        gap = 12
-        tab_height = max(44, self.height // 16)
-        action_height = max(92, self.height // 8)
+        metrics = self.presenter.layout_metrics
+        margin = metrics.unit(18)
+        gap = metrics.unit(12)
+        tab_height = max(metrics.unit(44), self.height // 16)
+        action_height = max(metrics.unit(92), self.height // 8)
         content_top = margin + tab_height + gap
         content_height = self.height - content_top - action_height - (gap * 2) - margin
         content_height = max(320, content_height)

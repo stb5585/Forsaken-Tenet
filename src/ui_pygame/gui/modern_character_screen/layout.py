@@ -99,17 +99,95 @@ class CharacterLayoutMixin:
     def tab_button_rects(self, player_char=None) -> list[pygame.Rect]:
         """Return clickable rectangles for character tabs."""
         visible_tabs = self.visible_tabs(player_char)
-        x = self.tab_rect.left + 12
-        tab_width = max(120, min(220, (self.tab_rect.width - 24) // max(1, len(visible_tabs))))
+        metrics = self.presenter.layout_metrics
+        padding = metrics.unit(12)
+        x = self.tab_rect.left + padding
+        tab_width = max(
+            metrics.unit(120),
+            min(
+                metrics.unit(220),
+                (self.tab_rect.width - (padding * 2)) // max(1, len(visible_tabs)),
+            ),
+        )
         return [
             pygame.Rect(
                 x + (index * tab_width),
-                self.tab_rect.top + 8,
-                tab_width - 8,
-                self.tab_rect.height - 16,
+                self.tab_rect.top + metrics.unit(8),
+                tab_width - metrics.unit(8),
+                self.tab_rect.height - metrics.unit(16),
             )
             for index, _tab in enumerate(visible_tabs)
         ]
+
+    def character_stat_column_rects(
+        self,
+        rows: list[tuple[str, str]],
+        rect: pygame.Rect,
+        preferred_font,
+    ) -> tuple[pygame.Rect, pygame.Rect, object]:
+        """Measure separate label and value columns without abbreviating stat labels."""
+        metrics = self.presenter.layout_metrics
+        padding = metrics.unit(16)
+        column_gap = metrics.unit(12)
+        available_width = rect.width - (padding * 2) - column_gap
+        value_width = max(
+            metrics.unit(42),
+            max((preferred_font.size(value)[0] for _label, value in rows), default=0),
+        )
+        label_font = preferred_font
+        for candidate in (preferred_font, self.normal_font, self.small_font):
+            label_width = max((candidate.size(label)[0] for label, _value in rows), default=0)
+            if label_width + value_width <= available_width:
+                label_font = candidate
+                break
+        else:
+            label_width = max((self.small_font.size(label)[0] for label, _value in rows), default=0)
+            label_font = self.small_font
+
+        label_width = max((label_font.size(label)[0] for label, _value in rows), default=0)
+        value_column_width = max(metrics.unit(1), available_width - label_width)
+        label_rect = pygame.Rect(rect.left + padding, rect.top, label_width, rect.height)
+        value_rect = pygame.Rect(
+            label_rect.right + column_gap,
+            rect.top,
+            value_column_width,
+            rect.height,
+        )
+        return label_rect, value_rect, label_font
+
+    def _draw_character_stat_rows(
+        self,
+        rows: list[tuple[str, str]],
+        rect: pygame.Rect,
+        y: int,
+        *,
+        preferred_font,
+        row_gap: int,
+        bottom_limit: int,
+    ) -> int:
+        """Draw Character-tab stats in measured, non-overlapping columns."""
+        label_rect, value_rect, label_font = self.character_stat_column_rects(
+            rows, rect, preferred_font
+        )
+        row_height = max(label_font.get_height(), preferred_font.get_height())
+        for label, value in rows:
+            if y + row_height > bottom_limit:
+                break
+            label_surface = label_font.render(label, True, self.colors.GRAY)
+            value_surface = preferred_font.render(value, True, self.colors.WHITE)
+            self.screen.blit(
+                label_surface,
+                (label_rect.left, y + (row_height - label_surface.get_height()) // 2),
+            )
+            self.screen.blit(
+                value_surface,
+                (
+                    value_rect.right - value_surface.get_width(),
+                    y + (row_height - value_surface.get_height()) // 2,
+                ),
+            )
+            y += row_height + row_gap
+        return y
 
     def draw_character_panel(self, player_char):
         y = self._draw_panel(self.character_panel_rect, "Character")
@@ -223,15 +301,13 @@ class CharacterLayoutMixin:
         self._draw_divider(attribute_rect, y - 10)
         self._draw_text("Core Attributes", self.large_font, self.colors.GOLD, info_x, y, info_width)
         y += self.large_font.get_height() + 8
-        y = self._draw_key_values(
+        self._draw_character_stat_rows(
             attribute_rows,
             attribute_rect,
             y,
-            font=attribute_font,
-            label_padding=36,
-            right_align_values=True,
+            preferred_font=attribute_font,
             row_gap=attribute_gap,
-            bottom_limit=self.character_panel_rect.bottom - 16,
+            bottom_limit=self.character_panel_rect.bottom - self.presenter.layout_metrics.unit(16),
         )
 
     def draw_combat_panel(self, player_char):
@@ -255,14 +331,13 @@ class CharacterLayoutMixin:
         else:
             stat_font = self.small_font
             stat_gap = 1
-        y = self._draw_key_values(
+        y = self._draw_character_stat_rows(
             combat_rows,
             self.combat_panel_rect,
             y,
-            font=stat_font,
+            preferred_font=stat_font,
             row_gap=stat_gap,
-            right_align_values=True,
-            bottom_limit=resistance_top - 12,
+            bottom_limit=resistance_top - self.presenter.layout_metrics.unit(12),
         )
 
         y = max(y + 12, resistance_top)

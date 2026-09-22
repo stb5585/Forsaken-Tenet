@@ -7,13 +7,13 @@ import typing
 from types import SimpleNamespace
 
 import pygame
+import pytest
 
 from src.core import abilities, companions, items
 from src.core.classes import (
     ability_mechanics,
     archdruid,
     astromancer,
-    bard,
     class_rings,
     demonologist,
     grandmaster,
@@ -22,6 +22,7 @@ from src.core.classes import (
 )
 from src.core.progression import ProgressionState
 from src.ui_pygame import game as pygame_game
+from src.ui_pygame.display_scaling import DisplayConfiguration, LayoutMetrics
 from src.ui_pygame.gui.dungeon_manager import DungeonManager
 from src.ui_pygame.gui.modern_character_screen import (
     RESISTANCE_ORDER,
@@ -86,17 +87,19 @@ class RecordingScreen:
         return "screen-copy"
 
 
-def _make_presenter():
+def _make_presenter(size=(1000, 720)):
+    metrics = LayoutMetrics(DisplayConfiguration.for_viewport(fullscreen=False, render_size=size))
     return SimpleNamespace(
-        screen=RecordingScreen(),
-        width=1000,
-        height=720,
+        screen=RecordingScreen(size),
+        width=size[0],
+        height=size[1],
         title_font=RecordingFont(34),
         large_font=RecordingFont(28),
         normal_font=RecordingFont(22),
         small_font=RecordingFont(18),
         clock=SimpleNamespace(tick=lambda _fps: None),
         debug_mode=True,
+        layout_metrics=metrics,
     )
 
 
@@ -618,6 +621,48 @@ def test_character_panel_reserves_portrait_detail_rows_after_large_portrait(monk
     panel_bottom = screen.character_panel_rect.bottom
     for text, (_x, y) in detail_blits:
         assert y + presenter.small_font.get_height() <= panel_bottom, text
+
+
+@pytest.mark.parametrize("size", [(1000, 720), (1920, 1080)])
+def test_base_character_stats_render_full_labels_in_separate_columns(monkeypatch, size):
+    presenter = _make_presenter(size)
+    screen = ModernCharacterScreen(presenter)
+    player = _make_player()
+    monkeypatch.setattr(
+        screen,
+        "draw_semi_transparent_panel",
+        lambda rect, alpha=180: DummySurface((rect.width, rect.height)),
+    )
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.modern_character_screen.pygame.draw.rect", lambda *_args, **_kwargs: None
+    )
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.modern_character_screen.pygame.draw.line", lambda *_args, **_kwargs: None
+    )
+    screen.load_portrait = lambda _player: None
+
+    screen.draw_character_panel(player)
+    screen.draw_combat_panel(player)
+
+    rendered = [
+        getattr(surface, "text", None) for surface, _position in presenter.screen.blit_calls
+    ]
+    for label in ("Intelligence", "Constitution", "Magic Attack", "Magic Defense"):
+        assert label in rendered
+        assert f"{label[:8]}..." not in rendered
+
+    for rows, panel in (
+        (screen.build_core_attributes(player), screen.character_panel_rect),
+        (screen.build_combat_stats(player), screen.combat_panel_rect),
+    ):
+        label_rect, value_rect, _label_font = screen.character_stat_column_rects(
+            rows, panel, screen.large_font
+        )
+        assert label_rect.right <= value_rect.left
+        assert value_rect.right <= panel.right - presenter.layout_metrics.unit(16)
+
+    assert screen.tab_rect.contains(screen.tab_button_rects(player)[0])
+    assert screen.actions_rect.width == screen.content_rect.width
 
 
 def test_modern_character_companion_display_prefers_familiar_then_living_summon():
@@ -1650,6 +1695,8 @@ def test_modern_character_totems_tab_shows_review_and_selector(monkeypatch):
 
 
 def test_modern_character_totems_tab_c_opens_existing_aspect_popup(monkeypatch):
+    import src.ui_pygame.gui.modern_character_screen as modern_module
+
     presenter = _make_presenter()
     screen = ModernCharacterScreen(presenter)
     player = _make_player()
@@ -1664,8 +1711,6 @@ def test_modern_character_totems_tab_c_opens_existing_aspect_popup(monkeypatch):
 
         def show(self, **kwargs):
             opened.append(kwargs["player_char"].cls.name)
-
-    import src.ui_pygame.gui.modern_character_screen as modern_module
 
     monkeypatch.setattr(modern_module.mechanics, "TotemAspectsPopupMenu", FakePopup)
     monkeypatch.setattr(screen, "draw_all", lambda *_args, **_kwargs: None)
@@ -2979,8 +3024,6 @@ def test_dungeon_character_screen_router_lazy_loads_modern_default(monkeypatch):
             self.presenter = presenter
             self.background = None
             created.append(self)
-
-    import src.ui_pygame.gui.modern_character_screen as modern_module
 
     monkeypatch.setattr(
         "src.ui_pygame.gui.modern_character_screen.screen.ModernCharacterScreen", FakeModern
