@@ -7,6 +7,7 @@ from types import SimpleNamespace
 
 import pygame
 
+from src.ui_pygame.display_scaling import DisplayConfiguration, LayoutMetrics
 from src.ui_pygame.gui import confirmation_popup
 from src.ui_pygame.gui.input_guards import (
     prepare_guarded_input,
@@ -62,17 +63,19 @@ class RecordingScreen:
         return "copied-surface"
 
 
-def _make_presenter(*, debug_mode=False):
+def _make_presenter(*, debug_mode=False, size=(640, 480)):
+    metrics = LayoutMetrics(DisplayConfiguration.for_viewport(fullscreen=False, render_size=size))
     return SimpleNamespace(
         screen=RecordingScreen(),
-        width=640,
-        height=480,
+        width=size[0],
+        height=size[1],
         title_font=RecordingFont(),
         large_font=RecordingFont(),
         normal_font=RecordingFont(),
         small_font=RecordingFont(),
         debug_mode=debug_mode,
         clock=SimpleNamespace(tick=lambda _fps: None),
+        layout_metrics=metrics,
     )
 
 
@@ -85,6 +88,18 @@ def _event(event_type, key=None):
 
 def _mouse_event(event_type, pos, button=1, y=0):
     return SimpleNamespace(type=event_type, pos=pos, button=button, y=y)
+
+
+def _scripted_events(batches):
+    iterator = iter(batches)
+
+    def next_batch():
+        try:
+            return next(iterator)
+        except StopIteration as error:
+            raise AssertionError("scripted event queue exhausted") from error
+
+    return next_batch
 
 
 def _patch_visuals(monkeypatch):
@@ -597,6 +612,36 @@ def test_quantity_popup_draw_and_show_cover_adjustment_confirmation_and_cancel(m
         lambda: next(arrow_cancel_events, []),
     )
     assert arrow_cancel_popup.show() is None
+
+
+def test_quantity_popup_measures_long_content_inside_scaled_popup(monkeypatch):
+    _patch_visuals(monkeypatch)
+    presenter = _make_presenter(size=(1920, 1080))
+    popup = confirmation_popup.QuantityPopup(
+        presenter,
+        "Elixir of the Unbroken Moon and the Last Forgotten Kingdom",
+        action="retrieve",
+    )
+    assert popup.popup_rect.left >= 0
+    assert popup.popup_rect.right <= presenter.width
+    assert popup.popup_rect.top >= 0
+    assert popup.popup_rect.bottom <= presenter.height
+    assert all(
+        popup.popup_rect.contains(rect)
+        for rect in [*popup.digit_rects(), *popup.button_rects().values()]
+    )
+    title_width = popup.popup_rect.width - (presenter.layout_metrics.unit(32) * 2)
+    assert all(
+        presenter.title_font.size(line)[0] <= title_width for line in popup._layout["title_lines"]
+    )
+    assert all(
+        presenter.small_font.size(line)[0] <= title_width
+        for line in popup._layout["instruction_lines"]
+    )
+
+    events = _scripted_events([[_event(pygame.KEYDOWN, pygame.K_ESCAPE)]])
+    monkeypatch.setattr("src.ui_pygame.gui.confirmation_popup.pygame.event.get", events)
+    assert popup.show() is None
 
 
 def test_quantity_popup_can_flush_and_wait_for_key_release(monkeypatch):

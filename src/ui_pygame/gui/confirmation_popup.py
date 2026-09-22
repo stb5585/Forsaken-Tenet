@@ -9,6 +9,8 @@ from src.ui_pygame.screen_runtime import get_events
 from .input_guards import prepare_guarded_input, release_guard_allows_input
 from .mouse_helpers import hit_index, is_left_click, mouse_position
 
+QUANTITY_INSTRUCTIONS = "UP/DOWN: Adjust | LEFT/RIGHT: Switch | ENTER: Confirm | ESC: Cancel"
+
 
 def _get_safe_background_surface(presenter, screen):
     """Return a copied popup background when provider output is unusable."""
@@ -744,6 +746,7 @@ class QuantityPopup:
         self.title_font = presenter.title_font
         self.normal_font = presenter.normal_font
         self.small_font = presenter.small_font
+        self.metrics = presenter.layout_metrics
 
         # State - quantity as [tens, ones], initialized from default_quantity
         default_quantity = min(default_quantity, max_quantity)  # Clamp to max
@@ -752,30 +755,135 @@ class QuantityPopup:
         self.selected_place = 0  # 0 = ones, 1 = tens
         self.focus_control = "ones"
 
-        # Calculate popup position (centered)
-        self.popup_width = 500
-        self.popup_height = 300
-        self.popup_x = (self.width - self.popup_width) // 2
-        self.popup_y = (self.height - self.popup_height) // 2
-        self.popup_rect = pygame.Rect(
-            self.popup_x, self.popup_y, self.popup_width, self.popup_height
+        self._layout = self._calculate_layout()
+        self.popup_rect = self._layout["popup_rect"]
+        self.popup_width = self.popup_rect.width
+        self.popup_height = self.popup_rect.height
+        self.popup_x = self.popup_rect.x
+        self.popup_y = self.popup_rect.y
+
+    def _title(self) -> str:
+        action = {"store": "Store", "retrieve": "Retrieve", "sell": "Sell"}.get(self.action, "Buy")
+        return f"{action} {self.item_name}"
+
+    @staticmethod
+    def _wrap_text(text: str, font, max_width: int) -> list[str]:
+        """Wrap text at word boundaries using the active rendered font."""
+        lines: list[str] = []
+        line = ""
+        for word in text.split():
+            if font.size(word)[0] > max_width:
+                if line:
+                    lines.append(line)
+                    line = ""
+                fragment = ""
+                for character in word:
+                    candidate = f"{fragment}{character}"
+                    if fragment and font.size(candidate)[0] > max_width:
+                        lines.append(fragment)
+                        fragment = character
+                    else:
+                        fragment = candidate
+                line = fragment
+                continue
+            candidate = word if not line else f"{line} {word}"
+            if line and font.size(candidate)[0] > max_width:
+                lines.append(line)
+                line = word
+            else:
+                line = candidate
+        if line:
+            lines.append(line)
+        return lines or [text]
+
+    def _calculate_layout(self) -> dict[str, object]:
+        """Measure all popup geometry from fonts and responsive padding."""
+        unit = self.metrics.unit
+        outer_margin = unit(24)
+        horizontal_padding = unit(32)
+        vertical_padding = unit(18)
+        button_width = max(unit(110), self.small_font.size("Confirm")[0] + unit(28))
+        button_height = self.small_font.get_height() + unit(16)
+        digit_width = max(unit(52), self.title_font.size("8")[0] + unit(28))
+        digit_height = self.title_font.get_height() + unit(16)
+        control_gap = unit(18)
+        quantity_label_width = self.normal_font.size("Quantity:")[0]
+        controls_width = quantity_label_width + unit(24) + (digit_width * 2) + control_gap
+        button_row_width = (button_width * 2) + unit(24)
+        desired_width = max(
+            unit(500),
+            controls_width + (horizontal_padding * 2),
+            button_row_width + (horizontal_padding * 2),
+            self.title_font.size(self._title())[0] + (horizontal_padding * 2),
+            self.small_font.size(QUANTITY_INSTRUCTIONS)[0] + (horizontal_padding * 2),
         )
+        popup_width = min(max(unit(280), desired_width), self.width - (outer_margin * 2))
+        text_width = max(unit(80), popup_width - (horizontal_padding * 2))
+        title_lines = self._wrap_text(self._title(), self.title_font, text_width)
+        instruction_lines = self._wrap_text(QUANTITY_INSTRUCTIONS, self.small_font, text_width)
+        title_height = len(title_lines) * self.title_font.get_height()
+        instruction_height = len(instruction_lines) * self.small_font.get_height()
+        cost_height = (
+            self.normal_font.get_height()
+            if self.unit_cost > 0 and self.action in {"buy", "sell"}
+            else 0
+        )
+        popup_height = (
+            (vertical_padding * 4)
+            + title_height
+            + digit_height
+            + cost_height
+            + button_height
+            + instruction_height
+            + unit(54)
+        )
+        popup_height = min(max(unit(220), popup_height), self.height - (outer_margin * 2))
+        popup_rect = pygame.Rect(
+            (self.width - popup_width) // 2,
+            (self.height - popup_height) // 2,
+            popup_width,
+            popup_height,
+        )
+        title_top = popup_rect.top + vertical_padding
+        quantity_y = title_top + title_height + vertical_padding
+        digits_left = popup_rect.centerx - ((digit_width * 2) + control_gap) // 2
+        digits = [
+            pygame.Rect(digits_left, quantity_y, digit_width, digit_height),
+            pygame.Rect(
+                digits_left + digit_width + control_gap, quantity_y, digit_width, digit_height
+            ),
+        ]
+        cost_y = quantity_y + digit_height + unit(12)
+        button_y = cost_y + cost_height + unit(18)
+        buttons = {
+            "confirm": pygame.Rect(
+                popup_rect.centerx - unit(12) - button_width, button_y, button_width, button_height
+            ),
+            "cancel": pygame.Rect(
+                popup_rect.centerx + unit(12), button_y, button_width, button_height
+            ),
+        }
+        instruction_top = buttons["confirm"].bottom + vertical_padding
+        return {
+            "popup_rect": popup_rect,
+            "title_lines": title_lines,
+            "title_top": title_top,
+            "quantity_y": quantity_y,
+            "digits": digits,
+            "buttons": buttons,
+            "cost_y": cost_y,
+            "instruction_lines": instruction_lines,
+            "instruction_top": instruction_top,
+            "text_width": text_width,
+        }
 
     def digit_rects(self) -> list[pygame.Rect]:
         """Return clickable tens/ones rectangles in index order [tens, ones]."""
-        qty_y = self.popup_y + 80
-        return [
-            pygame.Rect(self.popup_x + 250 - 30, qty_y - 10, 60, 50),
-            pygame.Rect(self.popup_x + 320 - 30, qty_y - 10, 60, 50),
-        ]
+        return list(self._layout["digits"])
 
     def button_rects(self) -> dict[str, pygame.Rect]:
         """Return clickable Confirm/Cancel button rectangles."""
-        button_y = self.popup_y + 212
-        return {
-            "confirm": pygame.Rect(self.popup_rect.centerx - 150, button_y, 130, 36),
-            "cancel": pygame.Rect(self.popup_rect.centerx + 20, button_y, 130, 36),
-        }
+        return dict(self._layout["buttons"])
 
     @property
     def quantity(self):
@@ -818,28 +926,23 @@ class QuantityPopup:
         pygame.draw.rect(self.screen, self.BORDER_COLOR, self.popup_rect, 3)
         draw_popup_close_button(self.screen, self.popup_rect, self.small_font)
 
-        # Title based on action
-        if self.action == "store":
-            title = f"Store {self.item_name}"
-        elif self.action == "retrieve":
-            title = f"Retrieve {self.item_name}"
-        elif self.action == "sell":
-            title = f"Sell {self.item_name}"
-        else:
-            title = f"Buy {self.item_name}"
-
-        title_text = self.title_font.render(title, True, self.GOLD)
-        title_rect = title_text.get_rect(centerx=self.popup_rect.centerx, top=self.popup_y + 20)
-        self.screen.blit(title_text, title_rect)
+        title_y = self._layout["title_top"]
+        for title_line in self._layout["title_lines"]:
+            title_text = self.title_font.render(title_line, True, self.GOLD)
+            title_rect = title_text.get_rect(centerx=self.popup_rect.centerx, top=title_y)
+            self.screen.blit(title_text, title_rect)
+            title_y += title_text.get_height()
 
         # Quantity selector with tens and ones
-        qty_y = self.popup_y + 80
         qty_label = self.normal_font.render("Quantity:", True, self.WHITE)
-        self.screen.blit(qty_label, (self.popup_x + 50, qty_y))
+        label_rect = qty_label.get_rect(
+            right=self.digit_rects()[0].left - self.metrics.unit(24),
+            centery=self.digit_rects()[0].centery,
+        )
+        self.screen.blit(qty_label, label_rect)
 
         # Tens place
-        tens_x = self.popup_x + 250
-        tens_highlight = pygame.Rect(tens_x - 30, qty_y - 10, 60, 50)
+        tens_highlight, ones_highlight = self.digit_rects()
         if self.focus_control == "tens":
             pygame.draw.rect(self.screen, self.HIGHLIGHT_BG, tens_highlight)
             pygame.draw.rect(self.screen, self.GOLD, tens_highlight, 2)
@@ -848,11 +951,9 @@ class QuantityPopup:
             tens_color = self.WHITE
 
         tens_text = self.title_font.render(str(self.tens), True, tens_color)
-        self.screen.blit(tens_text, (tens_x - tens_text.get_width() // 2, qty_y))
+        self.screen.blit(tens_text, tens_text.get_rect(center=tens_highlight.center))
 
         # Ones place
-        ones_x = self.popup_x + 320
-        ones_highlight = pygame.Rect(ones_x - 30, qty_y - 10, 60, 50)
         if self.focus_control == "ones":
             pygame.draw.rect(self.screen, self.HIGHLIGHT_BG, ones_highlight)
             pygame.draw.rect(self.screen, self.GOLD, ones_highlight, 2)
@@ -861,10 +962,10 @@ class QuantityPopup:
             ones_color = self.WHITE
 
         ones_text = self.title_font.render(str(self.ones), True, ones_color)
-        self.screen.blit(ones_text, (ones_x - ones_text.get_width() // 2, qty_y))
+        self.screen.blit(ones_text, ones_text.get_rect(center=ones_highlight.center))
 
         # Total cost/value
-        cost_y = self.popup_y + 160
+        cost_y = self._layout["cost_y"]
         if self.unit_cost > 0:
             total_value = self.quantity * self.unit_cost
             if self.action == "sell":
@@ -879,12 +980,12 @@ class QuantityPopup:
                 self.screen.blit(cost_text, cost_rect)
 
         # Instructions
-        instr_y = self.popup_y + 254
-        instr1 = self.small_font.render(
-            "UP/DOWN: Adjust | LEFT/RIGHT: Switch | ENTER: Confirm | ESC: Cancel", True, self.GRAY
-        )
-        instr_rect = instr1.get_rect(centerx=self.popup_rect.centerx, top=instr_y)
-        self.screen.blit(instr1, instr_rect)
+        instr_y = self._layout["instruction_top"]
+        for instruction_line in self._layout["instruction_lines"]:
+            instruction = self.small_font.render(instruction_line, True, self.GRAY)
+            instr_rect = instruction.get_rect(centerx=self.popup_rect.centerx, top=instr_y)
+            self.screen.blit(instruction, instr_rect)
+            instr_y += instruction.get_height()
 
         for label, rect in self.button_rects().items():
             focused = self.focus_control == label
