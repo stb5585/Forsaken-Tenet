@@ -285,63 +285,67 @@ class InnManager(TownScreenBase):
             return
 
         bounty_screen = LocationMenuScreen(self.presenter, "Turn In Bounty")
-        bounty_options = [(name, 0) for name in completable]
-        bounty_options.append(("Back", 0))
-
-        choice_idx = bounty_screen.navigate_with_content(
-            bounty_options,
-            flush_events=True,
-            require_key_release=True,
-        )
-
-        if choice_idx is None or bounty_options[choice_idx][0] == "Back":
-            return
-
-        bounty_name = bounty_options[choice_idx][0]
-        bounty_data = self.player_char.quest_dict["Bounty"].get(bounty_name)
-        if not bounty_data:
-            popup = ConfirmationPopup(
-                self.presenter, "That bounty is no longer available.", show_buttons=False
+        remaining = list(completable)
+        while remaining:
+            bounty_options = [(name, 0) for name in remaining]
+            bounty_options.append(("Back", 0))
+            choice_idx = bounty_screen.navigate_with_content(
+                bounty_options,
+                flush_events=True,
+                require_key_release=True,
             )
-            popup.show(**self.popup_show_kwargs())
-            return
 
-        bounty = bounty_data[0]
+            if choice_idx is None or bounty_options[choice_idx][0] == "Back":
+                return
 
-        # Award rewards
-        gold = bounty.get("gold", 0)
-        exp = bounty.get("exp", 0)
-        self.player_char.gold += gold
-        from src.core.progression import award_experience
+            bounty_name = bounty_options[choice_idx][0]
+            bounty_data = self.player_char.quest_dict["Bounty"].get(bounty_name)
+            if not bounty_data:
+                remaining.remove(bounty_name)
+                continue
 
-        level_result = award_experience(self.player_char, exp)
-        self.player_char._pending_level_up_result = (
-            level_result if level_result.new_level > level_result.old_level else None
-        )
+            bounty = bounty_data[0]
+            gold = bounty.get("gold", 0)
+            exp = bounty.get("exp", 0)
+            self.player_char.gold += gold
+            from src.core.progression import award_experience
 
-        reward_lines = [
-            f"Bounty Complete: {bounty_name}",
-            "",
-            "Rewards:",
-            f"• {gold} Gold",
-            f"• {exp} Experience",
-        ]
+            level_result = award_experience(self.player_char, exp)
+            self.player_char._pending_level_up_result = (
+                level_result if level_result.new_level > level_result.old_level else None
+            )
+            reward_lines = [
+                f"Bounty Complete: {bounty_name}",
+                "",
+                "Rewards:",
+                f"• {gold} Gold",
+                f"• {exp} Experience",
+            ]
+            if bounty.get("reward"):
+                reward_item = bounty["reward"]()
+                self.player_char.modify_inventory(reward_item)
+                reward_lines.append(f"• {reward_item.name}")
+            reward_msg = "\n".join(reward_lines)
+            previous_background_draw_func = self._popup_background_draw_func
+            self._popup_background_draw_func = (
+                lambda options=bounty_options: bounty_screen.draw_content_selection_frame(
+                    options,
+                    do_flip=False,
+                )
+            )
+            try:
+                popup = ConfirmationPopup(self.presenter, reward_msg, show_buttons=False)
+                popup.show(**self.popup_show_kwargs())
+            finally:
+                self._popup_background_draw_func = previous_background_draw_func
 
-        if bounty.get("reward"):
-            reward_item = bounty["reward"]()
-            self.player_char.modify_inventory(reward_item)
-            reward_lines.append(f"• {reward_item.name}")
+            # Remove completed bounty and retain the selector for remaining entries.
+            del self.player_char.quest_dict["Bounty"][bounty_name]
+            self._remove_board_bounty(bounty_name)
+            remaining.remove(bounty_name)
 
-        reward_msg = "\n".join(reward_lines)
-        popup = ConfirmationPopup(self.presenter, reward_msg, show_buttons=False)
-        popup.show(**self.popup_show_kwargs())
-
-        # Remove completed bounty
-        del self.player_char.quest_dict["Bounty"][bounty_name]
-        self._remove_board_bounty(bounty_name)
-
-        if level_result.new_level > level_result.old_level:
-            self.level_up()
+            if level_result.new_level > level_result.old_level:
+                self.level_up()
 
     def _remove_board_bounty(self, bounty_name):
         """Remove an accepted or completed bounty from the current board."""
