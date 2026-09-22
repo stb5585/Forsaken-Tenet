@@ -6,6 +6,7 @@ from .dungeon.assets import TextureLibrary
 from .dungeon.overlays import OverlayRenderer
 from .dungeon.performance import DungeonPerformanceDiagnostics
 from .dungeon.renderer import SceneRenderer
+from .dungeon.trap_feedback import TrapImpactRenderer
 
 
 class DungeonRenderer:
@@ -22,6 +23,7 @@ class DungeonRenderer:
         self.scene_renderer = SceneRenderer(presenter, self.textures)
         self.scene_renderer.enable_wall_overlays = True
         self.overlays = OverlayRenderer(presenter)
+        self.trap_feedback = TrapImpactRenderer(presenter)
 
     def _refresh_screen_refs(self) -> None:
         self.screen = self.presenter.screen
@@ -52,6 +54,19 @@ class DungeonRenderer:
     def render_damage_flash(self):
         self._refresh_screen_refs()
         self.overlays.render_damage_flash()
+
+    def queue_trap_feedback(self, feedback) -> str:
+        """Queue one core trap payload and return its one-shot sound identifier."""
+        self.trap_feedback.queue(feedback)
+        return self.trap_feedback.sound_name(feedback)
+
+    def render_trap_feedback(self) -> bool:
+        self._refresh_screen_refs()
+        return self.trap_feedback.render()
+
+    @property
+    def trap_feedback_active(self) -> bool:
+        return self.trap_feedback.active
 
     def record_ui_and_present(self, ui_elapsed_seconds: float, flip_elapsed_seconds: float) -> None:
         """Record overlay/HUD and display-present timing for the exploration loop."""

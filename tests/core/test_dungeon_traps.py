@@ -131,6 +131,12 @@ def test_tripwire_scales_with_depth_uses_defense_and_only_triggers_once():
     assert health_after_first < initial_health
     assert second_message == ""
     assert player.health.current == health_after_first
+    feedback = map_tiles.pop_trap_feedback(player)
+    assert len(feedback) == 1
+    assert feedback[0].category == "physical"
+    assert feedback[0].source == "arrow"
+    assert feedback[0].damage > 0
+    assert map_tiles.pop_trap_feedback(player) == []
 
 
 def test_avoid_traps_halves_a_failed_tripwire_avoidance():
@@ -168,6 +174,10 @@ def test_magic_ward_uses_an_offensive_spell_and_magic_defense(monkeypatch):
     assert "Magic Ward casts Shadow Bolt" in message
     assert "Shadow damage" in message
     assert "warded" in message
+    feedback = map_tiles.pop_trap_feedback(player)
+    assert len(feedback) == 1
+    assert feedback[0].category == "magical"
+    assert feedback[0].element == "Shadow"
 
 
 def test_alert_forces_enemy_initiative(monkeypatch):
@@ -187,6 +197,7 @@ def test_alert_forces_enemy_initiative(monkeypatch):
     assert "has the initiative" in message
     assert first is enemy
     assert tile.trap_forced_initiative is False
+    assert map_tiles.pop_trap_feedback(player) == []
 
 
 def test_red_alert_uses_the_next_depth_enemy_pool(monkeypatch):
