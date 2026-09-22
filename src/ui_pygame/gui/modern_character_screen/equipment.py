@@ -203,15 +203,18 @@ class CharacterEquipmentMixin:
             "Ring": pygame.Rect(
                 center_x - box_width - column_gap // 2, bottom_y, box_width, box_height
             ),
-            "Pendant": pygame.Rect(
-                center_x + column_gap // 2, bottom_y, box_width, box_height
-            ),
+            "Pendant": pygame.Rect(center_x + column_gap // 2, bottom_y, box_width, box_height),
         }
 
     def equipment_layout_rect(self) -> pygame.Rect:
         """Return the paper-doll layout rect without drawing the surrounding panel."""
         metrics = self.presenter.layout_metrics
-        y = self.details_rect.top + metrics.unit(14) + self.large_font.get_height() + metrics.unit(10)
+        y = (
+            self.details_rect.top
+            + metrics.unit(14)
+            + self.large_font.get_height()
+            + metrics.unit(10)
+        )
         return pygame.Rect(
             self.details_rect.left + metrics.unit(28),
             y,
