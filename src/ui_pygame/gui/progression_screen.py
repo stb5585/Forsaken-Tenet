@@ -413,36 +413,37 @@ class ProgressionScreen(ProgressionPanelMixin, ProgressionTreeMixin, TownScreenB
     def draw_embedded(self, player_char, rect):
         """Draw progression as a Character Menu tab without flipping."""
         self.player_char = player_char
-        tree_width = int(rect.width * 0.74)
-        tree_rect = pygame.Rect(
-            rect.left,
-            rect.top,
-            tree_width,
-            rect.height,
-        )
-        attr_rect = pygame.Rect(
-            tree_rect.right + 10,
-            rect.top,
-            rect.right - tree_rect.right - 10,
-            min(320, rect.height),
-        )
-        detail_top = attr_rect.bottom + 10
+        layout = self.embedded_layout_rects(rect)
+        self._draw_tree(layout["tree"])
+        self._draw_attributes(layout["attributes"])
+        self._draw_details(layout["details"])
+        self._draw_spend_button(layout["spend"])
+
+    def embedded_layout_rects(self, rect: pygame.Rect) -> dict[str, pygame.Rect]:
+        """Return the shared visible and interactive bounds for embedded progression."""
+        metrics = self.presenter.layout_metrics
+        gap = metrics.unit(10)
+        spend_height = max(metrics.unit(38), self.normal_font.get_height() + metrics.unit(14))
+        tree_width = int(rect.width * 0.69)
+        tree_rect = pygame.Rect(rect.left, rect.top, tree_width, rect.height)
+        side_left = tree_rect.right + gap
+        side_width = rect.right - side_left
+        attribute_height = min(metrics.unit(320), rect.height)
+        attr_rect = pygame.Rect(side_left, rect.top, side_width, attribute_height)
+        spend_rect = pygame.Rect(side_left, rect.bottom - spend_height, side_width, spend_height)
+        detail_top = attr_rect.bottom + gap
         detail_rect = pygame.Rect(
-            attr_rect.left,
+            side_left,
             detail_top,
-            attr_rect.width,
-            max(1, rect.bottom - detail_top - 48),
+            side_width,
+            max(1, spend_rect.top - detail_top - gap),
         )
-        spend_rect = pygame.Rect(
-            attr_rect.left,
-            rect.bottom - 38,
-            attr_rect.width,
-            38,
-        )
-        self._draw_tree(tree_rect)
-        self._draw_attributes(attr_rect)
-        self._draw_details(detail_rect)
-        self._draw_spend_button(spend_rect)
+        return {
+            "tree": tree_rect,
+            "attributes": attr_rect,
+            "details": detail_rect,
+            "spend": spend_rect,
+        }
 
     def handle_event(self, event) -> bool:
         """Handle an event while embedded in the Character Menu."""

@@ -21,29 +21,46 @@ class ProgressionPanelMixin:
 
     def _draw_attributes(self, rect):
         self._ensure_staging()
+        metrics = self.presenter.layout_metrics
+        horizontal_padding = metrics.unit(12)
+        row_gap = metrics.unit(6)
+        control_size = max(metrics.unit(24), self.small_font.get_height() + metrics.unit(6))
+        row_height = max(
+            control_size + metrics.unit(8), self.small_font.get_height() + metrics.unit(14)
+        )
         self.draw_semi_transparent_panel(rect)
-        pygame.draw.rect(self.screen, self.colors.BORDER_COLOR, rect, 2)
+        pygame.draw.rect(self.screen, self.colors.BORDER_COLOR, rect, metrics.stroke(2))
         self.screen.blit(
             self.normal_font.render(
                 "Primary Attributes",
                 True,
                 self.colors.GOLD,
             ),
-            (rect.left + 16, rect.top + 12),
+            (rect.left + metrics.unit(16), rect.top + metrics.unit(12)),
         )
         self.attribute_rects = []
         self.attribute_minus_rects = []
         self.attribute_plus_rects = []
         for index, stat_name in enumerate(PRIMARY_ATTRIBUTES):
             row = pygame.Rect(
-                rect.left + 12,
-                rect.top + 48 + index * 38,
-                rect.width - 24,
-                32,
+                rect.left + horizontal_padding,
+                rect.top + metrics.unit(48) + index * (row_height + row_gap),
+                rect.width - (horizontal_padding * 2),
+                row_height,
             )
             self.attribute_rects.append(row)
-            minus_rect = pygame.Rect(row.left + 4, row.top + 4, 24, 24)
-            plus_rect = pygame.Rect(row.right - 28, row.top + 4, 24, 24)
+            minus_rect = pygame.Rect(
+                row.left + metrics.unit(4),
+                row.centery - control_size // 2,
+                control_size,
+                control_size,
+            )
+            plus_rect = pygame.Rect(
+                row.right - metrics.unit(4) - control_size,
+                row.centery - control_size // 2,
+                control_size,
+                control_size,
+            )
             self.attribute_minus_rects.append(minus_rect)
             self.attribute_plus_rects.append(plus_rect)
             selected = self.focus == "attributes" and index == self.current_attribute
@@ -66,7 +83,10 @@ class ProgressionPanelMixin:
             )
             self.screen.blit(
                 text_surface,
-                (row.left + 34, row.top + 7),
+                (
+                    minus_rect.right + metrics.unit(6),
+                    row.centery - self.small_font.get_height() // 2,
+                ),
             )
             minus_color = self.colors.GOLD if pending > 0 else self.colors.GRAY
             plus_color = (
@@ -77,14 +97,14 @@ class ProgressionPanelMixin:
             self.screen.blit(
                 self.small_font.render("-", True, minus_color),
                 (
-                    minus_rect.centerx - 3,
+                    minus_rect.centerx - self.small_font.size("-")[0] // 2,
                     minus_rect.centery - self.small_font.get_height() // 2,
                 ),
             )
             self.screen.blit(
                 self.small_font.render("+", True, plus_color),
                 (
-                    plus_rect.centerx - 3,
+                    plus_rect.centerx - self.small_font.size("+")[0] // 2,
                     plus_rect.centery - self.small_font.get_height() // 2,
                 ),
             )
@@ -95,12 +115,13 @@ class ProgressionPanelMixin:
                 True,
                 self.colors.GOLD,
             ),
-            (rect.left + 16, rect.bottom - 26),
+            (rect.left + metrics.unit(16), rect.bottom - metrics.unit(26)),
         )
 
     def _draw_details(self, rect):
+        metrics = self.presenter.layout_metrics
         self.draw_semi_transparent_panel(rect)
-        pygame.draw.rect(self.screen, self.colors.BORDER_COLOR, rect, 2)
+        pygame.draw.rect(self.screen, self.colors.BORDER_COLOR, rect, metrics.stroke(2))
         status = self._selected_status()
         if status is None:
             return
@@ -110,7 +131,7 @@ class ProgressionPanelMixin:
             f"{status.node.cost} {point_label}",
         ]
         warning_lines = set()
-        content_width = rect.width - 28
+        content_width = rect.width - metrics.unit(28)
         displayed_class = (
             self._selected_tree_id() if hasattr(self, "player_char") else status.node.tree_id
         )
@@ -222,8 +243,8 @@ class ProgressionPanelMixin:
             lines.extend(wrapped_reason)
             if reason.startswith("Another promotion is already distributed"):
                 warning_lines.update(wrapped_reason)
-        line_height = self.small_font.get_height() + 2
-        max_lines = max(1, (rect.height - 20) // line_height)
+        line_height = self.small_font.get_height() + metrics.unit(2)
+        max_lines = max(1, (rect.height - metrics.unit(20)) // line_height)
         for index, line in enumerate(lines[:max_lines]):
             if index == 0:
                 color = self.colors.GOLD
@@ -233,14 +254,18 @@ class ProgressionPanelMixin:
                 color = self.colors.WHITE
             self.screen.blit(
                 self.small_font.render(line, True, color),
-                (rect.left + 14, rect.top + 10 + index * line_height),
+                (
+                    rect.left + metrics.unit(14),
+                    rect.top + metrics.unit(10) + index * line_height,
+                ),
             )
 
     def _draw_spend_button(self, rect):
         self._ensure_staging()
         enabled = self.has_pending_changes()
-        gap = 8
-        reset_width = max(72, (rect.width - gap) // 3)
+        metrics = self.presenter.layout_metrics
+        gap = metrics.unit(8)
+        reset_width = max(metrics.unit(72), (rect.width - gap) // 3)
         self.reset_button_rect = pygame.Rect(
             rect.left,
             rect.top,
@@ -269,10 +294,11 @@ class ProgressionPanelMixin:
         )
 
     def _draw_action_button(self, rect, label, enabled, selected):
+        metrics = self.presenter.layout_metrics
         if selected:
             pygame.draw.rect(self.screen, self.colors.HIGHLIGHT_BG, rect)
         color = self.colors.GOLD if enabled else self.colors.GRAY
-        pygame.draw.rect(self.screen, color, rect, 2 if selected else 1)
+        pygame.draw.rect(self.screen, color, rect, metrics.stroke(2 if selected else 1))
         surface = self.normal_font.render(label, True, color)
         self.screen.blit(
             surface,
@@ -291,24 +317,49 @@ class ProgressionPanelMixin:
             self.player_char = player_char
         self.draw_background()
         self._draw_header()
-        tree_rect = pygame.Rect(24, 100, int(self.width * 0.69), self.height - 280)
-        attr_rect = pygame.Rect(
-            tree_rect.right + 12,
-            100,
-            self.width - tree_rect.right - 36,
-            320,
-        )
-        detail_rect = pygame.Rect(24, self.height - 165, self.width - 48, 125)
-        self._draw_tree(tree_rect)
-        self._draw_attributes(attr_rect)
-        self._draw_details(detail_rect)
+        layout = self.standalone_layout_rects()
+        self._draw_tree(layout["tree"])
+        self._draw_attributes(layout["attributes"])
+        self._draw_details(layout["details"])
         hint = (
             "Q/E: Current/Completed Trees  TAB: Tree/Attributes  "
             "ARROWS: Select  ENTER/CLICK: Purchase  ESC: Back"
         )
         self.screen.blit(
             self.small_font.render(hint, True, self.colors.GRAY),
-            (24, self.height - 28),
+            (
+                self.presenter.layout_metrics.unit(24),
+                self.height - self.presenter.layout_metrics.unit(28),
+            ),
         )
         if do_flip:
             pygame.display.flip()
+
+    def standalone_layout_rects(self) -> dict[str, pygame.Rect]:
+        """Return responsive visible bounds for the standalone progression screen."""
+        metrics = self.presenter.layout_metrics
+        margin = metrics.unit(24)
+        gap = metrics.unit(12)
+        header_height = metrics.unit(100)
+        footer_height = metrics.unit(165)
+        tree_width = int((self.width - (margin * 2) - gap) * 0.69)
+        tree_rect = pygame.Rect(
+            margin,
+            header_height,
+            tree_width,
+            self.height - header_height - footer_height,
+        )
+        attr_left = tree_rect.right + gap
+        attr_rect = pygame.Rect(
+            attr_left,
+            header_height,
+            self.width - attr_left - margin,
+            min(metrics.unit(320), tree_rect.height),
+        )
+        detail_rect = pygame.Rect(
+            margin,
+            self.height - footer_height,
+            self.width - (margin * 2),
+            footer_height - metrics.unit(40),
+        )
+        return {"tree": tree_rect, "attributes": attr_rect, "details": detail_rect}
