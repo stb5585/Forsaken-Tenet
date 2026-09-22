@@ -50,18 +50,69 @@ class LocationMenuScreen(TownScreenBase):
             return None
         return self.location_portrait_name
 
+    def _uses_bounty_layout(self) -> bool:
+        """Return whether this location menu is one of the bounty-board views."""
+        return "Bounty" in self.location_name
+
+    def _top_rect(self) -> pygame.Rect:
+        """Return the title bounds, measured for bounty-board text when needed."""
+        if not self._uses_bounty_layout():
+            return pygame.Rect(0, 0, self.width, self.height // 12)
+        metrics = self.presenter.layout_metrics
+        height = max(metrics.unit(64), self.large_font.get_height() + metrics.unit(28))
+        return pygame.Rect(0, 0, self.width, height)
+
+    def _content_rect(self) -> pygame.Rect:
+        """Return the right-hand bounty content panel bounds."""
+        top_rect = self._top_rect()
+        content_x = self.width // 3
+        return pygame.Rect(
+            content_x, top_rect.bottom, self.width - content_x, self.height - top_rect.bottom
+        )
+
+    def _options_panel_rect(self, option_count: int) -> pygame.Rect:
+        """Return the left list panel, with bounty rows sized from their font."""
+        top_rect = self._top_rect()
+        options_width = self.width // 3
+        if not self._uses_bounty_layout():
+            return pygame.Rect(0, top_rect.bottom, options_width, self.height // 4)
+        metrics = self.presenter.layout_metrics
+        vertical_padding = metrics.unit(6)
+        row_height = self.normal_font.get_height() + (vertical_padding * 2)
+        row_gap = metrics.unit(6)
+        panel_height = (
+            (vertical_padding * 2)
+            + (row_height * option_count)
+            + (row_gap * max(0, option_count - 1))
+        )
+        return pygame.Rect(
+            0,
+            top_rect.bottom,
+            options_width,
+            min(self.height - top_rect.bottom, panel_height),
+        )
+
     def option_rects(self, options: list[str] | None = None) -> list[pygame.Rect]:
         """Return clickable rectangles for the visible location options."""
         options = options if options is not None else self.options_list
         if not options:
             return []
-        top_height = self.height // 12
-        options_width = self.width // 3
-        options_height = self.height // 4
-        options_rect = pygame.Rect(0, top_height, options_width, options_height)
+        options_rect = self._options_panel_rect(len(options))
         metrics = self.presenter.layout_metrics
         vertical_padding = metrics.unit(6)
         horizontal_padding = metrics.unit(12)
+        if self._uses_bounty_layout():
+            row_height = self.normal_font.get_height() + (vertical_padding * 2)
+            row_gap = metrics.unit(6)
+            return [
+                pygame.Rect(
+                    options_rect.left + horizontal_padding,
+                    options_rect.top + vertical_padding + (idx * (row_height + row_gap)),
+                    options_rect.width - (horizontal_padding * 2),
+                    row_height,
+                )
+                for idx, _option in enumerate(options)
+            ]
         option_height = options_rect.height // (len(options) + 1)
         row_height = self.normal_font.get_height() + (vertical_padding * 2)
         return [
@@ -76,18 +127,15 @@ class LocationMenuScreen(TownScreenBase):
 
     def _content_item_layout(self) -> tuple[pygame.Rect, int, int, int, int, int]:
         metrics = self.presenter.layout_metrics
-        top_height = self.height // 12
-        content_width = 2 * self.width // 3
-        content_height = self.height - top_height
-        content_x = self.width // 3
-        content_y = top_height
-        content_rect = pygame.Rect(content_x, content_y, content_width, content_height)
+        content_rect = self._content_rect()
+        content_height = content_rect.height
         vertical_padding = metrics.unit(4)
         line_height = self.large_font.get_height() + (vertical_padding * 2)
-        max_visible = max(1, (content_height - metrics.unit(80)) // line_height)
+        content_padding = metrics.unit(40)
+        max_visible = max(1, (content_height - (content_padding * 2)) // line_height)
         cursor_x = content_rect.left + metrics.unit(20)
         item_x = cursor_x + metrics.unit(20)
-        quantity_x = content_rect.right - metrics.unit(80)
+        quantity_x = content_rect.right - metrics.unit(20)
         return content_rect, line_height, max_visible, cursor_x, item_x, quantity_x
 
     def content_row_rects(self, item_count: int) -> list[tuple[int, pygame.Rect]]:
@@ -167,11 +215,15 @@ class LocationMenuScreen(TownScreenBase):
 
     def draw_top(self):
         """Draw the top header with location name."""
-        top_height = self.height // 12
-        top_rect = pygame.Rect(0, 0, self.width, top_height)
+        top_rect = self._top_rect()
 
         self.draw_semi_transparent_panel(top_rect)
-        pygame.draw.rect(self.screen, self.colors.BORDER_COLOR, top_rect, 2)
+        pygame.draw.rect(
+            self.screen,
+            self.colors.BORDER_COLOR,
+            top_rect,
+            self.presenter.layout_metrics.stroke(2) if self._uses_bounty_layout() else 2,
+        )
 
         # Center the location name
         text = self.large_font.render(self.location_name, True, self.colors.GOLD)
@@ -180,14 +232,15 @@ class LocationMenuScreen(TownScreenBase):
 
     def draw_options(self):
         """Draw the menu options on the left side."""
-        top_height = self.height // 12
-        options_width = self.width // 3
-        options_height = self.height // 4
-        options_y = top_height
-        options_rect = pygame.Rect(0, options_y, options_width, options_height)
+        options_rect = self._options_panel_rect(len(self.options_list))
 
         self.draw_semi_transparent_panel(options_rect)
-        pygame.draw.rect(self.screen, self.colors.BORDER_COLOR, options_rect, 2)
+        pygame.draw.rect(
+            self.screen,
+            self.colors.BORDER_COLOR,
+            options_rect,
+            self.presenter.layout_metrics.stroke(2) if self._uses_bounty_layout() else 2,
+        )
 
         option_rects = self.option_rects()
         for idx, option in enumerate(self.options_list):
@@ -209,15 +262,15 @@ class LocationMenuScreen(TownScreenBase):
 
     def draw_content(self, content_text="", items_data=None):
         """Draw the content area on the right side with optional text or formatted items."""
-        top_height = self.height // 12
-        content_width = 2 * self.width // 3
-        content_height = self.height - top_height
-        content_x = self.width // 3
-        content_y = top_height
-        content_rect = pygame.Rect(content_x, content_y, content_width, content_height)
+        content_rect = self._content_rect()
 
         self.draw_semi_transparent_panel(content_rect)
-        pygame.draw.rect(self.screen, self.colors.BORDER_COLOR, content_rect, 2)
+        pygame.draw.rect(
+            self.screen,
+            self.colors.BORDER_COLOR,
+            content_rect,
+            self.presenter.layout_metrics.stroke(2) if self._uses_bounty_layout() else 2,
+        )
 
         # Handle structured items data with proper alignment and scrolling
         if items_data:
@@ -397,23 +450,42 @@ class LocationMenuScreen(TownScreenBase):
 
     def draw_options_instructions(self):
         """Draw instructions only on the left side, without menu highlighting."""
-        top_height = self.height // 12
         left_width = self.width // 3
-        options_rect = pygame.Rect(0, top_height, left_width, self.height - top_height)
+        top_rect = self._top_rect()
+        options_rect = pygame.Rect(0, top_rect.bottom, left_width, self.height - top_rect.bottom)
 
         self.draw_semi_transparent_panel(options_rect)
-        pygame.draw.rect(self.screen, self.colors.BORDER_COLOR, options_rect, 2)
+        pygame.draw.rect(
+            self.screen,
+            self.colors.BORDER_COLOR,
+            options_rect,
+            self.presenter.layout_metrics.stroke(2) if self._uses_bounty_layout() else 2,
+        )
 
         # Draw instructions text
         instr_font = self.normal_font
         instructions = ["[Use arrows to select]", "[Press ESC to go back]"]
 
-        y = options_rect.top + 20
+        y = options_rect.top + self.presenter.layout_metrics.unit(20)
         for instruction in instructions:
             text = instr_font.render(instruction, True, self.colors.GOLD)
             text_rect = text.get_rect(centerx=options_rect.centerx, top=y)
             self.screen.blit(text, text_rect)
-            y += 40
+            y += instr_font.get_height() + self.presenter.layout_metrics.unit(18)
+
+    def draw_content_selection_frame(self, items_data, *, do_flip: bool = False) -> None:
+        """Draw a content-list selection frame without consuming input events."""
+        self.draw_background()
+        self.draw_top()
+        self.draw_options_instructions()
+        self.draw_npc_portrait(npc_name=self.current_portrait_name())
+        formatted_items = [
+            (index, item_name, quantity, index == self.current_option)
+            for index, (item_name, quantity) in enumerate(items_data)
+        ]
+        self.draw_content(items_data=formatted_items)
+        if do_flip:
+            pygame.display.flip()
 
     def navigate_with_content(
         self,
@@ -445,19 +517,7 @@ class LocationMenuScreen(TownScreenBase):
         )
 
         while True:
-            self.draw_background()
-            self.draw_top()
-            self.draw_options_instructions()
-            self.draw_npc_portrait(npc_name=self.current_portrait_name())
-
-            # Build structured items data with selection state
-            formatted_items = []
-            for idx, (item_name, quantity) in enumerate(items_data):
-                is_selected = idx == self.current_option
-                formatted_items.append((idx, item_name, quantity, is_selected))
-
-            self.draw_content(items_data=formatted_items)
-            pygame.display.flip()
+            self.draw_content_selection_frame(items_data, do_flip=True)
 
             input_armed = release_guard_allows_input(require_key_release, input_armed)
             for event in get_events():

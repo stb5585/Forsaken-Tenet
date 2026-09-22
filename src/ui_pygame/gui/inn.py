@@ -362,32 +362,42 @@ class InnManager(TownScreenBase):
             return
 
         bounty_screen = LocationMenuScreen(self.presenter, "Abandon Bounty")
-        bounty_options = list(bounty_dict) + ["Back"]
-
-        choice_idx = bounty_screen.navigate(
-            bounty_options,
-            reset_cursor=False,
-            flush_events=True,
-            require_key_release=True,
-        )
-
-        if choice_idx is None or bounty_options[choice_idx] == "Back":
-            return
-
-        bounty_name = bounty_options[choice_idx]
-        popup = ConfirmationPopup(
-            self.presenter,
-            f"Are you sure you want to abandon the {bounty_name} bounty?",
-            show_buttons=True,
-        )
-        if popup.show(**self.popup_show_kwargs()):
-            del bounty_dict[bounty_name]
-            notice = ConfirmationPopup(
-                self.presenter,
-                f"Abandoned bounty: {bounty_name}",
-                show_buttons=False,
+        while bounty_dict:
+            bounty_options = [(name, 0) for name in bounty_dict]
+            bounty_options.append(("Back", 0))
+            choice_idx = bounty_screen.navigate_with_content(
+                bounty_options,
+                flush_events=True,
+                require_key_release=True,
             )
-            notice.show(**self.popup_show_kwargs())
+
+            if choice_idx is None or bounty_options[choice_idx][0] == "Back":
+                return
+
+            bounty_name = bounty_options[choice_idx][0]
+            previous_background_draw_func = self._popup_background_draw_func
+            self._popup_background_draw_func = (
+                lambda options=bounty_options: bounty_screen.draw_content_selection_frame(
+                    options,
+                    do_flip=False,
+                )
+            )
+            try:
+                popup = ConfirmationPopup(
+                    self.presenter,
+                    f"Are you sure you want to abandon the {bounty_name} bounty?",
+                    show_buttons=True,
+                )
+                if popup.show(**self.popup_show_kwargs()):
+                    del bounty_dict[bounty_name]
+                    notice = ConfirmationPopup(
+                        self.presenter,
+                        f"Abandoned bounty: {bounty_name}",
+                        show_buttons=False,
+                    )
+                    notice.show(**self.popup_show_kwargs())
+            finally:
+                self._popup_background_draw_func = previous_background_draw_func
 
     def view_active_bounties(self):
         """View all active bounty quests."""
