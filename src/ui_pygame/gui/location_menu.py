@@ -59,29 +59,35 @@ class LocationMenuScreen(TownScreenBase):
         options_width = self.width // 3
         options_height = self.height // 4
         options_rect = pygame.Rect(0, top_height, options_width, options_height)
+        metrics = self.presenter.layout_metrics
+        vertical_padding = metrics.unit(6)
+        horizontal_padding = metrics.unit(12)
         option_height = options_rect.height // (len(options) + 1)
+        row_height = self.normal_font.get_height() + (vertical_padding * 2)
         return [
             pygame.Rect(
-                options_rect.left + 12,
-                options_rect.top + (idx + 1) * option_height - 6,
-                options_rect.width - 24,
-                self.normal_font.get_height() + 12,
+                options_rect.left + horizontal_padding,
+                options_rect.top + ((idx + 1) * option_height) - vertical_padding,
+                options_rect.width - (horizontal_padding * 2),
+                row_height,
             )
             for idx, _option in enumerate(options)
         ]
 
     def _content_item_layout(self) -> tuple[pygame.Rect, int, int, int, int, int]:
+        metrics = self.presenter.layout_metrics
         top_height = self.height // 12
         content_width = 2 * self.width // 3
         content_height = self.height - top_height
         content_x = self.width // 3
         content_y = top_height
         content_rect = pygame.Rect(content_x, content_y, content_width, content_height)
-        line_height = 28
-        max_visible = max(1, (content_height - 80) // line_height)
-        cursor_x = content_rect.left + 20
-        item_x = cursor_x + 20
-        quantity_x = content_rect.right - 80
+        vertical_padding = metrics.unit(4)
+        line_height = self.large_font.get_height() + (vertical_padding * 2)
+        max_visible = max(1, (content_height - metrics.unit(80)) // line_height)
+        cursor_x = content_rect.left + metrics.unit(20)
+        item_x = cursor_x + metrics.unit(20)
+        quantity_x = content_rect.right - metrics.unit(80)
         return content_rect, line_height, max_visible, cursor_x, item_x, quantity_x
 
     def content_row_rects(self, item_count: int) -> list[tuple[int, pygame.Rect]]:
@@ -96,13 +102,21 @@ class LocationMenuScreen(TownScreenBase):
         end = min(item_count, self.scroll_offset + max_visible)
         rows = []
         for visible_idx, item_idx in enumerate(range(self.scroll_offset, end)):
-            text_y = content_rect.top + 40 + (visible_idx * line_height)
+            row_top = (
+                content_rect.top
+                + self.presenter.layout_metrics.unit(40)
+                + (visible_idx * line_height)
+            )
+            row_rect = pygame.Rect(
+                item_x - self.presenter.layout_metrics.unit(8),
+                row_top,
+                content_rect.right - item_x - self.presenter.layout_metrics.unit(20),
+                line_height,
+            )
             rows.append(
                 (
                     item_idx,
-                    pygame.Rect(
-                        item_x - 8, text_y - 4, content_rect.right - item_x - 20, line_height
-                    ),
+                    row_rect,
                 )
             )
         return rows
@@ -175,10 +189,6 @@ class LocationMenuScreen(TownScreenBase):
         self.draw_semi_transparent_panel(options_rect)
         pygame.draw.rect(self.screen, self.colors.BORDER_COLOR, options_rect, 2)
 
-        # Calculate spacing for options
-        num_options = len(self.options_list)
-        option_height = options_rect.height // (num_options + 1)
-
         option_rects = self.option_rects()
         for idx, option in enumerate(self.options_list):
             # Highlight selected option
@@ -186,14 +196,14 @@ class LocationMenuScreen(TownScreenBase):
 
             # Draw option text centered
             text = self.normal_font.render(option, True, color)
-            text_x = options_rect.centerx - text.get_width() // 2
-            text_y = options_rect.top + (idx + 1) * option_height
+            row_rect = option_rects[idx]
+            text_x = row_rect.centerx - text.get_width() // 2
+            text_y = row_rect.centery - text.get_height() // 2
 
             # Highlight background for selected
             if idx == self.current_option:
-                highlight_rect = option_rects[idx]
-                pygame.draw.rect(self.screen, self.colors.HIGHLIGHT_BG, highlight_rect)
-                pygame.draw.rect(self.screen, self.colors.GOLD, highlight_rect, 1)
+                pygame.draw.rect(self.screen, self.colors.HIGHLIGHT_BG, row_rect)
+                pygame.draw.rect(self.screen, self.colors.GOLD, row_rect, 1)
 
             self.screen.blit(text, (text_x, text_y))
 
@@ -221,7 +231,7 @@ class LocationMenuScreen(TownScreenBase):
             # Determine visible window of items
             visible_items = items_data[self.scroll_offset : self.scroll_offset + max_visible]
 
-            text_y = content_rect.top + 40  # Start with some padding
+            text_y = content_rect.top + self.presenter.layout_metrics.unit(40)
 
             for idx, item_name, quantity, is_selected in visible_items:
                 if is_selected:
@@ -231,11 +241,17 @@ class LocationMenuScreen(TownScreenBase):
                 # Draw cursor for selected item
                 if is_selected:
                     cursor = font.render(">", True, self.colors.GOLD)
-                    self.screen.blit(cursor, (cursor_x, text_y))
+                    self.screen.blit(
+                        cursor,
+                        (cursor_x, row_rect.top + (row_rect.height - cursor.get_height()) // 2),
+                    )
 
                 # Draw item name
                 color = self.colors.GOLD if is_selected else self.colors.WHITE
                 name_surface = font.render(item_name, True, color)
+                text_y = (
+                    row_rects[idx].top + (row_rects[idx].height - name_surface.get_height()) // 2
+                )
                 self.screen.blit(name_surface, (item_x, text_y))
 
                 # Draw quantity (right-aligned) if not zero

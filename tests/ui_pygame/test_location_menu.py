@@ -8,6 +8,7 @@ from types import SimpleNamespace
 import pygame
 import pytest
 
+from src.ui_pygame.display_scaling import DisplayConfiguration, LayoutMetrics
 from src.ui_pygame.gui import location_menu
 
 
@@ -58,18 +59,32 @@ class RecordingScreen:
         return "screen-copy"
 
 
-def _make_presenter():
+def _make_presenter(size=(900, 700)):
+    metrics = LayoutMetrics(DisplayConfiguration.for_viewport(fullscreen=False, render_size=size))
     return SimpleNamespace(
-        screen=RecordingScreen(),
-        width=900,
-        height=700,
+        screen=RecordingScreen(size),
+        width=size[0],
+        height=size[1],
         title_font=RecordingFont(32),
         large_font=RecordingFont(28),
         normal_font=RecordingFont(22),
         small_font=RecordingFont(18),
         clock=SimpleNamespace(tick=lambda _fps: None),
         debug_mode=True,
+        layout_metrics=metrics,
     )
+
+
+def _scripted_events(batches):
+    iterator = iter(batches)
+
+    def next_batch():
+        try:
+            return next(iterator)
+        except StopIteration as error:
+            raise AssertionError("scripted event queue exhausted") from error
+
+    return next_batch
 
 
 def test_location_menu_draw_helpers(monkeypatch):
@@ -131,6 +146,31 @@ def test_location_menu_draw_helpers(monkeypatch):
     assert draw_rect_calls
 
 
+def test_location_menu_rows_use_their_shared_scaled_rects(monkeypatch):
+    presenter = _make_presenter((1920, 1080))
+    screen = location_menu.LocationMenuScreen(presenter, "Accept Bounty")
+    screen.options_list = ["Green Slime", "Scarecrow", "Bandit", "Back"]
+    screen.current_option = 1
+    monkeypatch.setattr(screen, "draw_semi_transparent_panel", lambda *_args, **_kwargs: None)
+    draw_calls = []
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.location_menu.pygame.draw.rect",
+        lambda _surface, _color, rect, *_args, **_kwargs: draw_calls.append(rect.copy()),
+    )
+
+    option_rect = screen.option_rects()[1]
+    assert option_rect.height >= presenter.normal_font.get_height() + (
+        presenter.layout_metrics.unit(6) * 2
+    )
+    screen.draw_options()
+    assert option_rect in draw_calls
+
+    item_rect = dict(screen.content_row_rects(3))[0]
+    assert item_rect.height >= presenter.large_font.get_height() + (
+        presenter.layout_metrics.unit(4) * 2
+    )
+
+
 def test_location_menu_draws_static_and_option_portraits(monkeypatch):
     presenter = _make_presenter()
     screen = location_menu.LocationMenuScreen(presenter, "Patrons")
@@ -178,7 +218,7 @@ def test_location_menu_navigation_and_item_navigation(monkeypatch):
         ]
     )
     monkeypatch.setattr(
-        "src.ui_pygame.gui.location_menu.pygame.event.get", lambda: next(event_batches, [])
+        "src.ui_pygame.gui.location_menu.pygame.event.get", _scripted_events(event_batches)
     )
     assert screen.navigate(["Rest", "Leave"]) == 1
 
