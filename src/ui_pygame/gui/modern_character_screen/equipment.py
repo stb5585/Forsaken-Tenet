@@ -85,6 +85,9 @@ class CharacterEquipmentMixin:
     def _draw_equipment_slot_box(
         self, slot: EquipmentSlotSummary, rect: pygame.Rect, *, selected: bool = False
     ) -> None:
+        metrics = self.presenter.layout_metrics
+        horizontal_padding = metrics.unit(10)
+        vertical_padding = metrics.unit(8)
         bg_color = (
             (18, 16, 15)
             if slot.item_name != "(empty)" and slot.implemented
@@ -97,46 +100,65 @@ class CharacterEquipmentMixin:
         )
         text_color = self.colors.WHITE if slot.implemented else self.colors.GRAY
         pygame.draw.rect(self.screen, bg_color, rect)
-        pygame.draw.rect(self.screen, border_color, rect, 2)
+        pygame.draw.rect(self.screen, border_color, rect, metrics.stroke(2))
         if selected:
             overlay = pygame.Surface(rect.size, pygame.SRCALPHA)
             overlay.fill((*self.colors.HIGHLIGHT_BG[:3], 95))
             self.screen.blit(overlay, rect)
-            inner = rect.inflate(-6, -6)
-            pygame.draw.rect(self.screen, self.colors.GOLD, inner, 4)
-            pygame.draw.rect(self.screen, (255, 244, 170), inner.inflate(-8, -8), 1)
-            corner_len = min(28, max(14, rect.width // 7))
+            inner = rect.inflate(-metrics.unit(6), -metrics.unit(6))
+            pygame.draw.rect(self.screen, self.colors.GOLD, inner, metrics.stroke(4))
+            pygame.draw.rect(
+                self.screen,
+                (255, 244, 170),
+                inner.inflate(-metrics.unit(8), -metrics.unit(8)),
+                metrics.stroke(1),
+            )
+            corner_len = min(metrics.unit(28), max(metrics.unit(14), rect.width // 7))
             for x1, x2 in (
                 (inner.left, inner.left + corner_len),
                 (inner.right - corner_len, inner.right),
             ):
-                pygame.draw.line(self.screen, (255, 244, 170), (x1, inner.top), (x2, inner.top), 3)
                 pygame.draw.line(
-                    self.screen, (255, 244, 170), (x1, inner.bottom), (x2, inner.bottom), 3
+                    self.screen,
+                    (255, 244, 170),
+                    (x1, inner.top),
+                    (x2, inner.top),
+                    metrics.stroke(3),
                 )
-        x = rect.left + 10
-        y = rect.top + 8
-        width = rect.width - 20
+                pygame.draw.line(
+                    self.screen,
+                    (255, 244, 170),
+                    (x1, inner.bottom),
+                    (x2, inner.bottom),
+                    metrics.stroke(3),
+                )
+        x = rect.left + horizontal_padding
+        y = rect.top + vertical_padding
+        width = rect.width - (horizontal_padding * 2)
         self._draw_text(slot.slot, self.normal_font, self.colors.GRAY, x, y, width)
-        y += self.normal_font.get_height() + 2
-        art_width = min(76, max(58, rect.width // 4))
-        art_height = max(72, rect.height - (y - rect.top) - 12)
+        y += self.normal_font.get_height() + metrics.unit(2)
+        art_width = min(metrics.unit(76), max(metrics.unit(46), rect.width // 4))
+        art_height = max(metrics.unit(52), rect.height - (y - rect.top) - vertical_padding)
         art_rect = pygame.Rect(x, y, art_width, art_height)
         if slot.icon_item is not None:
             self._draw_item_art_backdrop(art_rect)
             render = self.item_render_manager.get_scaled_render(slot.icon_item, art_rect.size)
             self.screen.blit(render, art_rect)
 
-        text_x = art_rect.right + 8
-        text_width = max(40, rect.right - text_x - 10)
+        text_x = art_rect.right + metrics.unit(8)
+        text_width = max(metrics.unit(40), rect.right - text_x - horizontal_padding)
         item_name = self._fit_text(slot.item_name, self.normal_font, text_width)
         self._draw_text(item_name, self.normal_font, text_color, text_x, y, text_width)
-        y += self.normal_font.get_height() + 4
-        value_x = text_x + min(max(112, (text_width * 2) // 3), max(40, text_width - 40))
-        value_width = max(32, rect.right - value_x - 10)
-        label_width = max(32, value_x - text_x - 8)
+        y += self.normal_font.get_height() + metrics.unit(4)
+        detail_label_width = max(
+            (self.small_font.size(f"{label}:")[0] for label, _value in slot.detail_rows[:4]),
+            default=0,
+        )
+        label_width = min(detail_label_width, max(metrics.unit(32), text_width // 2))
+        value_x = text_x + label_width + metrics.unit(8)
+        value_width = max(metrics.unit(32), rect.right - value_x - horizontal_padding)
         for label, value in slot.detail_rows[:4]:
-            self._draw_text(f"{label}:", self.small_font, self.colors.WHITE, text_x, y, label_width)
+            self._draw_text(f"{label}:", self.small_font, self.colors.WHITE, text_x, y)
             value_text = self._fit_text(value, self.small_font, value_width)
             rendered_width = self.small_font.size(value_text)[0]
             value_draw_x = value_x + max(0, value_width - rendered_width)
@@ -157,13 +179,19 @@ class CharacterEquipmentMixin:
         pygame.draw.rect(self.screen, (124, 99, 62), rect, 1)
 
     def equipment_slot_rects(self, rect: pygame.Rect | None = None) -> dict[str, pygame.Rect]:
-        """Return fixed paper-doll slot rectangles for hit testing and drawing."""
+        """Return rendered paper-doll rectangles for drawing and hit testing."""
         rect = rect or self.equipment_layout_rect()
-        box_width = min(260, max(180, (rect.width - 56) // 3))
-        box_height = min(150, max(140, (rect.height - 28) // 3))
+        metrics = self.presenter.layout_metrics
+        column_gap = metrics.unit(8)
+        minimum_gap = metrics.unit(4)
+        box_width = min(metrics.unit(260), (rect.width - (column_gap * 2)) // 3)
+        box_height = min(
+            metrics.unit(150),
+            max(metrics.unit(52), (rect.height - (minimum_gap * 2)) // 3),
+        )
         center_x = rect.centerx
-        row_gap = max(12, (rect.height - (box_height * 3) - 36) // 2)
-        top_y = rect.top + 8
+        row_gap = max(minimum_gap, (rect.height - (box_height * 3)) // 2)
+        top_y = rect.top
         middle_y = top_y + box_height + row_gap
         bottom_y = middle_y + box_height + row_gap
 
@@ -172,18 +200,26 @@ class CharacterEquipmentMixin:
             "Weapon": pygame.Rect(rect.left, middle_y, box_width, box_height),
             "Armor": pygame.Rect(center_x - box_width // 2, middle_y, box_width, box_height),
             "OffHand": pygame.Rect(rect.right - box_width, middle_y, box_width, box_height),
-            "Ring": pygame.Rect(center_x - box_width - 8, bottom_y, box_width, box_height),
-            "Pendant": pygame.Rect(center_x + 8, bottom_y, box_width, box_height),
+            "Ring": pygame.Rect(
+                center_x - box_width - column_gap // 2, bottom_y, box_width, box_height
+            ),
+            "Pendant": pygame.Rect(center_x + column_gap // 2, bottom_y, box_width, box_height),
         }
 
     def equipment_layout_rect(self) -> pygame.Rect:
         """Return the paper-doll layout rect without drawing the surrounding panel."""
-        y = self.details_rect.top + 14 + self.large_font.get_height() + 10
+        metrics = self.presenter.layout_metrics
+        y = (
+            self.details_rect.top
+            + metrics.unit(14)
+            + self.large_font.get_height()
+            + metrics.unit(10)
+        )
         return pygame.Rect(
-            self.details_rect.left + 28,
+            self.details_rect.left + metrics.unit(28),
             y,
-            self.details_rect.width - 56,
-            self.details_rect.bottom - y - 20,
+            self.details_rect.width - metrics.unit(56),
+            self.details_rect.bottom - y - metrics.unit(20),
         )
 
     def _draw_equipment_paper_doll(

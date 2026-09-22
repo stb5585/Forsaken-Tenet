@@ -665,6 +665,39 @@ def test_base_character_stats_render_full_labels_in_separate_columns(monkeypatch
     assert screen.actions_rect.width == screen.content_rect.width
 
 
+@pytest.mark.parametrize("size", [(1000, 720), (1920, 1080)])
+def test_equipment_paper_doll_uses_shared_responsive_slot_geometry(monkeypatch, size):
+    screen = ModernCharacterScreen(_make_presenter(size))
+    player = _make_player()
+    layout_rect = screen.equipment_layout_rect()
+    slot_rects = screen.equipment_slot_rects(layout_rect)
+
+    assert set(slot_rects) == {"Helmet", "Weapon", "Armor", "OffHand", "Ring", "Pendant"}
+    assert all(layout_rect.contains(rect) for rect in slot_rects.values())
+    slot_values = list(slot_rects.values())
+    assert all(
+        not first.colliderect(second)
+        for index, first in enumerate(slot_values)
+        for second in slot_values[index + 1 :]
+    )
+
+    drawn_rects = []
+    monkeypatch.setattr(
+        screen,
+        "_draw_equipment_slot_box",
+        lambda _slot, rect, selected=False: drawn_rects.append((rect, selected)),
+    )
+    screen._draw_equipment_paper_doll(
+        screen.build_equipment_slots(player),
+        layout_rect,
+        "Armor",
+    )
+    assert {tuple(rect) for rect, _selected in drawn_rects} == {
+        tuple(rect) for rect in slot_rects.values()
+    }
+    assert next(selected for rect, selected in drawn_rects if rect == slot_rects["Armor"])
+
+
 def test_modern_character_companion_display_prefers_familiar_then_living_summon():
     screen = ModernCharacterScreen(_make_presenter())
     player = _make_player()
