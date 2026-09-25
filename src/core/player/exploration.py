@@ -16,6 +16,23 @@ from .config import (
 )
 from .maps import _load_text_map, _load_tiled_map
 
+# Keep the first six steps from town at intended level-0 encounter difficulty.
+TOWN_SAFE_ZONE_RADIUS = 6
+
+
+def normalize_town_safe_zone(world_dict, map_tiles) -> int:
+    """Replace level-0 CavePath2 tiles near town with ordinary CavePath0 tiles."""
+    town_x, town_y, town_z = TOWN_LOCATION
+    normalized = 0
+    for (x, y, z), tile in world_dict.items():
+        if z != town_z or type(tile) is not map_tiles.CavePath2:
+            continue
+        if abs(x - town_x) + abs(y - town_y) > TOWN_SAFE_ZONE_RADIUS:
+            continue
+        world_dict[(x, y, z)] = map_tiles.CavePath0(x, y, z)
+        normalized += 1
+    return normalized
+
 
 class PlayerExplorationMixin:
     def minimap(self):
@@ -153,6 +170,8 @@ class PlayerExplorationMixin:
                 world_dict.update(_load_tiled_map(map_file, z, map_tiles))
                 continue
             world_dict.update(_load_text_map(map_file, z, map_tiles))
+
+        normalize_town_safe_zone(world_dict, map_tiles)
 
         map_tiles.assign_dungeon_traps(
             world_dict,

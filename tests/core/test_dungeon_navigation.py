@@ -8,6 +8,7 @@ from types import SimpleNamespace
 from src.core import enemies, map_tiles
 from src.core.character import Combat, Level, Resource, Stats
 from src.core.player import DIRECTIONS, Player
+from src.core.player.exploration import TOWN_SAFE_ZONE_RADIUS, normalize_town_safe_zone
 
 
 def _make_player():
@@ -65,6 +66,26 @@ def test_movement():
     assert "east" in movable_directions
     assert player.quit is False
     assert player.in_town() is False
+
+
+def test_town_safe_zone_normalizes_only_nearby_level_zero_cave_path_twos():
+    town_x, town_y, town_z = (5, 10, 0)
+    inside = (town_x + TOWN_SAFE_ZONE_RADIUS, town_y, town_z)
+    outside = (town_x + TOWN_SAFE_ZONE_RADIUS + 1, town_y, town_z)
+    world = {
+        inside: map_tiles.CavePath2(*inside),
+        outside: map_tiles.CavePath2(*outside),
+        (town_x, town_y + 1, town_z): map_tiles.CavePath0(town_x, town_y + 1, town_z),
+        (town_x, town_y, 1): map_tiles.CavePath2(town_x, town_y, 1),
+        (town_x + 1, town_y, town_z): map_tiles.StairsDown(town_x + 1, town_y, town_z),
+    }
+
+    assert normalize_town_safe_zone(world, map_tiles) == 1
+    assert type(world[inside]) is map_tiles.CavePath0
+    assert type(world[outside]) is map_tiles.CavePath2
+    assert type(world[(town_x, town_y + 1, town_z)]) is map_tiles.CavePath0
+    assert type(world[(town_x, town_y, 1)]) is map_tiles.CavePath2
+    assert type(world[(town_x + 1, town_y, town_z)]) is map_tiles.StairsDown
 
 
 def test_bone_pile_marks_minotaur_approach_tile():
