@@ -119,7 +119,7 @@ def test_runtime_normalizes_text_and_pointer_payloads(monkeypatch):
     assert inputs[2].command == UiCommand.CANCEL
 
 
-def test_pointer_press_filter_requires_release_before_another_primary_press():
+def test_pointer_press_filter_deduplicates_within_one_queue_poll():
     press_filter = PointerPressFilter()
     events = [
         pygame.event.Event(pygame.MOUSEBUTTONDOWN, pos=(4, 6), button=1),
@@ -136,6 +136,11 @@ def test_pointer_press_filter_requires_release_before_another_primary_press():
         pygame.MOUSEBUTTONDOWN,
     ]
     assert filtered[-1].pos == (9, 3)
+
+    next_poll = press_filter.filter(
+        [pygame.event.Event(pygame.MOUSEBUTTONDOWN, pos=(4, 6), button=1)]
+    )
+    assert [event.type for event in next_poll] == [pygame.MOUSEBUTTONDOWN]
 
 
 def test_runtime_does_not_click_through_pointer_initiated_transition(monkeypatch):

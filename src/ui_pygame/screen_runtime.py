@@ -82,58 +82,44 @@ class Screen(Protocol):
 
 
 class PointerPressFilter:
-    """Discard repeated primary-pointer presses until the button is released.
+    """Remove duplicate primary presses from one event-queue poll.
 
-    Pygame normally emits one ``MOUSEBUTTONDOWN`` followed by one
-    ``MOUSEBUTTONUP`` for a click. Some touch/remote-input paths can emit
-    duplicate down events, however. Filtering those events at the sole event
-    polling boundary protects every legacy selector without imposing a timing
-    cooldown that could discard a legitimate subsequent click.
+    A legacy blocking screen may poll the queue independently from the screen
+    that ran just before it, so pointer state must not persist between calls to
+    :func:`get_events`. Keeping the suppression local to the batch handles
+    duplicate events delivered in one frame without treating a later, valid
+    click as held forever when a release event was not observed.
     """
 
-    def __init__(self) -> None:
-        self._primary_pressed = False
-
     def reset(self) -> None:
-        """Forget any in-progress pointer gesture."""
-        self._primary_pressed = False
+        """Retain the public reset hook; batch filtering has no saved state."""
 
     def filter(self, events: list[pygame.event.Event]) -> list[pygame.event.Event]:
-        """Return events with duplicate primary-button presses removed."""
+        """Return one primary press per press/release sequence in this batch."""
         filtered: list[pygame.event.Event] = []
-        focus_lost_events = {
-            event_type
-            for event_type in (getattr(pygame, "WINDOWFOCUSLOST", None),)
-            if event_type is not None
-        }
+        primary_pressed = False
 
         for event in events:
-            if event.type in focus_lost_events:
-                self.reset()
-                filtered.append(event)
-                continue
-
             if getattr(event, "button", None) != 1:
                 filtered.append(event)
                 continue
 
             if event.type == pygame.MOUSEBUTTONUP:
-                self._primary_pressed = False
+                primary_pressed = False
                 filtered.append(event)
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if not self._primary_pressed:
-                    self._primary_pressed = True
+                if not primary_pressed:
+                    primary_pressed = True
                     filtered.append(event)
             else:
                 filtered.append(event)
         return filtered
 
-
 _pointer_press_filter = PointerPressFilter()
 
 
 def reset_pointer_press_filter() -> None:
-    """Reset pointer filtering at a new application session or in tests."""
+    """Compatibility hook for application-session boundaries and tests."""
     _pointer_press_filter.reset()
 
 
