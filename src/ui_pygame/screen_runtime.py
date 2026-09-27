@@ -81,6 +81,62 @@ class Screen(Protocol):
         """Release screen-local state before removal from the stack."""
 
 
+class PointerPressFilter:
+    """Discard repeated primary-pointer presses until the button is released.
+
+    Pygame normally emits one ``MOUSEBUTTONDOWN`` followed by one
+    ``MOUSEBUTTONUP`` for a click. Some touch/remote-input paths can emit
+    duplicate down events, however. Filtering those events at the sole event
+    polling boundary protects every legacy selector without imposing a timing
+    cooldown that could discard a legitimate subsequent click.
+    """
+
+    def __init__(self) -> None:
+        self._primary_pressed = False
+
+    def reset(self) -> None:
+        """Forget any in-progress pointer gesture."""
+        self._primary_pressed = False
+
+    def filter(self, events: list[pygame.event.Event]) -> list[pygame.event.Event]:
+        """Return events with duplicate primary-button presses removed."""
+        filtered: list[pygame.event.Event] = []
+        focus_lost_events = {
+            event_type
+            for event_type in (getattr(pygame, "WINDOWFOCUSLOST", None),)
+            if event_type is not None
+        }
+
+        for event in events:
+            if event.type in focus_lost_events:
+                self.reset()
+                filtered.append(event)
+                continue
+
+            if getattr(event, "button", None) != 1:
+                filtered.append(event)
+                continue
+
+            if event.type == pygame.MOUSEBUTTONUP:
+                self._primary_pressed = False
+                filtered.append(event)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if not self._primary_pressed:
+                    self._primary_pressed = True
+                    filtered.append(event)
+            else:
+                filtered.append(event)
+        return filtered
+
+
+_pointer_press_filter = PointerPressFilter()
+
+
+def reset_pointer_press_filter() -> None:
+    """Reset pointer filtering at a new application session or in tests."""
+    _pointer_press_filter.reset()
+
+
 _KEY_COMMANDS: dict[int, UiCommand] = {
     pygame.K_UP: UiCommand.NAVIGATE_UP,
     pygame.K_w: UiCommand.NAVIGATE_UP,
@@ -123,8 +179,10 @@ def _poll_pygame_events(
 ) -> list[pygame.event.Event]:
     """Read the process event queue; this is the sole direct polling boundary."""
     if event_types is None:
-        return list(pygame.event.get())
-    return list(pygame.event.get(event_types))
+        events = list(pygame.event.get())
+    else:
+        events = list(pygame.event.get(event_types))
+    return _pointer_press_filter.filter(events)
 
 
 def get_events(event_types: int | tuple[int, ...] | None = None) -> list[pygame.event.Event]:
@@ -226,9 +284,19 @@ class ScreenRuntime:
             normalized = normalize_event(event)
             if normalized is not None and self.current is not None:
                 active = self.current
-                self._apply(active.handle_input(normalized))
+                transition = active.handle_input(normalized)
+                self._apply(transition)
                 if not self.running:
                     return False
+                if (
+                    transition is not None
+                    and event.type == pygame.MOUSEBUTTONDOWN
+                    and getattr(event, "button", None) == 1
+                ):
+                    # Events from this batch were queued before the new screen
+                    # existed. Do not let a rapid second press click through a
+                    # pointer-initiated transition.
+                    break
 
         active = self.current
         if active is None:

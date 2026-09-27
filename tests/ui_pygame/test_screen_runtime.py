@@ -9,7 +9,12 @@ from typing import Any
 import pygame
 
 from src.ui_common.input import UiCommand
-from src.ui_pygame.screen_runtime import ScreenInput, ScreenRuntime, ScreenTransition
+from src.ui_pygame.screen_runtime import (
+    PointerPressFilter,
+    ScreenInput,
+    ScreenRuntime,
+    ScreenTransition,
+)
 
 
 class Clock:
@@ -112,6 +117,46 @@ def test_runtime_normalizes_text_and_pointer_payloads(monkeypatch):
     assert inputs[1].pointer == (4, 6)
     assert inputs[1].button == 1
     assert inputs[2].command == UiCommand.CANCEL
+
+
+def test_pointer_press_filter_requires_release_before_another_primary_press():
+    press_filter = PointerPressFilter()
+    events = [
+        pygame.event.Event(pygame.MOUSEBUTTONDOWN, pos=(4, 6), button=1),
+        pygame.event.Event(pygame.MOUSEBUTTONDOWN, pos=(4, 6), button=1),
+        pygame.event.Event(pygame.MOUSEBUTTONUP, pos=(4, 6), button=1),
+        pygame.event.Event(pygame.MOUSEBUTTONDOWN, pos=(9, 3), button=1),
+    ]
+
+    filtered = press_filter.filter(events)
+
+    assert [event.type for event in filtered] == [
+        pygame.MOUSEBUTTONDOWN,
+        pygame.MOUSEBUTTONUP,
+        pygame.MOUSEBUTTONDOWN,
+    ]
+    assert filtered[-1].pos == (9, 3)
+
+
+def test_runtime_does_not_click_through_pointer_initiated_transition(monkeypatch):
+    parent = RecordingScreen()
+    child = RecordingScreen()
+    parent.transitions.append(ScreenTransition.push(child))
+    runtime = ScreenRuntime(pygame.Surface((32, 24)), parent, clock=Clock())
+    monkeypatch.setattr(
+        "src.ui_pygame.screen_runtime._poll_pygame_events",
+        lambda: [
+            pygame.event.Event(pygame.MOUSEBUTTONDOWN, pos=(4, 6), button=1),
+            pygame.event.Event(pygame.MOUSEBUTTONUP, pos=(4, 6), button=1),
+            pygame.event.Event(pygame.MOUSEBUTTONDOWN, pos=(4, 6), button=1),
+        ],
+    )
+    monkeypatch.setattr("src.ui_pygame.screen_runtime.pygame.display.flip", lambda: None)
+
+    assert runtime.run_frame() is True
+    assert runtime.current is child
+    assert len([call for call in parent.calls if call[0] == "input"]) == 1
+    assert not [call for call in child.calls if isinstance(call, tuple) and call[0] == "input"]
 
 
 def test_screen_runtime_is_the_only_direct_event_queue_reader():
