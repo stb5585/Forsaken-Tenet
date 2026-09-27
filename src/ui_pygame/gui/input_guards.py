@@ -34,10 +34,14 @@ def prepare_guarded_input(*, flush_events: bool = False, require_key_release: bo
             pygame.event.clear()
         except pygame.error:
             pass
-    # Pointer release is always required for a newly entered clickable view.
-    # Keyboard release remains opt-in so text/menu flows retain their existing
-    # behavior unless they explicitly request it.
-    return _input_devices_released(require_key_release)
+    # A keyboard guard starts unarmed without reading key state. The first
+    # frame must still discard a queued KEYDOWN that opened this view; its
+    # usual per-frame release check will arm the next frame after the key is
+    # physically up. Pointer-only views can be armed immediately, but never
+    # while the pointer button is held.
+    if require_key_release:
+        return False
+    return _input_devices_released(False)
 
 
 def release_guard_allows_input(require_key_release: bool, input_armed: bool) -> bool:
@@ -50,12 +54,12 @@ def release_guard_allows_input(require_key_release: bool, input_armed: bool) -> 
 def update_input_armed_from_event(event, require_key_release: bool, input_armed: bool) -> bool:
     """Refresh a release guard after a release event.
 
-    The physical state check avoids arming one input device while another is
-    still held, which is what allows a click that opened a popup to activate a
-    control inside it.
+    A release event is the reliable ordering boundary for queued input. Do not
+    poll device state here: headless backends and remote input can report
+    stale state after Pygame has already delivered the release event.
     """
-    if input_armed:
+    if input_armed or not require_key_release:
         return True
-    if event.type == pygame.MOUSEBUTTONUP or (require_key_release and event.type == pygame.KEYUP):
-        return _input_devices_released(require_key_release)
+    if event.type in (pygame.KEYUP, pygame.MOUSEBUTTONUP):
+        return True
     return input_armed
