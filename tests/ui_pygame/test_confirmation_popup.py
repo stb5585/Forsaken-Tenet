@@ -194,18 +194,40 @@ def test_release_guard_waits_for_mouse_button_release(monkeypatch):
     assert release_guard_allows_input(True, False) is True
 
 
+def test_prepare_guarded_input_waits_for_held_mouse_by_default(monkeypatch):
+    mouse_states = iter([(True, False, False), (False, False, False)])
+    monkeypatch.setattr("src.ui_pygame.gui.input_guards.pygame.event.pump", lambda: None)
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.input_guards.pygame.mouse.get_pressed",
+        lambda: next(mouse_states),
+    )
+
+    assert prepare_guarded_input() is False
+    assert release_guard_allows_input(False, False) is True
+
+
 def test_shared_input_guard_prepare_and_event_release(monkeypatch):
     clear_calls = []
+    key_is_held = {"value": True}
     monkeypatch.setattr(
         "src.ui_pygame.gui.input_guards.pygame.event.clear", lambda: clear_calls.append(True)
     )
-    monkeypatch.setattr("src.ui_pygame.gui.input_guards.pygame.key.get_pressed", lambda: [1])
+    monkeypatch.setattr("src.ui_pygame.gui.input_guards.pygame.event.pump", lambda: None)
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.input_guards.pygame.key.get_pressed",
+        lambda: [1] if key_is_held["value"] else [],
+    )
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.input_guards.pygame.mouse.get_pressed",
+        lambda: (False, False, False),
+    )
 
     assert prepare_guarded_input(flush_events=True, require_key_release=True) is False
     assert clear_calls == [True]
     assert (
         update_input_armed_from_event(_event(pygame.KEYDOWN, pygame.K_RETURN), True, False) is False
     )
+    key_is_held["value"] = False
     assert update_input_armed_from_event(_event(pygame.KEYUP, pygame.K_RETURN), True, False) is True
 
 
