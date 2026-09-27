@@ -115,6 +115,7 @@ class PointerPressFilter:
                 filtered.append(event)
         return filtered
 
+
 _pointer_press_filter = PointerPressFilter()
 
 
