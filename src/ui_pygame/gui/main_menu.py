@@ -5,15 +5,15 @@ Main menu screen for the Pygame GUI.
 import pygame
 
 from src.paths import PYGAME_ASSETS_DIR
-from src.ui_pygame.screen_runtime import get_events
+from src.ui_common.input import UiCommand
+from src.ui_pygame.screen_runtime import ScreenInput, ScreenRuntime, ScreenTransition
 
 from .input_guards import (
     prepare_guarded_input,
     release_guard_allows_input,
-    update_input_armed_from_event,
 )
 from .menu_layout import menu_unit, menu_viewport_size, touch_target_height
-from .mouse_helpers import hit_index, is_left_click, mouse_position
+from .mouse_helpers import hit_index
 
 
 class MainMenuScreen:
@@ -45,6 +45,10 @@ class MainMenuScreen:
 
         self.current_option = 0
         self.options = []
+        self.selected_option = None
+        self._flush_events = False
+        self._require_key_release = False
+        self._input_armed = True
 
     def option_rects(self, options: list[str] | None = None) -> list[pygame.Rect]:
         """Return clickable rectangles for the current menu options."""
@@ -152,11 +156,80 @@ class MainMenuScreen:
                 self.screen.blit(text, text_rect)
 
     def draw(self):
-        """Draw the entire main menu."""
+        """Draw the entire main menu for legacy callers."""
+        self.render(self.screen)
+        pygame.display.flip()
+
+    def configure(
+        self,
+        options,
+        *,
+        flush_events: bool = False,
+        require_key_release: bool = False,
+    ):
+        """Prepare the menu for a new ScreenRuntime session."""
+        if not options:
+            raise ValueError("main menu requires at least one option")
+        self.options = list(options)
+        self.current_option = min(self.current_option, len(self.options) - 1)
+        self.selected_option = None
+        self._flush_events = flush_events
+        self._require_key_release = require_key_release
+
+    def enter(self):
+        """Arm input after the menu becomes the active runtime screen."""
+        self._input_armed = prepare_guarded_input(
+            flush_events=self._flush_events,
+            require_key_release=self._require_key_release,
+        )
+
+    def handle_input(self, event: ScreenInput):
+        """Handle normalized navigation and return a completed menu choice."""
+        self._input_armed = release_guard_allows_input(
+            self._require_key_release,
+            self._input_armed,
+        )
+        if not self._input_armed and event.pressed is False:
+            self._input_armed = True
+
+        if event.pointer is not None:
+            hovered = hit_index(self.option_rects(), event.pointer)
+            if hovered is not None and event.pressed is None:
+                self.current_option = hovered
+            elif hovered is not None and event.pressed and event.button == 1 and self._input_armed:
+                self.current_option = hovered
+                self.selected_option = hovered
+                return ScreenTransition.pop(hovered)
+
+        if not event.pressed or not self._input_armed:
+            return None
+        if event.command is UiCommand.NAVIGATE_UP:
+            self.current_option = (self.current_option - 1) % len(self.options)
+        elif event.command is UiCommand.NAVIGATE_DOWN:
+            self.current_option = (self.current_option + 1) % len(self.options)
+        elif event.command is UiCommand.CONFIRM:
+            self.selected_option = self.current_option
+            return ScreenTransition.pop(self.current_option)
+        elif event.command is UiCommand.CANCEL:
+            return ScreenTransition.quit()
+        return None
+
+    def update(self, _elapsed_seconds: float):
+        """Advance the runtime screen without time-dependent work."""
+        return None
+
+    def render(self, surface):
+        """Render one frame; ScreenRuntime performs the display flip."""
+        self.screen = surface
         self.draw_background()
         self.draw_title()
         self.draw_menu()
-        pygame.display.flip()
+
+    def resume(self, _result=None):
+        """Satisfy the shared runtime screen lifecycle."""
+
+    def exit(self):
+        """Satisfy the shared runtime screen lifecycle."""
 
     def navigate(
         self,
@@ -164,50 +237,11 @@ class MainMenuScreen:
         flush_events: bool = False,
         require_key_release: bool = False,
     ):
-        """
-        Navigate the main menu and return selected option index.
-
-        Args:
-            options: List of menu option strings
-
-        Returns:
-            int: Index of selected option, or None if cancelled
-        """
-        self.options = options
-
-        input_armed = prepare_guarded_input(
+        """Run this menu through the shared runtime and return its selection."""
+        self.configure(
+            options,
             flush_events=flush_events,
             require_key_release=require_key_release,
         )
-
-        while True:
-            self.draw()
-
-            input_armed = release_guard_allows_input(require_key_release, input_armed)
-            for event in get_events():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    import sys
-
-                    sys.exit()
-                input_armed = update_input_armed_from_event(event, require_key_release, input_armed)
-                hovered = hit_index(self.option_rects(), mouse_position(event))
-                if hovered is not None and event.type == pygame.MOUSEMOTION:
-                    self.current_option = hovered
-                elif hovered is not None and is_left_click(event):
-                    if input_armed:
-                        self.current_option = hovered
-                        return self.current_option
-                if event.type == pygame.KEYDOWN:
-                    if not input_armed:
-                        continue
-                    if event.key == pygame.K_UP:
-                        self.current_option = (self.current_option - 1) % len(self.options)
-                    elif event.key == pygame.K_DOWN:
-                        self.current_option = (self.current_option + 1) % len(self.options)
-                    elif event.key == pygame.K_RETURN or event.key == pygame.K_SPACE:
-                        return self.current_option
-                    elif event.key == pygame.K_ESCAPE:
-                        return None
-
-            self.presenter.clock.tick(30)
+        ScreenRuntime(self.screen, self, frames_per_second=30).run()
+        return self.selected_option
