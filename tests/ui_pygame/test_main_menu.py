@@ -6,9 +6,10 @@ from __future__ import annotations
 from types import SimpleNamespace
 
 import pygame
-import pytest
 
+from src.ui_common.input import UiCommand
 from src.ui_pygame.gui import main_menu
+from src.ui_pygame.screen_runtime import ScreenInput, TransitionKind
 
 
 class DummySurface:
@@ -179,6 +180,49 @@ def test_main_menu_draw_and_navigation(monkeypatch):
     )
 
 
+def test_main_menu_is_a_runtime_screen_and_returns_its_selected_option(monkeypatch):
+    presenter = _make_presenter()
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.main_menu.pygame.image.load",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(FileNotFoundError()),
+    )
+    screen = main_menu.MainMenuScreen(presenter)
+    screen.configure(["New Game", "Load Game", "Quit"])
+    screen.enter()
+
+    assert screen.handle_input(ScreenInput(command=UiCommand.NAVIGATE_DOWN, pressed=True)) is None
+    transition = screen.handle_input(ScreenInput(command=UiCommand.CONFIRM, pressed=True))
+
+    assert transition is not None
+    assert transition.kind is TransitionKind.POP
+    assert transition.result == 1
+    assert screen.selected_option == 1
+
+
+def test_main_menu_navigate_uses_screen_runtime(monkeypatch):
+    presenter = _make_presenter()
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.main_menu.pygame.image.load",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(FileNotFoundError()),
+    )
+    screen = main_menu.MainMenuScreen(presenter)
+    runtime_calls = []
+
+    class FakeRuntime:
+        def __init__(self, surface, initial_screen, *, frames_per_second):
+            runtime_calls.append((surface, initial_screen, frames_per_second))
+            self.screen = initial_screen
+
+        def run(self):
+            self.screen.enter()
+            self.screen.selected_option = 2
+
+    monkeypatch.setattr(main_menu, "ScreenRuntime", FakeRuntime)
+
+    assert screen.navigate(["New Game", "Quit"]) == 2
+    assert runtime_calls == [(presenter.screen, screen, 30)]
+
+
 def test_main_menu_options_expand_to_native_touch_targets(monkeypatch):
     presenter = _make_presenter()
     presenter.width, presenter.height = (1920, 1080)
@@ -192,7 +236,7 @@ def test_main_menu_options_expand_to_native_touch_targets(monkeypatch):
     assert all(rect.height >= 72 for rect in screen.option_rects())
 
 
-def test_main_menu_quit_event_raises_system_exit(monkeypatch):
+def test_main_menu_quit_event_ends_the_runtime_session(monkeypatch):
     presenter = _make_presenter()
     monkeypatch.setattr(
         "src.ui_pygame.gui.main_menu.pygame.image.load",
@@ -201,17 +245,12 @@ def test_main_menu_quit_event_raises_system_exit(monkeypatch):
     screen = main_menu.MainMenuScreen(presenter)
     monkeypatch.setattr(screen, "draw", lambda: None)
 
-    quit_calls = []
-    monkeypatch.setattr("src.ui_pygame.gui.main_menu.pygame.quit", lambda: quit_calls.append(True))
-    monkeypatch.setattr("sys.exit", lambda: (_ for _ in ()).throw(SystemExit()))
     monkeypatch.setattr(
         "src.ui_pygame.gui.main_menu.pygame.event.get",
         lambda: [SimpleNamespace(type=pygame.QUIT)],
     )
 
-    with pytest.raises(SystemExit):
-        screen.navigate(["Play"])
-    assert quit_calls
+    assert screen.navigate(["Play"]) is None
 
 
 def test_main_menu_falls_back_to_text_title_when_background_missing(monkeypatch):

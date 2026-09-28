@@ -29,7 +29,9 @@ launch, and remote-playtest controls.
   event subscriptions.
 - `src/ui_pygame/input_adapter.py` maps supported inputs to semantic commands.
 - `src/ui_pygame/screen_runtime.py` owns direct event polling, normalized
-  screen input, the frame clock, and push/replace/pop/quit transitions.
+  screen input, the frame clock, and push/replace/pop/quit transitions. The
+  main menu is the first production screen on this runtime; remaining legacy
+  loops use its `get_events()` compatibility boundary while they are migrated.
 - `src/ui_pygame/assets/` contains runtime managers and packaged visual assets.
 - `src/core/events/` exposes UI-agnostic events consumed by presentation code.
 
