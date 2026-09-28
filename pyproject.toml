@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "the-forsaken-tenet"
-version = "2.0.0"
+version = "2.1.0"
 description = "A visual dungeon-crawl RPG built with Pygame"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -43,9 +43,9 @@ tools = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/stb5585/Dungeon-Crawl"
-Repository = "https://github.com/stb5585/Dungeon-Crawl"
-Issues = "https://github.com/stb5585/Dungeon-Crawl/issues"
+Homepage = "https://github.com/stb5585/Forsaken-Tenet"
+Repository = "https://github.com/stb5585/Forsaken-Tenet"
+Issues = "https://github.com/stb5585/Forsaken-Tenet/issues"
 
 [project.scripts]
 forsaken-tenet = "src.ui_pygame.game:main"
