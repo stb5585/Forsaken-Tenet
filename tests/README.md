@@ -111,6 +111,7 @@ focused Ruff baseline configured in `pyproject.toml`, and runs `compileall` for
   src/core/combat/battle_engine/models.py \
   src/core/identity.py \
   src/core/randomness.py \
+  src/core/character/status_lifecycle.py \
   src/core/contracts \
   src/core/data/ability_schema.py \
   src/core/data/ability_traits.py \
