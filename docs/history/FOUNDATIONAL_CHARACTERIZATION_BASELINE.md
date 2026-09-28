@@ -132,11 +132,10 @@ post-contact, or non-contact behavior.
 
 ## Retained Combat Evidence
 
-The last byte-comparable singleton baseline is
-[`multi_enemy_slice0_pre_refactor.txt`](../../reports/balance_baselines/multi_enemy_slice0_pre_refactor.txt);
-the post-pilot report is
-[`multi_enemy_slice6_pilot.txt`](../../reports/balance_baselines/multi_enemy_slice6_pilot.txt).
-These remain the pre-foundation drift references.
+The retained seed-1337 singleton foundation baseline is
+[`multi_enemy_foundation_singleton.txt`](../../reports/balance_baselines/multi_enemy_foundation_singleton.txt).
+It supersedes the historical pre-foundation report filenames, which are not
+retained in this repository.
 
 Pilot 3's pre-tree, seed-1337 promoted-class evidence remains:
 
@@ -147,8 +146,8 @@ Pilot 3's pre-tree, seed-1337 promoted-class evidence remains:
 | `burrow_and_bone` | 500 | 65.4% | 2.45x | 65.2% | 0 / 0 | Blocked |
 
 The detailed reports remain
-[`multi_enemy_pilot3_floor3.txt`](../../reports/balance_baselines/multi_enemy_pilot3_floor3.txt)
+[`multi_enemy_pilot3_foundation_floor3.txt`](../../reports/balance_baselines/multi_enemy_pilot3_foundation_floor3.txt)
 and
-[`multi_enemy_pilot3_floor4.txt`](../../reports/balance_baselines/multi_enemy_pilot3_floor4.txt).
+[`multi_enemy_pilot3_foundation_floor4.txt`](../../reports/balance_baselines/multi_enemy_pilot3_foundation_floor4.txt).
 None of this evidence authorizes normal pair generation under the new timing,
 contact, or visibility rules.

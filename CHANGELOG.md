@@ -17,6 +17,19 @@
 - Reconciled active roadmap, mobile, GUI, ability, save-history, and tool
   documentation with the current implementation.
 
+### Responsive UI, Quest, And Input Refinement
+
+- Made the town location menu, quantity popup, Character Menu stats, equipment,
+  progression, and bounty views use their active display layout instead of
+  fixed desktop geometry.
+- Kept bounty turn-in selection open until a concrete completion choice is made
+  and normalized high-level paths near town to avoid unsafe return placement.
+- Added visible damaging-trap impact feedback and kept acknowledgement-only
+  trap input from leaking into movement.
+- Scoped duplicate primary-pointer filtering to one event-queue poll, preserving
+  release events while preventing one physical click from activating multiple
+  overlapping UI handlers.
+
 ### Foundational Gameplay Baseline
 
 - Completed the foundational gameplay refactor: immutable ability slugs and
@@ -119,7 +132,7 @@
 ### Promotion Stabilization
 
 - Recorded pre-release saves as disposable development artifacts, established
-  the version-1 current-save boundary, removed historical migration machinery,
+  the version-2 current-save boundary, removed historical migration machinery,
   and retained atomic writes for current saves.
 - Added portable checkout/frozen resource paths and platform user-data paths,
   moved runtime maps into package data, and introduced a PyInstaller onedir

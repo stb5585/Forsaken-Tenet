@@ -1,6 +1,6 @@
 # The Forsaken Tenet Development Roadmap
 
-*Updated: September 20, 2026*
+*Updated: September 27, 2026*
 
 This roadmap contains the current priority, completed baseline summaries needed
 for sequencing, ordered candidates, and deferred decision gates. Detailed
@@ -177,7 +177,7 @@ These are bounded follow-ups, not current priorities:
 | Guardian rooms, mini-bosses, deeper Reflection, and Vesperion tuning | Story trigger, failure/retry behavior, route compatibility, and balance target. | [`STORY_AND_ENDGAME_DESIGN.md`](STORY_AND_ENDGAME_DESIGN.md) |
 | Dynamic/spatial audio and final asset replacement | Concrete asset list, runtime routing, fallback, and settings behavior. | [`SOUND_SYSTEM.md`](SOUND_SYSTEM.md) |
 | Profiles, achievements, run summaries, and account-wide Bestiary data | Ownership, privacy, storage, migration, and reset contract. | This roadmap plus a future dedicated spec. |
-| Mobile and multi-platform support | Phase 1 semantic-input foundation is in progress. Promotion beyond the shared input/display/runtime foundations still requires a successful Android feasibility spike and explicit release ownership. | [`MOBILE_PLATFORM_ROADMAP.md`](MOBILE_PLATFORM_ROADMAP.md) |
+| Mobile and multi-platform support | Phase 1 semantic input remains in progress; Phase 2 native-resolution/adaptive-layout migration and Phase 3 runtime adoption are underway. Promotion beyond the shared foundations still requires a successful Android feasibility spike and explicit release ownership. | [`MOBILE_PLATFORM_ROADMAP.md`](MOBILE_PLATFORM_ROADMAP.md) |
 | Broad UI/core cleanup | A concrete duplicated rule or save/testability defect with a bounded extraction plan. | The affected domain owner document. |
 
 ## Watch Items
@@ -209,75 +209,6 @@ findings using [`CLASS_KIT_EVIDENCE_NOTES.md`](CLASS_KIT_EVIDENCE_NOTES.md).
 5. Run focused tests for every changed system before broad validation.
 6. Update the owner document and roadmap in the same change when a gate is
    promoted, completed, or deferred.
-
-## Active Slice — Combat Presentation And Playtest Reliability
-
-The current playtest slice improves action readability without changing combat
-numbers: a persisted six-slot ability bar, compact fixed commands, a
-badge-based timeline without visible readiness calculations, and persistent
-environmental-effect feedback. The Character Menu's combined Abilities workspace
-splits learned Skills and Spells into icon cards that can be dragged onto shortcut
-slots; All Actions remains the full read-only combat catalog.
-
-The slice also standardizes stat-debuff wording and lets non-player actors use
-item-gated abilities without carrying or consuming player inventory. Player
-item requirements remain unchanged. Focused regressions cover action
-availability, anti-magic feedback, debuff text, and enemy/familiar ability use.
-Empty shortcut buttons are inert and cannot commit a turn.
-Specials and Action Layout are combined into an icon-based Abilities workspace,
-  split into learned Skills and Spells with drag-and-drop shortcut assignment.
-Victory rewards and level-up mutations are deferred until the enemy fade finishes;
-  the pre-reward combat frame remains behind the outcome popup.
-Defeated timeline badges remain until their sprites finish fading.
-The current actor is integrated into the timeline ribbon, with blue player-side
-  and red enemy-side token outlines.
-Turned-in collection quests retain their completed collection count instead of
-  reverting to zero progress.
-Dungeon entry and death clear cached dungeon frames before the next view is
-  rendered.
-The item-icon map covers every catalog item, including Monocane and crossbow
-  equipment and ammunition.
-Keyboard menu navigation skips shortcut tiles; shortcuts remain available by
-  number key, mouse click, or touch.
-Specialist gathering now adds persistent visible resource nodes without
-replacing themed enemy drops: Druid/Archdruid harvest botanical reagents and
-Assassin harvests Deathcap Mushroom; other classes receive generic discovery
-feedback only.
-
-## Shipped — Early Progression, Quest, And Combat Improvements
-
-Ordinary chest Mimic outcomes are now generated from the persisted dungeon seed,
-so reloading cannot turn a planned Mimic into a normal chest. Seraphine Voss and
-Mara Vale each offer four level-spread side quests, including reusable dungeon
-landmark and town-conversation objectives; the early Magic Shop quests provide
-route guidance without constraining exploration. Boss fights include Defend,
-and Charge now pays off its one-round setup with 2.5× weapon damage while
-retaining its contested one-turn stun.
-
-Follow-up tuning makes the two conversation beats staged leads rather than
-standalone turn-ins: the Barkeep points Seraphine's commission to the first
-descent, and Griswold turns Mara's lead into a Bandit contract. Green and Red
-Slimes now share the existing Fungus Spore drop, so the early Spore quest is
-open to every class; the Lich commission moves to level 55.
-
-## Shipped — Playtest Presentation And Encounter Follow-Up
-
-Multi-enemy combat now presents explicit previous/next target controls alongside
-direct lane selection, with stable distinct hostile-lane colors across the
-battlefield and timeline. Debug mode exposes Auto Kill with `K`; normal combat
-does not expose it. Victory popups include affected bounty progress.
-
-Trap damage and other acknowledgement-only messages require fresh input before
-they can close, and trap feedback blocks movement over the updated dungeon
-frame. Post-level-10 death now surfaces its existing resurrection gold cost and
-possible stat loss in the defeat summary.
-
-Barghest is tuned for a normally geared level-15 encounter with approximately
-even baseline initiative pressure. Shop panes identify equipment already worn
-in a compatible slot, and shop Quest entries appear only when that giver has an
-offer, active quest, or turn-in. The Character Menu separates the learned
-ability reference from Action Layout and shows a description while an
-assignable action is hovered.
 
 ## Deferred Design Gate — Shop Stock And Opening Pacing
 
