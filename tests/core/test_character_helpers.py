@@ -476,6 +476,60 @@ class TestCharacterHelpers:
         assert jump.charging is False
         assert player.class_effects["Jump"].active is False
 
+    def test_effects_surfaces_start_of_turn_hook_failures(self, monkeypatch):
+        from src.core.classes import promotion_kits
+
+        player = TestGameState.create_player(class_name="Warrior", race_name="Human")
+
+        def fail_tick(_character):
+            raise RuntimeError("promotion tick failed")
+
+        monkeypatch.setattr(promotion_kits, "tick_combat_state", fail_tick)
+
+        with pytest.raises(RuntimeError, match="promotion tick failed"):
+            player.effects()
+
+    def test_effects_surfaces_persistent_affliction_failures(self, monkeypatch):
+        from src.core import persistent_afflictions
+
+        player = TestGameState.create_player(class_name="Warrior", race_name="Human")
+
+        def fail_tick(_character):
+            raise RuntimeError("affliction tick failed")
+
+        monkeypatch.setattr(persistent_afflictions, "hemorrhaging_tick", fail_tick)
+
+        with pytest.raises(RuntimeError, match="affliction tick failed"):
+            player.effects()
+
+    def test_effects_end_surfaces_cleanup_hook_failures(self, monkeypatch):
+        from src.core.classes import pathfinder
+
+        player = TestGameState.create_player(class_name="Warrior", race_name="Human")
+
+        def fail_tick(_character, *, end=False):
+            assert end is True
+            raise RuntimeError("pathfinder cleanup failed")
+
+        monkeypatch.setattr(pathfinder, "tick_combat_state", fail_tick)
+
+        with pytest.raises(RuntimeError, match="pathfinder cleanup failed"):
+            player.effects(end=True)
+
+    def test_effects_end_surfaces_charge_cleanup_failures(self):
+        player = TestGameState.create_player(class_name="Warrior", race_name="Human")
+
+        def fail_cancel(_character):
+            raise RuntimeError("charge cleanup failed")
+
+        player.spellbook["Skills"]["Broken Charge"] = SimpleNamespace(
+            charging=True,
+            cancel_charge=fail_cancel,
+        )
+
+        with pytest.raises(RuntimeError, match="charge cleanup failed"):
+            player.effects(end=True)
+
     def test_effects_cover_doom_ice_block_and_dot_cleanup(self, monkeypatch):
         player = TestGameState.create_player(class_name="Knight Enchanter", race_name="Human")
         player.health.current = 20
