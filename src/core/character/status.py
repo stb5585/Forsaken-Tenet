@@ -301,105 +301,17 @@ class CharacterStatusMixin:
         """
         Silence, Blind, and Disarm can be indefinite unless cured (duration=-1)
         """
-        from ..classes import ability_mechanics
-
         self._last_bleed_tick_damage = 0
-        effect_dicts = [
-            self.status_effects,
-            self.physical_effects,
-            self.stat_effects,
-            self.magic_effects,
-            self.class_effects,
-        ]
-
-        def default(effect=None, end_combat=False):
-            if end_combat:
-                for effect_dict in effect_dicts:
-                    for effect in effect_dict.keys():
-                        if effect_dict[effect].active:
-                            self._emit_status_event(
-                                self, effect, applied=False, source="Combat End"
-                            )
-                        effect_dict[effect].active = False
-                        effect_dict[effect].duration = 0
-                        effect_dict[effect].extra = 0
-                        effect_dict[effect].source = ""
-                for skill_group in getattr(self, "spellbook", {}).values():
-                    for skill in getattr(skill_group, "values", lambda: [])():
-                        if getattr(skill, "charging", False):
-                            cancel_charge = getattr(skill, "cancel_charge", None)
-                            if callable(cancel_charge):
-                                try:
-                                    cancel_charge(self)
-                                    continue
-                                except Exception:
-                                    pass
-                            skill.charging = False
-                            if hasattr(skill, "charge_turns"):
-                                skill.charge_turns = 0
-                            if hasattr(skill, "charge_target"):
-                                skill.charge_target = None
-                self.grandmaster_technique_stacks = {}
-                self._hemorrhage_thirst_streak = 0
-                self._corruption_payload = None
-            else:
-                effect_dict = self.effect_handler(effect=effect)
-                if effect_dict[effect].active:
-                    self._emit_status_event(self, effect, applied=False, source="Duration Expired")
-                effect_dict[effect].active = False
-                effect_dict[effect].duration = 0
-                effect_dict[effect].extra = 0
-                effect_dict[effect].source = ""
-                if effect == "DOT":
-                    self._corruption_payload = None
 
         if end:
-            try:
-                from ..classes import pathfinder
+            from . import status_lifecycle
 
-                pathfinder.tick_combat_state(self, end=True)
-            except Exception:
-                pass
-            try:
-                from ..classes import healer
+            status_lifecycle.end_combat(self)
+            return None
 
-                healer.tick_combat_state(self, end=True)
-            except Exception:
-                pass
-            try:
-                from ..classes import mage_mechanics
-
-                mage_mechanics.tick_combat_state(self, end=True)
-            except Exception:
-                pass
-            default(end_combat=True)
-            self.temporary_health = None
-            self.fractures = {}
-            for attr in (
-                "soul_bound_to",
-                "soul_siphon",
-                "shadow_curtain_turns",
-                "shade_of_ahool_turns",
-                "warlock_eclipse_turns",
-                "mystical_vitality_turns",
-                "demon_grease_turns",
-                "soul_vessel_turns",
-                "temporary_undead_allies",
-                "haunted_turns",
-                "_temporary_stasis_turns",
-                "_soul_binding_caster",
-            ):
-                if hasattr(self, attr):
-                    delattr(self, attr)
-            try:
-                from ..classes import promotion_kits
-
-                promotion_kits.clear_combat_state(self)
-            except Exception:
-                pass
-            ability_mechanics.sync_exploration_flags(self)
         else:
-            from ..classes import grandmaster
+            from ..classes import ability_mechanics, grandmaster
+            from . import status_lifecycle
 
             status_text = ""
             stasis_turns = max(
@@ -426,30 +338,7 @@ class CharacterStatusMixin:
                     fear.duration = max(1, int(fear.duration or 0))
                     fear.source = "Sciophobia"
                     status_text += f"The haunting fills {self.name} with fear.\n"
-            try:
-                from ..classes import promotion_kits
-
-                status_text += promotion_kits.tick_combat_state(self)
-            except Exception:
-                pass
-            try:
-                from ..classes import mage_mechanics
-
-                status_text += mage_mechanics.tick_combat_state(self)
-            except Exception:
-                pass
-            try:
-                from ..classes import healer
-
-                status_text += healer.tick_combat_state(self)
-            except Exception:
-                pass
-            try:
-                from ..classes import pathfinder
-
-                status_text += pathfinder.tick_combat_state(self)
-            except Exception:
-                pass
+            status_text += status_lifecycle.tick_start_of_turn_hooks(self)
             temporary_health = getattr(self, "temporary_health", None)
             if isinstance(temporary_health, dict):
                 temporary_health["turns"] = max(0, int(temporary_health.get("turns", 0) or 0) - 1)
@@ -462,7 +351,7 @@ class CharacterStatusMixin:
                 polymorph.duration -= 1
                 if polymorph.duration <= 0:
                     status_text += f"{self.name} returns to their true form.\n"
-                    default(effect="Polymorph")
+                    status_lifecycle.clear_effect(self, "Polymorph")
             for expired in grandmaster.tick_technique_stacks(self):
                 status_text += f"{self.name}'s {expired} technique fades.\n"
             if self.status_effects["Doom"].active:
@@ -508,7 +397,7 @@ class CharacterStatusMixin:
                     )
                 if not self.magic_effects["Ice Block"].duration:
                     status_text += f"The ice block around {self.name} melts.\n"
-                    default(effect="Ice Block")
+                    status_lifecycle.clear_effect(self, "Ice Block")
                 else:
                     return status_text
             shackles = getattr(self, "conjured_shackles", None)
@@ -548,20 +437,15 @@ class CharacterStatusMixin:
                     ]
                 )
             ):
-                try:
-                    from ..classes import pathfinder
-
-                    self.physical_effects["Prone"].duration = max(
-                        0,
-                        self.physical_effects["Prone"].duration
-                        - pathfinder.bounce_back_bonus(self),
-                    )
-                except Exception:
-                    pass
+                self.physical_effects["Prone"].duration = max(
+                    0,
+                    self.physical_effects["Prone"].duration
+                    - status_lifecycle.prone_recovery_bonus(self),
+                )
                 if not random.randint(0, self.physical_effects["Prone"].duration) or random.randint(
                     0, self.check_mod("luck", luck_factor=10)
                 ):
-                    default(effect="Prone")
+                    status_lifecycle.clear_effect(self, "Prone")
                     status_text += f"{self.name} is no longer prone.\n"
                 else:
                     self.physical_effects["Prone"].duration -= 1
@@ -581,7 +465,7 @@ class CharacterStatusMixin:
                 else:
                     status_text += f"{self.name} resisted the poison.\n"
                 if not self.status_effects["Poison"].duration:
-                    default(effect="Poison")
+                    status_lifecycle.clear_effect(self, "Poison")
                     status_text += f"The poison has left {self.name}.\n"
             if self.magic_effects["DOT"].active:
                 self.magic_effects["DOT"].duration -= 1
@@ -604,7 +488,7 @@ class CharacterStatusMixin:
                 if dot_damage <= 0:
                     # Defensive guard: DOT should always have positive damage,
                     # but some effect paths may leave .extra unset/zero.
-                    default(effect="DOT")
+                    status_lifecycle.clear_effect(self, "DOT")
                     self.magic_effects["DOT"].duration = 0
                 else:
                     if not random.randint(0, self.check_mod("magic def") // dot_damage):
@@ -632,19 +516,12 @@ class CharacterStatusMixin:
 
                         status_text += warlock.spread_corruption(self)
                     if not self.magic_effects["DOT"].duration:
-                        default(effect="DOT")
+                        status_lifecycle.clear_effect(self, "DOT")
                         if is_burn:
                             status_text += f"The flames around {self.name} burn out.\n"
                         else:
                             status_text += f"The magic affecting {self.name} has worn off.\n"
-            try:
-                from .. import persistent_afflictions as afflictions
-
-                status_text += afflictions.hemorrhaging_tick(self)
-                status_text += afflictions.swarms_tick(self)
-                status_text += afflictions.polydipsia_tick(self)
-            except Exception:
-                pass
+            status_text += status_lifecycle.tick_persistent_afflictions(self)
             fractures = getattr(self, "fractures", {})
             if fractures.get("Ribs") or fractures.get("Exoskeleton"):
                 fracture_damage = max(1, int(self.health.max * 0.05))
@@ -688,7 +565,7 @@ class CharacterStatusMixin:
                         )
                 if hallowed_ground.duration <= 0:
                     status_text += "The sacred light fades from the ground.\n"
-                    default(effect="Hallowed Ground")
+                    status_lifecycle.clear_effect(self, "Hallowed Ground")
             if self.physical_effects["Bleed"].active:
                 self.physical_effects["Bleed"].duration -= 1
                 bleed_damage = max(1, int(self.physical_effects["Bleed"].extra * 0.75))
@@ -706,7 +583,7 @@ class CharacterStatusMixin:
                 else:
                     status_text += f"{self.name} resisted the bleed.\n"
                 if not self.physical_effects["Bleed"].duration:
-                    default(effect="Bleed")
+                    status_lifecycle.clear_effect(self, "Bleed")
                     status_text += f"{self.name}'s wounds have healed and is no longer bleeding.\n"
             for effect_name, expiry_message in (
                 ("Cripple", f"{self.name}'s weapon arm recovers.\n"),
@@ -717,23 +594,23 @@ class CharacterStatusMixin:
                     continue
                 effect.duration -= 1
                 if not effect.duration:
-                    default(effect=effect_name)
+                    status_lifecycle.clear_effect(self, effect_name)
                     status_text += expiry_message
             if self.status_effects["Blind"].active:
                 self.status_effects["Blind"].duration -= 1
                 if not self.status_effects["Blind"].duration:
                     status_text += f"{self.name} regains sight and is no longer blind.\n"
-                    default(effect="Blind")
+                    status_lifecycle.clear_effect(self, "Blind")
             if self.status_effects["Blind Rage"].active:
                 self.status_effects["Blind Rage"].duration -= 1
                 if not self.status_effects["Blind Rage"].duration:
                     status_text += f"{self.name} calms down.\n"
-                    default(effect="Blind Rage")
+                    status_lifecycle.clear_effect(self, "Blind Rage")
             if self.status_effects["Hangover"].active:
                 self.status_effects["Hangover"].duration -= 1
                 if not self.status_effects["Hangover"].duration:
                     status_text += f"{self.name} shakes off the hangover.\n"
-                    default(effect="Hangover")
+                    status_lifecycle.clear_effect(self, "Hangover")
             if (not self.status_effects["Stun"].active) and self.status_effects["Stun"].extra > 0:
                 # Post-stun immunity countdown (stun-lock prevention).
                 self.status_effects["Stun"].extra -= 1
@@ -754,7 +631,7 @@ class CharacterStatusMixin:
                 self.status_effects["Sleep"].duration -= 1
                 if not self.status_effects["Sleep"].duration:
                     status_text += f"{self.name} is no longer asleep.\n"
-                    default(effect="Sleep")
+                    status_lifecycle.clear_effect(self, "Sleep")
             if (
                 self.status_effects["Silence"].active
                 and self.status_effects["Silence"].duration > 0
@@ -762,17 +639,17 @@ class CharacterStatusMixin:
                 self.status_effects["Silence"].duration -= 1
                 if not self.status_effects["Silence"].duration:
                     status_text += f"{self.name} can speak again.\n"
-                    default(effect="Silence")
+                    status_lifecycle.clear_effect(self, "Silence")
             if self.status_effects["Berserk"].active:
                 self.status_effects["Berserk"].duration -= 1
                 if not self.status_effects["Berserk"].duration:
                     status_text += f"{self.name} has regained their composure.\n"
-                    default(effect="Berserk")
+                    status_lifecycle.clear_effect(self, "Berserk")
             if self.status_effects["Peaceful"].active:
                 self.status_effects["Peaceful"].duration -= 1
                 if not self.status_effects["Peaceful"].duration:
                     status_text += f"{self.name}'s peaceful focus fades.\n"
-                    default(effect="Peaceful")
+                    status_lifecycle.clear_effect(self, "Peaceful")
             if self.status_effects["Defend"].active:
                 if (
                     ability_mechanics.has_skill(self, "Defensive Regen")
@@ -782,40 +659,32 @@ class CharacterStatusMixin:
                     heal = min(heal, self.health.max - self.health.current)
                     self.health.current += heal
                     status_text += f"{self.name}'s defensive focus restores {heal} health.\n"
-                    try:
-                        from ..classes import promotion_kits
-
-                        status_text += promotion_kits.record_defensive_regen(
-                            self,
-                            heal,
-                        )
-                    except Exception:
-                        pass
+                    status_text += status_lifecycle.record_defensive_regen(self, heal)
                 self.status_effects["Defend"].duration -= 1
                 if not self.status_effects["Defend"].duration:
                     status_text += f"{self.name} lowers their guard.\n"
-                    default(effect="Defend")
+                    status_lifecycle.clear_effect(self, "Defend")
             if self.status_effects["Steal Success"].active:
                 self.status_effects["Steal Success"].duration -= 1
                 if not self.status_effects["Steal Success"].duration:
-                    default(effect="Steal Success")
+                    status_lifecycle.clear_effect(self, "Steal Success")
             if self.magic_effects["Reflect"].active:
                 self.magic_effects["Reflect"].duration -= 1
                 if not self.magic_effects["Reflect"].duration:
                     status_text += f"{self.name} is no longer reflecting magic.\n"
-                    default(effect="Reflect")
+                    status_lifecycle.clear_effect(self, "Reflect")
             for element in ["Fire", "Ice", "Electric", "Water", "Earth", "Wind"]:
                 effect_name = f"Resist {element}"
                 if self.magic_effects[effect_name].active:
                     self.magic_effects[effect_name].duration -= 1
                     if not self.magic_effects[effect_name].duration:
                         status_text += f"{self.name}'s {element.lower()} resistance fades.\n"
-                        default(effect=effect_name)
+                        status_lifecycle.clear_effect(self, effect_name)
             if self.magic_effects["Stone Skin"].active:
                 self.magic_effects["Stone Skin"].duration -= 1
                 if not self.magic_effects["Stone Skin"].duration:
                     status_text += f"{self.name}'s stone skin crumbles away.\n"
-                    default(effect="Stone Skin")
+                    status_lifecycle.clear_effect(self, "Stone Skin")
             if self.magic_effects["Nature Shield"].active:
                 self.magic_effects["Nature Shield"].duration -= 1
                 if (
@@ -823,7 +692,7 @@ class CharacterStatusMixin:
                     or not self.magic_effects["Nature Shield"].duration
                 ):
                     status_text += f"{self.name}'s nature shield fades.\n"
-                    default(effect="Nature Shield")
+                    status_lifecycle.clear_effect(self, "Nature Shield")
             if self.magic_effects["Tree of Life"].active:
                 heal = max(1, int(self.health.max * 0.33))
                 heal = min(heal, self.health.max - self.health.current)
@@ -836,22 +705,22 @@ class CharacterStatusMixin:
                 self.magic_effects["Tree of Life"].duration -= 1
                 if not self.magic_effects["Tree of Life"].duration:
                     status_text += f"{self.name} returns from the Tree of Life.\n"
-                    default(effect="Tree of Life")
+                    status_lifecycle.clear_effect(self, "Tree of Life")
             if self.magic_effects["Totem"].active:
                 self.magic_effects["Totem"].duration -= 1
                 if not self.magic_effects["Totem"].duration:
                     status_text += f"{self.name}'s totem crumbles to dust.\n"
-                    default(effect="Totem")
+                    status_lifecycle.clear_effect(self, "Totem")
             if self.magic_effects["Astral Shift"].active:
                 self.magic_effects["Astral Shift"].duration -= 1
                 if not self.magic_effects["Astral Shift"].duration:
                     status_text += f"{self.name} fully returns from the astral plane.\n"
-                    default(effect="Astral Shift")
+                    status_lifecycle.clear_effect(self, "Astral Shift")
             for stat in ["Attack", "Defense", "Magic", "Magic Defense", "Speed"]:
                 if self.stat_effects[stat].active:
                     self.stat_effects[stat].duration -= 1
                     if not self.stat_effects[stat].duration:
-                        default(effect=stat)
+                        status_lifecycle.clear_effect(self, stat)
             for attr in ("_guard_suppressed",):
                 value = int(getattr(self, attr, 0) or 0)
                 if value > 0:
@@ -880,12 +749,7 @@ class CharacterStatusMixin:
                 soul_siphon["turns"] = int(soul_siphon.get("turns", 0) or 0) - 1
                 if soul_siphon["turns"] <= 0:
                     delattr(self, "soul_siphon")
-            try:
-                from ..classes import promotion_kits
-
-                promotion_kits.tick_magical_invigoration(self)
-            except Exception:
-                pass
+            status_lifecycle.tick_magical_invigoration(self)
             if self.magic_effects["Regen"].active:
                 self.magic_effects["Regen"].duration -= 1
                 heal = self.magic_effects["Regen"].extra
@@ -895,13 +759,10 @@ class CharacterStatusMixin:
                 status_text += f"{self.name}'s health has regenerated by {heal}.\n"
                 if heal > 0:
                     self._emit_status_tick_event(self, "Regen", heal, "healing", source="Regen")
-                    try:
-                        status_text += promotion_kits.record_magical_invigoration_tick(self)
-                    except Exception:
-                        pass
+                    status_text += status_lifecycle.record_magical_invigoration_tick(self)
                 if not self.magic_effects["Regen"].duration:
                     status_text += "Regeneration spell ends.\n"
-                    default(effect="Regen")
+                    status_lifecycle.clear_effect(self, "Regen")
             if self.class_effects["Power Up"].active:
                 if _class_name(self) == "Lycan":
                     self.class_effects["Power Up"].duration += 1
@@ -947,7 +808,7 @@ class CharacterStatusMixin:
                             f"The shield around {self.name} explodes, dealing "
                             f"{self.class_effects['Power Up'].extra} damage to the enemy.\n"
                         )
-                    default(effect="Power Up")
+                    status_lifecycle.clear_effect(self, "Power Up")
             return status_text
 
     def special_effects(self, target: Character) -> str:
