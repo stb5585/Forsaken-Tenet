@@ -1689,7 +1689,7 @@ def test_ability_status_visuals_draw_shield_and_rising_smoke_without_duplicate_o
     circle_calls.clear()
     view.trigger_smoke_screen_visual("enemy")
     view._last_enemy_target_rect = pygame.Rect(200, 160, 120, 160)
-    view._render_ability_status_visuals(smoke_only, "enemy", include_duplicates=False)
+    view._render_ability_status_visuals(smoke_only, "enemy")
     assert circle_calls
 
 
@@ -1722,7 +1722,7 @@ def test_ability_status_visuals_do_not_draw_active_totem_marker(monkeypatch):
     monkeypatch.setattr("src.ui_pygame.gui.combat_view.pygame.time.get_ticks", lambda: 1000)
 
     view._last_enemy_target_rect = pygame.Rect(200, 160, 120, 160)
-    view._render_ability_status_visuals(character, "enemy", include_duplicates=False)
+    view._render_ability_status_visuals(character, "enemy")
 
     assert not rect_calls
     assert not ellipse_calls

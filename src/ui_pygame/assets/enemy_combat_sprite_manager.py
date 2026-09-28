@@ -101,7 +101,6 @@ class EnemyCombatSpriteManager:
 
     def __init__(
         self,
-        render_manager: object | None = None,
         *,
         sprite_root: Path | None = None,
         sprite_map_path: Path | None = None,

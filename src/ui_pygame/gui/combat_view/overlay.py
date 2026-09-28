@@ -219,11 +219,7 @@ class CombatOverlayMixin:
                         max_width=lane.width - 24,
                         max_rows=1,
                     )
-            self._render_ability_status_visuals(
-                enemy,
-                member.combatant_id,
-                include_duplicates=False,
-            )
+            self._render_ability_status_visuals(enemy, member.combatant_id)
 
         self._last_enemy_target_rect = self._enemy_target_rects.get(
             focus_target_id,
@@ -351,7 +347,7 @@ class CombatOverlayMixin:
                 eye_size // 2,
             )
 
-        self._render_ability_status_visuals(enemy, "enemy", include_duplicates=False)
+        self._render_ability_status_visuals(enemy, "enemy")
 
         hidden_by_invisibility = self._enemy_hidden_by_invisibility(
             enemy,
@@ -782,9 +778,8 @@ class CombatOverlayMixin:
                 slot_text, (rect.left + self.native_unit(5), rect.top + self.native_unit(4))
             )
             icon_key = getattr(action, "icon_key", "unknown") if action is not None else "unknown"
-            icon = icon_manager.get_icon(icon_key)
             icon_size = self.native_unit(34)
-            icon = pygame.transform.smoothscale(icon, (icon_size, icon_size))
+            icon = icon_manager.get_scaled_icon(icon_key, (icon_size, icon_size))
             self.screen.blit(
                 icon,
                 icon.get_rect(centerx=rect.centerx, top=rect.top + self.native_unit(18)),

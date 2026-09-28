@@ -26,3 +26,20 @@ def test_ability_icon_manager_returns_native_icon_and_fallback():
 
     assert manager.get_icon("skill_offense").get_size() == (32, 32)
     assert manager.get_icon("missing_semantic_type").get_size() == (32, 32)
+
+
+def test_ability_icon_manager_caches_scaled_icons(monkeypatch):
+    manager = AbilityIconManager()
+    calls = []
+    monkeypatch.setattr(
+        "src.ui_pygame.assets.ability_icon_manager.pygame.transform.smoothscale",
+        lambda icon, size: calls.append((icon, size)) or pygame.Surface(size, pygame.SRCALPHA),
+    )
+
+    first = manager.get_scaled_icon("skill_offense", (44, 44))
+    second = manager.get_scaled_icon("skill_offense", (44, 44))
+    resized = manager.get_scaled_icon("skill_offense", (52, 52))
+
+    assert first is second
+    assert resized is not first
+    assert [size for _icon, size in calls] == [(44, 44), (52, 52)]

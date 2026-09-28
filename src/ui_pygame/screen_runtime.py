@@ -91,9 +91,6 @@ class PointerPressFilter:
     click as held forever when a release event was not observed.
     """
 
-    def reset(self) -> None:
-        """Retain the public reset hook; batch filtering has no saved state."""
-
     def filter(self, events: list[pygame.event.Event]) -> list[pygame.event.Event]:
         """Return one primary press per press/release sequence in this batch."""
         filtered: list[pygame.event.Event] = []
@@ -117,11 +114,6 @@ class PointerPressFilter:
 
 
 _pointer_press_filter = PointerPressFilter()
-
-
-def reset_pointer_press_filter() -> None:
-    """Compatibility hook for application-session boundaries and tests."""
-    _pointer_press_filter.reset()
 
 
 _KEY_COMMANDS: dict[int, UiCommand] = {

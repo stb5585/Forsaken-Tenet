@@ -298,9 +298,7 @@ class CombatSpriteMixin:
         faded.set_alpha(int(56 + pulse * 42))
         return faded
 
-    def _render_ability_status_visuals(
-        self, character, target: str, *, include_duplicates: bool = True
-    ) -> None:
+    def _render_ability_status_visuals(self, character, target: str) -> None:
         rect = self._target_rect_for_effect(target)
         if self._magic_effect_active(character, "Mana Shield"):
             self._render_mana_shield_visual(

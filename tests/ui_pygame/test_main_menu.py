@@ -73,12 +73,13 @@ def test_main_menu_draw_and_navigation(monkeypatch):
     presenter = _make_presenter()
     background = DummySurface((1536, 1024), text="background")
     scaled_background = DummySurface((1050, 700), text="scaled")
+    scale_calls = []
     monkeypatch.setattr(
         "src.ui_pygame.gui.main_menu.pygame.image.load", lambda *_args, **_kwargs: background
     )
     monkeypatch.setattr(
         "src.ui_pygame.gui.main_menu.pygame.transform.smoothscale",
-        lambda _surface, _size: scaled_background,
+        lambda _surface, size: scale_calls.append(size) or scaled_background,
     )
     screen = main_menu.MainMenuScreen(presenter)
 
@@ -96,6 +97,15 @@ def test_main_menu_draw_and_navigation(monkeypatch):
     screen.current_option = 1
     screen.draw_background()
     assert presenter.screen.blit_calls[-1][0] is scaled_background
+    screen.draw_background()
+    assert presenter.screen.blit_calls[-1][0] is scaled_background
+    assert scale_calls == [(1050, 700)]
+
+    presenter.width, presenter.height = (1050, 700)
+    screen.width, screen.height = (1050, 700)
+    screen.draw_background()
+    assert len([call for call in presenter.screen.blit_calls if call[0] is scaled_background]) == 3
+    assert scale_calls == [(1050, 700), (1050, 700)]
 
     screen.draw_title()
     assert "The Forsaken Tenet" not in presenter.title_font.render_calls

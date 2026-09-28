@@ -42,6 +42,7 @@ class MainMenuScreen:
         self.normal_font = presenter.normal_font
         self.small_font = presenter.small_font
         self.background = self._load_background()
+        self._background_cache: dict[tuple[int, int], tuple[pygame.Surface, tuple[int, int]]] = {}
 
         self.current_option = 0
         self.options = []
@@ -106,7 +107,12 @@ class MainMenuScreen:
             self.screen.fill(self.BLACK)
             return
 
-        scaled, offset = self._scale_background(self.background)
+        cache_key = (self.width, self.height)
+        cached = self._background_cache.get(cache_key)
+        if cached is None:
+            cached = self._scale_background(self.background)
+            self._background_cache[cache_key] = cached
+        scaled, offset = cached
         self.screen.blit(scaled, offset)
 
     def draw_title(self):

@@ -62,9 +62,7 @@ class IconManager:
         icon_root: Path | None = None,
         *,
         mapping_path: Path | None = None,
-        icon_set: str | None = None,
     ) -> None:
-        self.icon_set = "default"
         self.icon_root = Path(icon_root or ICON_ROOT)
         self.mapping_path = Path(mapping_path or self.icon_root / "item_icon_map.json")
         self.frames: dict[str, IconFrame] = {}
