@@ -1081,7 +1081,6 @@ class TextureLibrary:
             self.get_panel_texture(panel_id, texture_key),
             quad,
             darkness=0.0,
-            output_size=view_size,
         )
         surface = self._shade_projected_surface(projected.surface, panel_id, darkness)
         projected = ProjectedSurface(surface=surface, topleft=projected.topleft)

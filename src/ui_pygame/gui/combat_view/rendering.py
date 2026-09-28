@@ -156,7 +156,7 @@ class CombatRenderingMixin:
                 eye_size // 2,
             )
 
-        self._render_ability_status_visuals(enemy, "enemy", include_duplicates=False)
+        self._render_ability_status_visuals(enemy, "enemy")
 
         # Enemy identity is concealed while genuine invisibility defeats Sight.
         font = pygame.font.Font(None, 32)

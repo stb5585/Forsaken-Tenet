@@ -90,7 +90,7 @@ class UltimateArmorShop:
 
         if confirm == 0:  # Yes
             # Show crafting animation
-            self._show_crafting_animation(armor_item.name)
+            self._show_crafting_animation()
 
             # Give the armor
             player_char.modify_inventory(armor_item)
@@ -106,7 +106,7 @@ class UltimateArmorShop:
                 "The Forge Master",
             )
 
-    def _show_crafting_animation(self, armor_name):
+    def _show_crafting_animation(self):
         """Show a crafting animation while the armor is being made."""
         screen = self.presenter.screen
         width = screen.get_width()

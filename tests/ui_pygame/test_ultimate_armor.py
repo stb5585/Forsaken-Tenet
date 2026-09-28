@@ -80,9 +80,7 @@ def test_visit_shop_handles_quest_looted_leave_and_confirm(monkeypatch):
     tile = SimpleNamespace(looted=False)
 
     crafted = []
-    monkeypatch.setattr(
-        shop, "_show_crafting_animation", lambda armor_name: crafted.append(armor_name)
-    )
+    monkeypatch.setattr(shop, "_show_crafting_animation", lambda: crafted.append(True))
 
     class MerlinRobe:
         def __init__(self):
@@ -112,7 +110,7 @@ def test_visit_shop_handles_quest_looted_leave_and_confirm(monkeypatch):
     presenter.menu_results = [0, 0]
     shop.visit_shop(player, tile)
     assert player.quest_dict["Side"]["He Ain't Heavy"]["Completed"] is True
-    assert crafted == ["Merlin Robe"]
+    assert crafted == [True]
     assert tile.looted is True
     assert player.inventory_added and player.inventory_added[0].name == "Merlin Robe"
     assert any(title == "Cloth Armor" for title, _message in presenter.messages)
@@ -167,6 +165,6 @@ def test_crafting_animation_renders_until_time_expires(monkeypatch):
 
     monkeypatch.setattr("src.ui_pygame.gui.ultimate_armor.time.time", fake_time)
 
-    shop._show_crafting_animation("Genji")
+    shop._show_crafting_animation()
     assert presenter.screen.fill_calls
     assert presenter.screen.blit_calls

@@ -41,7 +41,7 @@ def test_project_texture_to_core_panels():
             zone.left_wall,
             zone.right_wall,
         ):
-            projected = project_texture_to_quad(texture, quad, darkness=0.2, output_size=size)
+            projected = project_texture_to_quad(texture, quad, darkness=0.2)
             assert projected.surface.get_width() > 0
             assert projected.surface.get_height() > 0
             assert projected.surface.get_bounding_rect().width > 0
@@ -63,7 +63,7 @@ def test_project_texture_to_extrapolated_depth3_slot_quad():
         )
     )
 
-    projected = project_texture_to_quad(texture, quad, darkness=0.0, output_size=(1024, 768))
+    projected = project_texture_to_quad(texture, quad, darkness=0.0)
 
     assert projected.surface.get_width() > 0
     assert projected.surface.get_height() > 0

@@ -45,7 +45,6 @@ def project_texture_to_quad(
     texture: pygame.Surface,
     quad: Quad,
     darkness: float = 0.0,
-    output_size: tuple[int, int] | None = None,
 ) -> ProjectedSurface:
     """Project a texture into a local bounding-box surface that contains the quad."""
     points = list(quad.points)

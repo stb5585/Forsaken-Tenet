@@ -39,6 +39,7 @@ class AbilityIconManager:
         self.frames: dict[str, AbilityIconFrame] = {}
         self._atlas: pygame.Surface | None = None
         self._icons: dict[str, pygame.Surface] = {}
+        self._scaled_icons: dict[tuple[str, tuple[int, int]], pygame.Surface] = {}
         self._fallback: pygame.Surface | None = None
         self._load_manifest()
 
@@ -95,6 +96,16 @@ class AbilityIconManager:
             return self.fallback_surface()
         self._icons[icon_key] = icon
         return icon
+
+    def get_scaled_icon(self, icon_key: str, size: tuple[int, int]) -> pygame.Surface:
+        """Return a cached icon scaled for a stable render slot size."""
+        target = (max(1, int(size[0])), max(1, int(size[1])))
+        cache_key = (icon_key, target)
+        cached = self._scaled_icons.get(cache_key)
+        if cached is None:
+            cached = pygame.transform.smoothscale(self.get_icon(icon_key), target)
+            self._scaled_icons[cache_key] = cached
+        return cached
 
     def fallback_surface(self) -> pygame.Surface:
         """Return a deterministic missing-icon marker."""
