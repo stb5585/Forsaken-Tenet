@@ -16,6 +16,9 @@
   spell-contact roll instead of relying on random contact.
 - Reconciled active roadmap, mobile, GUI, ability, save-history, and tool
   documentation with the current implementation.
+- Extracted status-effect lifecycle hooks from `CharacterStatusMixin.effects()`
+  and removed silent suppression of combat-state, affliction, prone-recovery,
+  promotion, and charge-cleanup failures.
 
 ### Responsive UI, Quest, And Input Refinement
 
