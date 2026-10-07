@@ -260,6 +260,9 @@ revises them.
 - They could advise, warn, and challenge the civilization's conscience, but
   they held no formal power to govern, veto policy, command officials, or
   enforce their interpretations.
+- After the original exemplars, each Guardian alone selected and trained a
+  successor. No council, community vote, or supernatural sign confirmed the
+  transfer; every succession depended on personal judgment and intimate trust.
 - Verified history does not treat the principles or the Guardians as a divine
   creation or gift.
 - Later religions, including the Church of Elysia, recast that history as the
@@ -522,9 +525,8 @@ or boss gates merely to support prose.
 These decisions are important enough to settle during story development rather
 than infer during implementation:
 
-- whether the other Guardian lineages followed the Voluntas model, how their
-  later successors were selected, and whether succession gradually altered the
-  original custodial tradition;
+- whether generations of personal appointment preserved the original
+  custodial tradition or gradually introduced interpretive drift;
 - the identities, eras, motives, and crossing mechanics of the independent
   forces that exploited the Hollowing's temporal wounds;
 - the precise method Vesperion used to open the deeper threshold, the
