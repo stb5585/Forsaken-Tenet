@@ -215,31 +215,32 @@ revises them.
 - At the deepest historical foundation lies the Guardian complex built around
   the seven principles. Later cultures occupied, expanded, fortified, mined,
   sealed, and misinterpreted what they inherited.
-- The Hollowing damaged the boundaries between eras and opened temporal wounds
-  through the descent.
-- Independent forces later exploited those wounds. Some crossings may have
+- The Hollowing damaged the boundaries between realms and opened inter-realm
+  breaches through the descent.
+- Independent forces later exploited those breaches. Some crossings may have
   been organized invasions; others were accidental or opportunistic. Vesperion
   did not direct or control everything that passed through them.
-- Those crossings folded foreign creatures, materials, rooms, and possibly
-  entire side spaces into structures that were never designed to contain them.
-- The corruption explains why architecture, ecosystems, technology, and eras
-  can change abruptly without requiring one civilization to have built every
-  floor.
+- Those crossings folded creatures, materials, rooms, and possibly entire side
+  spaces from shadow realms, underworlds, and other planes into structures that
+  were never designed to contain them.
+- The corruption explains why architecture, ecosystems, technology, and
+  metaphysical rules can change abruptly without requiring one civilization to
+  have built every floor.
 - Silvana knew and used only the uppermost layers. The full depth and sacred
   purpose had been lost before Vesperion deliberately opened the current deeper
   threshold.
 - He engineered the opening to attract explorers, draw them into recovering
   the six relics, and provoke a final confrontation over Voluntas.
 - This plan does not mean Vesperion created the dungeon, caused every danger
-  within it, or controlled the independent forces exploiting its temporal
-  wounds.
+  within it, or controlled the independent forces exploiting its inter-realm
+  breaches.
 - Treasure seekers, soldiers, scholars, pilgrims, opportunists, and desperate
   people followed the new breach.
 - Most who descend do not return unchanged; many do not return at all.
-- The identities, eras, and motives of the forces that crossed the temporal
-  wounds and the exact mechanics of those crossings remain active canon
-  decisions. Early characters do not possess authoritative answers or know
-  Vesperion's role in the opening.
+- The identities, home realms, and motives of the forces that crossed the
+  inter-realm breaches and the exact mechanics of those crossings remain active
+  canon decisions. Early characters do not possess authoritative answers or
+  know Vesperion's role in the opening.
 
 ### The Six Guardians And Voluntas
 
@@ -326,9 +327,10 @@ revises them.
   decision to sever the principles from balance and choice for proof that
   meaningful choice itself was the defect.
 - Vesperion was mortal until the Hollowing tore him from natural life, made him
-  ageless, and bound his continued existence to the temporal wounds he created.
-- The Hollowing fractured temporal boundaries, but Vesperion did not command
-  every force that later crossed them.
+  ageless, and bound his continued existence to the inter-realm breaches he
+  created.
+- The Hollowing fractured the boundaries between realms, but Vesperion did not
+  command every force that later crossed them.
 - He deliberately opened the deeper threshold beneath Silvana to attract
   explorers, recover the six relics through their efforts, and provoke a final
   confrontation over Voluntas.
@@ -532,8 +534,8 @@ or boss gates merely to support prose.
 These decisions are important enough to settle during story development rather
 than infer during implementation:
 
-- the identities, eras, motives, and crossing mechanics of the independent
-  forces that exploited the Hollowing's temporal wounds;
+- the identities, home realms, motives, and crossing mechanics of the
+  independent forces that exploited the Hollowing's inter-realm breaches;
 - the precise method Vesperion used to open the deeper threshold, the
   conditions that made it possible, and why he chose this moment;
 - the names and prior relationships of the core Silvana cast;
