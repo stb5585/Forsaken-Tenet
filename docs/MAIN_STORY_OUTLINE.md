@@ -59,9 +59,12 @@ The dungeon is one place with several histories.
 4. **Temporal contamination:** the rebuilt civilization eventually divided
    into movements that each treated one tenet as a complete answer. Their rival
    orthodoxies turned valid principles into weapons, producing a second civil
-   war and social collapse. Vesperion treated that recurrence as proof that
-   voluntary restraint could never work and performed the Hollowing. The act
-   damaged the boundaries between eras, tore the previously mortal Vesperion
+   war and social collapse. The other six Guardian traditions rejected every
+   faction but withdrew into the Guardian complex, sealing the relics, records,
+   and teachings while the civilization fell outside. Vesperion treated both
+   the recurrence and that retreat as proof that voluntary restraint could
+   never work and performed the Hollowing. The act damaged the boundaries
+   between eras, tore the previously mortal Vesperion
    from natural life, made him ageless, and bound his existence to the resulting
    temporal wounds. Independent forces later exploited those wounds,
    introducing foreign creatures, technologies, environments, and side spaces
@@ -550,9 +553,9 @@ were incomplete.
 3. The player's earlier answers and build receive recognition where available.
 4. Six clues expose the deliberately empty seventh place.
 5. The Hooded Figure reveals Vesperion as the original Voluntas Guardian's
-   personally prepared first successor, the second collapse that broke his
-   faith in voluntary restraint, and how the Hollowing made him ageless by
-   binding him to its temporal wounds.
+   personally prepared first successor, the second collapse and Guardian
+   withdrawal that broke his faith in voluntary restraint, and how the
+   Hollowing made him ageless by binding him to its temporal wounds.
 6. Voluntas is understood as choosing, not collected as an object.
 7. The Acolyte confirms the cost of surrendering choice.
 8. Reflection tests whether the hero can affirm the path actually taken rather
