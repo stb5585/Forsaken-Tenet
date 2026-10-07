@@ -56,8 +56,11 @@ The dungeon is one place with several histories.
    civil power. The original Guardian of Voluntas personally prepared Vesperion
    as the office's first successor. Later religions recast this history as a
    divine gift.
-4. **Temporal contamination:** the Hollowing damaged the boundaries between
-   eras. It also tore the previously mortal Vesperion from natural life, made
+4. **Temporal contamination:** the rebuilt civilization eventually suffered a
+   second social collapse that repeated the failures the tenets were meant to
+   prevent. Vesperion treated that recurrence as proof that voluntary restraint
+   could never work and performed the Hollowing. The act damaged the boundaries
+   between eras, tore the previously mortal Vesperion from natural life, made
    him ageless, and bound his existence to the resulting temporal wounds.
    Independent forces later exploited those wounds, introducing foreign
    creatures, technologies, environments, and side spaces into the descent
@@ -540,8 +543,9 @@ were incomplete.
 3. The player's earlier answers and build receive recognition where available.
 4. Six clues expose the deliberately empty seventh place.
 5. The Hooded Figure reveals Vesperion as the original Voluntas Guardian's
-   personally prepared first successor and explains how the Hollowing made him
-   ageless by binding him to its temporal wounds.
+   personally prepared first successor, the second collapse that broke his
+   faith in voluntary restraint, and how the Hollowing made him ageless by
+   binding him to its temporal wounds.
 6. Voluntas is understood as choosing, not collected as an object.
 7. The Acolyte confirms the cost of surrendering choice.
 8. Reflection tests whether the hero can affirm the path actually taken rather
@@ -581,8 +585,8 @@ victory.
 1. The hero returns to the final threshold by choice rather than accident.
 2. Vesperion recognizes the restored pattern and the self the hero affirmed.
 3. The Busboy disguise is fully acknowledged.
-4. Vesperion reframes Joffrey, the Waitress, the Acolyte, and the town's losses
-   as proof that freedom is cruelty.
+4. Vesperion reframes the second collapse, Joffrey, the Waitress, the Acolyte,
+   and the town's losses as proof that freedom is cruelty.
 5. The hero's answer is expressed through accumulated actions and selected
    echoes rather than one canon speech assigned to every build.
 6. Guardian counters and Choose Fate turn prior story trials into readable
