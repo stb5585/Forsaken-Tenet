@@ -62,15 +62,16 @@ The dungeon is one place with several histories.
    war and social collapse. The other six Guardian traditions rejected every
    faction but withdrew into the Guardian complex, sealing the relics, records,
    and teachings while the civilization fell outside. When Vesperion performed
-   the Hollowing, the six custodians chose to hold the seals and died protecting
-   the complex. Each voluntarily impressed a memory-echo into their relic before
-   death. Vesperion treated both the recurrence and that retreat as proof that
-   voluntary restraint could never work. The Hollowing damaged the boundaries
-   between eras, tore the previously mortal Vesperion from natural life, made
-   him ageless, and bound his existence to the resulting temporal wounds.
-   Independent forces later exploited those wounds,
-   introducing foreign creatures, technologies, environments, and side spaces
-   into the descent without all of them serving Vesperion.
+   the Hollowing, he knew the six custodians would choose to hold the seals and
+   that doing so would kill them. He accepted their deaths as a necessary cost
+   and proceeded. The six died protecting the complex after each voluntarily
+   impressed a memory-echo into their relic. Vesperion treated both the
+   recurrence and the retreat as proof that voluntary restraint could never
+   work. The Hollowing damaged the boundaries between eras, tore the previously
+   mortal Vesperion from natural life, made him ageless, and bound his existence
+   to the resulting temporal wounds. Independent forces later exploited those
+   wounds, introducing foreign creatures, technologies, environments, and side
+   spaces into the descent without all of them serving Vesperion.
 
 Each visible relic arc should preserve a distinct trace of that civil war: a
 law, battlefield, memorial, propaganda fragment, corrupted rite, or ruined
@@ -557,8 +558,9 @@ were incomplete.
 4. Six clues expose the deliberately empty seventh place.
 5. The Hooded Figure reveals Vesperion as the original Voluntas Guardian's
    personally prepared first successor, the second collapse and Guardian
-   withdrawal that broke his faith in voluntary restraint, and how the
-   Hollowing made him ageless by binding him to its temporal wounds.
+   withdrawal that broke his faith in voluntary restraint, his knowing
+   acceptance of the six custodians' deaths, and how the Hollowing made him
+   ageless by binding him to its temporal wounds.
 6. Voluntas is understood as choosing, not collected as an object.
 7. The Acolyte confirms the cost of surrendering choice.
 8. Reflection tests whether the hero can affirm the path actually taken rather
@@ -598,8 +600,9 @@ victory.
 1. The hero returns to the final threshold by choice rather than accident.
 2. Vesperion recognizes the restored pattern and the self the hero affirmed.
 3. The Busboy disguise is fully acknowledged.
-4. Vesperion reframes the second collapse, Joffrey, the Waitress, the Acolyte,
-   and the town's losses as proof that freedom is cruelty.
+4. Vesperion defends accepting the six custodians' deaths, then reframes the
+   second collapse, Joffrey, the Waitress, the Acolyte, and the town's losses as
+   proof that freedom is cruelty.
 5. The hero's answer is expressed through accumulated actions and selected
    echoes rather than one canon speech assigned to every build.
 6. Guardian counters and Choose Fate turn prior story trials into readable
