@@ -217,9 +217,11 @@ revises them.
   sealed, and misinterpreted what they inherited.
 - The Hollowing damaged the boundaries between realms and opened inter-realm
   breaches through the descent.
-- Independent forces later exploited those breaches. Some crossings may have
-  been organized invasions; others were accidental or opportunistic. Vesperion
-  did not direct or control everything that passed through them.
+- Many unrelated forces later crossed those breaches independently: beasts,
+  refugees, raiders, cults, explorers, and other opportunists from several
+  realms. Some crossings were deliberate, while others were accidental.
+- No single realm, invasion, or commanding power controls the contamination,
+  and Vesperion did not direct everything that passed through the breaches.
 - Those crossings folded creatures, materials, rooms, and possibly entire side
   spaces from shadow realms, underworlds, and other planes into structures that
   were never designed to contain them.
@@ -237,10 +239,10 @@ revises them.
 - Treasure seekers, soldiers, scholars, pilgrims, opportunists, and desperate
   people followed the new breach.
 - Most who descend do not return unchanged; many do not return at all.
-- The identities, home realms, and motives of the forces that crossed the
-  inter-realm breaches and the exact mechanics of those crossings remain active
-  canon decisions. Early characters do not possess authoritative answers or
-  know Vesperion's role in the opening.
+- Which recurring realms and groups deserve names, why particular travelers
+  crossed, and the exact mechanics of the breaches remain active canon
+  decisions. Early characters do not possess authoritative answers or know
+  Vesperion's role in the opening.
 
 ### The Six Guardians And Voluntas
 
@@ -534,8 +536,8 @@ or boss gates merely to support prose.
 These decisions are important enough to settle during story development rather
 than infer during implementation:
 
-- the identities, home realms, motives, and crossing mechanics of the
-  independent forces that exploited the Hollowing's inter-realm breaches;
+- which recurring realms and inter-realm groups deserve named histories, what
+  motivates them, and how the breaches behave;
 - the precise method Vesperion used to open the deeper threshold, the
   conditions that made it possible, and why he chose this moment;
 - the names and prior relationships of the core Silvana cast;
