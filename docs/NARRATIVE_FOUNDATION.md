@@ -243,9 +243,14 @@ revises them.
 
 ### The Six Guardians And Voluntas
 
-- The ancient civilization discovered seven principles and chose Guardians to
-  embody, interpret, and protect them. Verified history does not treat the
-  principles as a divine creation or gift.
+- The ancient civilization discovered the seven principles while rebuilding
+  from a devastating internal conflict and social near-collapse.
+- Survivors studied the failures that produced the crisis and formalized the
+  principles as mutually balancing safeguards. No one principle was meant to
+  rule without the restraint and perspective of the other six.
+- The civilization then chose Guardians to embody, interpret, and protect the
+  principles. Verified history does not treat them as a divine creation or
+  gift.
 - Later religions, including the Church of Elysia, recast that history as the
   bestowal of sacred principles by a deity. This theology neither proves nor
   disproves Elysia's existence; it is not a literal account of the tenets'
@@ -473,8 +478,8 @@ or boss gates merely to support prose.
 These decisions are important enough to settle during story development rather
 than infer during implementation:
 
-- how the ancient civilization discovered the seven principles and chose its
-  original Guardians;
+- how the ancient civilization chose its original Guardians and what authority
+  those offices held during the post-crisis reconstruction;
 - the identities, eras, motives, and crossing mechanics of the independent
   forces that exploited the Hollowing's temporal wounds;
 - the precise method Vesperion used to open the deeper threshold, the
