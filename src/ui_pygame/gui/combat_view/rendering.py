@@ -532,7 +532,7 @@ class CombatRenderingMixin:
         # Brief pause while still pumping events to keep the window responsive.
         flash_clock = pygame.time.Clock()
         elapsed = 0
-        duration_ms = 180
+        duration_ms = 120
         while elapsed < duration_ms:
             for event in get_events():
                 if event.type == pygame.QUIT:

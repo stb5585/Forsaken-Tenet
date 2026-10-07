@@ -39,6 +39,9 @@ class RecordingFont:
         self.render_calls.append(text)
         return DummySurface((max(8, len(text) * 8), 20), text=text)
 
+    def get_height(self):
+        return 20
+
 
 class RecordingScreen:
     def __init__(self, size=(800, 600)):
@@ -112,6 +115,10 @@ def test_load_game_draw_helpers_and_data_loading(monkeypatch):
         cls=SimpleNamespace(name="Warrior"),
         level=SimpleNamespace(level=5, exp=123),
         gold=77,
+        location_z=2,
+        health=SimpleNamespace(current=31, max=40),
+        mana=SimpleNamespace(current=12, max=20),
+        combat=SimpleNamespace(attack=14, defense=9, magic=6, magic_def=8),
         stats=SimpleNamespace(strength=10, intel=9, wisdom=8, con=11, charisma=7, dex=6),
         portrait_variant=3,
     )
@@ -142,6 +149,9 @@ def test_load_game_draw_helpers_and_data_loading(monkeypatch):
     assert screen.save_data[0]["sex"] == "Female"
     assert screen.save_data[0]["portrait_variant"] == 3
     assert screen.save_data[0]["stats"]["STR"] == 10
+    assert screen.save_data[0]["location"] == "Dungeon Level 2"
+    assert screen.save_data[0]["vitals"] == {"HP": "31/40", "MP": "12/20"}
+    assert screen.save_data[0]["combat_stats"]["Attack"] == 14
     assert screen.save_data[1]["name"] == "Corrupted save"
     assert screen.save_data[1]["loadable"] is False
     assert screen.save_data[2]["name"] == "Error loading"
@@ -158,14 +168,18 @@ def test_load_game_draw_helpers_and_data_loading(monkeypatch):
         getattr(surface, "text", None) == "scaled-portrait"
         for surface, _pos in presenter.screen.blit_calls
     )
-    assert "Level: 5" in presenter.small_font.render_calls
-    assert "Race: Human" in presenter.small_font.render_calls
-    assert "Sex: Female" in presenter.small_font.render_calls
-    assert "Class: Warrior" in presenter.small_font.render_calls
-    assert "Experience: 123" in presenter.small_font.render_calls
-    assert "Gold: 77" in presenter.small_font.render_calls
-    assert "Stats:" in presenter.small_font.render_calls
+    assert "Character" in presenter.normal_font.render_calls
+    assert "LEVEL:" in presenter.small_font.render_calls
+    assert "Human" in presenter.small_font.render_calls
+    assert "Female" in presenter.small_font.render_calls
+    assert "Warrior" in presenter.small_font.render_calls
+    assert "123 XP" in presenter.small_font.render_calls
+    assert "77G" in presenter.small_font.render_calls
+    assert "Core Attributes" in presenter.normal_font.render_calls
     assert "STR: 10" in presenter.small_font.render_calls
+    assert "Combat" in presenter.normal_font.render_calls
+    assert "HP: 31/40" in presenter.small_font.render_calls
+    assert "Attack: 14" in presenter.small_font.render_calls
 
     screen.draw_file_list()
     assert "Save Files" in presenter.small_font.render_calls

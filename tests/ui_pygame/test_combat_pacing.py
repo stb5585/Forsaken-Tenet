@@ -14,10 +14,10 @@ from src.ui_pygame.gui.combat_view.animator import DEATH_ANIMATION_FRAMES
 
 def test_noninteractive_combat_waits_are_reduced():
     assert COMBAT_START_TRANSITION_FRAMES == 12
-    assert ENEMY_PRE_ACTION_HOLD_FRAMES == 15
-    assert ENEMY_RESULT_HOLD_FRAMES == 24
-    assert POST_TURN_DELAY_FRAMES == 3
-    assert DEFEAT_PAUSE_MS == 450
-    assert FLEE_PAUSE_MS == 350
-    assert POST_DEATH_PAUSE_MS == 75
-    assert DEATH_ANIMATION_FRAMES == 36
+    assert ENEMY_PRE_ACTION_HOLD_FRAMES == 6
+    assert ENEMY_RESULT_HOLD_FRAMES == 10
+    assert POST_TURN_DELAY_FRAMES == 1
+    assert DEFEAT_PAUSE_MS == 250
+    assert FLEE_PAUSE_MS == 200
+    assert POST_DEATH_PAUSE_MS == 40
+    assert DEATH_ANIMATION_FRAMES == 18

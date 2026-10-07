@@ -457,7 +457,7 @@ class ShopScreen(TownScreenBase):
             ):
                 equipped_text = self.normal_font.render("Already Equipped", True, self.colors.GOLD)
                 equipped_rect = equipped_text.get_rect(
-                    center=(self.mod_rect.centerx, self.mod_rect.top + 34)
+                    center=(self.mod_rect.centerx, self.mod_rect.centery)
                 )
                 self.screen.blit(equipped_text, equipped_rect)
 
