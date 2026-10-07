@@ -75,8 +75,8 @@ The dungeon is one place with several histories.
    work. The Hollowing damaged the boundaries between realms, tore the
    previously mortal Vesperion from natural life, made him ageless, and bound
    his existence to the resulting inter-realm breaches. The breach network is
-   hybrid: a few anchored breaches permit repeat two-way travel and can support
-   complete side realms, while smaller tears open unpredictably, shift
+   hybrid: exactly two anchored breaches permit repeat two-way travel and can
+   support complete side realms, while smaller tears open unpredictably, shift
    location, or collapse and may strand whatever passes through them. Beasts,
    refugees, raiders, cults, explorers, and other opportunists from shadow
    realms, underworlds, and other planes later crossed independently. Some
@@ -87,9 +87,8 @@ The dungeon is one place with several histories.
 Inter-realm content shares a cause but not an allegiance. Each recurring group
 or side space should have a local reason for crossing, surviving, exploiting the
 dungeon, or seeking a return route rather than being folded into one invasion.
-The existing Realm of Cambion portal route is the clearest current candidate
-for a major stable anchor; treating it as settled canon remains a separate
-story decision.
+The existing Realm of Cambion portal route is one of the two stable anchors.
+The identity and thematic role of the second anchor remain to be settled.
 
 Each visible relic arc should preserve a distinct trace of that civil war: a
 law, battlefield, memorial, propaganda fragment, corrupted rite, or ruined
