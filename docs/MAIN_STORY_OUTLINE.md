@@ -56,15 +56,22 @@ The dungeon is one place with several histories.
    civil power. The original Guardian of Voluntas personally prepared Vesperion
    as the office's first successor. Later religions recast this history as a
    divine gift.
-4. **Temporal contamination:** the rebuilt civilization eventually suffered a
-   second social collapse that repeated the failures the tenets were meant to
-   prevent. Vesperion treated that recurrence as proof that voluntary restraint
-   could never work and performed the Hollowing. The act damaged the boundaries
-   between eras, tore the previously mortal Vesperion from natural life, made
-   him ageless, and bound his existence to the resulting temporal wounds.
-   Independent forces later exploited those wounds, introducing foreign
-   creatures, technologies, environments, and side spaces into the descent
-   without all of them serving Vesperion.
+4. **Temporal contamination:** the rebuilt civilization eventually divided
+   into movements that each treated one tenet as a complete answer. Their rival
+   orthodoxies turned valid principles into weapons, producing a second civil
+   war and social collapse. Vesperion treated that recurrence as proof that
+   voluntary restraint could never work and performed the Hollowing. The act
+   damaged the boundaries between eras, tore the previously mortal Vesperion
+   from natural life, made him ageless, and bound his existence to the resulting
+   temporal wounds. Independent forces later exploited those wounds,
+   introducing foreign creatures, technologies, environments, and side spaces
+   into the descent without all of them serving Vesperion.
+
+Each visible relic arc should preserve a distinct trace of that civil war: a
+law, battlefield, memorial, propaganda fragment, corrupted rite, or ruined
+community showing how a valid principle became destructive when treated as
+complete. The evidence must condemn the severing of balance and choice rather
+than imply that any principle is inherently evil.
 
 The current crisis begins when Vesperion deliberately opens a deeper threshold
 beyond the upper works Silvana knew how to use. He intends to attract explorers,
