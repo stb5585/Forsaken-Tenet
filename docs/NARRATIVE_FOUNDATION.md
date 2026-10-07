@@ -226,14 +226,20 @@ revises them.
   can change abruptly without requiring one civilization to have built every
   floor.
 - Silvana knew and used only the uppermost layers. The full depth and sacred
-  purpose had been lost before the current deeper threshold opened.
+  purpose had been lost before Vesperion deliberately opened the current deeper
+  threshold.
+- He engineered the opening to attract explorers, draw them into recovering
+  the six relics, and provoke a final confrontation over Voluntas.
+- This plan does not mean Vesperion created the dungeon, caused every danger
+  within it, or controlled the independent forces exploiting its temporal
+  wounds.
 - Treasure seekers, soldiers, scholars, pilgrims, opportunists, and desperate
   people followed the new breach.
 - Most who descend do not return unchanged; many do not return at all.
 - The identities, eras, and motives of the forces that crossed the temporal
-  wounds, the exact mechanics of those crossings, and the reason the deeper
-  threshold opened now remain active canon decisions. Early characters do not
-  possess authoritative answers.
+  wounds and the exact mechanics of those crossings remain active canon
+  decisions. Early characters do not possess authoritative answers or know
+  Vesperion's role in the opening.
 
 ### The Six Guardians And Voluntas
 
@@ -264,6 +270,9 @@ revises them.
 - He believes his position is compassionate.
 - The Hollowing fractured temporal boundaries, but Vesperion did not command
   every force that later crossed them.
+- He deliberately opened the deeper threshold beneath Silvana to attract
+  explorers, recover the six relics through their efforts, and provoke a final
+  confrontation over Voluntas.
 - He is not a cackling destroyer and should not speak like the legacy Devil.
 - He uses the Busboy disguise to remain near the hero and observe how grief,
   blame, love, ambition, and uncertainty shape decisions.
@@ -468,9 +477,8 @@ than infer during implementation:
   original Guardians;
 - the identities, eras, motives, and crossing mechanics of the independent
   forces that exploited the Hollowing's temporal wounds;
-- what caused the sealed deeper threshold to open now;
-- how much Vesperion influenced the current opening versus exploiting it
-  afterward;
+- the precise method Vesperion used to open the deeper threshold, the
+  conditions that made it possible, and why he chose this moment;
 - the names and prior relationships of the core Silvana cast;
 - Joffrey's role, motive, and witnessed pre-tragedy scenes;
 - the Acolyte's era, original purpose, and surviving trail;
