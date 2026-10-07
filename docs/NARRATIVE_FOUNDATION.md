@@ -215,9 +215,13 @@ revises them.
 - At the deepest historical foundation lies the Guardian complex built around
   the seven principles. Later cultures occupied, expanded, fortified, mined,
   sealed, and misinterpreted what they inherited.
-- A later temporal incursion or invasion contaminated parts of the descent.
-  It folded foreign creatures, materials, rooms, and possibly entire side
-  spaces into structures that were never designed to contain them.
+- The Hollowing damaged the boundaries between eras and opened temporal wounds
+  through the descent.
+- Independent forces later exploited those wounds. Some crossings may have
+  been organized invasions; others were accidental or opportunistic. Vesperion
+  did not direct or control everything that passed through them.
+- Those crossings folded foreign creatures, materials, rooms, and possibly
+  entire side spaces into structures that were never designed to contain them.
 - The corruption explains why architecture, ecosystems, technology, and eras
   can change abruptly without requiring one civilization to have built every
   floor.
@@ -226,13 +230,20 @@ revises them.
 - Treasure seekers, soldiers, scholars, pilgrims, opportunists, and desperate
   people followed the new breach.
 - Most who descend do not return unchanged; many do not return at all.
-- The precise source and mechanics of the temporal incursion, the ancient
-  deity's relationship to the Guardians, and the reason the deeper threshold
-  opened now remain active canon decisions. Early characters do not possess
-  authoritative answers.
+- The identities, eras, and motives of the forces that crossed the temporal
+  wounds, the exact mechanics of those crossings, and the reason the deeper
+  threshold opened now remain active canon decisions. Early characters do not
+  possess authoritative answers.
 
 ### The Six Guardians And Voluntas
 
+- The ancient civilization discovered seven principles and chose Guardians to
+  embody, interpret, and protect them. Verified history does not treat the
+  principles as a divine creation or gift.
+- Later religions, including the Church of Elysia, recast that history as the
+  bestowal of sacred principles by a deity. This theology neither proves nor
+  disproves Elysia's existence; it is not a literal account of the tenets'
+  historical origin.
 - The known relics preserve six principles: Self, Order, Nature, Love,
   Guidance, and Endurance.
 - The six are safeguards and witnesses, not sufficient answers by themselves.
@@ -243,12 +254,16 @@ revises them.
 - Vesperion was once the Guardian of Voluntas.
 - Through the Hollowing, he removed the principle from recorded history and
   left the remaining six easier to convert into instruments of control.
+- That erasure allowed later traditions to remember only six divine gifts,
+  concealing the missing Guardian inside sincere inherited belief.
 
 ### Vesperion
 
 - Vesperion is associated with the Evening Star, radiant twilight, silence,
   certainty, control, and mercy through removal of choice.
 - He believes his position is compassionate.
+- The Hollowing fractured temporal boundaries, but Vesperion did not command
+  every force that later crossed them.
 - He is not a cackling destroyer and should not speak like the legacy Devil.
 - He uses the Busboy disguise to remain near the hero and observe how grief,
   blame, love, ambition, and uncertainty shape decisions.
@@ -449,11 +464,13 @@ or boss gates merely to support prose.
 These decisions are important enough to settle during story development rather
 than infer during implementation:
 
-- the identity of the ancient deity and whether the seven principles were
-  created, discovered, embodied, or entrusted to the Guardians;
-- the source, era, and mechanics of the temporal incursion or invasion;
+- how the ancient civilization discovered the seven principles and chose its
+  original Guardians;
+- the identities, eras, motives, and crossing mechanics of the independent
+  forces that exploited the Hollowing's temporal wounds;
 - what caused the sealed deeper threshold to open now;
-- how much Vesperion influenced the opening versus exploiting it afterward;
+- how much Vesperion influenced the current opening versus exploiting it
+  afterward;
 - the names and prior relationships of the core Silvana cast;
 - Joffrey's role, motive, and witnessed pre-tragedy scenes;
 - the Acolyte's era, original purpose, and surviving trail;
