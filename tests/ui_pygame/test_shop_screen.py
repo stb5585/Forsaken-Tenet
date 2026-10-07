@@ -23,6 +23,8 @@ class RenderedText:
 
     def get_rect(self, **kwargs):
         rect = SimpleNamespace(x=0, y=0, width=self.get_width(), height=self.get_height())
+        if "center" in kwargs:
+            rect.center = kwargs["center"]
         if "centerx" in kwargs:
             rect.centerx = kwargs["centerx"]
         if "centery" in kwargs:
@@ -486,6 +488,25 @@ def test_draw_mod_uses_cache_and_handles_cant_equip_and_errors(monkeypatch):
         equip_check=lambda _item, _slot: (_ for _ in ()).throw(AttributeError("boom"))
     )
     screen.draw_mod()
+
+
+def test_draw_mod_centers_already_equipped_feedback(monkeypatch):
+    screen = _make_shop(monkeypatch)
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.shop_screen.pygame.draw.rect", lambda *_args, **_kwargs: None
+    )
+    item = DummyItem("Silver Ring", typ="Accessory", subtyp="Ring")
+    screen.item_list = [("Silver Ring", item, 75, 0)]
+    screen.player_char.equipment = {"Ring": item}
+
+    screen.draw_mod()
+
+    equipped_rect = next(
+        position
+        for surface, position in screen.screen.blit_calls
+        if getattr(surface, "text", None) == "Already Equipped"
+    )
+    assert equipped_rect.center == (screen.mod_rect.centerx, screen.mod_rect.centery)
 
 
 def test_navigation_helpers_support_selection_wrapping_and_scroll(monkeypatch):

@@ -679,7 +679,12 @@ class PygameGame:
             state = town.ensure_bounty_board_state(self.player_char)
             if not state["initialized"]:
                 town.mark_bounty_board_restock(self.player_char)
-            return
+                return
+            if town._player_level(self.player_char) <= state["last_restock_level"]:
+                return
+            # Board offers have not been accepted yet, so replace them when a
+            # level-up changes the appropriate bounty enemy band. Accepted
+            # bounties remain in the player's quest dictionary.
         self.bounties = {}
         bounty_board = town.BountyBoard()
         bounty_board.generate_bounties(self)

@@ -145,7 +145,7 @@ class DummyCombatView:
 
 def test_combat_entry_and_turn_delay_constants():
     assert combat_manager.COMBAT_START_TRANSITION_FRAMES == 12
-    assert combat_manager.POST_TURN_DELAY_FRAMES == 3
+    assert combat_manager.POST_TURN_DELAY_FRAMES == 1
 
 
 class DummyLevelUpScreen:

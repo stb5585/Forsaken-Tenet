@@ -18,7 +18,7 @@ from .constants import (
 )
 from .helpers import _player_facing_victory_line
 
-POST_DEATH_PAUSE_MS = 75
+POST_DEATH_PAUSE_MS = 40
 
 
 class CombatOutcomeMixin:

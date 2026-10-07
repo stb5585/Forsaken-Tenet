@@ -41,6 +41,7 @@ class LoadGameScreen:
 
         # Fonts
         self.title_font = presenter.title_font
+        self.large_font = getattr(presenter, "large_font", presenter.normal_font)
         self.normal_font = presenter.normal_font
         self.small_font = presenter.small_font
 
@@ -83,7 +84,7 @@ class LoadGameScreen:
         self.screen.blit(title, title_rect)
 
     def draw_char_info(self):
-        """Draw the character information panel."""
+        """Draw the selected save in the Character Menu's portrait-and-summary style."""
         pygame.draw.rect(self.screen, self.BLACK, self.char_info_rect)
         pygame.draw.rect(self.screen, self.BORDER_COLOR, self.char_info_rect, 2)
 
@@ -92,62 +93,90 @@ class LoadGameScreen:
 
         info = self.save_data[self.current_selection]
 
-        x = self.char_info_rect.left + 20
-        y = self.char_info_rect.top + 20
-        line_height = 30
+        padding = 20
+        title_y = self.char_info_rect.top + 14
+        title = self.normal_font.render("Character", True, self.GOLD)
+        self.screen.blit(title, (self.char_info_rect.left + padding, title_y))
+
+        content_top = title_y + self.normal_font.get_height() + 16
+        content_left = self.char_info_rect.left + padding
+        content_width = self.char_info_rect.width - (padding * 2)
+        portrait_column_width = min(225, max(110, content_width * 2 // 5))
 
         portrait = self._portrait_for_save_info(info)
-        details_x = x
         if portrait is not None:
-            target_h = min(180, self.char_info_rect.height // 3)
             src_w = max(1, portrait.get_width())
             src_h = max(1, portrait.get_height())
-            target_w = max(1, int(src_w * (target_h / src_h)))
-            portrait_rect = pygame.Rect(x, y, target_w, target_h)
+            target_w = min(portrait_column_width, max(1, int(src_w * 400 / src_h)))
+            target_h = min(400, max(1, int(src_h * (target_w / src_w))))
+            portrait_rect = pygame.Rect(content_left, content_top, target_w, target_h)
+            pygame.draw.rect(self.screen, self.GRAY, portrait_rect)
             try:
                 portrait = pygame.transform.smoothscale(portrait, (target_w, target_h))
             except Exception:
                 pass
             self.screen.blit(portrait, portrait_rect)
-            details_x = portrait_rect.right + 18
+            pygame.draw.rect(self.screen, self.BORDER_COLOR, portrait_rect, 2)
 
-        # Character name (bold/larger)
-        name_text = self.normal_font.render(info["name"], True, self.GOLD)
+        details_x = content_left + portrait_column_width + 18
+        details_width = self.char_info_rect.right - padding - details_x
+        y = content_top
+        name_text = self.large_font.render(info["name"], True, self.GOLD)
         self.screen.blit(name_text, (details_x, y))
-        y += line_height * 1.5
+        y += self.large_font.get_height() + 12
 
-        # Character details
-        details = [
-            f"Level: {info['level']}",
-            f"Race: {info['race']}",
-            f"Sex: {info.get('sex', 'Unknown')}",
-            f"Class: {info['class']}",
+        summary_rows = [
+            ("LEVEL", info["level"]),
+            ("RACE", info["race"]),
+            ("CLASS", info["class"]),
+            ("SEX", info.get("sex", "Unknown")),
+            ("EXPERIENCE", f"{info.get('experience', 0):,} XP"),
+            ("GOLD", f"{info.get('gold', 0):,}G"),
         ]
+        if info.get("location"):
+            summary_rows.append(("LOCATION", info["location"]))
+        y = self._draw_preview_rows(summary_rows, details_x, y, details_width)
 
-        if "experience" in info:
-            details.append(f"Experience: {info['experience']:,}")
-
-        if "gold" in info:
-            details.append(f"Gold: {info['gold']}")
-
-        for detail in details:
-            text = self.small_font.render(detail, True, self.WHITE)
-            self.screen.blit(text, (details_x, y))
-            y += line_height
-
-        # Stats if available
-        if "stats" in info and info["stats"]:
+        if info.get("stats"):
             y += 10
-            if portrait is not None:
-                y = max(y, self.char_info_rect.top + 20 + target_h + 18)
-            stats_header = self.small_font.render("Stats:", True, self.GOLD)
-            self.screen.blit(stats_header, (x, y))
-            y += line_height
+            section = self.normal_font.render("Core Attributes", True, self.GOLD)
+            self.screen.blit(section, (details_x, y))
+            y += self.normal_font.get_height() + 6
+            stat_rows = list(info["stats"].items())
+            y = self._draw_preview_grid(stat_rows, details_x, y, details_width)
 
-            for stat_name, stat_value in info["stats"].items():
-                stat_text = self.small_font.render(f"{stat_name}: {stat_value}", True, self.WHITE)
-                self.screen.blit(stat_text, (x, y))
-                y += line_height - 5
+        detail_rows = [
+            *info.get("vitals", {}).items(),
+            *info.get("combat_stats", {}).items(),
+        ]
+        if detail_rows:
+            y += 10
+            section = self.normal_font.render("Combat", True, self.GOLD)
+            self.screen.blit(section, (details_x, y))
+            y += self.normal_font.get_height() + 6
+            self._draw_preview_grid(detail_rows, details_x, y, details_width)
+
+    def _draw_preview_rows(self, rows, x, y, width):
+        """Draw right-aligned value rows for the save preview."""
+        for label, value in rows:
+            label_text = self.small_font.render(f"{label}:", True, self.GRAY)
+            value_text = self.small_font.render(str(value), True, self.WHITE)
+            self.screen.blit(label_text, (x, y))
+            value_x = max(x, x + width - value_text.get_width())
+            self.screen.blit(value_text, (value_x, y))
+            y += self.small_font.get_height() + 4
+        return y
+
+    def _draw_preview_grid(self, rows, x, y, width):
+        """Draw compact preview rows, collapsing to one column on narrow screens."""
+        column_count = 2 if width >= 400 else 1
+        column_width = max(1, width // column_count)
+        for index in range(0, len(rows), column_count):
+            for column, (label, value) in enumerate(rows[index : index + column_count]):
+                text = self.small_font.render(f"{label}: {value}", True, self.WHITE)
+                self.screen.blit(text, (x + (column * column_width), y))
+            y += self.small_font.get_height() + 4
+        return y
 
     def _portrait_for_save_info(self, info):
         """Return a save preview portrait, falling back silently when unavailable."""
@@ -388,6 +417,26 @@ class LoadGameScreen:
                         "file": save_file,
                         "loadable": True,
                     }
+
+                    location_z = getattr(player_char, "location_z", 0)
+                    char_data["location"] = (
+                        "Town" if location_z == 0 else f"Dungeon Level {location_z}"
+                    )
+                    health = getattr(player_char, "health", None)
+                    mana = getattr(player_char, "mana", None)
+                    if health is not None or mana is not None:
+                        char_data["vitals"] = {
+                            "HP": f"{getattr(health, 'current', 0)}/{getattr(health, 'max', 0)}",
+                            "MP": f"{getattr(mana, 'current', 0)}/{getattr(mana, 'max', 0)}",
+                        }
+                    combat = getattr(player_char, "combat", None)
+                    if combat is not None:
+                        char_data["combat_stats"] = {
+                            "Attack": getattr(combat, "attack", 0),
+                            "Defense": getattr(combat, "defense", 0),
+                            "Magic": getattr(combat, "magic", 0),
+                            "Magic Def": getattr(combat, "magic_def", 0),
+                        }
 
                     # Try to get stats
                     if hasattr(player_char, "stats"):

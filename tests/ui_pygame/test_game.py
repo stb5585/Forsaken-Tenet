@@ -325,6 +325,32 @@ def test_debug_level_up_initialize_managers_and_update_bounties(monkeypatch):
     game.update_bounties()
     assert game.bounties["Goblin"]["reward"] == 50
 
+    class LevelAwareBountyBoard:
+        def __init__(self):
+            self.bounties = []
+
+        def generate_bounties(self, game_obj):
+            enemy_level = game_obj.player_char.player_level() // 10
+            self.bounties = [
+                {"enemy": SimpleNamespace(name=f"Level {enemy_level} Enemy"), "reward": 75}
+            ]
+
+    game.player_char.player_level = lambda: 10
+    game.player_char.quest_dict = {"Bounty": {}}
+    game.player_char.bounty_board_state = {
+        "initialized": True,
+        "last_restock_level": 9,
+        "last_restock_steps": 0,
+        "last_restock_enemies_defeated": 0,
+    }
+    game.bounties = {"Level 0 Enemy": {"reward": 25}}
+    monkeypatch.setattr("src.core.town.BountyBoard", LevelAwareBountyBoard)
+
+    game.update_bounties()
+
+    assert list(game.bounties) == ["Level 1 Enemy"]
+    assert game.bounties["Level 1 Enemy"]["reward"] == 75
+
 
 def test_location_music_wrapper_is_defensive_and_routes_to_sound_manager():
     game = pygame_game.PygameGame.__new__(pygame_game.PygameGame)

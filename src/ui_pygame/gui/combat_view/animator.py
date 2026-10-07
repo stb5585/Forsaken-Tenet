@@ -5,7 +5,7 @@ import random
 
 import pygame
 
-DEATH_ANIMATION_FRAMES = 36
+DEATH_ANIMATION_FRAMES = 18
 
 
 class SpriteAnimator:
