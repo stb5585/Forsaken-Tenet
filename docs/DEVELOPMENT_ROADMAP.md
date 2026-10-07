@@ -37,12 +37,12 @@ contracts belong in their owner documents.
 
 ## Active Priority — Narrative Foundation And Opening Story Vertical Slice
 
-Status: \`Active — Campaign Foundation And Story Packet Development\`
+Status: `Active — Campaign Foundation And Story Packet Development`
 
 The project is temporarily shifting from gameplay expansion and broad
 playtesting to campaign-wide story development. The active creative authority is
-[\`NARRATIVE_FOUNDATION.md\`](NARRATIVE_FOUNDATION.md), and the proposed route is
-[\`MAIN_STORY_OUTLINE.md\`](MAIN_STORY_OUTLINE.md). The goal is to retain the
+[`NARRATIVE_FOUNDATION.md`](NARRATIVE_FOUNDATION.md), and the proposed route is
+[`MAIN_STORY_OUTLINE.md`](MAIN_STORY_OUTLINE.md). The goal is to retain the
 descend-survive-return dungeon-crawl identity while making every major descent
 change Silvana, its people, or the player's understanding of the forgotten
 Guardian pattern.
