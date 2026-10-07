@@ -273,7 +273,11 @@ revises them.
 - Voluntas is the forgotten seventh principle: Choice and Free Will.
 - Voluntas is not a seventh collectible relic, throne, weapon, or external
   power. It exists wherever a soul can freely decide.
-- Vesperion was once the Guardian of Voluntas.
+- The original Guardian of Voluntas personally prepared Vesperion as the
+  office's first successor.
+- Vesperion legitimately inherited the custodial office. His later rejection
+  of choice betrayed the founder who trusted him as well as the principle
+  itself.
 - Through the Hollowing, he removed the principle from recorded history and
   left the remaining six easier to convert into instruments of control.
 - That erasure allowed later traditions to remember only six divine gifts,
@@ -489,8 +493,9 @@ or boss gates merely to support prose.
 These decisions are important enough to settle during story development rather
 than infer during implementation:
 
-- how later Guardians were selected and whether succession preserved or
-  gradually altered the original custodial tradition;
+- whether the other Guardian lineages followed the Voluntas model, how their
+  later successors were selected, and whether succession gradually altered the
+  original custodial tradition;
 - the identities, eras, motives, and crossing mechanics of the independent
   forces that exploited the Hollowing's temporal wounds;
 - the precise method Vesperion used to open the deeper threshold, the
