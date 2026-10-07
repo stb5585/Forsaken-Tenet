@@ -217,7 +217,13 @@ revises them.
   sealed, and misinterpreted what they inherited.
 - The Hollowing damaged the boundaries between realms and opened inter-realm
   breaches through the descent.
-- Many unrelated forces later crossed those breaches independently: beasts,
+- The resulting breach network is hybrid. A few major breaches remain anchored
+  and stable enough for repeat two-way travel between the dungeon and entire
+  side realms, supporting recurring routes, factions, and quests.
+- Smaller tears open unpredictably, shift location, or collapse. Creatures,
+  travelers, rooms, and materials passing through them may be stranded or
+  severed from their realms of origin.
+- Many unrelated forces later crossed the breaches independently: beasts,
   refugees, raiders, cults, explorers, and other opportunists from several
   realms. Some crossings were deliberate, while others were accidental.
 - No single realm, invasion, or commanding power controls the contamination,
@@ -239,10 +245,10 @@ revises them.
 - Treasure seekers, soldiers, scholars, pilgrims, opportunists, and desperate
   people followed the new breach.
 - Most who descend do not return unchanged; many do not return at all.
-- Which recurring realms and groups deserve names, why particular travelers
-  crossed, and the exact mechanics of the breaches remain active canon
-  decisions. Early characters do not possess authoritative answers or know
-  Vesperion's role in the opening.
+- Which major stable breaches and recurring groups deserve names, why
+  particular travelers crossed, and what conditions stabilize or collapse
+  smaller tears remain active canon decisions. Early characters do not possess
+  authoritative answers or know Vesperion's role in the opening.
 
 ### The Six Guardians And Voluntas
 
@@ -536,8 +542,9 @@ or boss gates merely to support prose.
 These decisions are important enough to settle during story development rather
 than infer during implementation:
 
-- which recurring realms and inter-realm groups deserve named histories, what
-  motivates them, and how the breaches behave;
+- which major stable breaches and recurring inter-realm groups deserve named
+  histories, what motivates them, and what conditions stabilize or collapse
+  smaller tears;
 - the precise method Vesperion used to open the deeper threshold, the
   conditions that made it possible, and why he chose this moment;
 - the names and prior relationships of the core Silvana cast;
