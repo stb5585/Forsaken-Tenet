@@ -46,10 +46,14 @@ The dungeon is one place with several histories.
 2. **The buried stronghold or temple-city:** an older civilization that built
    around inherited sacred structures and preserved only partial knowledge of
    their purpose.
-3. **The Guardian foundation:** the oldest complex, organized around the seven
-   principles and the relic tradition.
-4. **Temporal contamination:** a later incursion that introduced foreign eras,
-   creatures, technologies, environments, and side spaces into the descent.
+3. **The Guardian foundation:** the oldest complex, built by an ancient
+   civilization that discovered the seven principles and chose Guardians to
+   embody and protect them. Later religions recast that history as a divine
+   gift.
+4. **Temporal contamination:** the Hollowing damaged the boundaries between
+   eras. Independent forces later exploited those wounds, introducing foreign
+   creatures, technologies, environments, and side spaces into the descent
+   without all of them serving Vesperion.
 
 The current crisis begins when a deeper threshold opens beyond the upper works
 Silvana knew how to use. The town therefore has a real material relationship
@@ -687,8 +691,8 @@ The campaign outline is ready to become production storyboards when:
 
 - the current dungeon progression order is mapped to all ten chapters;
 - every existing main quest is assigned, reclassified, or identified as debt;
-- the source and chronology of the temporal incursion and opening event are
-  settled;
+- the chronology and mechanics of the temporal incursions and opening event
+  are settled;
 - the central cast naming and authority pass is complete;
 - Joffrey's living scenes and fatal route are causally complete;
 - the Acolyte's fragment sequence is defined;
