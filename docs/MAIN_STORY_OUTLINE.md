@@ -3,8 +3,8 @@
 Status: **Campaign Board V1 — Narrative Planning Only**
 
 This document converts the narrative foundation into a campaign-level route.
-It is intentionally more compact than the Vengeance of the Acolyte storyboard
-program. **The Forsaken Tenet** remains a dungeon crawler: chapters organize
+It is intentionally compact because **The Forsaken Tenet** remains a dungeon
+crawler: chapters organize
 meaningful changes in the existing descend-return loop rather than replacing
 exploration with long linear scenes.
 
