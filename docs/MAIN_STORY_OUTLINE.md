@@ -54,10 +54,13 @@ The dungeon is one place with several histories.
    built spiritual custodial offices around those crisis exemplars. The
    Guardians protected the relics, history, and teachings but held no formal
    civil power. Each Guardian alone selected and trained a successor, making
-   every transfer an act of personal judgment and trust. The original Guardian
-   of Voluntas followed that tradition by personally preparing Vesperion as the
-   office's first successor. Later religions recast this history as a divine
-   gift.
+   every transfer an act of personal judgment and trust. Across generations,
+   private instruction preserved the core teachings but subtly narrowed each
+   lineage's emphasis. Later factions exaggerated that cumulative drift into
+   incompatible orthodoxies, although the final custodians rejected the
+   extremists. The original Guardian of Voluntas followed the normal succession
+   tradition by personally preparing Vesperion as the office's first successor.
+   Later religions recast this history as a divine gift.
 4. **Temporal contamination:** the rebuilt civilization eventually divided
    into movements that each treated one tenet as a complete answer. Their rival
    orthodoxies turned valid principles into weapons, producing a second civil
@@ -78,7 +81,9 @@ The dungeon is one place with several histories.
 Each visible relic arc should preserve a distinct trace of that civil war: a
 law, battlefield, memorial, propaganda fragment, corrupted rite, or ruined
 community showing how a valid principle became destructive when treated as
-complete. The evidence must condemn the severing of balance and choice rather
+complete. When possible, the evidence should distinguish the original balanced
+teaching, the lineage's narrower inherited emphasis, and the faction's
+absolutist distortion. It must condemn the severing of balance and choice rather
 than imply that any principle is inherently evil.
 
 The current crisis begins when Vesperion deliberately opens a deeper threshold
