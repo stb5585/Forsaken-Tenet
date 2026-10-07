@@ -55,10 +55,12 @@ The dungeon is one place with several histories.
    creatures, technologies, environments, and side spaces into the descent
    without all of them serving Vesperion.
 
-The current crisis begins when a deeper threshold opens beyond the upper works
-Silvana knew how to use. The town therefore has a real material relationship
-with the dungeon while remaining ignorant of its full depth and original
-purpose.
+The current crisis begins when Vesperion deliberately opens a deeper threshold
+beyond the upper works Silvana knew how to use. He intends to attract explorers,
+recover the six relics through their efforts, and provoke a final confrontation
+over Voluntas. The town therefore has a real material relationship with the
+dungeon while remaining ignorant of its full depth, original purpose, and
+Vesperion's role in the opening.
 
 ## Prologue — The Lantern At The Edge
 
@@ -691,8 +693,8 @@ The campaign outline is ready to become production storyboards when:
 
 - the current dungeon progression order is mapped to all ten chapters;
 - every existing main quest is assigned, reclassified, or identified as debt;
-- the chronology and mechanics of the temporal incursions and opening event
-  are settled;
+- the chronology and mechanics of the temporal incursions, and the precise
+  method Vesperion used to open the deeper threshold, are settled;
 - the central cast naming and authority pass is complete;
 - Joffrey's living scenes and fatal route are causally complete;
 - the Acolyte's fragment sequence is defined;
