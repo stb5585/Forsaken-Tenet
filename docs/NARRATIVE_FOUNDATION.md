@@ -302,11 +302,16 @@ revises them.
 - The withdrawal did not endorse any faction or grant the custodians civil
   authority. It preserved the balanced tradition at the cost of leaving the
   war's outcome to people who had already rejected that balance.
+- When Vesperion began the Hollowing, the six withdrawn custodians chose to hold
+  the seals and died preventing the breach from immediately consuming the
+  Guardian complex and its relics.
+- Before death, each custodian voluntarily impressed a memory-echo into their
+  relic. Those echoes later form the six Liminal trials; they are neither
+  imprisoned souls nor living ancient Guardians.
 - Vesperion interpreted both the recurring conflict and the withdrawal as proof
   that voluntary restraint could never work. He mistook the civilization's
-  decision to sever the principles
-  from balance and choice for proof that meaningful choice itself was the
-  defect.
+  decision to sever the principles from balance and choice for proof that
+  meaningful choice itself was the defect.
 - Vesperion was mortal until the Hollowing tore him from natural life, made him
   ageless, and bound his continued existence to the temporal wounds he created.
 - The Hollowing fractured temporal boundaries, but Vesperion did not command
@@ -514,8 +519,8 @@ or boss gates merely to support prose.
 These decisions are important enough to settle during story development rather
 than infer during implementation:
 
-- what became of the six withdrawn custodians during the Hollowing and how
-  their presence survives in the relics and Liminal trials;
+- whether Vesperion intended the six custodians' deaths, knowingly accepted
+  them, or misjudged the consequences of the Hollowing;
 - whether the other Guardian lineages followed the Voluntas model, how their
   later successors were selected, and whether succession gradually altered the
   original custodial tradition;
