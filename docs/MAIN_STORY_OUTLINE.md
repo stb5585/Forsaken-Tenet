@@ -49,8 +49,10 @@ The dungeon is one place with several histories.
 3. **The Guardian foundation:** the oldest complex, built by an ancient
    civilization rebuilding after devastating internal conflict and social
    near-collapse. Its survivors formalized seven mutually balancing safeguards
-   from the failures that caused the crisis, then chose Guardians to embody and
-   protect them. Later religions recast that history as a divine gift.
+   from the failures that caused the crisis. They recognized seven people whose
+   choices had already embodied those principles as the original Guardians and
+   built the offices around those crisis exemplars. Later religions recast that
+   history as a divine gift.
 4. **Temporal contamination:** the Hollowing damaged the boundaries between
    eras. Independent forces later exploited those wounds, introducing foreign
    creatures, technologies, environments, and side spaces into the descent
