@@ -51,8 +51,9 @@ The dungeon is one place with several histories.
    near-collapse. Its survivors formalized seven mutually balancing safeguards
    from the failures that caused the crisis. They recognized seven people whose
    choices had already embodied those principles as the original Guardians and
-   built the offices around those crisis exemplars. Later religions recast that
-   history as a divine gift.
+   built spiritual custodial offices around those crisis exemplars. The
+   Guardians protected the relics, history, and teachings but held no formal
+   civil power. Later religions recast that history as a divine gift.
 4. **Temporal contamination:** the Hollowing damaged the boundaries between
    eras. Independent forces later exploited those wounds, introducing foreign
    creatures, technologies, environments, and side spaces into the descent
