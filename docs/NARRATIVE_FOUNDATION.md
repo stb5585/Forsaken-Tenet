@@ -217,9 +217,11 @@ revises them.
   sealed, and misinterpreted what they inherited.
 - The Hollowing damaged the boundaries between realms and opened inter-realm
   breaches through the descent.
-- The resulting breach network is hybrid. A few major breaches remain anchored
-  and stable enough for repeat two-way travel between the dungeon and entire
-  side realms, supporting recurring routes, factions, and quests.
+- The resulting breach network is hybrid. Exactly two major breaches remain
+  anchored and stable enough for repeat two-way travel between the dungeon and
+  entire side realms, supporting recurring routes, factions, and quests.
+- One anchored route leads to the Realm of Cambion. The identity and nature of
+  the second anchored realm remain to be settled.
 - Smaller tears open unpredictably, shift location, or collapse. Creatures,
   travelers, rooms, and materials passing through them may be stranded or
   severed from their realms of origin.
@@ -245,10 +247,10 @@ revises them.
 - Treasure seekers, soldiers, scholars, pilgrims, opportunists, and desperate
   people followed the new breach.
 - Most who descend do not return unchanged; many do not return at all.
-- Which major stable breaches and recurring groups deserve names, why
-  particular travelers crossed, and what conditions stabilize or collapse
-  smaller tears remain active canon decisions. Early characters do not possess
-  authoritative answers or know Vesperion's role in the opening.
+- The identity of the second stable anchor, which recurring groups deserve
+  names, why particular travelers crossed, and what conditions stabilize or
+  collapse smaller tears remain active canon decisions. Early characters do
+  not possess authoritative answers or know Vesperion's role in the opening.
 
 ### The Six Guardians And Voluntas
 
@@ -542,9 +544,9 @@ or boss gates merely to support prose.
 These decisions are important enough to settle during story development rather
 than infer during implementation:
 
-- which major stable breaches and recurring inter-realm groups deserve named
-  histories, what motivates them, and what conditions stabilize or collapse
-  smaller tears;
+- the identity of the second major stable anchor, which recurring
+  inter-realm groups deserve named histories, what motivates them, and what
+  conditions stabilize or collapse smaller tears;
 - the precise method Vesperion used to open the deeper threshold, the
   conditions that made it possible, and why he chose this moment;
 - the names and prior relationships of the core Silvana cast;
