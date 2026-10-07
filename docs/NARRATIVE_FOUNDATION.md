@@ -278,6 +278,8 @@ revises them.
 - Vesperion legitimately inherited the custodial office. His later rejection
   of choice betrayed the founder who trusted him as well as the principle
   itself.
+- The Guardian office conferred no inherent immortality. Vesperion remained
+  mortal until the Hollowing.
 - Through the Hollowing, he removed the principle from recorded history and
   left the remaining six easier to convert into instruments of control.
 - That erasure allowed later traditions to remember only six divine gifts,
@@ -288,6 +290,8 @@ revises them.
 - Vesperion is associated with the Evening Star, radiant twilight, silence,
   certainty, control, and mercy through removal of choice.
 - He believes his position is compassionate.
+- Vesperion was mortal until the Hollowing tore him from natural life, made him
+  ageless, and bound his continued existence to the temporal wounds he created.
 - The Hollowing fractured temporal boundaries, but Vesperion did not command
   every force that later crossed them.
 - He deliberately opened the deeper threshold beneath Silvana to attract
