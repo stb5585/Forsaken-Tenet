@@ -88,7 +88,12 @@ Inter-realm content shares a cause but not an allegiance. Each recurring group
 or side space should have a local reason for crossing, surviving, exploiting the
 dungeon, or seeking a return route rather than being folded into one invasion.
 The existing Realm of Cambion portal route is one of the two stable anchors.
-The identity and thematic role of the second anchor remain to be settled.
+The other reaches a chthonic underworld shaped by death, memory, and binding
+oaths. It is a living external realm rather than the universal destination of
+every dead soul, so travel there cannot retrieve any chosen dead person or make
+resurrection routine. It is also distinct from The Liminal Gap, preserving that
+space's exceptional endgame role and the permanence of Joffrey's death. The
+underworld's proper name remains to be settled.
 
 Each visible relic arc should preserve a distinct trace of that civil war: a
 law, battlefield, memorial, propaganda fragment, corrupted rite, or ruined
