@@ -263,6 +263,13 @@ revises them.
 - After the original exemplars, each Guardian alone selected and trained a
   successor. No council, community vote, or supernatural sign confirmed the
   transfer; every succession depended on personal judgment and intimate trust.
+- The core teachings survived, but generations of private instruction subtly
+  narrowed each lineage's emphasis. No single transfer constituted a betrayal;
+  the cumulative drift made the seven traditions easier to treat as separate
+  doctrines rather than a balanced whole.
+- Later political movements exaggerated those differences into incompatible
+  orthodoxies. The final six custodians still rejected the resulting factions
+  and the civil war.
 - Verified history does not treat the principles or the Guardians as a divine
   creation or gift.
 - Later religions, including the Church of Elysia, recast that history as the
@@ -525,8 +532,6 @@ or boss gates merely to support prose.
 These decisions are important enough to settle during story development rather
 than infer during implementation:
 
-- whether generations of personal appointment preserved the original
-  custodial tradition or gradually introduced interpretive drift;
 - the identities, eras, motives, and crossing mechanics of the independent
   forces that exploited the Hollowing's temporal wounds;
 - the precise method Vesperion used to open the deeper threshold, the
