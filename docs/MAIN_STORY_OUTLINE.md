@@ -53,7 +53,9 @@ The dungeon is one place with several histories.
    choices had already embodied those principles as the original Guardians and
    built spiritual custodial offices around those crisis exemplars. The
    Guardians protected the relics, history, and teachings but held no formal
-   civil power. Later religions recast that history as a divine gift.
+   civil power. The original Guardian of Voluntas personally prepared Vesperion
+   as the office's first successor. Later religions recast this history as a
+   divine gift.
 4. **Temporal contamination:** the Hollowing damaged the boundaries between
    eras. Independent forces later exploited those wounds, introducing foreign
    creatures, technologies, environments, and side spaces into the descent
@@ -535,7 +537,8 @@ were incomplete.
    dungeon; it does not present an isolated philosophy lecture.
 3. The player's earlier answers and build receive recognition where available.
 4. Six clues expose the deliberately empty seventh place.
-5. The Hooded Figure reveals Vesperion's former office and the Hollowing.
+5. The Hooded Figure reveals Vesperion as the original Voluntas Guardian's
+   personally prepared first successor and explains the Hollowing.
 6. Voluntas is understood as choosing, not collected as an object.
 7. The Acolyte confirms the cost of surrendering choice.
 8. Reflection tests whether the hero can affirm the path actually taken rather
