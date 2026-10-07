@@ -305,6 +305,9 @@ revises them.
 - When Vesperion began the Hollowing, the six withdrawn custodians chose to hold
   the seals and died preventing the breach from immediately consuming the
   Guardian complex and its relics.
+- Vesperion understood beforehand that they would hold the seals and that doing
+  so would kill them. Their deaths were not the Hollowing's primary purpose, but
+  he knowingly accepted them as a necessary cost and proceeded.
 - Before death, each custodian voluntarily impressed a memory-echo into their
   relic. Those echoes later form the six Liminal trials; they are neither
   imprisoned souls nor living ancient Guardians.
@@ -519,8 +522,6 @@ or boss gates merely to support prose.
 These decisions are important enough to settle during story development rather
 than infer during implementation:
 
-- whether Vesperion intended the six custodians' deaths, knowingly accepted
-  them, or misjudged the consequences of the Hollowing;
 - whether the other Guardian lineages followed the Voluntas model, how their
   later successors were selected, and whether succession gradually altered the
   original custodial tradition;
