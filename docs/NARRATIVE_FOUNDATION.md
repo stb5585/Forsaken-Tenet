@@ -248,9 +248,14 @@ revises them.
 - Survivors studied the failures that produced the crisis and formalized the
   principles as mutually balancing safeguards. No one principle was meant to
   rule without the restraint and perspective of the other six.
-- The civilization then chose Guardians to embody, interpret, and protect the
-  principles. Verified history does not treat them as a divine creation or
-  gift.
+- The people recognized as the original Guardians had already embodied the
+  principles through consequential choices during the collapse. Their lives
+  provided the evidence from which the principles were named.
+- Reconstruction leaders formally recognized those seven crisis exemplars and
+  created the Guardian offices around them. They did not select the originals
+  through an election, trial, or supernatural sign.
+- Verified history does not treat the principles or the Guardians as a divine
+  creation or gift.
 - Later religions, including the Church of Elysia, recast that history as the
   bestowal of sacred principles by a deity. This theology neither proves nor
   disproves Elysia's existence; it is not a literal account of the tenets'
@@ -478,8 +483,8 @@ or boss gates merely to support prose.
 These decisions are important enough to settle during story development rather
 than infer during implementation:
 
-- how the ancient civilization chose its original Guardians and what authority
-  those offices held during the post-crisis reconstruction;
+- what authority the original Guardian offices held during post-crisis
+  reconstruction and how later successors were selected;
 - the identities, eras, motives, and crossing mechanics of the independent
   forces that exploited the Hollowing's temporal wounds;
 - the precise method Vesperion used to open the deeper threshold, the
