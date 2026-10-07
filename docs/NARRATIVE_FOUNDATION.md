@@ -254,6 +254,12 @@ revises them.
 - Reconstruction leaders formally recognized those seven crisis exemplars and
   created the Guardian offices around them. They did not select the originals
   through an election, trial, or supernatural sign.
+- The Guardians were spiritual custodians rather than civil rulers. They
+  protected the relics, preserved the historical record, and interpreted and
+  transmitted the balanced teachings.
+- They could advise, warn, and challenge the civilization's conscience, but
+  they held no formal power to govern, veto policy, command officials, or
+  enforce their interpretations.
 - Verified history does not treat the principles or the Guardians as a divine
   creation or gift.
 - Later religions, including the Church of Elysia, recast that history as the
@@ -483,8 +489,8 @@ or boss gates merely to support prose.
 These decisions are important enough to settle during story development rather
 than infer during implementation:
 
-- what authority the original Guardian offices held during post-crisis
-  reconstruction and how later successors were selected;
+- how later Guardians were selected and whether succession preserved or
+  gradually altered the original custodial tradition;
 - the identities, eras, motives, and crossing mechanics of the independent
   forces that exploited the Hollowing's temporal wounds;
 - the precise method Vesperion used to open the deeper threshold, the
