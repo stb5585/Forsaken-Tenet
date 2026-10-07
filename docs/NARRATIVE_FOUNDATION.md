@@ -200,18 +200,36 @@ the underlying people and danger sincerely.
 The following points are settled unless a later story decision explicitly
 revises them.
 
-### Silvana And The Dungeon
+### Silvana And The Layered Dungeon
 
-- Silvana is a rain-dark frontier town at the kingdom's edge.
-- Its identity changed when a previously sealed dungeon stair opened.
+- Silvana is a rain-dark frontier town at the kingdom's edge, built directly
+  above a layered underground complex rather than beside an unrelated ruin.
+- The upper works served practical purposes within living memory: storage,
+  drainage or water management, mining, refuge, burial, defense, and controlled
+  access beneath the settlement. The exact division among those functions can
+  follow the existing town map and opening-story needs.
+- Those practical works reused a much older buried stronghold or temple-city.
+  Its builders knew that still older sacred structures continued below, but
+  their knowledge degraded into ritual, partial records, and incompatible
+  legends.
+- At the deepest historical foundation lies the Guardian complex built around
+  the seven principles. Later cultures occupied, expanded, fortified, mined,
+  sealed, and misinterpreted what they inherited.
+- A later temporal incursion or invasion contaminated parts of the descent.
+  It folded foreign creatures, materials, rooms, and possibly entire side
+  spaces into structures that were never designed to contain them.
+- The corruption explains why architecture, ecosystems, technology, and eras
+  can change abruptly without requiring one civilization to have built every
+  floor.
+- Silvana knew and used only the uppermost layers. The full depth and sacred
+  purpose had been lost before the current deeper threshold opened.
 - Treasure seekers, soldiers, scholars, pilgrims, opportunists, and desperate
-  people followed.
+  people followed the new breach.
 - Most who descend do not return unchanged; many do not return at all.
-- The dungeon contains sealed chambers, old Guardian symbols, relics, side
-  realms, and architecture that does not obey a single historical layer.
-- The exact origin of the dungeon, the reason the stair opened, and the
-  relationship among its historical layers remain development questions. Early
-  characters do not know authoritative answers.
+- The precise source and mechanics of the temporal incursion, the ancient
+  deity's relationship to the Guardians, and the reason the deeper threshold
+  opened now remain active canon decisions. Early characters do not possess
+  authoritative answers.
 
 ### The Six Guardians And Voluntas
 
@@ -431,8 +449,10 @@ or boss gates merely to support prose.
 These decisions are important enough to settle during story development rather
 than infer during implementation:
 
-- the historical origin and layered construction of the dungeon;
-- what caused the sealed stair to open now;
+- the identity of the ancient deity and whether the seven principles were
+  created, discovered, embodied, or entrusted to the Guardians;
+- the source, era, and mechanics of the temporal incursion or invasion;
+- what caused the sealed deeper threshold to open now;
 - how much Vesperion influenced the opening versus exploiting it afterward;
 - the names and prior relationships of the core Silvana cast;
 - Joffrey's role, motive, and witnessed pre-tragedy scenes;
