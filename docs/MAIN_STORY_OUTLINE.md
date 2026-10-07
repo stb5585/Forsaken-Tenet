@@ -57,7 +57,9 @@ The dungeon is one place with several histories.
    as the office's first successor. Later religions recast this history as a
    divine gift.
 4. **Temporal contamination:** the Hollowing damaged the boundaries between
-   eras. Independent forces later exploited those wounds, introducing foreign
+   eras. It also tore the previously mortal Vesperion from natural life, made
+   him ageless, and bound his existence to the resulting temporal wounds.
+   Independent forces later exploited those wounds, introducing foreign
    creatures, technologies, environments, and side spaces into the descent
    without all of them serving Vesperion.
 
@@ -538,7 +540,8 @@ were incomplete.
 3. The player's earlier answers and build receive recognition where available.
 4. Six clues expose the deliberately empty seventh place.
 5. The Hooded Figure reveals Vesperion as the original Voluntas Guardian's
-   personally prepared first successor and explains the Hollowing.
+   personally prepared first successor and explains how the Hollowing made him
+   ageless by binding him to its temporal wounds.
 6. Voluntas is understood as choosing, not collected as an object.
 7. The Acolyte confirms the cost of surrendering choice.
 8. Reflection tests whether the hero can affirm the path actually taken rather
