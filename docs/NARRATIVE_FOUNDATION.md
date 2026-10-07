@@ -290,6 +290,11 @@ revises them.
 - Vesperion is associated with the Evening Star, radiant twilight, silence,
   certainty, control, and mercy through removal of choice.
 - He believes his position is compassionate.
+- The reconstructed civilization later suffered a second social collapse that
+  repeated the failures the seven principles were meant to prevent.
+- Vesperion interpreted that recurrence as proof that voluntary restraint could
+  never work. He mistook the civilization's failure to live the principles in
+  balance for proof that meaningful choice itself was the defect.
 - Vesperion was mortal until the Hollowing tore him from natural life, made him
   ageless, and bound his continued existence to the temporal wounds he created.
 - The Hollowing fractured temporal boundaries, but Vesperion did not command
@@ -497,6 +502,8 @@ or boss gates merely to support prose.
 These decisions are important enough to settle during story development rather
 than infer during implementation:
 
+- what form the second social collapse took and how the other Guardian
+  traditions responded to it;
 - whether the other Guardian lineages followed the Voluntas model, how their
   later successors were selected, and whether succession gradually altered the
   original custodial tradition;
