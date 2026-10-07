@@ -223,6 +223,9 @@ revises them.
 - One anchored route leads to the Realm of Cambion. The other leads to a
   chthonic underworld shaped by death, memory, and binding oaths; its proper
   name remains to be settled.
+- The underworld is primarily inhabited by a living native people, not ordinary
+  dead souls. Their laws, rites, and social identities are shaped by remembered
+  obligations, funerary customs, and promises treated as binding forces.
 - This underworld is not the universal destination of every dead soul. Access
   to it does not make resurrection routine, permit the recovery of any chosen
   dead person, or weaken the permanence of Joffrey's death.
@@ -254,10 +257,11 @@ revises them.
 - Treasure seekers, soldiers, scholars, pilgrims, opportunists, and desperate
   people followed the new breach.
 - Most who descend do not return unchanged; many do not return at all.
-- The chthonic underworld's proper name, which recurring groups deserve
-  names, why particular travelers crossed, and what conditions stabilize or
-  collapse smaller tears remain active canon decisions. Early characters do
-  not possess authoritative answers or know Vesperion's role in the opening.
+- The chthonic underworld and its people still need proper names, internal
+  factions, and specific reasons for crossing. Which other recurring groups
+  deserve names, and what conditions stabilize or collapse smaller tears, also
+  remain active canon decisions. Early characters do not possess authoritative
+  answers or know Vesperion's role in the opening.
 
 ### The Six Guardians And Voluntas
 
@@ -551,9 +555,10 @@ or boss gates merely to support prose.
 These decisions are important enough to settle during story development rather
 than infer during implementation:
 
-- the chthonic underworld's proper name, which recurring inter-realm groups
-  deserve named histories, what motivates them, and what conditions stabilize
-  or collapse smaller tears;
+- the proper names and internal factions of the chthonic underworld and its
+  living native people, which other recurring inter-realm groups deserve named
+  histories, what motivates them, and what conditions stabilize or collapse
+  smaller tears;
 - the precise method Vesperion used to open the deeper threshold, the
   conditions that made it possible, and why he chose this moment;
 - the names and prior relationships of the core Silvana cast;
