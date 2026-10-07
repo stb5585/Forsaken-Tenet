@@ -37,6 +37,25 @@ mandatory title cards.
   without a separate gameplay and save contract.
 - Humor may provide texture, but critical revelations remain sincere.
 
+## Layered Descent Premise
+
+The dungeon is one place with several histories.
+
+1. **Silvana's upper works:** recently functional storage, drainage or water
+   management, mining, refuge, burial, defensive, and controlled-access spaces.
+2. **The buried stronghold or temple-city:** an older civilization that built
+   around inherited sacred structures and preserved only partial knowledge of
+   their purpose.
+3. **The Guardian foundation:** the oldest complex, organized around the seven
+   principles and the relic tradition.
+4. **Temporal contamination:** a later incursion that introduced foreign eras,
+   creatures, technologies, environments, and side spaces into the descent.
+
+The current crisis begins when a deeper threshold opens beyond the upper works
+Silvana knew how to use. The town therefore has a real material relationship
+with the dungeon while remaining ignorant of its full depth and original
+purpose.
+
 ## Prologue — The Lantern At The Edge
 
 ### Purpose
@@ -47,8 +66,9 @@ and ideological cast before any twist matters.
 
 ### Mandatory Beats
 
-1. The existing story cards establish the opened stair, missing expeditions,
-   forgotten relics, and the hero's unspecified reason for coming.
+1. The existing story cards establish the newly opened deeper threshold,
+   missing expeditions, forgotten relics, and the hero's unspecified reason
+   for coming.
 2. The hero arrives at The Thirsty Dog during an ordinary evening strained by
    another incomplete patrol return.
 3. The Barkeep manages the room; the Waitress and Joffrey are visibly together;
@@ -667,7 +687,8 @@ The campaign outline is ready to become production storyboards when:
 
 - the current dungeon progression order is mapped to all ten chapters;
 - every existing main quest is assigned, reclassified, or identified as debt;
-- the dungeon's origin and opening event are settled;
+- the source and chronology of the temporal incursion and opening event are
+  settled;
 - the central cast naming and authority pass is complete;
 - Joffrey's living scenes and fatal route are causally complete;
 - the Acolyte's fragment sequence is defined;
