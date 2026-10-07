@@ -61,12 +61,14 @@ The dungeon is one place with several histories.
    orthodoxies turned valid principles into weapons, producing a second civil
    war and social collapse. The other six Guardian traditions rejected every
    faction but withdrew into the Guardian complex, sealing the relics, records,
-   and teachings while the civilization fell outside. Vesperion treated both
-   the recurrence and that retreat as proof that voluntary restraint could
-   never work and performed the Hollowing. The act damaged the boundaries
-   between eras, tore the previously mortal Vesperion
-   from natural life, made him ageless, and bound his existence to the resulting
-   temporal wounds. Independent forces later exploited those wounds,
+   and teachings while the civilization fell outside. When Vesperion performed
+   the Hollowing, the six custodians chose to hold the seals and died protecting
+   the complex. Each voluntarily impressed a memory-echo into their relic before
+   death. Vesperion treated both the recurrence and that retreat as proof that
+   voluntary restraint could never work. The Hollowing damaged the boundaries
+   between eras, tore the previously mortal Vesperion from natural life, made
+   him ageless, and bound his existence to the resulting temporal wounds.
+   Independent forces later exploited those wounds,
    introducing foreign creatures, technologies, environments, and side spaces
    into the descent without all of them serving Vesperion.
 
@@ -535,7 +537,7 @@ were incomplete.
 
 - Liminal Gap arrival and hub;
 - wounded Hooded Figure guide;
-- six Guardian trials and deeper vignettes;
+- six Guardian memory-echo trials and deeper vignettes;
 - clue review;
 - Empty Seventh Seat;
 - Voluntas reveal;
@@ -548,8 +550,9 @@ were incomplete.
 ### Story Progression
 
 1. The wounded Hooded Figure admits guidance, misdirection, and withheld truth.
-2. Each Guardian trial recalls a conflict already lived in Silvana and the
-   dungeon; it does not present an isolated philosophy lecture.
+2. Each Guardian trial is an intentional memory-echo left by a custodian who
+   died holding the seals. It recalls a conflict already lived in Silvana and
+   the dungeon rather than presenting an isolated philosophy lecture.
 3. The player's earlier answers and build receive recognition where available.
 4. Six clues expose the deliberately empty seventh place.
 5. The Hooded Figure reveals Vesperion as the original Voluntas Guardian's
