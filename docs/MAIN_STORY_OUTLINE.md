@@ -61,7 +61,7 @@ The dungeon is one place with several histories.
    extremists. The original Guardian of Voluntas followed the normal succession
    tradition by personally preparing Vesperion as the office's first successor.
    Later religions recast this history as a divine gift.
-4. **Temporal contamination:** the rebuilt civilization eventually divided
+4. **Inter-realm contamination:** the rebuilt civilization eventually divided
    into movements that each treated one tenet as a complete answer. Their rival
    orthodoxies turned valid principles into weapons, producing a second civil
    war and social collapse. The other six Guardian traditions rejected every
@@ -72,11 +72,12 @@ The dungeon is one place with several histories.
    and proceeded. The six died protecting the complex after each voluntarily
    impressed a memory-echo into their relic. Vesperion treated both the
    recurrence and the retreat as proof that voluntary restraint could never
-   work. The Hollowing damaged the boundaries between eras, tore the previously
-   mortal Vesperion from natural life, made him ageless, and bound his existence
-   to the resulting temporal wounds. Independent forces later exploited those
-   wounds, introducing foreign creatures, technologies, environments, and side
-   spaces into the descent without all of them serving Vesperion.
+   work. The Hollowing damaged the boundaries between realms, tore the
+   previously mortal Vesperion from natural life, made him ageless, and bound
+   his existence to the resulting inter-realm breaches. Independent forces from
+   shadow realms, underworlds, and other planes later exploited those breaches,
+   introducing foreign creatures, technologies, environments, and side spaces
+   into the descent without all of them serving Vesperion.
 
 Each visible relic arc should preserve a distinct trace of that civil war: a
 law, battlefield, memorial, propaganda fragment, corrupted rite, or ruined
@@ -567,7 +568,7 @@ were incomplete.
    personally prepared first successor, the second collapse and Guardian
    withdrawal that broke his faith in voluntary restraint, his knowing
    acceptance of the six custodians' deaths, and how the Hollowing made him
-   ageless by binding him to its temporal wounds.
+   ageless by binding him to its inter-realm breaches.
 6. Voluntas is understood as choosing, not collected as an object.
 7. The Acolyte confirms the cost of surrendering choice.
 8. Reflection tests whether the hero can affirm the path actually taken rather
@@ -730,7 +731,7 @@ The campaign outline is ready to become production storyboards when:
 
 - the current dungeon progression order is mapped to all ten chapters;
 - every existing main quest is assigned, reclassified, or identified as debt;
-- the chronology and mechanics of the temporal incursions, and the precise
+- the chronology and mechanics of the inter-realm incursions, and the precise
   method Vesperion used to open the deeper threshold, are settled;
 - the central cast naming and authority pass is complete;
 - Joffrey's living scenes and fatal route are causally complete;
