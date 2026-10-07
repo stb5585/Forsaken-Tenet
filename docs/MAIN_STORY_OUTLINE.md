@@ -53,9 +53,11 @@ The dungeon is one place with several histories.
    choices had already embodied those principles as the original Guardians and
    built spiritual custodial offices around those crisis exemplars. The
    Guardians protected the relics, history, and teachings but held no formal
-   civil power. The original Guardian of Voluntas personally prepared Vesperion
-   as the office's first successor. Later religions recast this history as a
-   divine gift.
+   civil power. Each Guardian alone selected and trained a successor, making
+   every transfer an act of personal judgment and trust. The original Guardian
+   of Voluntas followed that tradition by personally preparing Vesperion as the
+   office's first successor. Later religions recast this history as a divine
+   gift.
 4. **Temporal contamination:** the rebuilt civilization eventually divided
    into movements that each treated one tenet as a complete answer. Their rival
    orthodoxies turned valid principles into weapons, producing a second civil
