@@ -220,8 +220,15 @@ revises them.
 - The resulting breach network is hybrid. Exactly two major breaches remain
   anchored and stable enough for repeat two-way travel between the dungeon and
   entire side realms, supporting recurring routes, factions, and quests.
-- One anchored route leads to the Realm of Cambion. The identity and nature of
-  the second anchored realm remain to be settled.
+- One anchored route leads to the Realm of Cambion. The other leads to a
+  chthonic underworld shaped by death, memory, and binding oaths; its proper
+  name remains to be settled.
+- This underworld is not the universal destination of every dead soul. Access
+  to it does not make resurrection routine, permit the recovery of any chosen
+  dead person, or weaken the permanence of Joffrey's death.
+- The chthonic realm is distinct from The Liminal Gap. The former is a living
+  external realm reached through an anchored breach; the latter remains the
+  exceptional threshold used by the endgame's death-and-return sequence.
 - Smaller tears open unpredictably, shift location, or collapse. Creatures,
   travelers, rooms, and materials passing through them may be stranded or
   severed from their realms of origin.
@@ -247,7 +254,7 @@ revises them.
 - Treasure seekers, soldiers, scholars, pilgrims, opportunists, and desperate
   people followed the new breach.
 - Most who descend do not return unchanged; many do not return at all.
-- The identity of the second stable anchor, which recurring groups deserve
+- The chthonic underworld's proper name, which recurring groups deserve
   names, why particular travelers crossed, and what conditions stabilize or
   collapse smaller tears remain active canon decisions. Early characters do
   not possess authoritative answers or know Vesperion's role in the opening.
@@ -544,9 +551,9 @@ or boss gates merely to support prose.
 These decisions are important enough to settle during story development rather
 than infer during implementation:
 
-- the identity of the second major stable anchor, which recurring
-  inter-realm groups deserve named histories, what motivates them, and what
-  conditions stabilize or collapse smaller tears;
+- the chthonic underworld's proper name, which recurring inter-realm groups
+  deserve named histories, what motivates them, and what conditions stabilize
+  or collapse smaller tears;
 - the precise method Vesperion used to open the deeper threshold, the
   conditions that made it possible, and why he chose this moment;
 - the names and prior relationships of the core Silvana cast;
