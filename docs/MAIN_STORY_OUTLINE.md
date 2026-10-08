@@ -90,6 +90,10 @@ The dungeon is one place with several histories.
 Inter-realm content shares a cause but not an allegiance. Each recurring group
 or side space should have a local reason for crossing, surviving, exploiting the
 dungeon, or seeking a return route rather than being folded into one invasion.
+The hero's first deliberate underworld incursion is predatory: raiders,
+cultists, or another aggressive faction establishes a foothold in the dungeon.
+Sympathetic underworld factions appear later, overturning the first impression
+that the aggressors represent the realm as a whole.
 The existing Realm of Cambion portal route is one of the two stable anchors.
 The other reaches a chthonic underworld containing both physical
 subterranean civilizations and supernatural domains. Embodied peoples such as
