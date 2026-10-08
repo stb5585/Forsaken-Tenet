@@ -93,9 +93,12 @@ dungeon, or seeking a return route rather than being folded into one invasion.
 The hero's first deliberate underworld incursion comes from a mixed raider
 compact establishing a foothold in the dungeon. Mercenaries, outcasts, and
 supernatural predators from several groups unite around plunder, captives, and
-opportunity rather than a shared ancestry or moral nature. Sympathetic
-underworld factions appear later, overturning the first impression that the
-compact represents the realm as a whole.
+opportunity rather than a shared ancestry or moral nature. Their foothold is an
+extractive base for stripping Guardian structures and older dungeon layers of
+relics, unusual materials, and saleable knowledge before moving the spoils back
+through the stable anchor. Sympathetic underworld factions appear later,
+overturning the first impression that the compact represents the realm as a
+whole.
 The existing Realm of Cambion portal route is one of the two stable anchors.
 The other reaches a chthonic underworld containing both physical
 subterranean civilizations and supernatural domains. Embodied peoples such as
