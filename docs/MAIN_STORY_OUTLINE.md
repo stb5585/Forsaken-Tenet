@@ -92,7 +92,10 @@ The other reaches a chthonic underworld containing both physical
 subterranean civilizations and supernatural domains. Embodied peoples such as
 dark elves, dwarves, and other underground cultures coexist or conflict with
 demons, fiends, monsters, and other supernatural beings; none of those broad
-categories implies one culture, allegiance, or moral alignment. It is an
+categories implies one culture, allegiance, or moral alignment. Power remains
+fragmented among settlements, clans, courts, and lairs. No realm-wide sovereign
+or broad population rules the other, and alliances, trade, and rivalries can
+cross the physical-supernatural divide. It is an
 external realm rather than the universal destination of every dead soul, so
 travel there cannot retrieve any chosen dead person or make resurrection
 routine. It is also distinct from The Liminal Gap, preserving that
