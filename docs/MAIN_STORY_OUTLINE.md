@@ -88,12 +88,14 @@ Inter-realm content shares a cause but not an allegiance. Each recurring group
 or side space should have a local reason for crossing, surviving, exploiting the
 dungeon, or seeking a return route rather than being folded into one invasion.
 The existing Realm of Cambion portal route is one of the two stable anchors.
-The other reaches a chthonic underworld shaped by death, memory, and binding
-oaths. Its primary inhabitants are a living native people rather than ordinary
-dead souls; remembered obligations, funerary customs, and enforceable promises
-shape their laws, rites, and identities. It is a living external realm rather
-than the universal destination of every dead soul, so travel there cannot
-retrieve any chosen dead person or make resurrection routine. It is also distinct from The Liminal Gap, preserving that
+The other reaches a chthonic underworld containing both physical
+subterranean civilizations and supernatural domains. Embodied peoples such as
+dark elves, dwarves, and other underground cultures coexist or conflict with
+demons, fiends, monsters, and other supernatural beings; none of those broad
+categories implies one culture, allegiance, or moral alignment. It is an
+external realm rather than the universal destination of every dead soul, so
+travel there cannot retrieve any chosen dead person or make resurrection
+routine. It is also distinct from The Liminal Gap, preserving that
 space's exceptional endgame role and the permanence of Joffrey's death. The
 underworld's proper name remains to be settled.
 
