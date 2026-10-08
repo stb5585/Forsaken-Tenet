@@ -221,11 +221,12 @@ revises them.
   anchored and stable enough for repeat two-way travel between the dungeon and
   entire side realms, supporting recurring routes, factions, and quests.
 - One anchored route leads to the Realm of Cambion. The other leads to a
-  chthonic underworld shaped by death, memory, and binding oaths; its proper
-  name remains to be settled.
-- The underworld is primarily inhabited by a living native people, not ordinary
-  dead souls. Their laws, rites, and social identities are shaped by remembered
-  obligations, funerary customs, and promises treated as binding forces.
+  chthonic underworld containing both physical subterranean civilizations and
+  supernatural domains; its proper name remains to be settled.
+- Its embodied peoples may include dark elves, dwarves, and other underground
+  cultures, while demons, fiends, monsters, and other supernatural beings also
+  inhabit or claim parts of the realm. Neither category is assumed to be a
+  single culture, allegiance, or moral alignment.
 - This underworld is not the universal destination of every dead soul. Access
   to it does not make resurrection routine, permit the recovery of any chosen
   dead person, or weaken the permanence of Joffrey's death.
@@ -257,10 +258,11 @@ revises them.
 - Treasure seekers, soldiers, scholars, pilgrims, opportunists, and desperate
   people followed the new breach.
 - Most who descend do not return unchanged; many do not return at all.
-- The chthonic underworld and its people still need proper names, internal
-  factions, and specific reasons for crossing. Which other recurring groups
-  deserve names, and what conditions stabilize or collapse smaller tears, also
-  remain active canon decisions. Early characters do not possess authoritative
+- The chthonic underworld, its physical peoples, and its supernatural powers
+  still need proper names, relationships, internal factions, and specific
+  reasons for crossing. Which other recurring groups deserve names, and what
+  conditions stabilize or collapse smaller tears, also remain active canon
+  decisions. Early characters do not possess authoritative
   answers or know Vesperion's role in the opening.
 
 ### The Six Guardians And Voluntas
@@ -555,10 +557,10 @@ or boss gates merely to support prose.
 These decisions are important enough to settle during story development rather
 than infer during implementation:
 
-- the proper names and internal factions of the chthonic underworld and its
-  living native people, which other recurring inter-realm groups deserve named
-  histories, what motivates them, and what conditions stabilize or collapse
-  smaller tears;
+- the proper names, relationships, and internal factions of the chthonic
+  underworld's physical peoples and supernatural powers, which other recurring
+  inter-realm groups deserve named histories, what motivates them, and what
+  conditions stabilize or collapse smaller tears;
 - the precise method Vesperion used to open the deeper threshold, the
   conditions that made it possible, and why he chose this moment;
 - the names and prior relationships of the core Silvana cast;
