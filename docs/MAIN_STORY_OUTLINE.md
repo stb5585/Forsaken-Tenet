@@ -101,8 +101,10 @@ Guardian legacy, targeted maps, or an informed patron; systematic extraction
 began only after it accidentally discovered valuable remains. An overdue
 Silvana expedition provides the first visible consequence. The hero follows its
 route through looted chambers, abandoned equipment, and signs of struggle to
-surviving captives and the compact's foothold. Sympathetic underworld factions
-appear later,
+surviving captives and the compact's foothold. The compact keeps the explorers
+alive for their local expertise, forcing them to guide raiders, bypass hazards,
+identify promising artifacts, and help dismantle unfamiliar structures safely.
+Sympathetic underworld factions appear later,
 overturning the first impression that the compact represents the realm as a
 whole.
 The existing Realm of Cambion portal route is one of the two stable anchors.
