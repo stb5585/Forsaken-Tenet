@@ -110,12 +110,15 @@ limited the local effects of the Hollowing, beginning a cascade in which
 smaller tears multiply, move through nearby levels, and release creatures or
 hazardous environments. The hero can rescue the captives or stabilize the
 containment structures, but cannot complete both in time. Rescuing the captives
-lets the cascade spread; containing it costs their lives. Silvana remembers both what the hero protected and what the choice
-left unprotected. No branch destroys a required relic, erases an essential
-truth, or blocks the critical path; it changes survivors, later hazards, and
-testimony. Sympathetic underworld factions appear later,
-overturning the first impression that the compact represents the realm as a
-whole.
+lets mobile tears and their hazards persist until a later joint repair with a
+sympathetic underworld faction stabilizes the damaged containment. The repair
+cannot undo casualties, altered rooms, severed routes, or other harm already
+caused. Containing the cascade during the original crisis avoids those later
+hazards but costs the captives' lives. Silvana remembers both what the hero
+protected and what the choice left unprotected. No branch destroys a required
+relic, erases an essential truth, or blocks the critical path; it changes
+survivors, later hazards, and testimony. The later allies overturn the first
+impression that the compact represents the underworld as a whole.
 The existing Realm of Cambion portal route is one of the two stable anchors.
 The other reaches a chthonic underworld containing both physical
 subterranean civilizations and supernatural domains. Embodied peoples such as
