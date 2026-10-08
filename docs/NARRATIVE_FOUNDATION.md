@@ -217,6 +217,12 @@ revises them.
   sealed, and misinterpreted what they inherited.
 - The Hollowing damaged the boundaries between realms and opened inter-realm
   breaches through the descent.
+- The initial contamination was an unplanned consequence of that fracturing,
+  not a coordinated invasion, migration, or diplomatic contact. Early beings,
+  materials, and spaces crossed because the boundaries failed.
+- Once factions discovered usable routes, they began exploiting them for
+  harmful or desperate purposes. Those later crossings can be intentional
+  without making the original contamination planned.
 - The resulting breach network is hybrid. Exactly two major breaches remain
   anchored and stable enough for repeat two-way travel between the dungeon and
   entire side realms, supporting recurring routes, factions, and quests.
@@ -263,8 +269,9 @@ revises them.
   people followed the new breach.
 - Most who descend do not return unchanged; many do not return at all.
 - The chthonic underworld, its physical peoples, and its supernatural powers
-  still need proper names, specific factions and alliances, and reasons for
-  crossing. Which other recurring groups deserve names, and what
+  still need proper names and specific factions and alliances. The first
+  deliberate exploitation the hero encounters, and each faction's harmful or
+  desperate reason for crossing, also remain to be settled. Which other recurring groups deserve names, and what
   conditions stabilize or collapse smaller tears, also remain active canon
   decisions. Early characters do not possess authoritative
   answers or know Vesperion's role in the opening.
