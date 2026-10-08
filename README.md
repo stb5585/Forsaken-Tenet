@@ -19,8 +19,10 @@ roadmap pass:
   abilities.
 - All 49 authored class ability trees and the critical class-kit closure pass
   are complete.
-- The foundational gameplay refactor is complete. Post-foundation reliability
-  hardening and broad manual playtesting are the active planning lane.
+- The foundational gameplay refactor is complete. Narrative foundation and the
+  opening story vertical slice are now the active planning lane; broader
+  post-foundation gameplay hardening and manual playtesting remain preserved
+  for resumption afterward.
 - Completed class-kit scope and deferred deep-kit gates are tracked in
   [docs/CLASS_KIT_DESIGN_GATES.md](docs/CLASS_KIT_DESIGN_GATES.md).
 - Combat architecture and balance decisions are specified in
@@ -143,6 +145,8 @@ Start with [docs/README.md](docs/README.md). The most useful current docs are:
 - [docs/PRESENTATION_ASSET_DESIGN_GATES.md](docs/PRESENTATION_ASSET_DESIGN_GATES.md)
 - [docs/DUNGEON_WORLD_ENCOUNTER_DESIGN_GATES.md](docs/DUNGEON_WORLD_ENCOUNTER_DESIGN_GATES.md)
 - [docs/EQUIPMENT_ITEMS_ECONOMY_DESIGN_GATES.md](docs/EQUIPMENT_ITEMS_ECONOMY_DESIGN_GATES.md)
+- [docs/NARRATIVE_FOUNDATION.md](docs/NARRATIVE_FOUNDATION.md)
+- [docs/MAIN_STORY_OUTLINE.md](docs/MAIN_STORY_OUTLINE.md)
 - [docs/STORY_AND_ENDGAME_DESIGN.md](docs/STORY_AND_ENDGAME_DESIGN.md)
 - [docs/PLAYTEST_CHECKLIST.md](docs/PLAYTEST_CHECKLIST.md)
 - [docs/ENEMY_VISUAL_SYSTEM.md](docs/ENEMY_VISUAL_SYSTEM.md)

@@ -1,6 +1,6 @@
 # The Forsaken Tenet Development Roadmap
 
-*Updated: September 27, 2026*
+*Updated: October 7, 2026*
 
 This roadmap contains the current priority, completed baseline summaries needed
 for sequencing, ordered candidates, and deferred decision gates. Detailed
@@ -35,6 +35,39 @@ contracts belong in their owner documents.
 - `Deferred`: intentionally postponed until its dependency is complete.
 - `Watch`: preserve current behavior and record issues encountered nearby.
 
+## Active Priority — Narrative Foundation And Opening Story Vertical Slice
+
+Status: `Active — Campaign Foundation And Story Packet Development`
+
+The project is temporarily shifting from gameplay expansion and broad
+playtesting to campaign-wide story development. The active creative authority is
+[`NARRATIVE_FOUNDATION.md`](NARRATIVE_FOUNDATION.md), and the proposed route is
+[`MAIN_STORY_OUTLINE.md`](MAIN_STORY_OUTLINE.md). The goal is to retain the
+descend-survive-return dungeon-crawl identity while making every major descent
+change Silvana, its people, or the player's understanding of the forgotten
+Guardian pattern.
+
+The ordered narrative work is:
+
+1. Reconcile the open canon decisions, current dungeon progression, relic
+   guardians, boss gates, and active quest classifications against the campaign
+   board.
+2. Complete the core cast authority and naming pass, Joffrey's living role, the
+   Acolyte fragment trail, and the dungeon-origin chronology.
+3. Produce the Prologue-through-Triangulus chapter packet with scene order,
+   dialogue, quest mapping, state, presentation, validation, and playtest
+   requirements.
+4. Implement that opening vertical slice without incidental combat, economy,
+   class, map-topology, or balance changes.
+5. Playtest whether the first arc establishes an immediate human stake,
+   recurring mystery, visible town consequence, and reason to continue before
+   promoting the remaining principle arcs.
+
+Grounded dark fantasy is the primary tone. Puns, pop-culture references, and
+eccentric quest material remain as supporting town and side-content texture;
+they should recede during grief, Guardian revelations, Liminal scenes, and the
+Vesperion ending.
+
 ## Completed Milestone — Foundational Gameplay Refactors
 
 Status: `Complete — Foundational Baseline Established`
@@ -46,15 +79,16 @@ action interface, and bounded multi-enemy support. Its committed reports are
 the baseline for all subsequent evidence. Ordinary random encounters remain
 singleton because no Pilot 3 pair qualified; dungeon rest remains deferred.
 
-## Active Priority — Post-Foundation Stabilization And Playtest
+## Paused Program — Post-Foundation Stabilization And Playtest
 
-Status: `Active — Evidence Collection And Reliability Hardening`
+Status: `Paused — Preserved During Narrative Foundation Work`
 
-Use [`playtest/CURRENT.md`](playtest/CURRENT.md) and
-[`CLASS_KIT_EVIDENCE_NOTES.md`](CLASS_KIT_EVIDENCE_NOTES.md) to collect broad
-manual evidence against the completed baseline. Record reproducible defects
-and promote numeric, content, or architecture changes only through their owner
-gate. Do not tune combat values merely to resolve an observation.
+Preserve [`playtest/CURRENT.md`](playtest/CURRENT.md) and
+[`CLASS_KIT_EVIDENCE_NOTES.md`](CLASS_KIT_EVIDENCE_NOTES.md) for resumption
+after the opening story vertical slice. Reproducible correctness defects found
+while developing the narrative path may still receive narrow fixes, but numeric,
+content, or architecture changes remain subject to their owner gates. Do not
+tune combat values merely to resolve an observation.
 
 The ordered stabilization work is:
 
@@ -145,15 +179,16 @@ and any future qualified-pair work are owned by
 [`MULTI_ENEMY_FUTURE_GATE.md`](MULTI_ENEMY_FUTURE_GATE.md). Floor 5 and rosters
 larger than two remain deferred.
 
-## Active Program — Broad Manual Playtest
+## Paused Program — Broad Manual Playtest
 
-Status: `Active — Foundational Baseline Established`
+Status: `Paused — Resume After Opening Narrative Vertical Slice`
 
 The comprehensive class-kit, progression, balance, interface, and endgame pass
-now begins. Follow the current queue and evidence format above. A reproducible
-defect may be fixed when the fix is narrow and does not settle an unapproved
-design question. Numeric tuning requires a focused evidence row and promoted
-one-page spec.
+remains defined by the current queue and evidence format. Resume it after the
+opening narrative slice has been implemented and evaluated. A reproducible
+defect may still be fixed when the fix is narrow and does not settle an
+unapproved design question. Numeric tuning requires a focused evidence row and
+promoted one-page spec.
 
 ## Ready After The Foundational Refactors
 

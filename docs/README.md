@@ -46,6 +46,10 @@ priority, owner documents define current behavior and decision gates, and
 
 ## Content, Story, Items, And Presentation
 
+- [`NARRATIVE_FOUNDATION.md`](NARRATIVE_FOUNDATION.md) — campaign-wide story
+  identity, tone, canon boundaries, reveal schedule, and narrative-debt ledger.
+- [`MAIN_STORY_OUTLINE.md`](MAIN_STORY_OUTLINE.md) — proposed prologue,
+  three-act route, ten chapter functions, supporting arcs, and implementation order.
 - [`STORY_AND_ENDGAME_DESIGN.md`](STORY_AND_ENDGAME_DESIGN.md) — current
   Vesperion/Voluntas canon, route contract, and future story gates.
 - [`QUEST_STORY_INTEGRATION_DESIGN.md`](QUEST_STORY_INTEGRATION_DESIGN.md) —
