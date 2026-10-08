@@ -230,6 +230,9 @@ revises them.
 - The compact's immediate objective is extractive. It uses the foothold to strip
   Guardian structures and older dungeon layers of relics, unusual materials,
   and saleable knowledge, then move the spoils through the stable anchor.
+- The compact entered without prior knowledge of the Guardian legacy, targeted
+  maps, or an informed patron. It began systematic plunder only after
+  accidentally discovering that the ruins contained valuable remains.
   Sympathetic underworld factions appear later and demonstrate that the compact
   does not represent the realm as a whole.
 - The resulting breach network is hybrid. Exactly two major breaches remain
@@ -279,9 +282,9 @@ revises them.
 - Most who descend do not return unchanged; many do not return at all.
 - The chthonic underworld, its physical peoples, and its supernatural powers
   still need proper names and specific factions and alliances. The raider
-  compact's name, leadership, and knowledge of the Guardian legacy, and each
-  later faction's harmful or desperate reason for crossing, also remain to be
-  settled. Which other recurring groups deserve names, and what
+  compact's name and leadership, the first visible consequence of its
+  plunder, and each later faction's harmful or desperate reason for crossing
+  also remain to be settled. Which other recurring groups deserve names, and what
   conditions stabilize or collapse smaller tears, also remain active canon
   decisions. Early characters do not possess authoritative
   answers or know Vesperion's role in the opening.
