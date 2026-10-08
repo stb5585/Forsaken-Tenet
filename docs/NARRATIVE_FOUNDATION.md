@@ -253,10 +253,14 @@ revises them.
   specialists drawn from several physical and supernatural communities whose
   safety depends on stable boundaries. Their cooperation reflects practical
   mutual need rather than one government, ancestry, or moral alignment.
-- Their repair ends the active cascade but cannot undo casualties, altered
-  rooms, severed routes, or other harm already caused. Containing the cascade
-  during the original crisis avoids those later hazards but costs the captives'
-  lives.
+- The hero must recover containment mechanisms that the compact removed and
+  dispersed among its foothold, caches, and retreat routes. The wardens combine
+  structural and ritual expertise to reconstruct the damaged system around
+  those recovered components.
+- The reconstructed containment ends the active cascade but cannot undo
+  casualties, altered rooms, severed routes, or other harm already caused.
+  Containing the cascade during the original crisis avoids those later hazards
+  but costs the captives' lives.
   Silvana remembers both what the hero protected and what the choice left
   unprotected.
 - No branch may destroy a required relic, erase an essential campaign truth, or
@@ -313,11 +317,10 @@ revises them.
 - Most who descend do not return unchanged; many do not return at all.
 - The chthonic underworld, its physical peoples, and its supernatural powers
   still need proper names and specific factions and alliances. The raider
-  compact's name and leadership, the wardens' name and method for repairing
-  the containment, and each later faction's harmful or desperate reason for
-  crossing also remain to be settled. Which other recurring groups deserve names, and what
-  conditions stabilize or collapse smaller tears, also remain active canon
-  decisions. Early characters do not possess authoritative
+  compact's name and leadership, the wardens' name, and each later faction's
+  harmful or desperate reason for crossing also remain to be settled. Which
+  other recurring groups deserve names, and what conditions stabilize or
+  collapse smaller tears, also remain active canon decisions. Early characters do not possess authoritative
   answers or know Vesperion's role in the opening.
 
 ### The Six Guardians And Voluntas
