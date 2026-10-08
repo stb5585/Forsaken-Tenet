@@ -223,10 +223,12 @@ revises them.
 - Once factions discovered usable routes, they began exploiting them for
   harmful or desperate purposes. Those later crossings can be intentional
   without making the original contamination planned.
-- The first deliberate exploitation the hero encounters is predatory: raiders,
-  cultists, or another aggressive underworld faction establishes a foothold in
-  the dungeon. Sympathetic underworld factions appear later and demonstrate
-  that the aggressors do not represent the realm as a whole.
+- The first deliberate exploitation the hero encounters is a mixed raider
+  compact establishing a foothold in the dungeon. Mercenaries, outcasts, and
+  supernatural predators recruited from several groups unite around plunder,
+  captives, and opportunity rather than a shared ancestry or moral nature.
+  Sympathetic underworld factions appear later and demonstrate that the compact
+  does not represent the realm as a whole.
 - The resulting breach network is hybrid. Exactly two major breaches remain
   anchored and stable enough for repeat two-way travel between the dungeon and
   entire side realms, supporting recurring routes, factions, and quests.
@@ -273,10 +275,9 @@ revises them.
   people followed the new breach.
 - Most who descend do not return unchanged; many do not return at all.
 - The chthonic underworld, its physical peoples, and its supernatural powers
-  still need proper names and specific factions and alliances. The identity,
-  leadership, and objective of the predatory faction establishing the first
-  foothold, and each later faction's harmful or desperate reason for crossing,
-  also remain to be settled. Which other recurring groups deserve names, and what
+  still need proper names and specific factions and alliances. The raider
+  compact's name, leadership, and immediate objective, and each later faction's
+  harmful or desperate reason for crossing, also remain to be settled. Which other recurring groups deserve names, and what
   conditions stabilize or collapse smaller tears, also remain active canon
   decisions. Early characters do not possess authoritative
   answers or know Vesperion's role in the opening.
