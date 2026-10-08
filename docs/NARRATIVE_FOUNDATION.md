@@ -239,6 +239,13 @@ revises them.
 - The compact keeps those explorers alive for their expertise. It forces them
   to guide raiders through local routes, bypass hazards, identify promising
   artifacts, and help dismantle unfamiliar structures safely.
+- Breaking the foothold requires an irreversible branching sacrifice. The hero
+  must prioritize different captive groups or threatened Guardian evidence, and
+  every route leaves a visible loss that Silvana remembers.
+- No branch may destroy a required relic, erase an essential campaign truth, or
+  block the critical path. The sacrifice changes survivors, available context,
+  and later testimony rather than determining whether the story remains
+  completable.
   Sympathetic underworld factions appear later and demonstrate that the compact
   does not represent the realm as a whole.
 - The resulting breach network is hybrid. Exactly two major breaches remain
@@ -288,9 +295,9 @@ revises them.
 - Most who descend do not return unchanged; many do not return at all.
 - The chthonic underworld, its physical peoples, and its supernatural powers
   still need proper names and specific factions and alliances. The raider
-  compact's name and leadership, the captives' fixed or variable eventual
-  fates, and each later faction's harmful or desperate reason for crossing also
-  remain to be settled. Which other recurring groups deserve names, and what
+  compact's name and leadership, the precise priorities and consequences in
+  the foothold's branching sacrifice, and each later faction's harmful or
+  desperate reason for crossing also remain to be settled. Which other recurring groups deserve names, and what
   conditions stabilize or collapse smaller tears, also remain active canon
   decisions. Early characters do not possess authoritative
   answers or know Vesperion's role in the opening.
