@@ -110,8 +110,11 @@ limited the local effects of the Hollowing, beginning a cascade in which
 smaller tears multiply, move through nearby levels, and release creatures or
 hazardous environments. The hero can rescue the captives or stabilize the
 containment structures, but cannot complete both in time. Rescuing the captives
-lets mobile tears and their hazards persist until a later joint repair with a
-sympathetic underworld faction stabilizes the damaged containment. The repair
+lets mobile tears and their hazards persist until a later joint repair with
+cross-faction wardens stabilizes the damaged containment. These engineers,
+scouts, and ritual specialists come from several physical and supernatural
+communities whose safety depends on stable boundaries; practical mutual need,
+not a unified government or moral alignment, holds them together. Their repair
 cannot undo casualties, altered rooms, severed routes, or other harm already
 caused. Containing the cascade during the original crisis avoids those later
 hazards but costs the captives' lives. Silvana remembers both what the hero
