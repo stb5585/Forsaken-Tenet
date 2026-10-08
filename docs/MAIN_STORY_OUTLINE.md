@@ -96,7 +96,10 @@ supernatural predators from several groups unite around plunder, captives, and
 opportunity rather than a shared ancestry or moral nature. Their foothold is an
 extractive base for stripping Guardian structures and older dungeon layers of
 relics, unusual materials, and saleable knowledge before moving the spoils back
-through the stable anchor. Sympathetic underworld factions appear later,
+through the stable anchor. The compact crossed without prior knowledge of the
+Guardian legacy, targeted maps, or an informed patron; systematic extraction
+began only after it accidentally discovered valuable remains. Sympathetic
+underworld factions appear later,
 overturning the first impression that the compact represents the realm as a
 whole.
 The existing Realm of Cambion portal route is one of the two stable anchors.
