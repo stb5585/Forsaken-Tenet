@@ -249,9 +249,14 @@ revises them.
 - Rescuing the captives allows the cascade to spread. Mobile tears and the
   hazards they release persist until a later joint repair with a sympathetic
   underworld faction can stabilize the damaged containment.
-- That repair ends the active cascade but cannot undo casualties, altered rooms,
-  severed routes, or other harm already caused. Containing the cascade during
-  the original crisis avoids those later hazards but costs the captives' lives.
+- The repair partners are cross-faction wardens: engineers, scouts, and ritual
+  specialists drawn from several physical and supernatural communities whose
+  safety depends on stable boundaries. Their cooperation reflects practical
+  mutual need rather than one government, ancestry, or moral alignment.
+- Their repair ends the active cascade but cannot undo casualties, altered
+  rooms, severed routes, or other harm already caused. Containing the cascade
+  during the original crisis avoids those later hazards but costs the captives'
+  lives.
   Silvana remembers both what the hero protected and what the choice left
   unprotected.
 - No branch may destroy a required relic, erase an essential campaign truth, or
@@ -308,9 +313,9 @@ revises them.
 - Most who descend do not return unchanged; many do not return at all.
 - The chthonic underworld, its physical peoples, and its supernatural powers
   still need proper names and specific factions and alliances. The raider
-  compact's name and leadership, the identity of the sympathetic faction and
-  its method for repairing the containment, and each later faction's harmful or
-  desperate reason for crossing also remain to be settled. Which other recurring groups deserve names, and what
+  compact's name and leadership, the wardens' name and method for repairing
+  the containment, and each later faction's harmful or desperate reason for
+  crossing also remain to be settled. Which other recurring groups deserve names, and what
   conditions stabilize or collapse smaller tears, also remain active canon
   decisions. Early characters do not possess authoritative
   answers or know Vesperion's role in the opening.
