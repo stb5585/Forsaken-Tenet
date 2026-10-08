@@ -98,8 +98,11 @@ extractive base for stripping Guardian structures and older dungeon layers of
 relics, unusual materials, and saleable knowledge before moving the spoils back
 through the stable anchor. The compact crossed without prior knowledge of the
 Guardian legacy, targeted maps, or an informed patron; systematic extraction
-began only after it accidentally discovered valuable remains. Sympathetic
-underworld factions appear later,
+began only after it accidentally discovered valuable remains. An overdue
+Silvana expedition provides the first visible consequence. The hero follows its
+route through looted chambers, abandoned equipment, and signs of struggle to
+surviving captives and the compact's foothold. Sympathetic underworld factions
+appear later,
 overturning the first impression that the compact represents the realm as a
 whole.
 The existing Realm of Cambion portal route is one of the two stable anchors.
