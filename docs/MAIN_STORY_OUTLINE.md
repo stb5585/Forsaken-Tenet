@@ -104,10 +104,13 @@ route through looted chambers, abandoned equipment, and signs of struggle to
 surviving captives and the compact's foothold. The compact keeps the explorers
 alive for their local expertise, forcing them to guide raiders, bypass hazards,
 identify promising artifacts, and help dismantle unfamiliar structures safely.
-Breaking the foothold forces an irreversible choice between captive groups or
-threatened Guardian evidence. Every route leaves a visible loss that Silvana
-remembers, but no branch destroys a required relic, erases an essential truth,
-or blocks the critical path; it changes survivors, context, and later
+Breaking the foothold forces an irreversible choice between lives now and
+future safety. The hero can rescue the captives or contain a danger that the
+compact's dismantling has begun to release, but cannot complete both in time.
+Rescuing the captives lets the danger escape or spread; containing it costs
+their lives. Silvana remembers both what the hero protected and what the choice
+left unprotected. No branch destroys a required relic, erases an essential
+truth, or blocks the critical path; it changes survivors, later hazards, and
 testimony. Sympathetic underworld factions appear later,
 overturning the first impression that the compact represents the realm as a
 whole.
