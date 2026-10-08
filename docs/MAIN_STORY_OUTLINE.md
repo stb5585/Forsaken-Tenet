@@ -114,9 +114,12 @@ lets mobile tears and their hazards persist until a later joint repair with
 cross-faction wardens stabilizes the damaged containment. These engineers,
 scouts, and ritual specialists come from several physical and supernatural
 communities whose safety depends on stable boundaries; practical mutual need,
-not a unified government or moral alignment, holds them together. Their repair
-cannot undo casualties, altered rooms, severed routes, or other harm already
-caused. Containing the cascade during the original crisis avoids those later
+not a unified government or moral alignment, holds them together. The hero
+must recover containment mechanisms that the compact removed and dispersed
+among its foothold, caches, and retreat routes. The wardens combine structural
+and ritual expertise to reconstruct the damaged system around those recovered
+components. The reconstructed containment cannot undo casualties, altered
+rooms, severed routes, or other harm already caused. Containing the cascade during the original crisis avoids those later
 hazards but costs the captives' lives. Silvana remembers both what the hero
 protected and what the choice left unprotected. No branch destroys a required
 relic, erases an essential truth, or blocks the critical path; it changes
