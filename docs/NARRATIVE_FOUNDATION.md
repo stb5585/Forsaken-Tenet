@@ -227,6 +227,10 @@ revises them.
   cultures, while demons, fiends, monsters, and other supernatural beings also
   inhabit or claim parts of the realm. Neither category is assumed to be a
   single culture, allegiance, or moral alignment.
+- Power is fragmented among settlements, clans, courts, and lairs rather than
+  held by one realm-wide sovereign or by either broad category. These groups
+  compete, trade, negotiate, and sometimes cooperate; alliances and rivalries
+  can cross the physical-supernatural divide.
 - This underworld is not the universal destination of every dead soul. Access
   to it does not make resurrection routine, permit the recovery of any chosen
   dead person, or weaken the permanence of Joffrey's death.
@@ -259,8 +263,8 @@ revises them.
   people followed the new breach.
 - Most who descend do not return unchanged; many do not return at all.
 - The chthonic underworld, its physical peoples, and its supernatural powers
-  still need proper names, relationships, internal factions, and specific
-  reasons for crossing. Which other recurring groups deserve names, and what
+  still need proper names, specific factions and alliances, and reasons for
+  crossing. Which other recurring groups deserve names, and what
   conditions stabilize or collapse smaller tears, also remain active canon
   decisions. Early characters do not possess authoritative
   answers or know Vesperion's role in the opening.
