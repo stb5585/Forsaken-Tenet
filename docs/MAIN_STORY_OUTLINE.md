@@ -105,10 +105,12 @@ surviving captives and the compact's foothold. The compact keeps the explorers
 alive for their local expertise, forcing them to guide raiders, bypass hazards,
 identify promising artifacts, and help dismantle unfamiliar structures safely.
 Breaking the foothold forces an irreversible choice between lives now and
-future safety. The hero can rescue the captives or contain a danger that the
-compact's dismantling has begun to release, but cannot complete both in time.
-Rescuing the captives lets the danger escape or spread; containing it costs
-their lives. Silvana remembers both what the hero protected and what the choice
+future safety. The compact has damaged Guardian containment structures that had
+limited the local effects of the Hollowing, beginning a cascade in which
+smaller tears multiply, move through nearby levels, and release creatures or
+hazardous environments. The hero can rescue the captives or stabilize the
+containment structures, but cannot complete both in time. Rescuing the captives
+lets the cascade spread; containing it costs their lives. Silvana remembers both what the hero protected and what the choice
 left unprotected. No branch destroys a required relic, erases an essential
 truth, or blocks the critical path; it changes survivors, later hazards, and
 testimony. Sympathetic underworld factions appear later,
