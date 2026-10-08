@@ -104,7 +104,11 @@ route through looted chambers, abandoned equipment, and signs of struggle to
 surviving captives and the compact's foothold. The compact keeps the explorers
 alive for their local expertise, forcing them to guide raiders, bypass hazards,
 identify promising artifacts, and help dismantle unfamiliar structures safely.
-Sympathetic underworld factions appear later,
+Breaking the foothold forces an irreversible choice between captive groups or
+threatened Guardian evidence. Every route leaves a visible loss that Silvana
+remembers, but no branch destroys a required relic, erases an essential truth,
+or blocks the critical path; it changes survivors, context, and later
+testimony. Sympathetic underworld factions appear later,
 overturning the first impression that the compact represents the realm as a
 whole.
 The existing Realm of Cambion portal route is one of the two stable anchors.
