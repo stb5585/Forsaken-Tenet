@@ -236,6 +236,9 @@ revises them.
 - The first visible consequence is an overdue expedition from Silvana. The hero
   follows its route through looted chambers, abandoned equipment, and signs of
   struggle to surviving captives and the compact's foothold.
+- The compact keeps those explorers alive for their expertise. It forces them
+  to guide raiders through local routes, bypass hazards, identify promising
+  artifacts, and help dismantle unfamiliar structures safely.
   Sympathetic underworld factions appear later and demonstrate that the compact
   does not represent the realm as a whole.
 - The resulting breach network is hybrid. Exactly two major breaches remain
@@ -285,9 +288,9 @@ revises them.
 - Most who descend do not return unchanged; many do not return at all.
 - The chthonic underworld, its physical peoples, and its supernatural powers
   still need proper names and specific factions and alliances. The raider
-  compact's name and leadership, why it keeps expedition members alive and
-  the captives' eventual fates, and each later faction's harmful or desperate
-  reason for crossing also remain to be settled. Which other recurring groups deserve names, and what
+  compact's name and leadership, the captives' fixed or variable eventual
+  fates, and each later faction's harmful or desperate reason for crossing also
+  remain to be settled. Which other recurring groups deserve names, and what
   conditions stabilize or collapse smaller tears, also remain active canon
   decisions. Early characters do not possess authoritative
   answers or know Vesperion's role in the opening.
