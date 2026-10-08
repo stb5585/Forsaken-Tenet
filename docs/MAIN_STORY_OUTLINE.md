@@ -77,7 +77,10 @@ The dungeon is one place with several histories.
    his existence to the resulting inter-realm breaches. The breach network is
    hybrid: exactly two anchored breaches permit repeat two-way travel and can
    support complete side realms, while smaller tears open unpredictably, shift
-   location, or collapse and may strand whatever passes through them. Beasts,
+   location, or collapse and may strand whatever passes through them. The
+   initial contamination was an unplanned result of the fracturing rather than
+   a coordinated incursion. Once usable routes were discovered, separate
+   factions began exploiting them for harmful or desperate purposes. Beasts,
    refugees, raiders, cults, explorers, and other opportunists from shadow
    realms, underworlds, and other planes later crossed independently. Some
    crossings were deliberate and others accidental. No single realm or
