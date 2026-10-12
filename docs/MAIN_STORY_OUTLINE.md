@@ -104,7 +104,11 @@ stable breach, remaining available for later underworld politics. Outside the
 foothold, the broker publicly operates a valuable cross-community trade
 network. Independent bands perform the raids, allowing wealth, influence, and
 plausible deniability to protect the broker from immediate arrest or execution.
-Their foothold is an extractive base for stripping Guardian structures and
+The broker belongs to one of the underworld's embodied peoples but conducts
+business across the physical-supernatural divide. Their wrongdoing arises from
+chosen exploitation and protected commerce, not from ancestry or supernatural
+nature. Their foothold is an extractive base for stripping Guardian structures
+and
 older dungeon layers of relics, unusual materials, and saleable knowledge
 before moving the spoils back through the stable anchor. The compact crossed without prior knowledge of the
 Guardian legacy, targeted maps, or an informed patron; systematic extraction
