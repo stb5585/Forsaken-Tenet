@@ -507,7 +507,10 @@ display names. Story text should nevertheless treat each central role as a
 specific person.
 
 - **The Hero:** player-authored identity; proves Voluntas through accumulated
-  choices rather than a fixed prophetic destiny.
+  choices rather than a fixed prophetic destiny. An early conversation records
+  one broad reason for coming to Silvana. That motive changes later dialogue
+  and Reflection echoes without altering progression, rewards, or access to
+  content.
 - **The Sergeant:** maintains the ledgers, balances public safety against the
   need to keep sending people below, and must reckon with the danger of turning
   protection into command.
@@ -665,8 +668,6 @@ than infer during implementation:
   obstacles or optional crises;
 - how the Realm of Cambion and other side spaces relate historically to the
   main dungeon;
-- whether the hero records an initial reason for coming to Silvana and how that
-  answer returns later.
 
 Routine travel, placement, connective dialogue, and minor staging should be
 derived from settled canon without repeatedly reopening these major questions.
