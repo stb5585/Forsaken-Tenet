@@ -229,10 +229,12 @@ first descent.
 
 ## Act I — The Opened Stair
 
-The hero arrives among people with years of shared history. Silvana's recurring
-cast already carries friendships, debts, disagreements, and family-like
-obligations, so the opening chapters reveal an existing community rather than
-assembling one around the player. Early dungeon outcomes should affect several
+The hero arrives among people with years of shared history. The Barkeep,
+Waitress, and Drunkard form the tavern's informal family; the Sergeant and
+Joffrey form a patrol circle built on professional trust. The Waitress and
+Joffrey join those circles, while the Busboy's service role lets him observe
+both. The opening chapters reveal this existing community rather than assemble
+one around the player, and early dungeon outcomes should affect several
 relationships at once.
 
 ## Chapter 1 — Names In The Ledger
