@@ -100,10 +100,13 @@ transactional rather than ideological, leaving internal fault lines the hero
 can exploit. The broker personally oversees the foothold and becomes the
 recognizable face of its extraction and captivity. When the hero fractures the
 compact, the broker abandons the unraveling bands and escapes through the
-stable breach, remaining available for later underworld politics. Their
-foothold is an extractive base for stripping Guardian structures and older
-dungeon layers of relics, unusual materials, and saleable knowledge before
-moving the spoils back through the stable anchor. The compact crossed without prior knowledge of the
+stable breach, remaining available for later underworld politics. Outside the
+foothold, the broker publicly operates a valuable cross-community trade
+network. Independent bands perform the raids, allowing wealth, influence, and
+plausible deniability to protect the broker from immediate arrest or execution.
+Their foothold is an extractive base for stripping Guardian structures and
+older dungeon layers of relics, unusual materials, and saleable knowledge
+before moving the spoils back through the stable anchor. The compact crossed without prior knowledge of the
 Guardian legacy, targeted maps, or an informed patron; systematic extraction
 began only after it accidentally discovered valuable remains. An overdue
 Silvana expedition provides the first visible consequence. The hero follows its
