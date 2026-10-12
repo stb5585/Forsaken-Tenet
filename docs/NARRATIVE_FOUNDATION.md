@@ -117,6 +117,18 @@ Their meanings should be foreshadowed before The Liminal Gap. The Liminal
 trials then clarify a pattern the player has already lived instead of
 introducing six philosophies at the end.
 
+### Relic Chapters Use Hybrid Custodians And Occupiers
+
+The six relic arcs should not repeat one literal guardian structure. Some major
+confrontations may involve ancient constructs, corrupted wardens, or beings
+directly bound to a relic. Others may involve later occupants, opportunists, or
+independent local crises encountered along the route.
+
+A required boss does not need to be a relic's formal custodian, but its
+confrontation must still reveal or complicate the chapter's principle, or
+causally enable the relic's discovery. Exact assignments belong in the later
+chapter-reconciliation pass, where existing progression can be respected.
+
 ### Build Identity Is Narrative Identity
 
 Class selection, promotions, Class Ring awakening, learned skills, and chosen
@@ -670,8 +682,8 @@ than infer during implementation:
 - the names and prior relationships of the core Silvana cast;
 - the exact sequence of Joffrey's witnessed pre-tragedy scenes;
 - the Acolyte's original purpose and surviving trail;
-- which existing bosses directly guard relic principles and which are
-  obstacles or optional crises;
+- the exact chapter-level mapping of existing bosses as relic custodians,
+  later occupants, supporting obstacles, or optional crises;
 
 Routine travel, placement, connective dialogue, and minor staging should be
 derived from settled canon without repeatedly reopening these major questions.
