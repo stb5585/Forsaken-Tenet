@@ -363,6 +363,12 @@ not be a literal relic guardian, but every required confrontation must reveal
 or complicate the chapter's principle or causally enable the relic's discovery.
 Exact assignments remain part of chapter reconciliation.
 
+The Acolyte's fragments follow thematic rather than chronological order. Each
+relic chapter uncovers evidence that reflects its principle, but neither the
+hero nor the player can yet place every fragment within the earlier journey.
+The Liminal Gap restores the true sequence and shows how the fragments connect
+into one gradual surrender.
+
 ## Chapter 3 — The Measure Of A Cage
 
 ### Principle
@@ -389,8 +395,9 @@ the final chapter packet must respect current progression order.
 
 ### Acolyte Trace
 
-The prior explorer's notes become cleaner and more rigid. They begin recording
-rules that promise safety if followed perfectly.
+The recovered note is unnervingly clean and rigid, recording rules that promise
+safety if followed perfectly. Its place in the prior explorer's journey remains
+unclear.
 
 ### Choice Space
 
@@ -429,8 +436,8 @@ historical layers.
 ### Acolyte Trace
 
 The prior explorer writes that hunger, fear, or strength proves what a creature
-is. A later annotation questions that conclusion, showing the beginning of
-internal fracture.
+is. An annotation questions that conclusion, proving an internal fracture
+without revealing when it began.
 
 ### Choice Space
 
@@ -542,8 +549,9 @@ not because the story declares them trustworthy.
 
 ### Acolyte Trace
 
-The prior explorer stops evaluating instructions and begins referring to one
-voice as the only safe guide.
+One fragment refers to a single voice as the only safe guide and no longer
+evaluates its instructions. The player cannot yet tell how early or late this
+submission occurred.
 
 ### Busboy Function
 
@@ -581,8 +589,10 @@ persistence is resolve and when it is merely an inability to stop.
 
 ### Acolyte Trace
 
-The last pre-Liminal fragment reveals that the prior explorer no longer wanted
-to decide whether to continue. They asked another will to decide for them.
+The most alarming fragment recovered before the Liminal Gap says that the prior
+explorer no longer wanted to decide whether to continue. They asked another will
+to decide for them, but the surrounding events and its chronological position
+remain missing.
 
 ### Choice Space
 
@@ -682,9 +692,10 @@ were incomplete.
 ### Acolyte Payoff
 
 Centuries-old fragments from earlier chapters should make the Acolyte
-recognizable before the title is spoken. Their Liminal scene completes a
-trajectory the player has been reading throughout the game without requiring a
-current Silvana resident to have known them.
+recognizable before the title is spoken. Those fragments were recovered in
+thematic rather than chronological order. Their Liminal scene restores the true
+sequence, resolves misleading assumptions about cause and timing, and completes
+the account without requiring a current Silvana resident to have known them.
 
 Vesperion arranged the trial to seek voluntary validation rather than simply
 recruit an heir or rehearse the relic route. He needed a capable, independent
