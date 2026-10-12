@@ -330,8 +330,12 @@ revises them.
   the Guardian of Voluntas to invert the threshold's ancient Guardian seal,
   turning a protective barrier into a passage. Centuries of decay had weakened
   the mechanism enough for the inversion to succeed.
-- He engineered the opening to attract explorers, draw them into recovering
-  the six relics, and provoke a final confrontation over Voluntas.
+- He waited until Silvana had developed enough explorers, equipment, trade, and
+  institutional support to sustain repeated descents and recover all six
+  relics, while the settlement remained ignorant of the dungeon's true purpose
+  and his manipulation.
+- He engineered the opening to attract those explorers, draw them into
+  recovering the six relics, and provoke a final confrontation over Voluntas.
 - This plan does not mean Vesperion created the dungeon, caused every danger
   within it, or controlled the independent forces exploiting its inter-realm
   breaches.
@@ -641,8 +645,6 @@ than infer during implementation:
 - detailed underworld naming, internal factions, later inter-realm groups,
   and minor-tear mechanics, all deferred to a later faction, quest, and
   mechanics pass;
-- why Vesperion judged Silvana's era to be the right moment to invert the
-  weakened deeper-threshold seal;
 - the names and prior relationships of the core Silvana cast;
 - Joffrey's role, motive, and witnessed pre-tragedy scenes;
 - the Acolyte's era, original purpose, and surviving trail;
