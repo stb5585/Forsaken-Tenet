@@ -481,8 +481,13 @@ revises them.
 - He is a patrol scout and route-mapper who explores the unstable upper
   levels, contributes directly to the Sergeant's records, and helps locate
   missing expeditions.
-- His fatal decision must remain meaningfully his even if Vesperion pressures,
-  deceives, or exploits him.
+- A patrol disappears after following a route Joffrey charted. Believing his
+  mistake placed them in danger, he chooses to return quickly, find them, and
+  correct the route.
+- Vesperion distorts the evidence and apparent urgency so immediate action seems
+  necessary, but does not compel Joffrey. The fatal decision remains
+  meaningfully Joffrey's.
+
 - The Waitress must have desires, judgment, anger, and relationships beyond
   receiving news of Joffrey.
 - The tragedy is not reversed by Voluntas or the ending.
@@ -649,7 +654,7 @@ than infer during implementation:
   and minor-tear mechanics, all deferred to a later faction, quest, and
   mechanics pass;
 - the names and prior relationships of the core Silvana cast;
-- Joffrey's motive for the fatal descent and his witnessed pre-tragedy scenes;
+- the exact sequence of Joffrey's witnessed pre-tragedy scenes;
 - the Acolyte's era, original purpose, and surviving trail;
 - which existing bosses directly guard relic principles and which are
   obstacles or optional crises;
