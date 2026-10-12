@@ -246,8 +246,9 @@ brought home for burial.
 
 1. The Sergeant shows the hero patrol entries describing sealed rooms, old
    symbols, missing hours, and incompatible routes.
-2. Joffrey appears in the barracks or tavern as an active defender preparing
-   for his own work below.
+2. Joffrey appears in the barracks or tavern as a patrol scout and
+   route-mapper preparing for work below, contributing firsthand observations
+   to the Sergeant's records and helping locate missing expeditions.
 3. The hero follows marks left by multiple patrols and discovers that
    contradictions repeat in a pattern.
 4. Early rescue and recovery content demonstrates that returning a person or
