@@ -527,6 +527,18 @@ revises them.
 
 ## Cast Obligations
 
+Silvana's core cast is a rooted community, not a collection of quest vendors
+who meet through the hero. The Barkeep, Waitress, Joffrey, Sergeant, Drunkard,
+and other recurring residents share years of friendship, favors, arguments,
+debts, and family-like obligations. They need not agree or like one another
+equally, but every major loss, discovery, and accusation should travel through
+several existing relationships.
+
+The hero enters this network as an outsider and gradually earns a place within
+it. The campaign should reveal preexisting bonds through ordinary behavior,
+shared memories, and conflicting accounts rather than introduce every
+relationship through exposition.
+
 Current stable internal identifiers may remain while a later cast pass decides
 display names. Story text should nevertheless treat each central role as a
 specific person.
@@ -688,7 +700,7 @@ than infer during implementation:
 - detailed underworld naming, internal factions, later inter-realm groups,
   and minor-tear mechanics, all deferred to a later faction, quest, and
   mechanics pass;
-- the names and prior relationships of the core Silvana cast;
+- the display names and exact relationship map of the rooted Silvana cast;
 - the exact sequence of Joffrey's witnessed pre-tragedy scenes;
 - the exact chapter-level mapping of existing bosses as relic custodians,
   later occupants, supporting obstacles, or optional crises;
