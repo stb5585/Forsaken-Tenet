@@ -509,9 +509,12 @@ revises them.
 
 - Their love and grief are real.
 - Joffrey must exist as a person before he becomes a body, letter, or symbol.
-- He is a patrol scout and route-mapper who explores the unstable upper
-  levels, contributes directly to the Sergeant's records, and helps locate
-  missing expeditions. His work embodies the unresolved tension between
+- He grew up in Silvana and trained under Caedmon, whose trust he earned as a
+  scout and route-mapper. After Liora joined Oren's household, she and Joffrey
+  became friends before their relationship gradually became romantic.
+- He explores the unstable upper levels, contributes directly to Caedmon's
+  records, and helps locate missing expeditions. His work embodies the
+  unresolved tension between
   necessary protection and the human cost Silvana is learning to normalize.
 - Four witnessed scenes establish him before the tragedy, in order: an ordinary
   tavern moment with the Waitress; a patrol briefing that demonstrates his
@@ -546,6 +549,11 @@ Drunkard form the tavern's informal family, while the Sergeant and Joffrey share
 the discipline, reliance, and accumulated trust of patrol work. The Waitress
 and Joffrey's relationship joins the circles. The Busboy's unremarkable service
 role gives him quiet access to both without making him appear central.
+
+Joffrey is a lifelong Silvana resident whom Caedmon trained into patrol work.
+His friendship with Liora began after she joined Oren's household and matured
+gradually into romance, making him an authentic member of both circles rather
+than a convenient link created for the plot.
 
 The tavern circle is chosen family. Oren gave Liora work and shelter when she
 needed stability, and their bond became father-like without replacing or
@@ -748,8 +756,6 @@ than infer during implementation:
 - detailed underworld naming, internal factions, later inter-realm groups,
   and minor-tear mechanics, all deferred to a later faction, quest, and
   mechanics pass;
-- the remaining one-to-one histories within Silvana's two established social
-  circles;
 - the exact chapter-level mapping of existing bosses as relic custodians,
   later occupants, supporting obstacles, or optional crises;
 
