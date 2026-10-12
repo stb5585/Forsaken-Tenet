@@ -192,7 +192,9 @@ and ideological cast before any twist matters.
    fixed backstory.
 2. The hero arrives at The Thirsty Dog during an ordinary evening strained by
    another incomplete patrol return. An early conversation records one broad
-   reason for coming to Silvana.
+   reason for coming to Silvana: **Fortune** for profit from the opened depths,
+   **Service** to answer the town's need, **Knowledge** to uncover what lies
+   below, or **Reinvention** to leave an old life behind.
 3. The Barkeep manages the room; the Waitress and Joffrey are visibly together;
    the Busboy works at the edge of notice.
 4. The Sergeant seeks reliable help because witness accounts disagree.
