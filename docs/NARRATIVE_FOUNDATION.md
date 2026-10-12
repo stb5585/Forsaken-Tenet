@@ -496,9 +496,14 @@ revises them.
 - They are a tragic ideological mirror rather than another required boss.
 - Their existence should be foreshadowed through fragments, traces, altered
   records, or remembered actions across the main descent.
-- Their identity, class history, relationship to the Hooded Figure, degree of
-  direct contact with Vesperion, and exact surviving trail remain development
-  questions.
+- The evidence is recovered out of chronological order. Each relic chapter
+  exposes a fragment that resonates with its principle, allowing the player to
+  recognize the Acolyte's erosion without yet knowing its precise sequence or
+  causes.
+- The Liminal Gap restores the fragments' true order and completes the account
+  of how an independent explorer came to ask Vesperion to choose for them.
+- Their identity, class history, relationship to the Hooded Figure, and degree
+  of direct contact with Vesperion remain development questions.
 
 ### Joffrey And The Waitress
 
@@ -685,7 +690,6 @@ than infer during implementation:
   mechanics pass;
 - the names and prior relationships of the core Silvana cast;
 - the exact sequence of Joffrey's witnessed pre-tragedy scenes;
-- the Acolyte's exact surviving trail through the relic chapters;
 - the exact chapter-level mapping of existing bosses as relic custodians,
   later occupants, supporting obstacles, or optional crises;
 
