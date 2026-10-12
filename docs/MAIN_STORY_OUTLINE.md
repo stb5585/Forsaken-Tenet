@@ -356,6 +356,13 @@ bosses, locations, and quests, but the exact mechanical mapping must be audited
 before a chapter packet changes content. The outline defines narrative
 function; it does not move a boss or relic by assertion.
 
+Relic chapters use a hybrid boss structure. Some confrontations involve ancient
+constructs, corrupted wardens, or beings directly bound to a relic; others
+involve later occupants, opportunists, or independent local crises. A boss need
+not be a literal relic guardian, but every required confrontation must reveal
+or complicate the chapter's principle or causally enable the relic's discovery.
+Exact assignments remain part of chapter reconciliation.
+
 ## Chapter 3 — The Measure Of A Cage
 
 ### Principle
