@@ -141,6 +141,10 @@ Settled preserve-first assignments:
   custodian. Its terror forces explorers into rigid routes, repeated rituals,
   and compulsory ideas of safe behavior. Defeating it removes the practical
   barrier to Quadrata and exposes how fear can create coercive order.
+- **Hexagonum — Wendigo:** Wendigo is a later, curse-born inhabitant rather
+  than an ancient custodian. Its endless hunger embodies the false claim that
+  instinct and need dictate what a being must become. Defeating it clears the
+  relic route while Hexagonum rejects appetite as destiny.
 
 ### Build Identity Is Narrative Identity
 
