@@ -227,6 +227,11 @@ revises them.
   compact establishing a foothold in the dungeon. Mercenaries, outcasts, and
   supernatural predators recruited from several groups unite around plunder,
   captives, and opportunity rather than a shared ancestry or moral nature.
+- A spoils-broker holds the compact together by controlling access to buyers,
+  critical supplies, and the division of plunder. Its member bands remain
+  operationally independent, but depend on the broker to turn theft into
+  profit. The broker's authority is transactional rather than ideological,
+  creating internal fault lines the hero can exploit.
 - The compact's immediate objective is extractive. It uses the foothold to strip
   Guardian structures and older dungeon layers of relics, unusual materials,
   and saleable knowledge, then move the spoils through the stable anchor.
@@ -317,11 +322,12 @@ revises them.
 - Most who descend do not return unchanged; many do not return at all.
 - The chthonic underworld, its physical peoples, and its supernatural powers
   still need proper names and specific factions and alliances. The raider
-  compact's name and leadership, the wardens' name, and each later faction's
-  harmful or desperate reason for crossing also remain to be settled. Which
-  other recurring groups deserve names, and what conditions stabilize or
-  collapse smaller tears, also remain active canon decisions. Early characters do not possess authoritative
-  answers or know Vesperion's role in the opening.
+  compact's name, the spoils-broker's identity, the wardens' name, and each
+  later faction's harmful or desperate reason for crossing remain to be
+  settled. Which other recurring groups deserve names, and what conditions
+  stabilize or collapse smaller tears, also remain active canon decisions.
+  Early characters do not possess authoritative answers or know Vesperion's
+  role in the opening.
 
 ### The Six Guardians And Voluntas
 
