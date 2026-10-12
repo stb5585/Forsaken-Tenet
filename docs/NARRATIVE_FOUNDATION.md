@@ -135,6 +135,13 @@ narrative role. A boss should be moved, replaced, or supplemented only when the
 audit finds no credible thematic or causal fit, and any such exception requires
 a separate gameplay and save-contract review.
 
+Settled preserve-first assignments:
+
+- **Quadrata — Nightmare:** Nightmare is a later occupant, not an ancient
+  custodian. Its terror forces explorers into rigid routes, repeated rituals,
+  and compulsory ideas of safe behavior. Defeating it removes the practical
+  barrier to Quadrata and exposes how fear can create coercive order.
+
 ### Build Identity Is Narrative Identity
 
 Class selection, promotions, Class Ring awakening, learned skills, and chosen
