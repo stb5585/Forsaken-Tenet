@@ -511,7 +511,8 @@ revises them.
 - Joffrey must exist as a person before he becomes a body, letter, or symbol.
 - He is a patrol scout and route-mapper who explores the unstable upper
   levels, contributes directly to the Sergeant's records, and helps locate
-  missing expeditions.
+  missing expeditions. His work embodies the unresolved tension between
+  necessary protection and the human cost Silvana is learning to normalize.
 - A patrol disappears after following a route Joffrey charted. Believing his
   mistake placed them in danger, he chooses to return quickly, find them, and
   correct the route.
@@ -539,6 +540,12 @@ Drunkard form the tavern's informal family, while the Sergeant and Joffrey share
 the discipline, reliance, and accumulated trust of patrol work. The Waitress
 and Joffrey's relationship joins the circles. The Busboy's unremarkable service
 role gives him quiet access to both without making him appear central.
+
+A principled tension already exists between the circles. The Sergeant and the
+patrol accept dangerous work as necessary to protect Silvana, while the tavern
+family fears that repeated necessity is teaching the town to treat its people
+as expendable. Neither position is wholly wrong: refusing every risk abandons
+people and routes below, but accepting every loss turns sacrifice into routine.
 
 The hero enters this network as an outsider and gradually earns a place within
 it. The campaign should reveal preexisting bonds through ordinary behavior,
