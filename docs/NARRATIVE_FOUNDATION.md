@@ -465,14 +465,20 @@ revises them.
 ### The Acolyte
 
 - The Acolyte is a former hero who followed the relic path and failed.
+- Their journey occurred centuries before the current campaign during a private
+  trial arranged by Vesperion. He temporarily admitted one promising explorer
+  into the sealed complex and closed the route again after their surrender.
+- No living Silvana resident knew them; their history survives through
+  preserved fragments rather than a current-town cover-up.
 - They came to believe Vesperion's promise that surrendering choice would end
   suffering.
 - Their surrender felt peaceful before it became empty.
 - They are a tragic ideological mirror rather than another required boss.
 - Their existence should be foreshadowed through fragments, traces, altered
   records, or remembered actions across the main descent.
-- The exact era, identity, class history, relationship to the Hooded Figure,
-  and degree of direct contact with Vesperion remain development questions.
+- Their identity, class history, original purpose, relationship to the Hooded
+  Figure, degree of direct contact with Vesperion, and exact surviving trail
+  remain development questions.
 
 ### Joffrey And The Waitress
 
@@ -487,7 +493,6 @@ revises them.
 - Vesperion distorts the evidence and apparent urgency so immediate action seems
   necessary, but does not compel Joffrey. The fatal decision remains
   meaningfully Joffrey's.
-
 - The Waitress must have desires, judgment, anger, and relationships beyond
   receiving news of Joffrey.
 - The tragedy is not reversed by Voluntas or the ending.
@@ -655,7 +660,7 @@ than infer during implementation:
   mechanics pass;
 - the names and prior relationships of the core Silvana cast;
 - the exact sequence of Joffrey's witnessed pre-tragedy scenes;
-- the Acolyte's era, original purpose, and surviving trail;
+- the Acolyte's original purpose and surviving trail;
 - which existing bosses directly guard relic principles and which are
   obstacles or optional crises;
 - how the Realm of Cambion and other side spaces relate historically to the
