@@ -293,6 +293,10 @@ revises them.
 - One anchored route leads to the Realm of Cambion. The other leads to a
   chthonic underworld containing both physical subterranean civilizations and
   supernatural domains; its proper name remains to be settled.
+- Neither stable anchor predates the Hollowing or represents an ancient
+  Guardian trade route. The Hollowing created both connections accidentally;
+  inhabitants later explored, fortified, exploited, and adapted to the
+  passages.
 - Its embodied peoples may include dark elves, dwarves, and other underground
   cultures, while demons, fiends, monsters, and other supernatural beings also
   inhabit or claim parts of the realm. Neither category is assumed to be a
@@ -668,8 +672,6 @@ than infer during implementation:
 - the Acolyte's original purpose and surviving trail;
 - which existing bosses directly guard relic principles and which are
   obstacles or optional crises;
-- how the Realm of Cambion and other side spaces relate historically to the
-  main dungeon;
 
 Routine travel, placement, connective dialogue, and minor staging should be
 derived from settled canon without repeatedly reopening these major questions.
