@@ -167,9 +167,12 @@ The current crisis begins when Vesperion deliberately opens a deeper threshold
 beyond the upper works Silvana knew how to use. As the first successor to the
 Guardian of Voluntas, he uses his inherited custodial authority to invert the
 threshold's ancient Guardian seal, turning a protective barrier into a passage
-after centuries of decay weaken the mechanism. He intends to attract explorers,
-recover the six relics through their efforts, and provoke a final confrontation
-over Voluntas. The town therefore has a real material relationship with the
+after centuries of decay weaken the mechanism. He has waited until Silvana
+possesses enough explorers, equipment, trade, and institutional support to
+sustain repeated descents and recover all six relics, while remaining ignorant
+of the dungeon's true purpose and his manipulation. He intends to use those
+explorers to recover the relics and provoke a final confrontation over
+Voluntas. The town therefore has a real material relationship with the
 dungeon while remaining ignorant of its full depth, original purpose, and
 Vesperion's role in the opening.
 
