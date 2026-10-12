@@ -241,10 +241,11 @@ revises them.
   cross-community trade network. Independent bands perform the raids, allowing
   the broker to use wealth, influence, and plausible deniability as protection
   from immediate arrest or execution.
-- The broker belongs to one of the underworld's embodied peoples but conducts
-  business across the physical-supernatural divide. Their wrongdoing arises
-  from chosen exploitation and protected commerce, not from ancestry or
-  supernatural nature.
+- The broker belongs to a deep-dwelling dwarven trade culture and conducts
+  business across the physical-supernatural divide. Guild credentials,
+  logistical expertise, and control of transport infrastructure support the
+  broker's commercial influence. Their wrongdoing arises from chosen
+  exploitation and protected commerce, not from dwarven ancestry.
 - The compact's immediate objective is extractive. It uses the foothold to strip
   Guardian structures and older dungeon layers of relics, unusual materials,
   and saleable knowledge, then move the spoils through the stable anchor.
@@ -333,15 +334,12 @@ revises them.
 - Treasure seekers, soldiers, scholars, pilgrims, opportunists, and desperate
   people followed the new breach.
 - Most who descend do not return unchanged; many do not return at all.
-- The chthonic underworld, its physical peoples, and its supernatural powers
-  still need proper names and specific factions and alliances. The raider
-  compact's name, the spoils-broker's personal name and specific embodied
-  culture, the wardens' name, and each later faction's harmful or desperate
-  reason for
-  crossing remain to be settled. Which other recurring groups deserve names,
-  and what conditions stabilize or collapse smaller tears, also remain active
-  canon decisions.
-  Early characters do not possess authoritative answers or know Vesperion's
+- The chthonic underworld storyline is structurally complete for this
+  foundation pass. Proper names for the realm, raider compact, spoils-broker,
+  wardens, cultures, and secondary factions are deferred to a later
+  faction-and-naming pass. The conditions that stabilize or collapse minor
+  tears can be settled during quest and mechanics design.
+- Early characters do not possess authoritative answers or know Vesperion's
   role in the opening.
 
 ### The Six Guardians And Voluntas
