@@ -188,10 +188,11 @@ and ideological cast before any twist matters.
 ### Mandatory Beats
 
 1. The existing story cards establish the newly opened deeper threshold,
-   missing expeditions, forgotten relics, and the hero's unspecified reason
-   for coming.
+   missing expeditions, and forgotten relics without assigning the hero a
+   fixed backstory.
 2. The hero arrives at The Thirsty Dog during an ordinary evening strained by
-   another incomplete patrol return.
+   another incomplete patrol return. An early conversation records one broad
+   reason for coming to Silvana.
 3. The Barkeep manages the room; the Waitress and Joffrey are visibly together;
    the Busboy works at the edge of notice.
 4. The Sergeant seeks reliable help because witness accounts disagree.
@@ -205,10 +206,10 @@ and ideological cast before any twist matters.
   the patrol table.
 - The Drunkard recognizes a symbol described by a survivor, then retreats into
   humor when pressed.
-- The Busboy remembers the hero's order or reason for being present with
-  unsettling accuracy.
-- A compact role-playing answer may record why the hero answered Silvana's
-  plea, but only after its persistence and echo contract is approved.
+- The Busboy remembers the hero's order and chosen reason for being present
+  with unsettling accuracy.
+- The chosen motive later changes dialogue and Reflection echoes without
+  altering progression, rewards, or access to content.
 
 ### Information Boundary
 
