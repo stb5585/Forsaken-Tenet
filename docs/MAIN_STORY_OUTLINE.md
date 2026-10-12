@@ -29,7 +29,8 @@ mandatory title cards.
 - Vesperion remains the fallen Guardian of Voluntas and the Busboy in disguise.
 - The Hooded Figure remains a Witness of Voluntas rather than the villain.
 - Joffrey's death and the Waitress's grief remain real.
-- The Acolyte remains a non-boss tragic mirror in the current route.
+- The Acolyte remains a non-boss tragic mirror from a private trial Vesperion
+  arranged centuries earlier; no living Silvana resident knew them.
 - The false final leads to The Liminal Gap.
 - Guardian trials, Voluntas, Reflection, return, true final, and the ending
   retain their implemented order.
@@ -667,9 +668,10 @@ were incomplete.
 
 ### Acolyte Payoff
 
-Fragments from earlier chapters should make the Acolyte recognizable before
-the title is spoken. Their Liminal scene completes a trajectory the player has
-been reading throughout the game.
+Centuries-old fragments from earlier chapters should make the Acolyte
+recognizable before the title is spoken. Their Liminal scene completes a
+trajectory the player has been reading throughout the game without requiring a
+current Silvana resident to have known them.
 
 The Acolyte does not need immediate redemption, combat, or a heroic sacrifice.
 Their existence is the warning: peace purchased by surrendering the self
