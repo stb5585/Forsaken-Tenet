@@ -484,6 +484,10 @@ revises them.
 - Their journey occurred centuries before the current campaign during a private
   trial arranged by Vesperion. He temporarily admitted one promising explorer
   into the sealed complex and closed the route again after their surrender.
+- Vesperion wanted voluntary validation, not merely an heir or a rehearsal for
+  the relic route. He chose a capable, independent explorer and tried to make
+  them freely conclude that surrendering choice was merciful, believing their
+  uncoerced agreement would prove his doctrine.
 - No living Silvana resident knew them; their history survives through
   preserved fragments rather than a current-town cover-up.
 - They came to believe Vesperion's promise that surrendering choice would end
@@ -492,9 +496,9 @@ revises them.
 - They are a tragic ideological mirror rather than another required boss.
 - Their existence should be foreshadowed through fragments, traces, altered
   records, or remembered actions across the main descent.
-- Their identity, class history, original purpose, relationship to the Hooded
-  Figure, degree of direct contact with Vesperion, and exact surviving trail
-  remain development questions.
+- Their identity, class history, relationship to the Hooded Figure, degree of
+  direct contact with Vesperion, and exact surviving trail remain development
+  questions.
 
 ### Joffrey And The Waitress
 
@@ -681,7 +685,7 @@ than infer during implementation:
   mechanics pass;
 - the names and prior relationships of the core Silvana cast;
 - the exact sequence of Joffrey's witnessed pre-tragedy scenes;
-- the Acolyte's original purpose and surviving trail;
+- the Acolyte's exact surviving trail through the relic chapters;
 - the exact chapter-level mapping of existing bosses as relic custodians,
   later occupants, supporting obstacles, or optional crises;
 
