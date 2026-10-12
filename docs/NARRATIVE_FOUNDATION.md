@@ -241,6 +241,10 @@ revises them.
   cross-community trade network. Independent bands perform the raids, allowing
   the broker to use wealth, influence, and plausible deniability as protection
   from immediate arrest or execution.
+- The broker belongs to one of the underworld's embodied peoples but conducts
+  business across the physical-supernatural divide. Their wrongdoing arises
+  from chosen exploitation and protected commerce, not from ancestry or
+  supernatural nature.
 - The compact's immediate objective is extractive. It uses the foothold to strip
   Guardian structures and older dungeon layers of relics, unusual materials,
   and saleable knowledge, then move the spoils through the stable anchor.
@@ -331,8 +335,9 @@ revises them.
 - Most who descend do not return unchanged; many do not return at all.
 - The chthonic underworld, its physical peoples, and its supernatural powers
   still need proper names and specific factions and alliances. The raider
-  compact's name, the spoils-broker's personal name and cultural origin, the
-  wardens' name, and each later faction's harmful or desperate reason for
+  compact's name, the spoils-broker's personal name and specific embodied
+  culture, the wardens' name, and each later faction's harmful or desperate
+  reason for
   crossing remain to be settled. Which other recurring groups deserve names,
   and what conditions stabilize or collapse smaller tears, also remain active
   canon decisions.
