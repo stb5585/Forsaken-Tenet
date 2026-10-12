@@ -453,11 +453,18 @@ Before Joffrey descends on his fatal route, the player must:
 - receive enough information that Joffrey's later letter refers to known
   tensions rather than inventing them after his death.
 
+### Fatal Trigger
+
+A patrol disappears after following a route Joffrey charted. Believing his
+mistake placed them in danger, he chooses to return quickly, find them, and
+correct the route. Vesperion distorts the evidence and apparent urgency so
+immediate action seems necessary, but does not compel him.
+
 ### Fixed Tragic Outcome
 
-Joffrey dies in the current campaign route. Vesperion may influence his
-information, fear, timing, or sense of obligation, but Joffrey is not reduced
-to a puppet. His love and fatal choice remain his.
+Joffrey dies in the current campaign route. His choice to accept the risk
+remains his even though Vesperion manipulates the information and timing. His
+love and fatal choice remain real.
 
 ### Variable Expression
 
