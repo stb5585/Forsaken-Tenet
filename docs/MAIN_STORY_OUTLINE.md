@@ -235,9 +235,11 @@ figure without replacing her prior family. Pell Morn is Oren's oldest friend
 and Liora's exasperating uncle figure; their support includes accountability
 for his drinking. Together they form the tavern's chosen family.
 
-Sergeant Caedmon Varr and Joffrey form a patrol circle built on professional
-trust. Liora and Joffrey join the two circles, while the Busboy Tavin's service
-role lets him observe both.
+Joffrey grew up in Silvana and trained under Sergeant Caedmon Varr, whose
+professional trust he earned as a scout and route-mapper. After Liora joined
+Oren's household, she and Joffrey became friends before their relationship
+gradually became romantic. Their bond joins the two circles, while the Busboy
+Tavin's service role lets him observe both.
 
 The patrol circle regards dangerous work as necessary protection. The tavern
 circle fears that repeated necessity is making Silvana comfortable with
@@ -492,12 +494,12 @@ than a late quest reveal used primarily to support Vesperion's final speech.
 The player witnesses four scenes in order before Joffrey descends on his fatal
 route:
 
-1. **Ordinary tavern moment:** Joffrey and the Waitress share familiar work,
-   affection, disagreement, or humor while the tavern family carries on around
-   them. The relationship exists as ordinary life rather than tragedy setup.
-2. **Patrol briefing:** Joffrey demonstrates competence as a scout and
-   route-mapper. The Sergeant trusts his judgment, and their professional bond
-   is visible before either man is placed under blame.
+1. **Ordinary tavern moment:** Joffrey and Liora share familiar work,
+   affection, disagreement, or humor while their chosen family carries on
+   around them. The relationship exists as ordinary life rather than tragedy setup.
+2. **Patrol briefing:** Joffrey demonstrates the competence Caedmon helped him
+   develop as a scout and route-mapper. Caedmon trusts his judgment, and their
+   mentor-protege bond is visible before either man is placed under blame.
 3. **Route review with the hero:** Joffrey explains uncertain evidence, accepts
    responsibility for his maps, and engages the disagreement over necessary
    risk and normalized sacrifice.
