@@ -508,9 +508,11 @@ specific person.
 
 - **The Hero:** player-authored identity; proves Voluntas through accumulated
   choices rather than a fixed prophetic destiny. An early conversation records
-  one broad reason for coming to Silvana. That motive changes later dialogue
-  and Reflection echoes without altering progression, rewards, or access to
-  content.
+  one broad reason for coming to Silvana: **Fortune** seeks profit from the
+  newly opened depths, **Service** answers Silvana's need for help,
+  **Knowledge** seeks the truth beneath the town, and **Reinvention** leaves an
+  old life behind. The chosen motive changes later dialogue and Reflection
+  echoes without altering progression, rewards, or access to content.
 - **The Sergeant:** maintains the ledgers, balances public safety against the
   need to keep sending people below, and must reckon with the danger of turning
   protection into command.
