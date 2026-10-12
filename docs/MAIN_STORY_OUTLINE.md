@@ -143,7 +143,10 @@ survivors, later hazards, and testimony. The later allies overturn the first
 impression that the compact represents the underworld as a whole.
 The existing Realm of Cambion portal route is one of the two stable anchors.
 The other reaches a chthonic underworld containing both physical
-subterranean civilizations and supernatural domains. Embodied peoples such as
+subterranean civilizations and supernatural domains. Neither connection
+predates the Hollowing or represents an ancient Guardian trade route. The
+Hollowing created both anchors accidentally, and inhabitants later explored,
+fortified, exploited, and adapted to the passages. Embodied peoples such as
 dark elves, dwarves, and other underground cultures coexist or conflict with
 demons, fiends, monsters, and other supernatural beings; none of those broad
 categories implies one culture, allegiance, or moral alignment. Power remains
