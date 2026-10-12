@@ -93,8 +93,12 @@ dungeon, or seeking a return route rather than being folded into one invasion.
 The hero's first deliberate underworld incursion comes from a mixed raider
 compact establishing a foothold in the dungeon. Mercenaries, outcasts, and
 supernatural predators from several groups unite around plunder, captives, and
-opportunity rather than a shared ancestry or moral nature. Their foothold is an
-extractive base for stripping Guardian structures and older dungeon layers of
+opportunity rather than a shared ancestry or moral nature. A spoils-broker
+holds these independent bands together by controlling access to buyers,
+critical supplies, and the division of plunder. The broker's authority is
+transactional rather than ideological, leaving internal fault lines the hero
+can exploit. Their foothold is an extractive base for stripping Guardian
+structures and older dungeon layers of
 relics, unusual materials, and saleable knowledge before moving the spoils back
 through the stable anchor. The compact crossed without prior knowledge of the
 Guardian legacy, targeted maps, or an informed patron; systematic extraction
