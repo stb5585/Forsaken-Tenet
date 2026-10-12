@@ -565,8 +565,15 @@ replace or supplement that label in dialogue and interfaces. Story text must
 treat each central role as a specific person rather than withholding names for
 the entire campaign.
 
-The Busboy is the deliberate exception: his harmless public presentation must
-not expose the name Vesperion before the planned reveal.
+The canonical display names are:
+
+| Stable role | Display name | Introduction behavior |
+| --- | --- | --- |
+| Barkeep | Oren Caldus | Introduced naturally after the initial role label. |
+| Waitress | Liora Fen | Introduced naturally after the initial role label. |
+| Sergeant | Caedmon Varr | Introduced naturally after the initial role label. |
+| Drunkard | Pell Morn | Introduced naturally after the initial role label. |
+| Busboy | Tavin | Harmless public alias; Vesperion remains hidden until the planned reveal. |
 
 - **The Hero:** player-authored identity; proves Voluntas through accumulated
   choices rather than a fixed prophetic destiny. An early conversation records
@@ -575,25 +582,25 @@ not expose the name Vesperion before the planned reveal.
   **Knowledge** seeks the truth beneath the town, and **Reinvention** leaves an
   old life behind. The chosen motive changes later dialogue and Reflection
   echoes without altering progression, rewards, or access to content.
-- **The Sergeant:** maintains the ledgers, balances public safety against the
+- **Caedmon Varr — The Sergeant:** maintains the ledgers, balances public safety against the
   need to keep sending people below, and has earned Joffrey's professional
   trust. He must reckon with the danger of turning protection into command.
-- **The Barkeep:** keeper of ordinary memory and anchor of the tavern's
+- **Oren Caldus — The Barkeep:** keeper of ordinary memory and anchor of the tavern's
   informal family; notices who returns, who is missing, and what the town
   refuses to say aloud.
-- **The Waitress:** bridge between the tavern family and Joffrey's patrol
+- **Liora Fen — The Waitress:** bridge between the tavern family and Joffrey's patrol
   circle; capable of hope, frustration, work, love, blame, grief, and eventual
   survival beyond his death.
 - **Joffrey:** patrol scout and route-mapper whose relationship with the
   Waitress joins his professional circle to the tavern family. His ordinary
   work in Silvana's defense, motives, and choices must be witnessed before his
   death.
-- **The Busboy/Vesperion:** quiet observer whose service work grants access to
+- **Tavin — The Busboy/Vesperion:** quiet observer whose service work grants access to
   both social circles; his apparent empathy and ideological questions become
   disturbing in retrospect.
 - **The Hooded Figure:** feared guide whose respect for refusal gradually
   distinguishes them from the apparent kindness of the Busboy.
-- **The Drunkard:** humor, memory, and survivor guilt; his later attempt at
+- **Pell Morn — The Drunkard:** humor, memory, and survivor guilt; his later attempt at
   sobriety can embody endurance as an active choice rather than a joke ending.
 - **Mara Vale and Seraphine Voss:** useful bridges between ordinary side quests,
   exploration knowledge, and the dungeon's changing interpretation.
@@ -730,8 +737,8 @@ than infer during implementation:
 - detailed underworld naming, internal factions, later inter-realm groups,
   and minor-tear mechanics, all deferred to a later faction, quest, and
   mechanics pass;
-- the specific display names and remaining one-to-one histories within
-  Silvana's two established social circles;
+- the remaining one-to-one histories within Silvana's two established social
+  circles;
 - the exact chapter-level mapping of existing bosses as relic custodians,
   later occupants, supporting obstacles, or optional crises;
 
