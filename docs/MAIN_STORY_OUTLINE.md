@@ -229,6 +229,12 @@ first descent.
 
 ## Act I — The Opened Stair
 
+The hero arrives among people with years of shared history. Silvana's recurring
+cast already carries friendships, debts, disagreements, and family-like
+obligations, so the opening chapters reveal an existing community rather than
+assembling one around the player. Early dungeon outcomes should affect several
+relationships at once.
+
 ## Chapter 1 — Names In The Ledger
 
 ### Dramatic Purpose
@@ -268,9 +274,11 @@ brought home for burial.
 
 ### Town Change
 
-The barracks ledger adds or resolves named entries. The Barkeep and Waitress
-recognize that the hero returned with more than loot. Joffrey becomes more
-interested in the hero's report rather than existing only in secondhand
+The barracks ledger adds or resolves named entries. Because the Barkeep,
+Waitress, Joffrey, and Sergeant share years of history, every recovered person
+or confirmed death changes several conversations rather than only completing a
+quest. They recognize that the hero returned with more than loot, and Joffrey
+becomes more interested in the report rather than existing only in secondhand
 dialogue.
 
 ### Information Gained
