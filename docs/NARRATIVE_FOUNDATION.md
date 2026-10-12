@@ -326,6 +326,10 @@ revises them.
 - Silvana knew and used only the uppermost layers. The full depth and sacred
   purpose had been lost before Vesperion deliberately opened the current deeper
   threshold.
+- Vesperion used the custodial authority he inherited as the first successor to
+  the Guardian of Voluntas to invert the threshold's ancient Guardian seal,
+  turning a protective barrier into a passage. Centuries of decay had weakened
+  the mechanism enough for the inversion to succeed.
 - He engineered the opening to attract explorers, draw them into recovering
   the six relics, and provoke a final confrontation over Voluntas.
 - This plan does not mean Vesperion created the dungeon, caused every danger
@@ -637,8 +641,8 @@ than infer during implementation:
 - detailed underworld naming, internal factions, later inter-realm groups,
   and minor-tear mechanics, all deferred to a later faction, quest, and
   mechanics pass;
-- the precise method Vesperion used to open the deeper threshold, the
-  conditions that made it possible, and why he chose this moment;
+- why Vesperion judged Silvana's era to be the right moment to invert the
+  weakened deeper-threshold seal;
 - the names and prior relationships of the core Silvana cast;
 - Joffrey's role, motive, and witnessed pre-tragedy scenes;
 - the Acolyte's era, original purpose, and surviving trail;
