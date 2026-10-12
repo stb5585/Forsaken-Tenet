@@ -558,8 +558,20 @@ The first pass need not make survival variable.
 
 ### Dungeon Expression
 
-Luna's chamber should echo holding, releasing, protection, obligation, and the
+Domingo is the relic-route confrontation and a later crisis rather than an
+ancient custodian. Silvana's scientists hatched it hoping to create a protector,
+then confined it when they could not control it. Its escape and the deaths it
+caused leave a real threat, but the town's attempt to define protection without
+the protected being's consent helped create that threat.
+
+Defeating Domingo opens the practical route to Luna and remains necessary; the
+victory should nevertheless feel uneasy rather than absolve Silvana's choices.
+Luna's chamber echoes holding, releasing, protection, obligation, and the
 difference between sacrifice offered freely and sacrifice demanded by love.
+
+Iron Golem retains its existing role as the floor's progression gate and may
+support the broader theme of imposed purpose, but it is not Luna's custodian.
+Existing placement, gates, warp unlock, and rewards remain unchanged.
 
 ### Acolyte Trace
 
