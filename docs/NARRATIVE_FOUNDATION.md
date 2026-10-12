@@ -513,6 +513,12 @@ revises them.
   levels, contributes directly to the Sergeant's records, and helps locate
   missing expeditions. His work embodies the unresolved tension between
   necessary protection and the human cost Silvana is learning to normalize.
+- Four witnessed scenes establish him before the tragedy, in order: an ordinary
+  tavern moment with the Waitress; a patrol briefing that demonstrates his
+  competence and the Sergeant's trust; a route review with the hero that
+  exposes his responsibility and the town's risk debate; and the missing-patrol
+  crisis in which the Waitress objects, the Busboy subtly pressures, and
+  Joffrey chooses to depart.
 - A patrol disappears after following a route Joffrey charted. Believing his
   mistake placed them in danger, he chooses to return quickly, find them, and
   correct the route.
@@ -720,7 +726,6 @@ than infer during implementation:
   mechanics pass;
 - the display names and remaining one-to-one histories within Silvana's two
   established social circles;
-- the exact sequence of Joffrey's witnessed pre-tragedy scenes;
 - the exact chapter-level mapping of existing bosses as relic custodians,
   later occupants, supporting obstacles, or optional crises;
 
