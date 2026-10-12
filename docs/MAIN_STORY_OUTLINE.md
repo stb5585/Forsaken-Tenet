@@ -605,10 +605,22 @@ of guidance but deciding which guidance preserves judgment.
 
 ### Dungeon Expression
 
+The four Golems surrounding Polaris are ancient custodians still executing
+inflexible instructions. They can preserve routes, warnings, and procedures,
+but they cannot reconsider those commands when circumstances change. Their
+defense of the relic demonstrates the difference between guidance that
+preserves judgment and orders that demand obedience.
+
+The Red Dragon remains a separate later barrier tied to the Hooded Figure's
+existing quest and the route to the sixth floor. It tests whether the hero can
+accept useful guidance without mistaking either the guide or overwhelming power
+for certainty; it is not Polaris's custodian. Existing placement, floor gate,
+Class Ring aftermath, and rewards remain unchanged.
+
 False paths, the Jester's games, Realm of Cambion portals, altered maps, hidden
-routes, and anti-magic clues are natural supporting material. Not all must
-become mandatory. Their shared purpose is to test whether the hero follows,
-questions, remembers, or chooses a route with incomplete evidence.
+routes, and anti-magic clues remain supporting material. Their shared purpose
+is to test whether the hero follows, questions, remembers, or chooses a route
+with incomplete evidence.
 
 ### Hooded Figure Development
 
