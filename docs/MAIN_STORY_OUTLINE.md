@@ -229,11 +229,10 @@ first descent.
 
 ## Act I — The Opened Stair
 
-The hero arrives among people with years of shared history. The Barkeep,
-Waitress, and Drunkard form the tavern's informal family; the Sergeant and
-Joffrey form a patrol circle built on professional trust. The Waitress and
-Joffrey join those circles, while the Busboy's service role lets him observe
-both.
+The hero arrives among people with years of shared history. Oren Caldus, Liora
+Fen, and Pell Morn form the tavern's informal family; Sergeant Caedmon Varr and
+Joffrey form a patrol circle built on professional trust. Liora and Joffrey join
+those circles, while the Busboy Tavin's service role lets him observe both.
 
 The patrol circle regards dangerous work as necessary protection. The tavern
 circle fears that repeated necessity is making Silvana comfortable with
@@ -242,9 +241,10 @@ reveal this existing community and tension rather than assemble one around the
 player, and early dungeon outcomes should affect several relationships at once.
 
 An unfamiliar character may initially appear under a role label. A natural
-introduction then replaces or supplements that label with the character's
-personal name. Internal identifiers remain unchanged, and the Busboy's
-presentation must not reveal Vesperion prematurely.
+introduction then replaces or supplements it with Oren Caldus, Liora Fen,
+Caedmon Varr, or Pell Morn as appropriate. Internal identifiers remain
+unchanged. The Busboy uses Tavin as a harmless public alias and must not be
+identified as Vesperion prematurely.
 
 ## Chapter 1 — Names In The Ledger
 
