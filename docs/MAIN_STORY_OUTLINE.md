@@ -241,6 +241,11 @@ sacrificing its people. Neither side is entirely wrong. The opening chapters
 reveal this existing community and tension rather than assemble one around the
 player, and early dungeon outcomes should affect several relationships at once.
 
+An unfamiliar character may initially appear under a role label. A natural
+introduction then replaces or supplements that label with the character's
+personal name. Internal identifiers remain unchanged, and the Busboy's
+presentation must not reveal Vesperion prematurely.
+
 ## Chapter 1 — Names In The Ledger
 
 ### Dramatic Purpose
