@@ -232,6 +232,11 @@ revises them.
   operationally independent, but depend on the broker to turn theft into
   profit. The broker's authority is transactional rather than ideological,
   creating internal fault lines the hero can exploit.
+- The spoils-broker personally oversees the foothold and becomes the
+  recognizable face of its extraction and captivity. When the hero fractures
+  the compact, the broker abandons the unraveling bands and escapes through the
+  stable breach, preserving a recurring antagonist for later underworld
+  politics.
 - The compact's immediate objective is extractive. It uses the foothold to strip
   Guardian structures and older dungeon layers of relics, unusual materials,
   and saleable knowledge, then move the spoils through the stable anchor.
