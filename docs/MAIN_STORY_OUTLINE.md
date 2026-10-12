@@ -686,6 +686,11 @@ recognizable before the title is spoken. Their Liminal scene completes a
 trajectory the player has been reading throughout the game without requiring a
 current Silvana resident to have known them.
 
+Vesperion arranged the trial to seek voluntary validation rather than simply
+recruit an heir or rehearse the relic route. He needed a capable, independent
+explorer to reach his conclusion freely, believing that uncoerced surrender
+would prove that his answer to suffering was merciful.
+
 The Acolyte does not need immediate redemption, combat, or a heroic sacrifice.
 Their existence is the warning: peace purchased by surrendering the self
 eventually leaves no one present to experience peace.
