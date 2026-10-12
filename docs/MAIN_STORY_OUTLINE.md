@@ -229,10 +229,15 @@ first descent.
 
 ## Act I — The Opened Stair
 
-The hero arrives among people with years of shared history. Oren Caldus, Liora
-Fen, and Pell Morn form the tavern's informal family; Sergeant Caedmon Varr and
-Joffrey form a patrol circle built on professional trust. Liora and Joffrey join
-those circles, while the Busboy Tavin's service role lets him observe both.
+The hero arrives among people with years of shared history. Oren Caldus gave
+Liora Fen work and shelter when she needed stability, becoming a father-like
+figure without replacing her prior family. Pell Morn is Oren's oldest friend
+and Liora's exasperating uncle figure; their support includes accountability
+for his drinking. Together they form the tavern's chosen family.
+
+Sergeant Caedmon Varr and Joffrey form a patrol circle built on professional
+trust. Liora and Joffrey join the two circles, while the Busboy Tavin's service
+role lets him observe both.
 
 The patrol circle regards dangerous work as necessary protection. The tavern
 circle fears that repeated necessity is making Silvana comfortable with
