@@ -534,6 +534,12 @@ debts, and family-like obligations. They need not agree or like one another
 equally, but every major loss, discovery, and accusation should travel through
 several existing relationships.
 
+Two overlapping circles organize that history. The Barkeep, Waitress, and
+Drunkard form the tavern's informal family, while the Sergeant and Joffrey share
+the discipline, reliance, and accumulated trust of patrol work. The Waitress
+and Joffrey's relationship joins the circles. The Busboy's unremarkable service
+role gives him quiet access to both without making him appear central.
+
 The hero enters this network as an outsider and gradually earns a place within
 it. The campaign should reveal preexisting bonds through ordinary behavior,
 shared memories, and conflicting accounts rather than introduce every
@@ -551,16 +557,21 @@ specific person.
   old life behind. The chosen motive changes later dialogue and Reflection
   echoes without altering progression, rewards, or access to content.
 - **The Sergeant:** maintains the ledgers, balances public safety against the
-  need to keep sending people below, and must reckon with the danger of turning
-  protection into command.
-- **The Barkeep:** keeper of ordinary memory and the social center of Silvana;
-  notices who returns, who is missing, and what the town refuses to say aloud.
-- **The Waitress:** emotional center of the Joffrey arc; capable of hope,
-  frustration, work, love, blame, grief, and eventual survival.
-- **Joffrey:** patrol scout and route-mapper whose ordinary work in Silvana's
-  defense, motives, and choices must be witnessed before his death.
-- **The Busboy/Vesperion:** quiet observer and ideological interrogator whose
-  apparent empathy becomes disturbing in retrospect.
+  need to keep sending people below, and has earned Joffrey's professional
+  trust. He must reckon with the danger of turning protection into command.
+- **The Barkeep:** keeper of ordinary memory and anchor of the tavern's
+  informal family; notices who returns, who is missing, and what the town
+  refuses to say aloud.
+- **The Waitress:** bridge between the tavern family and Joffrey's patrol
+  circle; capable of hope, frustration, work, love, blame, grief, and eventual
+  survival beyond his death.
+- **Joffrey:** patrol scout and route-mapper whose relationship with the
+  Waitress joins his professional circle to the tavern family. His ordinary
+  work in Silvana's defense, motives, and choices must be witnessed before his
+  death.
+- **The Busboy/Vesperion:** quiet observer whose service work grants access to
+  both social circles; his apparent empathy and ideological questions become
+  disturbing in retrospect.
 - **The Hooded Figure:** feared guide whose respect for refusal gradually
   distinguishes them from the apparent kindness of the Busboy.
 - **The Drunkard:** humor, memory, and survivor guilt; his later attempt at
@@ -700,7 +711,8 @@ than infer during implementation:
 - detailed underworld naming, internal factions, later inter-realm groups,
   and minor-tear mechanics, all deferred to a later faction, quest, and
   mechanics pass;
-- the display names and exact relationship map of the rooted Silvana cast;
+- the display names and remaining one-to-one histories within Silvana's two
+  established social circles;
 - the exact sequence of Joffrey's witnessed pre-tragedy scenes;
 - the exact chapter-level mapping of existing bosses as relic custodians,
   later occupants, supporting obstacles, or optional crises;
