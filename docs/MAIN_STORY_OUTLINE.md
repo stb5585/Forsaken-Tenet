@@ -164,7 +164,10 @@ absolutist distortion. It must condemn the severing of balance and choice rather
 than imply that any principle is inherently evil.
 
 The current crisis begins when Vesperion deliberately opens a deeper threshold
-beyond the upper works Silvana knew how to use. He intends to attract explorers,
+beyond the upper works Silvana knew how to use. As the first successor to the
+Guardian of Voluntas, he uses his inherited custodial authority to invert the
+threshold's ancient Guardian seal, turning a protective barrier into a passage
+after centuries of decay weaken the mechanism. He intends to attract explorers,
 recover the six relics through their efforts, and provoke a final confrontation
 over Voluntas. The town therefore has a real material relationship with the
 dungeon while remaining ignorant of its full depth, original purpose, and
@@ -807,8 +810,8 @@ The campaign outline is ready to become production storyboards when:
 
 - the current dungeon progression order is mapped to all ten chapters;
 - every existing main quest is assigned, reclassified, or identified as debt;
-- the chronology and mechanics of the inter-realm incursions, and the precise
-  method Vesperion used to open the deeper threshold, are settled;
+- the chronology and mechanics of the inter-realm incursions are reconciled
+  with Vesperion's inversion of the deeper-threshold seal and its timing;
 - the central cast naming and authority pass is complete;
 - Joffrey's living scenes and fatal route are causally complete;
 - the Acolyte's fragment sequence is defined;
