@@ -387,7 +387,11 @@ constructs, corrupted wardens, or beings directly bound to a relic; others
 involve later occupants, opportunists, or independent local crises. A boss need
 not be a literal relic guardian, but every required confrontation must reveal
 or complicate the chapter's principle or causally enable the relic's discovery.
-Exact assignments remain part of chapter reconciliation.
+
+Reconciliation is preserve-first: existing placement, floor order, rewards, and
+progression gates remain intact while narrative framing supplies the strongest
+credible role. Moving, replacing, or adding a required boss is a last resort
+that requires a separate gameplay and save-contract review.
 
 The Acolyte's fragments follow thematic rather than chronological order. Each
 relic chapter uncovers evidence that reflects its principle, but neither the
