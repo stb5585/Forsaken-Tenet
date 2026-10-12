@@ -150,6 +150,11 @@ Settled preserve-first assignments:
   it would not submit to control. Its escape and violence expose the point
   where protection becomes possession. Defeating it remains necessary but does
   not make the town's choices righteous.
+- **Polaris — Golem custodians:** The four Golems surrounding Polaris are
+  ancient custodians still executing inflexible instructions. They demonstrate
+  the difference between guidance that preserves judgment and commands that
+  require obedience. The Red Dragon remains a separate later barrier tied to
+  the Hooded Figure's quest and the route to the sixth floor.
 
 ### Build Identity Is Narrative Identity
 
