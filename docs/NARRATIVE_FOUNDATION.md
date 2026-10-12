@@ -558,9 +558,15 @@ it. The campaign should reveal preexisting bonds through ordinary behavior,
 shared memories, and conflicting accounts rather than introduce every
 relationship through exposition.
 
-Current stable internal identifiers may remain while a later cast pass decides
-display names. Story text should nevertheless treat each central role as a
-specific person.
+Current stable internal identifiers should remain for compatibility. On first
+encounter, interfaces may identify an unfamiliar character by role, such as
+Barkeep or Sergeant. After a natural introduction, the personal name should
+replace or supplement that label in dialogue and interfaces. Story text must
+treat each central role as a specific person rather than withholding names for
+the entire campaign.
+
+The Busboy is the deliberate exception: his harmless public presentation must
+not expose the name Vesperion before the planned reveal.
 
 - **The Hero:** player-authored identity; proves Voluntas through accumulated
   choices rather than a fixed prophetic destiny. An early conversation records
@@ -724,8 +730,8 @@ than infer during implementation:
 - detailed underworld naming, internal factions, later inter-realm groups,
   and minor-tear mechanics, all deferred to a later faction, quest, and
   mechanics pass;
-- the display names and remaining one-to-one histories within Silvana's two
-  established social circles;
+- the specific display names and remaining one-to-one histories within
+  Silvana's two established social circles;
 - the exact chapter-level mapping of existing bosses as relic custodians,
   later occupants, supporting obstacles, or optional crises;
 
