@@ -477,19 +477,27 @@ meaning.
 Make the Waitress/Joffrey tragedy the emotional center of the campaign rather
 than a late quest reveal used primarily to support Vesperion's final speech.
 
-### Required Pre-Tragedy Work
+### Required Pre-Tragedy Sequence
 
-Before Joffrey descends on his fatal route, the player must:
+The player witnesses four scenes in order before Joffrey descends on his fatal
+route:
 
-- meet him;
-- understand why he believes he must act;
-- see his relationship with the Waitress during an ordinary moment;
-- understand that she respects his agency while fearing its cost and resists
-  the town treating such risks as routine;
-- observe the Busboy offer sympathy or advice that can later be read as
-  pressure;
-- receive enough information that Joffrey's later letter refers to known
-  tensions rather than inventing them after his death.
+1. **Ordinary tavern moment:** Joffrey and the Waitress share familiar work,
+   affection, disagreement, or humor while the tavern family carries on around
+   them. The relationship exists as ordinary life rather than tragedy setup.
+2. **Patrol briefing:** Joffrey demonstrates competence as a scout and
+   route-mapper. The Sergeant trusts his judgment, and their professional bond
+   is visible before either man is placed under blame.
+3. **Route review with the hero:** Joffrey explains uncertain evidence, accepts
+   responsibility for his maps, and engages the disagreement over necessary
+   risk and normalized sacrifice.
+4. **Missing-patrol departure:** The crisis gives Joffrey a concrete reason to
+   return below. The Waitress objects while respecting that the decision is
+   his, and the Busboy offers sympathy or advice whose subtle pressure becomes
+   clear only later.
+
+The later letter must refer back to details the player witnessed in these
+scenes rather than inventing Joffrey's motives after his death.
 
 ### Fatal Trigger
 
