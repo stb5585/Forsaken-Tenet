@@ -547,6 +547,13 @@ the discipline, reliance, and accumulated trust of patrol work. The Waitress
 and Joffrey's relationship joins the circles. The Busboy's unremarkable service
 role gives him quiet access to both without making him appear central.
 
+The tavern circle is chosen family. Oren gave Liora work and shelter when she
+needed stability, and their bond became father-like without replacing or
+erasing her actual family history. Pell is Oren's oldest friend and occupies
+the place of an exasperating uncle in Liora's life. Their care does not excuse
+his drinking or reduce him to a joke; support includes honesty, boundaries, and
+accountability.
+
 A principled tension already exists between the circles. The Sergeant and the
 patrol accept dangerous work as necessary to protect Silvana, while the tavern
 family fears that repeated necessity is teaching the town to treat its people
@@ -585,10 +592,12 @@ The canonical display names are:
 - **Caedmon Varr — The Sergeant:** maintains the ledgers, balances public safety against the
   need to keep sending people below, and has earned Joffrey's professional
   trust. He must reckon with the danger of turning protection into command.
-- **Oren Caldus — The Barkeep:** keeper of ordinary memory and anchor of the tavern's
-  informal family; notices who returns, who is missing, and what the town
+- **Oren Caldus — The Barkeep:** keeper of ordinary memory and anchor of the
+  tavern's chosen family. He gave Liora work and shelter when she needed
+  stability, and he notices who returns, who is missing, and what the town
   refuses to say aloud.
-- **Liora Fen — The Waitress:** bridge between the tavern family and Joffrey's patrol
+- **Liora Fen — The Waitress:** Oren's employee and chosen daughter rather than
+  his blood relative; bridge between the tavern family and Joffrey's patrol
   circle; capable of hope, frustration, work, love, blame, grief, and eventual
   survival beyond his death.
 - **Joffrey:** patrol scout and route-mapper whose relationship with the
@@ -600,8 +609,10 @@ The canonical display names are:
   disturbing in retrospect.
 - **The Hooded Figure:** feared guide whose respect for refusal gradually
   distinguishes them from the apparent kindness of the Busboy.
-- **Pell Morn — The Drunkard:** humor, memory, and survivor guilt; his later attempt at
-  sobriety can embody endurance as an active choice rather than a joke ending.
+- **Pell Morn — The Drunkard:** Oren's oldest friend and Liora's exasperating
+  uncle figure; carries humor, memory, and survivor guilt. His chosen family
+  holds him accountable, and his later attempt at sobriety can embody endurance
+  as an active choice rather than a joke ending.
 - **Mara Vale and Seraphine Voss:** useful bridges between ordinary side quests,
   exploration knowledge, and the dungeon's changing interpretation.
 - **The Acolyte:** absent predecessor whose trail creates a second, failed
