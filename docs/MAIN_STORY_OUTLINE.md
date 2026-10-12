@@ -233,9 +233,13 @@ The hero arrives among people with years of shared history. The Barkeep,
 Waitress, and Drunkard form the tavern's informal family; the Sergeant and
 Joffrey form a patrol circle built on professional trust. The Waitress and
 Joffrey join those circles, while the Busboy's service role lets him observe
-both. The opening chapters reveal this existing community rather than assemble
-one around the player, and early dungeon outcomes should affect several
-relationships at once.
+both.
+
+The patrol circle regards dangerous work as necessary protection. The tavern
+circle fears that repeated necessity is making Silvana comfortable with
+sacrificing its people. Neither side is entirely wrong. The opening chapters
+reveal this existing community and tension rather than assemble one around the
+player, and early dungeon outcomes should affect several relationships at once.
 
 ## Chapter 1 — Names In The Ledger
 
@@ -394,7 +398,9 @@ save lives, but they also reveal how fear turns protection into command.
 
 The Sergeant should not become a tyrant. His arc is the burden of deciding how
 much order a frightened town needs and recognizing when procedure begins
-treating people as replaceable pieces.
+treating people as replaceable pieces. The tavern circle's criticism should
+therefore expose a real danger in his methods without erasing the lives those
+methods have protected.
 
 ### Dungeon Expression
 
@@ -478,7 +484,8 @@ Before Joffrey descends on his fatal route, the player must:
 - meet him;
 - understand why he believes he must act;
 - see his relationship with the Waitress during an ordinary moment;
-- understand that she respects his agency while fearing its cost;
+- understand that she respects his agency while fearing its cost and resists
+  the town treating such risks as routine;
 - observe the Busboy offer sympathy or advice that can later be read as
   pressure;
 - receive enough information that Joffrey's later letter refers to known
