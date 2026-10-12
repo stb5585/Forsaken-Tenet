@@ -634,10 +634,9 @@ or boss gates merely to support prose.
 These decisions are important enough to settle during story development rather
 than infer during implementation:
 
-- the proper names, relationships, and internal factions of the chthonic
-  underworld's physical peoples and supernatural powers, which other recurring
-  inter-realm groups deserve named histories, what motivates them, and what
-  conditions stabilize or collapse smaller tears;
+- detailed underworld naming, internal factions, later inter-realm groups,
+  and minor-tear mechanics, all deferred to a later faction, quest, and
+  mechanics pass;
 - the precise method Vesperion used to open the deeper threshold, the
   conditions that made it possible, and why he chose this moment;
 - the names and prior relationships of the core Silvana cast;
