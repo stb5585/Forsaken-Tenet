@@ -126,8 +126,14 @@ independent local crises encountered along the route.
 
 A required boss does not need to be a relic's formal custodian, but its
 confrontation must still reveal or complicate the chapter's principle, or
-causally enable the relic's discovery. Exact assignments belong in the later
-chapter-reconciliation pass, where existing progression can be respected.
+causally enable the relic's discovery.
+
+Chapter reconciliation follows a preserve-first rule. Existing boss placement,
+floor order, rewards, and progression gates should remain intact while lore,
+setup, motives, environmental evidence, and aftermath supply the stronger
+narrative role. A boss should be moved, replaced, or supplemented only when the
+audit finds no credible thematic or causal fit, and any such exception requires
+a separate gameplay and save-contract review.
 
 ### Build Identity Is Narrative Identity
 
@@ -756,8 +762,8 @@ than infer during implementation:
 - detailed underworld naming, internal factions, later inter-realm groups,
   and minor-tear mechanics, all deferred to a later faction, quest, and
   mechanics pass;
-- the exact chapter-level mapping of existing bosses as relic custodians,
-  later occupants, supporting obstacles, or optional crises;
+- the exact preserve-first chapter mapping of existing bosses as relic
+  custodians, later occupants, supporting obstacles, or optional crises;
 
 Routine travel, placement, connective dialogue, and minor staging should be
 derived from settled canon without repeatedly reopening these major questions.
