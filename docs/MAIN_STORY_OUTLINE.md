@@ -471,6 +471,16 @@ nature-linked enemies should show adaptation rather than a generic green-biome
 chapter. The player sees organisms surviving inside several unnatural
 historical layers.
 
+Wendigo is the relic-route confrontation: a later, curse-born inhabitant rather
+than an ancient custodian. Its endless hunger embodies the false claim that
+instinct and need dictate what a being must become. Defeating it clears the
+route to Hexagonum, whose answer is that appetite can exert pressure without
+becoming destiny.
+
+Cockatrice remains tied to Pell's history and existing quest, while Incubus
+continues its separate underworld thread. Neither needs to become Hexagonum's
+guardian, and their existing placement, gates, and rewards remain unchanged.
+
 ### Acolyte Trace
 
 The prior explorer writes that hunger, fear, or strength proves what a creature
