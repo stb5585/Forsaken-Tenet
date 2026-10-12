@@ -145,6 +145,11 @@ Settled preserve-first assignments:
   than an ancient custodian. Its endless hunger embodies the false claim that
   instinct and need dictate what a being must become. Defeating it clears the
   relic route while Hexagonum rejects appetite as destiny.
+- **Luna — Domingo:** Domingo is a later crisis created when Silvana's
+  scientists hatched a creature to serve as a protector, then confined it when
+  it would not submit to control. Its escape and violence expose the point
+  where protection becomes possession. Defeating it remains necessary but does
+  not make the town's choices righteous.
 
 ### Build Identity Is Narrative Identity
 
