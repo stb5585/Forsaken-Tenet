@@ -478,6 +478,9 @@ revises them.
 
 - Their love and grief are real.
 - Joffrey must exist as a person before he becomes a body, letter, or symbol.
+- He is a patrol scout and route-mapper who explores the unstable upper
+  levels, contributes directly to the Sergeant's records, and helps locate
+  missing expeditions.
 - His fatal decision must remain meaningfully his even if Vesperion pressures,
   deceives, or exploits him.
 - The Waitress must have desires, judgment, anger, and relationships beyond
@@ -502,8 +505,8 @@ specific person.
   notices who returns, who is missing, and what the town refuses to say aloud.
 - **The Waitress:** emotional center of the Joffrey arc; capable of hope,
   frustration, work, love, blame, grief, and eventual survival.
-- **Joffrey:** an active participant in Silvana's defense whose motives and
-  choices must be witnessed before his death.
+- **Joffrey:** patrol scout and route-mapper whose ordinary work in Silvana's
+  defense, motives, and choices must be witnessed before his death.
 - **The Busboy/Vesperion:** quiet observer and ideological interrogator whose
   apparent empathy becomes disturbing in retrospect.
 - **The Hooded Figure:** feared guide whose respect for refusal gradually
@@ -646,7 +649,7 @@ than infer during implementation:
   and minor-tear mechanics, all deferred to a later faction, quest, and
   mechanics pass;
 - the names and prior relationships of the core Silvana cast;
-- Joffrey's role, motive, and witnessed pre-tragedy scenes;
+- Joffrey's motive for the fatal descent and his witnessed pre-tragedy scenes;
 - the Acolyte's era, original purpose, and surviving trail;
 - which existing bosses directly guard relic principles and which are
   obstacles or optional crises;
