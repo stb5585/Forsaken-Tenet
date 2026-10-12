@@ -420,10 +420,16 @@ methods have protected.
 
 ### Dungeon Expression
 
-Measured paths, constructs, keys, route sequencing, or a boss that enforces one
-acceptable pattern can embody order without consent. Existing Iron Golem,
-warehouse, soldier, key, and engineered-dungeon material are candidates, but
-the final chapter packet must respect current progression order.
+Nightmare is a later occupant rather than an ancient custodian. Its terror has
+made explorers rely on rigid routes, repeated rituals, and compulsory rules
+that promise safety. Those practices sometimes protect people, but they also
+punish doubt and deviation.
+
+Defeating Nightmare removes the practical barrier to Quadrata and reveals how
+fear can create coercive order without requiring the creature to understand the
+relic. The Pseudodragon remains a separate threat tied to the Hooded Figure's
+existing quest and may support the chapter without becoming the relic's
+guardian. Existing placement, gates, and rewards remain unchanged.
 
 ### Acolyte Trace
 
