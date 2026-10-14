@@ -19,10 +19,11 @@ roadmap pass:
   abilities.
 - All 49 authored class ability trees and the critical class-kit closure pass
   are complete.
-- The foundational gameplay refactor is complete. Narrative foundation and the
-  opening story vertical slice are now the active planning lane; broader
-  post-foundation gameplay hardening and manual playtesting remain preserved
-  for resumption afterward.
+- The foundational gameplay refactor and campaign-wide narrative foundation are
+  complete. Main-quest classification and the Prologue-through-Triangulus
+  production packet are now the active planning lane; broader post-foundation
+  gameplay hardening and manual playtesting remain preserved for resumption
+  afterward.
 - Completed class-kit scope and deferred deep-kit gates are tracked in
   [docs/CLASS_KIT_DESIGN_GATES.md](docs/CLASS_KIT_DESIGN_GATES.md).
 - Combat architecture and balance decisions are specified in
