@@ -511,7 +511,7 @@ revises them.
   hero.
 - Their wounded Liminal identity, Witness reveal, and later angelic
   confirmation remain the current route.
-- A personal angelic name is not yet canon.
+- No personal angelic name is required or canon for the current campaign pass.
 
 ### The Acolyte
 
@@ -537,8 +537,10 @@ revises them.
   causes.
 - The Liminal Gap restores the fragments' true order and completes the account
   of how an independent explorer came to ask Vesperion to choose for them.
-- Their identity, class history, relationship to the Hooded Figure, and degree
-  of direct contact with Vesperion remain development questions.
+- Their exact identity, class history, relationship to the Hooded Figure, and
+  degree of direct contact with Vesperion are intentionally unspecified. A
+  chapter packet must not invent those details unless the critical route
+  demonstrates a concrete need.
 
 ### Joffrey And The Waitress
 
@@ -783,21 +785,24 @@ It should include:
 The slice should not change combat numbers, rewards, map topology, class rules,
 or boss gates merely to support prose.
 
-## Open Canon Decisions
+## Deferred Canon Detail
 
-These decisions are important enough to settle during story development rather
-than infer during implementation:
+The following detail is intentionally postponed and does not block the accepted
+campaign foundation or opening story packet:
 
-- detailed underworld naming, internal factions, later inter-realm groups,
-  and minor-tear mechanics, all deferred to a later faction, quest, and
-  mechanics pass;
+- detailed underworld naming, internal factions, later inter-realm groups, and
+  minor-tear mechanics, all deferred to a later faction, quest, and mechanics
+  pass.
 
 Routine travel, placement, connective dialogue, and minor staging should be
-derived from settled canon without repeatedly reopening these major questions.
+derived from settled canon without reopening campaign-level decisions. Deferred
+details must remain unnamed or generic until their owning pass settles them.
 
-## Foundation Acceptance Criteria
+## Foundation Acceptance Record
 
-The narrative foundation is ready for implementation when:
+Status: `Accepted — October 13, 2026`
+
+The narrative foundation is ready for implementation because:
 
 - the campaign has one causal act/chapter route;
 - every relic has a town mirror, dungeon expression, confrontation, discovery,
