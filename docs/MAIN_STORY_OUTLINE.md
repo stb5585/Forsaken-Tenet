@@ -388,9 +388,10 @@ weapons, keys, warnings, or pieces of a damaged doctrine.
 ## Act II — Six Incomplete Truths
 
 Act II should occupy most of the game. Each chapter uses existing floor gates,
-bosses, locations, and quests, but the exact mechanical mapping must be audited
-before a chapter packet changes content. The outline defines narrative
-function; it does not move a boss or relic by assertion.
+bosses, locations, and quests. The preserve-first boss and relic mapping has
+been audited against current floor placement and progression gates. The outline
+defines narrative function without moving a boss or relic; exact dialogue,
+state, and presentation work belongs in each production packet.
 
 Relic chapters use a hybrid boss structure. Some confrontations involve ancient
 constructs, corrupted wardens, or beings directly bound to a relic; others
@@ -944,18 +945,28 @@ Reclassify remaining quests, naturalize references, separate tutorials from NPC
 voices, repair grammar and continuity, and deepen optional realms without
 diluting the critical route.
 
-## Campaign Board Exit Criteria
+## Campaign Board Reconciliation Status
 
-The campaign outline is ready to become production storyboards when:
+The campaign-level canon required for production packets is settled:
 
-- the current dungeon progression order is mapped to all ten chapters;
-- every existing main quest is assigned, reclassified, or identified as debt;
-- the chronology and mechanics of the inter-realm incursions are reconciled
-  with Vesperion's inversion of the deeper-threshold seal and its timing;
-- the central cast naming and authority pass is complete;
-- Joffrey's living scenes and fatal route are causally complete;
-- the Acolyte's fragment sequence is defined;
-- each relic's boss, chamber, town mirror, and aftermath are identified;
-- optional realms have explicit thematic and progression roles;
-- the Prologue-through-Triangulus packet can be written without inventing new
-  canon during implementation.
+- current dungeon and relic order are mapped to the ten-chapter route;
+- the Hollowing, seal inversion, and inter-realm chronology are reconciled;
+- the central cast names, relationships, and campaign functions are defined;
+- Joffrey's four living scenes and fatal route are causally complete;
+- the Acolyte's nonlinear fragment trail and Liminal reconstruction are defined;
+- every relic has a preserve-first confrontation, chamber role, town mirror,
+  and aftermath;
+- optional realms have explicit supporting roles and cannot silently become
+  required progression.
+
+The remaining production-readiness work is operational rather than foundational:
+
+- assign each existing main quest to a chapter, reclassify it as supporting
+  content, or record it as implementation debt;
+- write the Prologue-through-Triangulus packet without inventing new
+  campaign-level canon;
+- define that packet's exact dialogue, state, UI, save, validation, and
+  playtest contracts.
+
+Detailed underworld naming, internal factions, later inter-realm groups, and
+minor-tear mechanics remain deferred to a later faction and quest pass.
