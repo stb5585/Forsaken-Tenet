@@ -137,6 +137,10 @@ a separate gameplay and save-contract review.
 
 Settled preserve-first assignments:
 
+- **Triangulus — Barghest:** Barghest is a later occupant drawn to the relic's
+  influence rather than an ancient custodian. Its forms respond to observers'
+  expectations and fears, turning uncertainty about identity into a concrete
+  confrontation. Minotaur remains the unrelated first-floor progression gate.
 - **Quadrata — Nightmare:** Nightmare is a later occupant, not an ancient
   custodian. Its terror forces explorers into rigid routes, repeated rituals,
   and compulsory ideas of safe behavior. Defeating it removes the practical
