@@ -1,6 +1,6 @@
 # The Forsaken Tenet Development Roadmap
 
-*Updated: October 7, 2026*
+*Updated: October 13, 2026*
 
 This roadmap contains the current priority, completed baseline summaries needed
 for sequencing, ordered candidates, and deferred decision gates. Detailed
@@ -35,33 +35,32 @@ contracts belong in their owner documents.
 - `Deferred`: intentionally postponed until its dependency is complete.
 - `Watch`: preserve current behavior and record issues encountered nearby.
 
-## Active Priority — Narrative Foundation And Opening Story Vertical Slice
+## Active Priority — Opening Story Vertical Slice
 
-Status: `Active — Campaign Foundation And Story Packet Development`
+Status: `Active — Foundation Reconciled; Story Packet Development`
 
-The project is temporarily shifting from gameplay expansion and broad
-playtesting to campaign-wide story development. The active creative authority is
-[`NARRATIVE_FOUNDATION.md`](NARRATIVE_FOUNDATION.md), and the proposed route is
-[`MAIN_STORY_OUTLINE.md`](MAIN_STORY_OUTLINE.md). The goal is to retain the
-descend-survive-return dungeon-crawl identity while making every major descent
-change Silvana, its people, or the player's understanding of the forgotten
-Guardian pattern.
+The project remains temporarily shifted from gameplay expansion and broad
+playtesting to campaign story development. The accepted creative authority is
+[`NARRATIVE_FOUNDATION.md`](NARRATIVE_FOUNDATION.md), and the reconciled route
+is [`MAIN_STORY_OUTLINE.md`](MAIN_STORY_OUTLINE.md). Campaign chronology, the
+core cast, Joffrey and the Acolyte, and the preserve-first mapping for all six
+relics are settled. Detailed underworld names, internal factions, and minor-tear
+mechanics remain intentionally deferred and do not block the opening slice.
 
 The ordered narrative work is:
 
-1. Reconcile the open canon decisions, current dungeon progression, relic
-   guardians, boss gates, and active quest classifications against the campaign
-   board.
-2. Complete the core cast authority and naming pass, Joffrey's living role, the
-   Acolyte fragment trail, and the dungeon-origin chronology.
-3. Produce the Prologue-through-Triangulus chapter packet with scene order,
+1. Complete the campaign-board audit by assigning each current main quest to a
+   chapter, reclassifying it as supporting content, or recording it as
+   implementation debt.
+2. Produce the Prologue-through-Triangulus chapter packet with scene order,
    dialogue, quest mapping, state, presentation, validation, and playtest
    requirements.
-4. Implement that opening vertical slice without incidental combat, economy,
+3. Implement that opening vertical slice without incidental combat, economy,
    class, map-topology, or balance changes.
-5. Playtest whether the first arc establishes an immediate human stake,
-   recurring mystery, visible town consequence, and reason to continue before
-   promoting the remaining principle arcs.
+4. Playtest whether the first arc establishes an immediate human stake,
+   recurring mystery, visible town consequence, and reason to continue.
+5. Use that evidence before promoting the remaining principle arcs into
+   production packets.
 
 Grounded dark fantasy is the primary tone. Puns, pop-culture references, and
 eccentric quest material remain as supporting town and side-content texture;
