@@ -334,6 +334,16 @@ answer repeatedly chosen.
 - Uncertain Reports report-back;
 - creation of The Holy Relics.
 
+### Dungeon Expression
+
+Barghest is a later occupant drawn to Triangulus's influence rather than an
+ancient custodian. Its forms respond to observers' expectations and fears, so
+the creature makes uncertainty about identity physically dangerous without
+deliberately administering a Guardian trial.
+
+Minotaur remains the unrelated first-floor progression gate. Existing
+placement, keys, quest rewards, and access rules remain unchanged.
+
 ### Story Progression
 
 1. Witnesses give incompatible descriptions of the same Barghest because its
