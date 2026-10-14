@@ -674,9 +674,16 @@ ending a destructive repetition.
 
 ### Dungeon Expression
 
-The final relic route, Cerberus, loops, attrition, repeated thresholds, and
-long-standing defenders can embody endurance. The chapter should ask when
-persistence is resolve and when it is merely an inability to stop.
+Cerberus is the ancient guardian-beast of Infinitas. The custodians bound it to
+protect the final relic until formally relieved, but both those custodians and
+the release procedures vanished. It has continued its watch for ages without
+the ability to reconsider or stop.
+
+The final relic route, loops, attrition, and repeated thresholds reinforce the
+same question: when is persistence resolve, and when is it merely an inability
+to stop? Defeating Cerberus ends a duty that endurance alone could never
+complete. Existing placement, the Drunkard's quest, rewards, and final-relic
+access remain unchanged.
 
 ### Acolyte Trace
 
