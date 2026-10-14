@@ -159,6 +159,10 @@ Settled preserve-first assignments:
   the difference between guidance that preserves judgment and commands that
   require obedience. The Red Dragon remains a separate later barrier tied to
   the Hooded Figure's quest and the route to the sixth floor.
+- **Infinitas — Cerberus:** The ancient custodians bound Cerberus to protect the
+  final relic until formally relieved. Its custodians and release procedures
+  vanished, leaving it unable to stand down. Its endless watch embodies
+  endurance stripped of the choice to stop.
 
 ### Build Identity Is Narrative Identity
 
@@ -787,8 +791,6 @@ than infer during implementation:
 - detailed underworld naming, internal factions, later inter-realm groups,
   and minor-tear mechanics, all deferred to a later faction, quest, and
   mechanics pass;
-- the exact preserve-first chapter mapping of existing bosses as relic
-  custodians, later occupants, supporting obstacles, or optional crises;
 
 Routine travel, placement, connective dialogue, and minor staging should be
 derived from settled canon without repeatedly reopening these major questions.
