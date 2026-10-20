@@ -266,7 +266,7 @@ specific people and produces unreliable evidence.
 - Bring Him Home;
 - Rookie Mistake;
 - early dungeon exploration;
-- the Minotaur route and first-floor access;
+- the Minotaur and the only descent from level 1 to level 2;
 - first meetings with town services.
 
 These anchors do not all need to become mandatory. Timmy and the Rookie can
@@ -284,8 +284,9 @@ brought home for burial.
    contradictions repeat in a pattern.
 4. Early rescue and recovery content demonstrates that returning a person or
    their name matters to Silvana.
-5. The Minotaur is framed as a brutal gate in the same crisis, not an unrelated
-   contract placed between the player and the next level.
+5. The Minotaur remains the unavoidable Progression gate before the only stair
+   to level 2. It is not part of Edrin's level-1 patrol route and does not gate
+   the Barghest or Triangulus investigation.
 6. A small trace from an earlier explorer appears without the title Acolyte:
    disciplined notes, an unusual symbol, or a line about needing proof of who
    they were.
@@ -341,8 +342,8 @@ ancient custodian. Its forms respond to observers' expectations and fears, so
 the creature makes uncertainty about identity physically dangerous without
 deliberately administering a Guardian trial.
 
-Minotaur remains the unrelated first-floor progression gate. Existing
-placement, keys, quest rewards, and access rules remain unchanged.
+Minotaur remains the separate Progression gate from level 1 to level 2.
+Existing placement, keys, quest rewards, and access rules remain unchanged.
 
 ### Story Progression
 
@@ -905,7 +906,7 @@ by itself. The accepted quest roles are:
 | Current quest | Accepted category | Campaign role |
 | --- | --- | --- |
 | `Uncertain Reports` | Main | Chapters 1-2 investigation. |
-| `The Butcher` | Main | Chapter 1 crisis and first-floor access. |
+| `The Butcher` | Progression | Sole gate from level 1 to level 2; independent of the Triangulus Main route. |
 | `Cry Havoc!` | Main | Chapter 2 Barghest confrontation. |
 | `The Holy Relics` | Main | Chapters 2-8 aggregate campaign spine. |
 | `Payback` | Side | Chapter 3 supporting threat. |
