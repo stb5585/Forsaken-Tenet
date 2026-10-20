@@ -1,6 +1,10 @@
 # Prologue Through Triangulus Production Packet
 
-Status: **Draft — Core Route Decisions Accepted; Dialogue Review Pending**
+Status: **Draft — Dialogue Review Paused After Triangulus Scene**
+
+Review checkpoint: P0–P3, C1, and C4–C9 are accepted. C10–C12—the barracks
+report, tavern aftermath, and Hooded Figure response—remain to be reviewed
+before owner-document reconciliation and PR creation.
 
 This packet owns the first implementation-quality narrative slice: the Prologue,
 Chapter 1, and Chapter 2 through the recovery of Triangulus, the report back to
