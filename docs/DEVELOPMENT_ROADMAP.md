@@ -1,6 +1,6 @@
 # The Forsaken Tenet Development Roadmap
 
-*Updated: October 13, 2026*
+*Updated: October 20, 2026*
 
 This roadmap contains the current priority, completed baseline summaries needed
 for sequencing, ordered candidates, and deferred decision gates. Detailed
@@ -37,7 +37,7 @@ contracts belong in their owner documents.
 
 ## Active Priority — Opening Story Vertical Slice
 
-Status: `Active — Foundation Reconciled; Story Packet Development`
+Status: `Active — Quest Audit Complete; Story Packet Development`
 
 The project remains temporarily shifted from gameplay expansion and broad
 playtesting to campaign story development. The accepted creative authority is
@@ -47,20 +47,27 @@ core cast, Joffrey and the Acolyte, and the preserve-first mapping for all six
 relics are settled. Detailed underworld names, internal factions, and minor-tear
 mechanics remain intentionally deferred and do not block the opening slice.
 
+The campaign-board audit is complete. Of the fourteen entries currently
+authored as Main, ten remain Main, `Immovable Object` becomes the first
+Progression quest, and `Payback`, `Lapidation`, and
+`No Laughing Matter` move to Side with chapter-role metadata. The approved
+Progression category is design-complete but not yet implemented; the current
+runtime and save paths still recognize Main, Side, and Bounty.
+
 The ordered narrative work is:
 
-1. Complete the campaign-board audit by assigning each current main quest to a
-   chapter, reclassifying it as supporting content, or recording it as
-   implementation debt.
-2. Produce the Prologue-through-Triangulus chapter packet with scene order,
+1. Produce the Prologue-through-Triangulus chapter packet with scene order,
    dialogue, quest mapping, state, presentation, validation, and playtest
    requirements.
-3. Implement that opening vertical slice without incidental combat, economy,
+2. Implement that opening vertical slice without incidental combat, economy,
    class, map-topology, or balance changes.
-4. Playtest whether the first arc establishes an immediate human stake,
+3. Playtest whether the first arc establishes an immediate human stake,
    recurring mystery, visible town consequence, and reason to continue.
-5. Use that evidence before promoting the remaining principle arcs into
+4. Use that evidence before promoting the remaining principle arcs into
    production packets.
+5. Implement the Progression category and later-chapter story-state
+   prerequisites with the first production slice that requires them; do not
+   move content between runtime categories before that complete migration.
 
 Grounded dark fantasy is the primary tone. Puns, pop-culture references, and
 eccentric quest material remain as supporting town and side-content texture;
