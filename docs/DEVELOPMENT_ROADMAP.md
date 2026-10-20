@@ -48,9 +48,9 @@ relics are settled. Detailed underworld names, internal factions, and minor-tear
 mechanics remain intentionally deferred and do not block the opening slice.
 
 The campaign-board audit is complete. Of the fourteen entries currently
-authored as Main, ten remain Main, `Immovable Object` becomes the first
-Progression quest, and `Payback`, `Lapidation`, and
-`No Laughing Matter` move to Side with chapter-role metadata. The full authored
+authored as Main, nine remain Main; `The Butcher` and `Immovable Object` become
+Progression quests; and `Payback`, `Lapidation`, and `No Laughing Matter` move
+to Side with chapter-role metadata. The full authored
 Side-quest audit is also complete: twenty-nine existing Side entries plus those
 three reclassifications now have accepted preserve-or-revise dispositions.
 The approved Progression category is design-complete but not yet implemented;
