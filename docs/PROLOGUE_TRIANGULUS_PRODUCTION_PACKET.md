@@ -58,19 +58,19 @@ yet known.
 | ID | Section | Location | Participants | Player control | Mandatory result |
 | --- | --- | --- | --- | --- | --- |
 | P0 | Prologue | Story-card sequence | Narrator | Advance or skip pages using existing story-card controls. | Establish Silvana, the opened stair, missing people, and the hero's voluntary arrival without naming Guardians or principles. |
-| P1 | Prologue | The Thirsty Dog | Oren, Liora, Joffrey, Tavin, Pell, patrons, hero; Hooded Figure observed | Choose one arrival motive. | Record Fortune, Service, Knowledge, or Reinvention. Establish the tavern as a lived-in chosen family. |
+| P1 | Prologue | The Thirsty Dog | Oren, Liora, Joffrey, Tavin, Pell, patrons, hero; Hooded Figure observed | Choose one arrival motive. | Record Fortune, Service, Knowledge, or Reinvention. Establish the tavern as a lived-in chosen family and complete Joffrey's ordinary tavern scene. |
 | P2 | Prologue | The Thirsty Dog | Edrin Shaw, Caedmon, tavern circle, hero | Choose how to help during the interruption. | A wounded patrol scout returns without Mira Venn and Tomas Reed. His incompatible route account becomes immediate human evidence. |
 | P3 | Prologue | The Thirsty Dog to barracks handoff | Oren, Caedmon, hero | Accept or defer `Uncertain Reports`. | Oren vouches for the hero's conduct; Caedmon offers a bounded investigation rather than declaring the hero chosen. |
-| C1 | Chapter 1 | Barracks ledger | Caedmon, Joffrey, hero | Inspect three short report excerpts in any order. | The same symbols, missing interval, and sealed structure recur in mutually incompatible accounts. |
+| C1 | Chapter 1 | Barracks ledger | Caedmon, Joffrey, Edrin, hero | Inspect three short report excerpts in any order. | The same symbols, missing interval, and sealed structure recur in mutually incompatible accounts; complete Joffrey's patrol briefing scene. |
 | C2 | Chapter 1 | Town and first descent | Hero; town NPCs reactively | Normal town and dungeon control. | First descent receives a one-time environmental beat; town services remain available in the current order. |
 | C3 | Chapter 1 | Level 1 routes | Hero; Timmy or the Rookie when their optional quests are active | Existing exploration and quest interactions. | Optional rescue and burial outcomes gain multi-character reactions but never gate the main route. |
-| C4 | Chapter 1 | Tavern or barracks | Joffrey, Caedmon, Liora, hero | Short mandatory scene on next eligible town return. | Joffrey compares the hero's observations with his own maps; Liora challenges the normalization of repeated risk. |
+| C4 | Chapter 1 | Tavern or barracks | Joffrey, Caedmon, Liora, hero | Short mandatory scene on next eligible town return. | Joffrey compares the hero's observations with his own maps; Liora challenges the normalization of repeated risk; complete Joffrey's route-review scene. |
 | C5 | Chapter 1 | Minotaur route at `(3, 2, 1)` | Hero, Minotaur | Existing boss interaction and combat. | The Butcher is framed as the immediate obstacle behind recent patrol losses, not as a relic custodian. Mechanics and rewards remain unchanged. |
 | C6 | Chapter 1 | Barracks | Caedmon, Joffrey, hero | Report current evidence. | Caedmon identifies the Barghest account as the one lead that survives every rewrite. `Cry Havoc!` becomes available when its level requirement is also met. |
 | C7 | Chapter 2 | Barghest route at `(18, 2, 1)` | Hero, Barghest | Existing boss interaction and combat. | Witness descriptions are reconciled as different forms of the same creature. The Barghest remains a later occupant, not a Guardian. |
 | C8 | Chapter 2 | Sealed-chamber threshold | Hero | Inspect or continue; the fragment must be presented before relic interaction. | Recover the first unnamed prior-explorer fragment without using the title Acolyte. |
 | C9 | Chapter 2 | Relic room at `(19, 0, 1)` | Hero, Triangulus response | Choose one of four identity lenses. | Record Chosen Name, Deeds, Memory, or Next Choice; recover Triangulus; advance `Uncertain Reports` to report-back. |
-| C10 | Chapter 2 | Barracks | Caedmon, Joffrey, hero | Turn in `Uncertain Reports`. | Caedmon identifies a possible six-part pattern, marks uncertainty explicitly, and creates `The Holy Relics`. |
+| C10 | Chapter 2 | Barracks | Caedmon, Joffrey, Edrin, hero | Turn in `Uncertain Reports`. | Caedmon identifies a possible six-part pattern, marks uncertainty explicitly, and creates `The Holy Relics`. Edrin's recognition ties the proof back to the opening loss. |
 | C11 | Chapter 2 | The Thirsty Dog | Oren, Liora, Joffrey, Tavin, Pell, hero | Hear short reactions; no new mandatory choice. | Show the relic's effect on ordinary people. Tavin asks a subtle identity question; no one supplies the correct interpretation. |
 | C12 | Chapter 2 | Town threshold after C11 | Hooded Figure, hero | Listen or leave; either completes the beat. | The Hooded Figure respects the hero's answer without commanding a meaning, then withdraws. |
 
@@ -85,7 +85,7 @@ yet known.
 | Caedmon Varr | Patrol records, casualties, and the limits of his evidence. | Protect Silvana while refusing false certainty. | Three recurring anomalies and the possible six-part pattern only after Triangulus. | Guardian history or claims unsupported by the ledger. |
 | Pell Morn | Old rumors, survivor memory, and tavern history. | Deflect pain with humor while still recognizing danger. | A symbol seems familiar, followed by a retreat into a plausible joke. | A reliable exposition dump. |
 | Hooded Figure | The larger pattern and the importance of voluntary identity. | Place a question without taking the answer away from the hero. | A chosen name can become a vow. | Their allegiance, witness role, Vesperion, or the correct identity answer. |
-| Edrin Shaw | What he perceived during the failed patrol. | Make the town record Mira and Tomas rather than reduce them to missing numbers. | Contradictory route testimony and named losses. | Why the route changed or what lies beyond the sealed threshold. |
+| Edrin Shaw | What he perceived during the failed patrol. | Recover, make the town record Mira and Tomas rather than reduce them to missing numbers, and learn whether his testimony can still help. | Contradictory route testimony, named losses, and later recognition of the first relic's markings. | Why the route changed or what lies beyond the sealed threshold. He survives this slice and remains a witness, not a quest vendor. |
 
 First encounters may begin with role labels. Personal names replace or accompany
 them after natural introductions. Stable internal identifiers remain unchanged.
@@ -137,9 +137,12 @@ The player chooses exactly one saved motive:
 | `Knowledge` | “I want to know what opened beneath this town.” |
 | `Reinvention` | “I needed a place where my old life would not choose for me.” |
 
-Oren acknowledges without judging the answer. Tavin places the hero's order
-beside them before they ask twice. The Hooded Figure is visible in an unlit
-corner but does not speak.
+Oren acknowledges without judging the answer. Tavin places the drink Oren
+offered beside the hero before they ask twice. The Hooded Figure is visible in
+an unlit corner but does not speak.
+
+Set `joffrey_tavern_scene_seen`. This is the first of the four required living
+Joffrey scenes and must not be replayed later as new information.
 
 ### P2 — Incomplete Patrol Return
 
@@ -191,9 +194,13 @@ The barracks presents three concise entries in any order:
 
 After all three are inspected:
 
+- **Edrin:** “I know what I saw. I just do not know when I saw it.”
 - **Joffrey:** “Bad maps drift. They do not repeat the same mistake in three
   different hands.”
 - **Caedmon:** “Then find what is repeating.”
+
+Set `joffrey_patrol_briefing_seen`. This is the second required living Joffrey
+scene.
 
 ### C2 — First Descent
 
@@ -240,9 +247,9 @@ On the first eligible town return after the ledger is read:
 - **Joffrey:** “Then I go with them.”
 - **Liora:** “That is the answer I was afraid you would give.”
 
-This is the first of Joffrey's four required living scenes. Set
-`joffrey_ordinary_scene_seen`; later chapters must use the same flag rather
-than infer the scene from level.
+Set `joffrey_route_review_seen`. This is the third required living Joffrey
+scene. Chapter 5 owns the fourth, his missing-patrol departure. Later gates must
+check these explicit flags rather than infer the scenes from character level.
 
 ### C5 — The Butcher
 
@@ -335,6 +342,8 @@ Turning in `Uncertain Reports` remains the sole creator of
 - **Caedmon:** “The markings match three ledgers whose writers believed they
   found different rooms. With your relic beside them, the lines agree.”
 - **Joffrey:** “Not a map. A repeated structure.”
+- **Edrin:** “That belongs in the empty place between the marks. Mira kept
+  saying the center mattered.”
 - **Caedmon:** “Six positions appear in the damaged record. That may mean six
   objects, six chambers, or one clerk making the same error for a century.”
 - **Caedmon:** “We will call it a pattern when the evidence earns the word.
@@ -415,7 +424,9 @@ Add these normalized fields to `main_story`:
 | `hooded_figure_observed` | `false` | The silent P1 observation has occurred. |
 | `opening_ledger_seen` | `false` | All three C1 entries and their conclusion have been presented. |
 | `first_descent_story_seen` | `false` | C2 environmental text has appeared. |
-| `joffrey_ordinary_scene_seen` | `false` | C4 has completed; this is the first required living Joffrey scene. |
+| `joffrey_tavern_scene_seen` | `false` | P1 has completed; this is the first required living Joffrey scene. |
+| `joffrey_patrol_briefing_seen` | `false` | C1 has completed; this is the second required living Joffrey scene. |
+| `joffrey_route_review_seen` | `false` | C4 has completed; this is the third required living Joffrey scene. |
 | `acolyte_triangulus_fragment_seen` | `false` | C8 has completed. |
 | `triangulus_identity_answer` | `null` | `ChosenName`, `Deeds`, `Memory`, `NextChoice`, or `Unrecorded`. |
 | `first_relic_tavern_aftermath_seen` | `false` | C11 has completed. |
@@ -431,7 +442,7 @@ owners.
 - P3 can be deferred and remains available through Caedmon.
 - Closing a presentation early must leave the current scene eligible to replay
   unless its mandatory state and choice were committed.
-- C4, C8, C11, and C12 are one-time and repeat-safe.
+- P1, C1, C4, C8, C11, and C12 are one-time and repeat-safe.
 - Triangulus is granted only after a valid identity answer is stored.
 - Reloading after an answer or relic grant must not prompt again or duplicate
   the relic, restoration, quest progress, or event.
@@ -445,6 +456,9 @@ Current saves must not be forced through a new arrival scene retroactively.
 - New-player construction receives the fresh defaults above.
 - Loading a save created before these fields existed sets already-passed opening
   scenes to seen and records unavailable choices as `Unrecorded`.
+- Migrated saves treat all three opening Joffrey living scenes as seen if
+  `The Holy Relics` already exists; they must not be forced to replay scenes
+  solely to satisfy the later Chapter 5 gate.
 - If Triangulus is already owned, `triangulus_identity_answer` becomes
   `Unrecorded`, the fragment becomes seen, and no discovery scene replays.
 - If `Uncertain Reports` is already at `report_first_relic`, treat C8 and C9
@@ -543,7 +557,8 @@ present decisions and events, not become the sole owner of story rules.
 4. Can the player state a motive without being assigned a fixed backstory?
 5. Do Timmy and the Rookie deepen the town when completed without feeling
    mandatory?
-6. Does Joffrey register as competent, loved, and alive before later tragedy?
+6. Do Joffrey's tavern, patrol-briefing, and route-review scenes feel distinct,
+   and does he register as competent, loved, and alive before later tragedy?
 7. Does the Minotaur feel connected to the current crisis without being falsely
    elevated into relic lore?
 8. Does the Barghest make contradictory testimony physically legible?
