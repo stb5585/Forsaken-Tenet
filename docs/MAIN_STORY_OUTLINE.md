@@ -549,7 +549,10 @@ mistake placed them in danger, he chooses to return quickly, find them, and
 correct the route. Vesperion distorts the evidence and apparent urgency so
 immediate action seems necessary, but does not compel him. The false route
 leads Joffrey into Domingo's path, and Domingo kills him while he is attempting
-to reach the missing patrol.
+to reach the missing patrol. Joffrey's physical body is discovered on level 4
+near the Domingo route, not at the existing level-2 corpse tile. Its exact map
+coordinate and story-state visibility belong to the Chapter 5 production
+packet.
 
 ### Fixed Tragic Outcome
 
@@ -567,7 +570,11 @@ The hero may vary:
 - whether they answer the Waitress with comfort, honesty, anger, or silence;
 - which interpretation the town carries afterward.
 
-The first pass need not make survival variable.
+The first pass need not make survival variable. Liora survives the chapter and
+remains part of the later town and epilogue arcs. If `Where's the Beef?` is
+unfinished after Joffrey's death, she retains the quest but repurposes the
+provisions originally intended for their wedding feast as a church donation
+for people in need.
 
 ### Dungeon Expression
 
@@ -924,6 +931,13 @@ fatal route. `In the Day of Our Lord` unlocks only after `A Bad Dream` is
 completed. Domingo may be foreshadowed before then, but the formal contract and
 encounter cannot resolve out of sequence.
 
+The full authored Side-quest audit is owned by
+`QUEST_STORY_INTEGRATION_DESIGN.md`. Its central Chapter 5 consequence is that
+the level-2 corpse and crying encounter belong to a failed expedition connected
+to `Rookie Mistake`, while Joffrey receives a separate level-4 body and state.
+`Something to Cry About` preserves its crying trail and anguished-scream battle
+with a bereaved expedition survivor rather than Liora.
+
 ## Per-Chapter Production Packet
 
 Each chapter should receive one reconciled packet before implementation:
@@ -985,9 +999,9 @@ separate promoted spec authorizes a change.
 
 ### Narrative Slice 6 — Supporting And Texture Pass
 
-Reclassify remaining quests, naturalize references, separate tutorials from NPC
-voices, repair grammar and continuity, and deepen optional realms without
-diluting the critical route.
+Implement the accepted Side-quest dispositions, naturalize references, separate
+tutorials from NPC voices, repair grammar and continuity, and deepen optional
+realms without diluting the critical route.
 
 ## Campaign Board Reconciliation Status
 
@@ -1005,8 +1019,11 @@ The campaign-level canon required for production packets is settled:
 
 The campaign-board classification audit is complete. All fourteen current Main
 entries have an accepted Main, Progression, or Side role and an owning chapter
-or campaign-spine function. The remaining production-readiness work is
-operational rather than foundational:
+or campaign-spine function. The full authored Side-quest audit is also complete:
+all twenty-nine existing Side entries and the three reclassified entries have a
+preserve-or-revise disposition, and their required world, state, save, copy,
+and validation consequences are recorded. The remaining production-readiness
+work is operational rather than foundational:
 
 - write the Prologue-through-Triangulus packet without inventing new
   campaign-level canon;
