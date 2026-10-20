@@ -68,7 +68,7 @@ yet known.
 | C5 | Chapter 1 | Minotaur route at `(3, 2, 1)` | Hero, Minotaur | Existing boss interaction and combat. | The Butcher is framed as the immediate obstacle behind recent patrol losses, not as a relic custodian. Mechanics and rewards remain unchanged. |
 | C6 | Chapter 1 | Barracks | Caedmon, Joffrey, hero | Report current evidence. | Caedmon identifies the Barghest account as the one lead that survives every rewrite. `Cry Havoc!` becomes available when its level requirement is also met. |
 | C7 | Chapter 2 | Barghest route at `(18, 2, 1)` | Hero, Barghest | Existing boss interaction and combat. | Witness descriptions are reconciled as different forms of the same creature. The Barghest remains a later occupant, not a Guardian. |
-| C8 | Chapter 2 | Sealed-chamber threshold | Hero | Inspect or continue; the fragment must be presented before relic interaction. | Recover the first unnamed prior-explorer fragment without using the title Acolyte. |
+| C8 | Chapter 2 | Sealed-chamber threshold | Hero | Inspect or continue; the patrol discovery and fragment must be presented before relic interaction. | Confirm Tomas Reed's death, preserve Mira Venn as missing, and recover the first unnamed prior-explorer fragment without using the title Acolyte. |
 | C9 | Chapter 2 | Relic room at `(19, 0, 1)` | Hero, Triangulus response | Choose one of four identity lenses. | Record Chosen Name, Deeds, Memory, or Next Choice; recover Triangulus; advance `Uncertain Reports` to report-back. |
 | C10 | Chapter 2 | Barracks | Caedmon, Joffrey, Edrin, hero | Turn in `Uncertain Reports`. | Caedmon identifies a possible six-part pattern, marks uncertainty explicitly, and creates `The Holy Relics`. Edrin's recognition ties the proof back to the opening loss. |
 | C11 | Chapter 2 | The Thirsty Dog | Oren, Liora, Joffrey, Tavin, Pell, hero | Hear short reactions; no new mandatory choice. | Show the relic's effect on ordinary people. Tavin asks a subtle identity question; no one supplies the correct interpretation. |
@@ -294,10 +294,20 @@ uncertainty:
 The Barghest attacks because the hero enters its claimed lair. It does not speak
 as an appointed custodian and does not administer a deliberate trial.
 
-### C8 — First Prior-Explorer Fragment
+### C8 — Patrol Fate And First Prior-Explorer Fragment
 
-After the Barghest is defeated and before Triangulus can be collected, present
-a weathered note at the sealed-chamber threshold:
+After the Barghest is defeated and before Triangulus can be collected, the hero
+finds Tomas Reed beneath fallen stone, identifiable by his patrol clasp. Mira
+Venn is not present. Her chalk route marks continue beyond Tomas, cross the
+threshold, and end without a body or a clear return path. This confirms Tomas's
+death while preserving Mira as missing; neither the Barghest nor the relic is
+presented as a complete explanation for her disappearance.
+
+This is an environmental discovery, not a transported body, quest item, new
+combat, reward, or map gate. Set `opening_patrol_fate_seen` and allow later
+ledger and Edrin dialogue to remember the fixed outcome.
+
+At the same threshold, present a weathered note:
 
 > I wrote my name beside every turn so the dark could not take it. At the
 > seventh mark, the letters were mine but the hand was not. A name is proof only
@@ -337,7 +347,14 @@ After the answer, grant Triangulus exactly once, set `Uncertain Reports` to
 ### C10 — Barracks Report
 
 Turning in `Uncertain Reports` remains the sole creator of
-`The Holy Relics`.
+`The Holy Relics`. Resolve the named patrol cost before discussing the pattern:
+
+- **Edrin:** “Tomas?”
+- **Caedmon:** “Confirmed dead at the threshold. Mira is still missing.”
+- **Edrin:** “Still missing is not the same as gone.”
+- **Caedmon:** “No. It is not.”
+
+Then examine the relic evidence:
 
 - **Caedmon:** “The markings match three ledgers whose writers believed they
   found different rooms. With your relic beside them, the lines agree.”
@@ -427,6 +444,7 @@ Add these normalized fields to `main_story`:
 | `joffrey_tavern_scene_seen` | `false` | P1 has completed; this is the first required living Joffrey scene. |
 | `joffrey_patrol_briefing_seen` | `false` | C1 has completed; this is the second required living Joffrey scene. |
 | `joffrey_route_review_seen` | `false` | C4 has completed; this is the third required living Joffrey scene. |
+| `opening_patrol_fate_seen` | `false` | C8 confirmed Tomas dead and Mira still missing. |
 | `acolyte_triangulus_fragment_seen` | `false` | C8 has completed. |
 | `triangulus_identity_answer` | `null` | `ChosenName`, `Deeds`, `Memory`, `NextChoice`, or `Unrecorded`. |
 | `first_relic_tavern_aftermath_seen` | `false` | C11 has completed. |
@@ -460,7 +478,9 @@ Current saves must not be forced through a new arrival scene retroactively.
   `The Holy Relics` already exists; they must not be forced to replay scenes
   solely to satisfy the later Chapter 5 gate.
 - If Triangulus is already owned, `triangulus_identity_answer` becomes
-  `Unrecorded`, the fragment becomes seen, and no discovery scene replays.
+  `Unrecorded`, the patrol fate and fragment become seen, and no discovery
+  scene replays. Migrated state records Tomas as dead and Mira as missing
+  without replaying the threshold presentation.
 - If `Uncertain Reports` is already at `report_first_relic`, treat C8 and C9
   as complete without changing its current stage.
 - If `The Holy Relics` already exists, treat the barracks report and tavern
@@ -530,7 +550,8 @@ present decisions and events, not become the sole owner of story rules.
   behavior.
 - `Cry Havoc!` cannot appear before its story prerequisites and existing level
   requirement, and it retains target, reward, and combat.
-- The unnamed fragment always appears before first Triangulus collection.
+- Tomas's death, Mira's missing status, and the unnamed fragment always appear
+  before first Triangulus collection.
 - Triangulus cannot be duplicated by reload or repeated interaction.
 - First relic collection advances `Uncertain Reports` without immediately
   creating `The Holy Relics`.
@@ -562,11 +583,13 @@ present decisions and events, not become the sole owner of story rules.
 7. Does the Minotaur feel connected to the current crisis without being falsely
    elevated into relic lore?
 8. Does the Barghest make contradictory testimony physically legible?
-9. Does the Acolyte fragment invite curiosity without exposing the later title?
-10. Does Triangulus feel like a story event rather than only a full-heal pickup?
-11. Is the six-part possibility earned by evidence and still meaningfully
+9. Does finding Tomas while Mira remains missing feel like a meaningful answer
+   and a bounded future question rather than an arbitrary sequel hook?
+10. Does the Acolyte fragment invite curiosity without exposing the later title?
+11. Does Triangulus feel like a story event rather than only a full-heal pickup?
+12. Is the six-part possibility earned by evidence and still meaningfully
     uncertain?
-12. After returning to ordinary play, is there a clear reason to continue?
+13. After returning to ordinary play, is there a clear reason to continue?
 
 ## Acceptance Gate
 
