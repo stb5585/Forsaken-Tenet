@@ -95,7 +95,7 @@ completion trigger.
 | `Something to Cry About` | Revise | Preserve the floor-2 crying trail and anguished-scream battle, but replace Liora with a fellow survivor of the failed expedition behind `Rookie Mistake`, mourning a companion who died there. |
 | `A Candle for the Descent` | Preserve | Opening memorial and descent texture. Separate tutorial instruction from character voice where the production copy requires it. |
 | `Bring Him Home` | Preserve | Chapter 1 human rescue supporting the opening crisis. |
-| `Where's the Beef?` | Revise | Liora remains the sole owner. After Joffrey departs, she retains the quest and changes the purpose of the provisions to a church donation for people in need. Preserve accepted progress and rewards; remove the duplicate Busboy-authored entry and transfer logic. |
+| `Where's the Beef?` | Revise | Liora remains the sole owner. The provisions are for her and Joffrey's wedding feast. After Joffrey's death, an unfinished collection changes purpose to a church donation for people in need. Preserve accepted progress and rewards; remove the duplicate Busboy-authored entry and transfer logic. |
 | `Spores in the Dark` | Preserve | Early environmental texture and optional dungeon work. |
 | `Ticket to Ride` | Preserve | Optional town/economy texture; naturalize copy during the supporting-content pass. |
 | `An Honest Introduction` | Preserve | Early character and system introduction. Keep tutorial directions distinct from in-world dialogue. |
@@ -158,8 +158,9 @@ rather than treated as isolated JSON copy edits.
 
 - Liora survives Chapter 5 and remains available for her Chapters 8 and 10
   scenes and the epilogue.
-- `Where's the Beef?` remains with Liora. If it is active when Joffrey
-  departs, its objective becomes provisions for a church donation to feed
+- `Where's the Beef?` remains with Liora and initially collects provisions for
+  her and Joffrey's wedding feast. If it remains active after Joffrey's death,
+  Liora repurposes the unfinished collection as a church donation to feed
   people in need. Existing progress and rewards survive the text transition.
   Remove the duplicate Busboy quest record and the post-`A Bad Dream`
   ownership transfer.
