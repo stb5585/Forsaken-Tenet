@@ -547,7 +547,12 @@ scenes rather than inventing Joffrey's motives after his death.
 A patrol disappears after following a route Joffrey charted. Believing his
 mistake placed them in danger, he chooses to return quickly, find them, and
 correct the route. Vesperion distorts the evidence and apparent urgency so
-immediate action seems necessary, but does not compel him.
+immediate action seems necessary, but does not compel him. The false route
+leads Joffrey into Domingo's path, and Domingo kills him while he is attempting
+to reach the missing patrol. Joffrey's physical body is discovered on level 4
+near the Domingo route, not at the existing level-2 corpse tile. Its exact map
+coordinate and story-state visibility belong to the Chapter 5 production
+packet.
 
 ### Fixed Tragic Outcome
 
@@ -565,7 +570,11 @@ The hero may vary:
 - whether they answer the Waitress with comfort, honesty, anger, or silence;
 - which interpretation the town carries afterward.
 
-The first pass need not make survival variable.
+The first pass need not make survival variable. Liora survives the chapter and
+remains part of the later town and epilogue arcs. If `Where's the Beef?` is
+unfinished after Joffrey's death, she retains the quest but repurposes the
+provisions originally intended for their wedding feast as a church donation
+for people in need.
 
 ### Dungeon Expression
 
@@ -625,8 +634,11 @@ preserves judgment and orders that demand obedience.
 The Red Dragon remains a separate later barrier tied to the Hooded Figure's
 existing quest and the route to the sixth floor. It tests whether the hero can
 accept useful guidance without mistaking either the guide or overwhelming power
-for certainty; it is not Polaris's custodian. Existing placement, floor gate,
-Class Ring aftermath, and rewards remain unchanged.
+for certainty; it is not Polaris's custodian. Polaris recovery is represented
+as a staged milestone inside `The Holy Relics`; `Dracarys` unlocks only after
+that milestone and provides the chapter's final barrier and handoff toward
+Infinitas. Existing placement, floor gate, Class Ring aftermath, and rewards
+remain unchanged.
 
 False paths, the Jester's games, Realm of Cambion portals, altered maps, hidden
 routes, and anti-magic clues remain supporting material. Their shared purpose
@@ -864,7 +876,7 @@ own reason. The world continues because choice continues.
 | Red Dragon/Kaelenon/Zahhak | 6–7 or adjacent optional packet | Preserve layered identity without invalidating any class route. |
 | Jester and Cambion | 6 or optional supporting packets | Explore guidance, illusion, and authorship. |
 
-## Main Quest Reclassification Rule
+## Accepted Quest Classification
 
 A quest belongs to the main story only when completing it causes at least one
 of the following:
@@ -877,8 +889,54 @@ of the following:
 - creates the causal handoff to the next chapter.
 
 A difficult boss, large reward, floor gate, or memorable joke is not sufficient
-by itself. Such content can remain mechanically important while being labeled
-as a supporting or side quest.
+by itself. The accepted quest roles are:
+
+- **Main:** advances the campaign's causal story route. Main quests use explicit
+  story-state prerequisites; level remains a secondary eligibility check.
+- **Progression:** owns a mechanically required gate without claiming narrative
+  causality. This is an approved third authored category, but its runtime,
+  presentation, save, and test migration remains implementation work.
+- **Side:** optional content. A Side quest may carry chapter-role metadata when
+  it reinforces a principle, character, or conflict without advancing the
+  critical path.
+- **Bounty:** repeatable or contract-style hunting content outside the authored
+  campaign route.
+
+| Current quest | Accepted category | Campaign role |
+| --- | --- | --- |
+| `Uncertain Reports` | Main | Chapters 1-2 investigation. |
+| `The Butcher` | Main | Chapter 1 crisis and first-floor access. |
+| `Cry Havoc!` | Main | Chapter 2 Barghest confrontation. |
+| `The Holy Relics` | Main | Chapters 2-8 aggregate campaign spine. |
+| `Payback` | Side | Chapter 3 supporting threat. |
+| `Ignis Equus` | Main | Chapter 3 Quadrata route. |
+| `Lapidation` | Side | Chapter 4 supporting survivor arc. |
+| `The Power of Elysia Compels You!` | Main | Chapter 4 Hexagonum route. |
+| `Immovable Object` | Progression | Chapter 5 floor gate. |
+| `A Bad Dream` | Main | Chapter 5 discovery of Joffrey's death. |
+| `In the Day of Our Lord` | Main | Chapter 5 Domingo confrontation. |
+| `Dracarys` | Main | Chapter 6 post-Polaris barrier. |
+| `No Laughing Matter` | Side | Chapter 6 supporting false-guidance arc. |
+| `Hotter Than Hades` | Main | Chapter 7 Infinitas route. |
+
+`The Holy Relics` remains one aggregate quest rather than splitting into six
+new quest identifiers. Individual relic chapters use story-state milestones and
+existing associated quests. Polaris is a staged milestone inside the aggregate
+quest rather than a new dedicated quest.
+
+`A Bad Dream` retains its current level and rewards but requires completion of
+Joffrey's four living scenes and the preceding relic states. It reveals that
+Domingo killed Joffrey after Vesperion's distorted evidence drew him onto the
+fatal route. `In the Day of Our Lord` unlocks only after `A Bad Dream` is
+completed. Domingo may be foreshadowed before then, but the formal contract and
+encounter cannot resolve out of sequence.
+
+The full authored Side-quest audit is owned by
+`QUEST_STORY_INTEGRATION_DESIGN.md`. Its central Chapter 5 consequence is that
+the level-2 corpse and crying encounter belong to a failed expedition connected
+to `Rookie Mistake`, while Joffrey receives a separate level-4 body and state.
+`Something to Cry About` preserves its crying trail and anguished-scream battle
+with a bereaved expedition survivor rather than Liora.
 
 ## Per-Chapter Production Packet
 
@@ -941,9 +999,9 @@ separate promoted spec authorizes a change.
 
 ### Narrative Slice 6 — Supporting And Texture Pass
 
-Reclassify remaining quests, naturalize references, separate tutorials from NPC
-voices, repair grammar and continuity, and deepen optional realms without
-diluting the critical route.
+Implement the accepted Side-quest dispositions, naturalize references, separate
+tutorials from NPC voices, repair grammar and continuity, and deepen optional
+realms without diluting the critical route.
 
 ## Campaign Board Reconciliation Status
 
@@ -959,14 +1017,20 @@ The campaign-level canon required for production packets is settled:
 - optional realms have explicit supporting roles and cannot silently become
   required progression.
 
-The remaining production-readiness work is operational rather than foundational:
+The campaign-board classification audit is complete. All fourteen current Main
+entries have an accepted Main, Progression, or Side role and an owning chapter
+or campaign-spine function. The full authored Side-quest audit is also complete:
+all twenty-nine existing Side entries and the three reclassified entries have a
+preserve-or-revise disposition, and their required world, state, save, copy,
+and validation consequences are recorded. The remaining production-readiness
+work is operational rather than foundational:
 
-- assign each existing main quest to a chapter, reclassify it as supporting
-  content, or record it as implementation debt;
 - write the Prologue-through-Triangulus packet without inventing new
   campaign-level canon;
 - define that packet's exact dialogue, state, UI, save, validation, and
-  playtest contracts.
+  playtest contracts;
+- implement the approved Progression category and later-chapter story-state
+  prerequisites before their owning production slices require them.
 
 Detailed underworld naming, internal factions, later inter-realm groups, and
 minor-tear mechanics remain deferred to a later faction and quest pass.
