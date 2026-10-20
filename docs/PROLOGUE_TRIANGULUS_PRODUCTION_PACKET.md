@@ -35,7 +35,7 @@ separate approved specification.
 | Section | Entry state | Required result | Exit state |
 | --- | --- | --- | --- |
 | Prologue — The Lantern At The Edge | A newly created hero has completed character creation and the existing intro is ready to play. | Record why the hero came to Silvana, introduce the central town circle in motion, witness an incomplete patrol return, and offer `Uncertain Reports`. | The hero can accept or defer the first investigation and enter the ordinary town loop. |
-| Chapter 1 — Names In The Ledger | `Uncertain Reports` is active. The Minotaur and first-floor routes retain current state. | Show that the dungeon consumes named people, establish Joffrey as a living route-mapper, connect the Minotaur gate to the current patrol crisis, and reveal that contradictions repeat. | The Barghest report becomes the strongest surviving lead and `Cry Havoc!` becomes available under its existing level requirement. |
+| Chapter 1 — Names In The Ledger | `Uncertain Reports` is active. Level-1 routes and the separate Minotaur gate retain current state. | Show that the dungeon consumes named people, establish Joffrey as a living route-mapper, and reveal that contradictions repeat. Preserve the Minotaur as the independent Progression gate to level 2. | The Barghest report becomes the strongest surviving lead and `Cry Havoc!` becomes available under its existing level requirement; Minotaur state does not control that handoff. |
 | Chapter 2 — The Shape Of Proof | `Cry Havoc!` is active and the Barghest route is reachable. | Defeat the Barghest, discover the first unnamed Acolyte trace, answer Triangulus, recover the relic, and report it. | `Uncertain Reports` is turned in, `The Holy Relics` is created, and Silvana knows only that a possible six-part pattern exists. |
 
 ## Information Boundary
@@ -65,7 +65,7 @@ yet known.
 | C2 | Chapter 1 | Town and first descent | Hero; town NPCs reactively | Normal town and dungeon control. | First descent receives a one-time environmental beat; town services remain available in the current order. |
 | C3 | Chapter 1 | Level 1 routes | Hero; Timmy or the Rookie when their optional quests are active | Existing exploration and quest interactions. | Optional rescue and burial outcomes gain multi-character reactions but never gate the main route. |
 | C4 | Chapter 1 | Tavern or barracks | Joffrey, Caedmon, Liora, hero | Short mandatory scene on next eligible town return. | Joffrey compares the hero's observations with his own maps; Liora challenges the normalization of repeated risk; complete Joffrey's route-review scene. |
-| C5 | Chapter 1 | Minotaur route at `(3, 2, 1)` | Hero, Minotaur | Existing boss interaction and combat. | The Butcher is framed as the immediate obstacle behind recent patrol losses, not as a relic custodian. Mechanics and rewards remain unchanged. |
+| C5 | Chapter 1 | Minotaur route at `(3, 2, 1)` | Hero, Minotaur | Existing boss interaction and combat; timing is independent of the Main route. | The Butcher remains the sole Progression gate to the level-2 stair at `(3, 0, 1)`, not a relic custodian or prerequisite for the Barghest. Mechanics and rewards remain unchanged. |
 | C6 | Chapter 1 | Barracks | Caedmon, Joffrey, hero | Report current evidence. | Caedmon identifies the Barghest account as the one lead that survives every rewrite. `Cry Havoc!` becomes available when its level requirement is also met. |
 | C7 | Chapter 2 | Barghest route at `(18, 2, 1)` | Hero, Barghest | Existing boss interaction and combat. | Witness descriptions are reconciled as different forms of the same creature. The Barghest remains a later occupant, not a Guardian. |
 | C8 | Chapter 2 | Sealed-chamber threshold | Hero | Inspect or continue; the patrol discovery and fragment must be presented before relic interaction. | Confirm Tomas Reed's death, preserve Mira Venn as missing, and recover the first unnamed prior-explorer fragment without using the title Acolyte. |
@@ -269,25 +269,27 @@ check these explicit flags rather than infer the scenes from character level.
 
 ### C5 — The Butcher
 
-Preserve `The Butcher`, the Minotaur at `(3, 2, 1)`, two `OldKey` rewards,
-experience, combat, and access behavior.
+Reclassify `The Butcher` from Main to Progression. Preserve the Minotaur at
+`(3, 2, 1)`, the only approach to the level-2 stair at `(3, 0, 1)`, the two
+`OldKey` rewards, experience, combat, and access behavior.
 
-Replace generic framing with:
+Use this framing:
 
-- **Oren, offer:** “The Minotaur has made a slaughterhouse of the north route.
-  Edrin's patrol went around it and never found the same way back. If the
-  Butcher remains there, every search starts by choosing between its axe and an
-  untrusted map.”
-- **Oren, completion:** “Good. The road is still dangerous, but it is a road
-  again. Take the keys. Caedmon's people recovered them from packs they could
-  not carry home.”
+- **Oren, offer:** “There is one stair to the second level, and the Minotaur has
+  claimed the corridor before it. Until the Butcher falls, no patrol, rescue
+  party, or explorer goes deeper. Kill it and I will give you the keys carried
+  by the last people who tried.”
+- **Oren, completion:** “The stair is open again. That does not make it safe.
+  Take the keys. Their last owners will not need them.”
 
-The Minotaur is neither a Guardian nor part of the relic doctrine.
+The Minotaur is neither a Guardian nor part of the relic doctrine. It is not
+part of Edrin's patrol route, cannot be bypassed on the way to level 2, and is
+not a prerequisite for `Cry Havoc!`, the Barghest, or Triangulus.
 
 ### C6 — Barghest Lead
 
-When `Uncertain Reports` is active, the Minotaur route is resolved, the ledger
-scene is complete, and the existing level requirement is met:
+When `Uncertain Reports` is active, the ledger scene is complete, and the
+existing level requirement is met:
 
 - **Caedmon:** “One account survives every rewrite: a dog-shaped thing near a
   sealed chamber. Each witness gives it a different body and the same eyes.”
@@ -418,7 +420,7 @@ an item, or reveal allegiance.
 | Quest | Category | Packet action | Prerequisite and handoff |
 | --- | --- | --- | --- |
 | `Uncertain Reports` | Main | Rewrite offer/help/report copy; retain staged implementation and reward. | Offered after P2/P3; first relic advances it; turn-in creates `The Holy Relics`. |
-| `The Butcher` | Main | Preserve target, rewards, level, and gate; revise causal framing. | Requires opening handoff and current level eligibility. Completion clears the practical Chapter 1 obstacle. |
+| `The Butcher` | Progression | Preserve target, rewards, level, and sole level-2 gate; correct its framing and category. | Independent of the Barghest/Triangulus Main route. Runtime category migration must occur atomically with the approved Progression work. |
 | `Cry Havoc!` | Main | Preserve target, reward, level, and combat; revise Barghest framing. | Requires active `Uncertain Reports`, resolved Minotaur route, ledger scene, and current level eligibility. |
 | `The Holy Relics` | Main | No split. Preserve aggregate six-relic contract. | Created only when `Uncertain Reports` is turned in after Triangulus. |
 | `Bring Him Home` | Side | Preserve optional rescue and rewards; add town acknowledgement. | Never gates Main progression. |
@@ -562,10 +564,11 @@ present decisions and events, not become the sole owner of story rules.
 ### Quest And Route
 
 - `Uncertain Reports` is offered after P2 and can be deferred safely.
-- `The Butcher` retains target, rewards, experience, coordinates, and access
-  behavior.
+- `The Butcher` retains target, rewards, experience, coordinates, and sole
+  level-2 access behavior while moving to Progression.
 - `Cry Havoc!` cannot appear before its story prerequisites and existing level
-  requirement, and it retains target, reward, and combat.
+  requirement, does not depend on Minotaur defeat, and retains target, reward,
+  and combat.
 - Tomas's death, Mira's missing status, and the unnamed fragment always appear
   before first Triangulus collection.
 - Triangulus cannot be duplicated by reload or repeated interaction.
@@ -596,8 +599,8 @@ present decisions and events, not become the sole owner of story rules.
    mandatory?
 6. Do Joffrey's tavern, patrol-briefing, and route-review scenes feel distinct,
    and does he register as competent, loved, and alive before later tragedy?
-7. Does the Minotaur feel connected to the current crisis without being falsely
-   elevated into relic lore?
+7. Is the Minotaur clearly the unavoidable gate to level 2 without being
+   falsely connected to Edrin's patrol, the Barghest, or relic lore?
 8. Does the Barghest make contradictory testimony physically legible?
 9. Does finding Tomas while Mira remains missing feel like a meaningful answer
    and a bounded future question rather than an arbitrary sequel hook?
