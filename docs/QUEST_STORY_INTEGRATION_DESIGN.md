@@ -99,7 +99,7 @@ completion trigger.
 | `Spores in the Dark` | Preserve | Early environmental texture and optional dungeon work. |
 | `Ticket to Ride` | Preserve | Optional town/economy texture; naturalize copy during the supporting-content pass. |
 | `An Honest Introduction` | Preserve | Early character and system introduction. Keep tutorial directions distinct from in-world dialogue. |
-| `Rookie Mistake` | Revise | Chapter 1 rescue and recovery. Preserve the rescued Rookie and mechanics; soften victim-blaming language and establish the dead companion and surviving mourner used by `Something to Cry About`. |
+| `Rookie Mistake` | Revise | Chapter 1 body recovery and burial. Preserve the Rookie's death, body-transport mechanics, and rewards; soften victim-blaming language. The revised `Something to Cry About` uses the expedition's sole survivor mourning a different dead companion. |
 | `Loose Ends` | Preserve | Chapter 3 supporting Order conflict. |
 | `Eight Is Enough` | Preserve | Optional creature-hunt texture; polish tone without promoting it to campaign causality. |
 | `The Spring's Reflection` | Preserve | Chapter 4 location and nature support. |
@@ -146,9 +146,10 @@ rather than treated as isolated JSON copy edits.
   `(18, 12)`. It must use the actual corpse position or, preferably, query the
   relevant tile rather than duplicate coordinates.
 - `Something to Cry About` keeps its escalating crying and anguished-scream
-  battle. Its opponent is the bereaved expedition survivor, not Liora, and its
-  text must make the relationship to `Rookie Mistake` legible without making
-  either quest mandatory.
+  battle. Its opponent is the sole survivor of the failed expedition, grieving
+  a different companion whose floor-2 corpse anchors the encounter. The Rookie
+  remains dead and is recovered separately on floor 1. The text must make the
+  relationship legible without making either quest mandatory.
 - Remove canonical Mad Waitress triggers from corpse interaction, enemy-defeat
   quest advancement, and Chapter 5 aftermath. Existing enemy, sprite, and audio
   data may remain for compatibility or later repurposing, but must be
