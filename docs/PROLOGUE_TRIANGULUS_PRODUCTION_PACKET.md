@@ -146,16 +146,27 @@ Joffrey scenes and must not be replayed later as new information.
 
 ### P2 — Incomplete Patrol Return
 
-The tavern door opens. Edrin Shaw enters wounded and alone.
+The tavern door strikes the wall. Joffrey catches Edrin before he falls; Liora
+clears a table and begins binding his wounds.
 
-- **Edrin:** “Close it. Please. I do not know if the corridor followed me.”
-- **Caedmon:** “Where are Mira and Tomas?”
-- **Edrin:** “Mira marked every left turn. Tomas swore we never turned at all.
-  Then the lamps went out. When they came back, there was a sealed door between
-  us.”
-- **Caedmon:** “Was there a crest?”
-- **Edrin:** “Three cuts around an empty center. I saw it above the door. Mira
-  said it was below us.”
+- **Caedmon:** “Edrin. You left with Mira and Tomas. Where are they?”
+- **Edrin:** “Still below. We took the north survey route—the one Joffrey
+  marked last week. Mira chalked every turn.”
+- **Joffrey:** “That route has two junctions before the old drainage hall.”
+- **Edrin:** “I counted four. Tomas swore the passage never bent. We checked the
+  wall. Mira's marks were there, but not in the order she made them.”
+- **Caedmon:** “Then what happened?”
+- **Edrin:** “The lamps went out. We heard stone moving. When the light came
+  back, a sealed door stood where the passage had been. Mira and Tomas were on
+  the other side.”
+- **Caedmon:** “Did you hear them?”
+- **Edrin:** “Tomas, once. Mira kept striking the stone. She shouted that the
+  same three marks were carved beneath our feet, but I saw them above the
+  door.”
+- **Joffrey:** “Why did you leave?”
+- **Edrin:** “Something was following me. Pale eyes. Every time I looked back,
+  it wore a different shape. I came back because they need help—not because I
+  stopped looking.”
 
 The hero chooses one response. All are compassionate, mechanically neutral, and
 set one remembered expression:
@@ -173,10 +184,15 @@ experience, reputation, or mechanical bonus.
 ### P3 — Caedmon's Offer
 
 - **Oren:** “They helped before anyone promised coin.”
-- **Caedmon:** “That earns a hearing, not my trust. Caedmon Varr. I keep the
-  patrol ledger, including the pages I wish were empty.”
-- **Caedmon:** “Edrin's account is not the first that refuses to fit the map.
-  Follow the reports. Bring me proof, not a confident story.”
+- **Caedmon:** “That tells me why you trust their hands. It does not tell me
+  whether I trust their judgment.”
+- **Oren:** “Then give them something small enough to prove it.”
+- **Caedmon:** “Three patrols have returned with reports that contradict their
+  own maps. My people know those routes too well; every one of them begins by
+  defending what they remember.”
+- **Caedmon, to the hero:** “You are new. You have no old map to protect and no
+  comrade's pride to excuse. I do not need another confident story. Follow the
+  reports and bring me something the ledger cannot argue with.”
 
 The player may accept `Uncertain Reports` or defer. Deferral returns control to
 town and leaves the offer available from Caedmon. It does not replay P1 or P2.
