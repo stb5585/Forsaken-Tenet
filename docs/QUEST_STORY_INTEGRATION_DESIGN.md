@@ -38,7 +38,7 @@ under `Main` to one accepted role:
 | Current quest | Accepted category | Campaign role |
 | --- | --- | --- |
 | `Uncertain Reports` | Main | Chapters 1-2 investigation. |
-| `The Butcher` | Main | Chapter 1 crisis and first-floor access. |
+| `The Butcher` | Progression | Sole gate from level 1 to level 2; independent of the Triangulus Main route. |
 | `Cry Havoc!` | Main | Chapter 2 Barghest confrontation. |
 | `The Holy Relics` | Main | Chapters 2-8 aggregate campaign spine. |
 | `Payback` | Side | Chapter 3 supporting threat. |
@@ -63,7 +63,13 @@ The current runtime still assumes `Main`, `Side`, and `Bounty`.
 `Progression` therefore remains an accepted implementation contract until the
 loader, player state, advancement helpers, Pygame quest surfaces, serializers,
 normalization, and regressions are migrated together. Content must not move
-`Immovable Object` in isolation.
+`The Butcher` or `Immovable Object` in isolation.
+
+`The Butcher` joins `Immovable Object` in Progression. The Minotaur remains the
+unavoidable guard before the only stair from level 1 to level 2, but defeating
+it does not cause access to the level-1 Barghest, Triangulus, or first-relic
+report. Its target, level, rewards, coordinates, combat, and gate remain
+unchanged.
 
 `The Holy Relics` remains the aggregate six-relic quest. Polaris is represented
 as one of its staged milestones, and `Dracarys` unlocks only after that
