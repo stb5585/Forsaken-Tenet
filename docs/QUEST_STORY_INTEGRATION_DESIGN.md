@@ -1,6 +1,6 @@
 # Quest Story Integration Design
 
-Status: `Holy Relics Staging And Postgame Tavern V1 Implemented`
+Status: `Holy Relics V1 Implemented; Main-Quest Classification Accepted`
 
 This document owns quest-system changes whose purpose is to stage story
 information, preserve mystery, and keep quest guidance aligned with the
@@ -29,6 +29,52 @@ The shipped chain starts with Sergeant-led uncertainty:
 Early-game copy must not name Vesperion, Voluntas, the busboy identity, the
 Hooded Figure truth, or true-final route mechanics. It may hint at old
 principles, relic-light, sealed chambers, and incomplete reports.
+
+
+## Accepted Campaign Quest Classification
+
+The campaign audit assigns each of the fourteen entries currently authored
+under `Main` to one accepted role:
+
+| Current quest | Accepted category | Campaign role |
+| --- | --- | --- |
+| `Uncertain Reports` | Main | Chapters 1-2 investigation. |
+| `The Butcher` | Main | Chapter 1 crisis and first-floor access. |
+| `Cry Havoc!` | Main | Chapter 2 Barghest confrontation. |
+| `The Holy Relics` | Main | Chapters 2-8 aggregate campaign spine. |
+| `Payback` | Side | Chapter 3 supporting threat. |
+| `Ignis Equus` | Main | Chapter 3 Quadrata route. |
+| `Lapidation` | Side | Chapter 4 supporting survivor arc. |
+| `The Power of Elysia Compels You!` | Main | Chapter 4 Hexagonum route. |
+| `Immovable Object` | Progression | Chapter 5 floor gate. |
+| `A Bad Dream` | Main | Chapter 5 discovery of Joffrey's death. |
+| `In the Day of Our Lord` | Main | Chapter 5 Domingo confrontation. |
+| `Dracarys` | Main | Chapter 6 post-Polaris barrier. |
+| `No Laughing Matter` | Side | Chapter 6 supporting false-guidance arc. |
+| `Hotter Than Hades` | Main | Chapter 7 Infinitas route. |
+
+`Main` is reserved for causal story progression. Every Main quest uses
+explicit story-state prerequisites; character level is only a secondary
+eligibility check. `Progression` is a distinct authored category for required
+mechanical gates that do not advance the central narrative. `Side` remains
+the runtime category for optional supporting content and may receive chapter
+role metadata. `Bounty` remains outside the authored campaign route.
+
+The current runtime still assumes `Main`, `Side`, and `Bounty`.
+`Progression` therefore remains an accepted implementation contract until the
+loader, player state, advancement helpers, Pygame quest surfaces, serializers,
+normalization, and regressions are migrated together. Content must not move
+`Immovable Object` in isolation.
+
+`The Holy Relics` remains the aggregate six-relic quest. Polaris is represented
+as one of its staged milestones, and `Dracarys` unlocks only after that
+milestone. No separate Polaris quest is required.
+
+`A Bad Dream` retains its current level and rewards but is unavailable until
+Joffrey's four living scenes and the preceding relic states are complete.
+Domingo kills Joffrey after Vesperion's distorted evidence draws him onto the
+fatal route. `In the Day of Our Lord` unlocks only after `A Bad Dream` is
+completed.
 
 ## Late-Game Quest Continuity Hooks
 
@@ -85,7 +131,15 @@ Quest records may optionally define staged metadata:
 - `Stages`: stage definitions containing display text, objective/help text, and
   trigger identifiers.
 
-Non-staged quests remain valid and ignore these fields.
+Non-staged quests remain valid and ignore these fields. Future authored
+entries may also define chapter-role metadata for documentation and
+presentation without making that metadata a completion trigger.
+
+The accepted Progression migration must add the category atomically across
+new-player defaults, eligible-quest lookup, defeat/item/locate advancement,
+quest menus, save serialization and normalization, and focused regressions.
+Until that migration lands, current content remains in its shipped runtime
+categories.
 
 Shared core quest-progress helpers own story quest synchronization so Pygame
 does not duplicate relic or staged-objective rules. The helper is responsible
