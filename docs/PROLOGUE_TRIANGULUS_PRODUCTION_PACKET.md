@@ -275,16 +275,18 @@ Reclassify `The Butcher` from Main to Progression. Preserve the Minotaur at
 
 Use this framing:
 
-- **Oren, offer:** “There is one stair to the second level, and the Minotaur has
-  claimed the corridor before it. Until the Butcher falls, no patrol, rescue
-  party, or explorer goes deeper. Kill it and I will give you the keys carried
-  by the last people who tried.”
+- **Oren, offer:** “That stair was open a week ago. Then the Minotaur came up
+  from the lower passages and claimed the corridor before it. Patrols reached
+  the second level before; now no patrol, rescue party, or explorer can go
+  deeper. Kill the Butcher and I will give you the keys carried by the last
+  people who tried.”
 - **Oren, completion:** “The stair is open again. That does not make it safe.
   Take the keys. Their last owners will not need them.”
 
-The Minotaur is neither a Guardian nor part of the relic doctrine. It is not
-part of Edrin's patrol route, cannot be bypassed on the way to level 2, and is
-not a prerequisite for `Cry Havoc!`, the Barghest, or Triangulus.
+The Minotaur is a recent threat rather than the reason older expeditions could
+not reach level 2. It is neither a Guardian nor part of the relic doctrine. It
+is not part of Edrin's patrol route, cannot be bypassed on the way to level 2,
+and is not a prerequisite for `Cry Havoc!`, the Barghest, or Triangulus.
 
 ### C6 — Barghest Lead
 
