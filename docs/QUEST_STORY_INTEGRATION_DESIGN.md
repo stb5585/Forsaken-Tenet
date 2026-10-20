@@ -1,6 +1,6 @@
 # Quest Story Integration Design
 
-Status: `Holy Relics V1 Implemented; Main-Quest Classification Accepted`
+Status: `Holy Relics V1 Implemented; Full Authored-Quest Audit Accepted`
 
 This document owns quest-system changes whose purpose is to stage story
 information, preserve mystery, and keep quest guidance aligned with the
@@ -74,6 +74,130 @@ Joffrey's four living scenes and the preceding relic states are complete.
 Domingo kills Joffrey after Vesperion's distorted evidence draws him onto the
 fatal route. `In the Day of Our Lord` unlocks only after `A Bad Dream` is
 completed.
+
+## Accepted Side-Quest Audit
+
+The audit covers all twenty-nine entries currently authored under `Side` plus
+the three entries moving from `Main`, for a post-migration total of thirty-two
+authored Side quests. `Bounty` entries remain contract-style hunting content
+and do not require individual campaign classification.
+
+`Preserve` means that the quest's current function, target, and reward remain
+valid. `Revise` means that the identifier and useful mechanics remain, but its
+copy, ownership, prerequisite, or aftermath must change to fit the accepted
+campaign. Chapter-role metadata is descriptive and must not itself become a
+completion trigger.
+
+| Side quest | Disposition | Accepted story role or required revision |
+| --- | --- | --- |
+| `Pandora's Box` | Revise | Chapter 6 supporting mystery. Preserve its objective and reward; rewrite Hooded Figure framing so it supports uncertain guidance without premature certainty. |
+| `Rat Trap` | Preserve | Opening town-and-dungeon texture. Keep it optional and outside the campaign chain. |
+| `Something to Cry About` | Revise | Preserve the floor-2 crying trail and anguished-scream battle, but replace Liora with a fellow survivor of the failed expedition behind `Rookie Mistake`, mourning a companion who died there. |
+| `A Candle for the Descent` | Preserve | Opening memorial and descent texture. Separate tutorial instruction from character voice where the production copy requires it. |
+| `Bring Him Home` | Preserve | Chapter 1 human rescue supporting the opening crisis. |
+| `Where's the Beef?` | Revise | Liora remains the sole owner. After Joffrey departs, she retains the quest and changes the purpose of the provisions to a church donation for people in need. Preserve accepted progress and rewards; remove the duplicate Busboy-authored entry and transfer logic. |
+| `Spores in the Dark` | Preserve | Early environmental texture and optional dungeon work. |
+| `Ticket to Ride` | Preserve | Optional town/economy texture; naturalize copy during the supporting-content pass. |
+| `An Honest Introduction` | Preserve | Early character and system introduction. Keep tutorial directions distinct from in-world dialogue. |
+| `Rookie Mistake` | Revise | Chapter 1 rescue and recovery. Preserve the rescued Rookie and mechanics; soften victim-blaming language and establish the dead companion and surviving mourner used by `Something to Cry About`. |
+| `Loose Ends` | Preserve | Chapter 3 supporting Order conflict. |
+| `Eight Is Enough` | Preserve | Optional creature-hunt texture; polish tone without promoting it to campaign causality. |
+| `The Spring's Reflection` | Preserve | Chapter 4 location and nature support. |
+| `I'm Molting!` | Preserve | Optional material/economy texture; retain background humor. |
+| `Put A Feather In It` | Preserve | Optional material/economy texture; retain background humor. |
+| `A Breath Between Stones` | Preserve | Chapter 4 environmental support and quiet counterpoint. |
+| `Metalingus` | Preserve | Guard-facing salvage work. It may share a Scrap Metal target with `The Iron Ledger` because the owners and purposes differ. |
+| `The Iron Ledger` | Preserve | Guild/economy salvage work. Do not merge it with `Metalingus` without later pacing evidence. |
+| `Knock Back a Couple Brewskis` | Preserve | Town-character texture supporting the Drunkard's longer endurance arc. |
+| `The Shocker` | Revise | Preserve its class/mechanical role; replace generic "greater evil" framing with a local threat and earned consequence. |
+| `Naivete` | Preserve | Chapter 4 nature and judgment support; polish copy as needed. |
+| `Earth, Wind, and Fire...and Water and...` | Preserve | Optional elemental texture; keep the reference in the background rather than as a critical revelation. |
+| `Oedipal Complex` | Preserve | Optional Cambion/underworld and illusion chain. |
+| `The Unquiet Thesis` | Preserve | Optional Chapter 6 guidance and interpretation support. |
+| `The Holy Grail of Quests` | Preserve | Optional Cambion/underworld and illusion chain; keep its humor outside serious campaign beats. |
+| `This Thing's Nuclear` | Preserve | Polaris-supporting optional content. Preserve mechanics and naturalize conspicuously modern phrasing only where it breaks tone. |
+| `The Wizard's Folly` | Preserve | Optional Cambion/underworld and illusion chain. |
+| `He Ain't Heavy` | Revise | Preserve the late rescue role; replace stale "primal evil" language with the specific danger and survivor stakes. |
+| `Payback` | Reclassify and revise | Move from Main to Side as Chapter 3 supporting threat. Preserve target and reward; rewrite Hooded Figure and rival framing to avoid false campaign causality. |
+| `Lapidation` | Reclassify and revise | Move from Main to Side as Chapter 4/Pell survivor history. Preserve mechanics and polish continuity copy. |
+| `No Laughing Matter` | Reclassify and revise | Move from Main to Side as Chapter 6 false-guidance and illusion support. Preserve mechanics and reward; naturalize the "Agent of Chaos" reference. |
+
+No audited Side quest becomes required merely because it supports a campaign
+chapter. References and puns remain welcome as background texture, but grief,
+Guardian revelations, and causal handoffs use direct language.
+
+## Quest-Change Consequence Register
+
+Quest edits must be implemented as world, state, presentation, and save changes
+rather than treated as isolated JSON copy edits.
+
+### Joffrey, the Floor-2 Corpse, and `Something to Cry About`
+
+- The current `DeadBody` tile at level 2, coordinate `(11, 9)`, remains on
+  floor 2 and becomes the dead member of the `Rookie Mistake` expedition. It
+  anchors `Something to Cry About` and its proximity-based crying.
+- Joffrey receives a distinct `JoffreyBody` world asset on level 4 near the
+  Domingo route. The exact coordinate belongs to the Chapter 5 production
+  packet and must not be inferred during this audit.
+- Joffrey's body remains hidden or absent until his fatal departure and the
+  corresponding story state. Interacting with it advances `A Bad Dream`;
+  the generic corpse interaction must no longer own Joffrey's quest logic.
+- The current floor-2 random-cry check uses an obsolete approximate coordinate
+  `(18, 12)`. It must use the actual corpse position or, preferably, query the
+  relevant tile rather than duplicate coordinates.
+- `Something to Cry About` keeps its escalating crying and anguished-scream
+  battle. Its opponent is the bereaved expedition survivor, not Liora, and its
+  text must make the relationship to `Rookie Mistake` legible without making
+  either quest mandatory.
+- Remove canonical Mad Waitress triggers from corpse interaction, enemy-defeat
+  quest advancement, and Chapter 5 aftermath. Existing enemy, sprite, and audio
+  data may remain for compatibility or later repurposing, but must be
+  unreachable from the accepted story route.
+
+### Liora, Provisions, and Joffrey's Effects
+
+- Liora survives Chapter 5 and remains available for her Chapters 8 and 10
+  scenes and the epilogue.
+- `Where's the Beef?` remains with Liora. If it is active when Joffrey
+  departs, its objective becomes provisions for a church donation to feed
+  people in need. Existing progress and rewards survive the text transition.
+  Remove the duplicate Busboy quest record and the post-`A Bad Dream`
+  ownership transfer.
+- The Brass Key, `Joffrey's Letter`, and their useful rewards can no longer
+  depend on defeating Liora. Move their handoff into a nonviolent Liora,
+  Sergeant, or joint aftermath scene; the Chapter 5 packet will choose the
+  exact scene while preserving the items and rewards.
+- Rewrite `Joffrey's Key`, `Joffrey's Letter`, and related event text so
+  Joffrey acted voluntarily under distorted evidence rather than supernatural
+  compulsion. The letter must recall details from the four witnessed living
+  scenes.
+- Remove or replace the current Busboy event that assumes Liora fled and Tavin
+  took over her tables. Grief changes her dialogue and quest purpose without
+  removing her from town.
+
+### State, Saves, Presentation, and Validation
+
+- Add explicit story-state prerequisites for `A Bad Dream` and
+  `In the Day of Our Lord`; a level check alone cannot reveal Joffrey's body
+  or Domingo's resolution early.
+- Give the Joffrey body and the floor-2 expedition corpse independent stable
+  state. Existing coordinate-keyed world state must migrate so an old floor-2
+  read flag neither pre-reads the new Joffrey asset nor creates duplicate
+  rewards.
+- Preserve completed and accepted quest identifiers wherever possible.
+  `Where's the Beef?` changes stage/copy in place; its collected-item progress
+  must not reset during the transition.
+- Update the body interaction, random-cry, quest-manager handoff, enemy-defeat
+  advancement, special-event, dialogue, renderer, map, and save-normalization
+  surfaces together.
+- Add focused regressions for the level-2 corpse coordinate and crying radius,
+  the separate level-4 Joffrey body and visibility gate, the two corpse states
+  across save round trips, `A Bad Dream` and Domingo sequence, Liora's
+  survival, the provisions-purpose transition, and the absence of duplicate
+  Brass Key or letter rewards.
+- Audit current body-tile, dungeon-manager, quest-manager, progression, and
+  player-helper tests. Mad Waitress combat may retain isolated enemy behavior
+  coverage, but it is no longer a canonical route regression.
 
 ## Late-Game Quest Continuity Hooks
 
