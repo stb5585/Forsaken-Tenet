@@ -30,7 +30,6 @@ Early-game copy must not name Vesperion, Voluntas, the busboy identity, the
 Hooded Figure truth, or true-final route mechanics. It may hint at old
 principles, relic-light, sealed chambers, and incomplete reports.
 
-
 ## Accepted Campaign Quest Classification
 
 The campaign audit assigns each of the fourteen entries currently authored
