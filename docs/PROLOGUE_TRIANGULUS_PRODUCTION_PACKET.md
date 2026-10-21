@@ -1,10 +1,10 @@
 # Prologue Through Triangulus Production Packet
 
-Status: **Draft — Dialogue Review Paused After Barracks Report**
+Status: **Draft — Dialogue Review At Hooded Figure Response**
 
-Review checkpoint: P0–P3, C1, and C4–C10 are accepted. C11–C12—the tavern
-aftermath and Hooded Figure response—remain to be reviewed before
-owner-document reconciliation and PR creation.
+Review checkpoint: P0–P3, C1, and C4–C11 are accepted. C12—the Hooded Figure
+response—remains to be reviewed before owner-document reconciliation and PR
+creation.
 
 This packet owns the first implementation-quality narrative slice: the Prologue,
 Chapter 1, and Chapter 2 through the recovery of Triangulus, the report back to
@@ -403,19 +403,39 @@ seventh absence.
 
 ### C11 — Tavern Aftermath
 
-On the next tavern visit after C10:
+On the next tavern visit after C10, news of the discovery has already spread.
+Several conversations stop when the hero enters.
 
-- **Oren:** “The room went quiet before you showed us what you carried.”
-- **Liora:** “Then put it somewhere people do not have to die proving what it
-  is.”
-- **Joffrey:** “If it explains the routes, it may keep the next patrol alive.”
+The first reactions overlap:
+
+- **Excited patron:** “If one of those can make sense of the old records,
+  imagine what six could show us.”
+- **Uneasy patron:** “Those records describe changing passages and missing
+  hours. Perhaps some things were hidden for a reason.”
+- **Angry patron:** “Tomas is dead, Mira is gone, and we brought the thing they
+  found home? Break it before it costs another name.”
+- **Oren:** “No one is breaking anything in my tavern. No one is calling it our
+  salvation, either.”
+
+The familiar circle responds:
+
+- **Liora:** “Put it somewhere people do not have to die proving what it is.”
+- **Joffrey:** “If it explains the routes, it may keep the next patrol alive.
+  That is reason enough to study it—not reason enough to trust it.”
 - **Pell:** “Three points. Knew a fellow with a three-point plan once. Lost two
-  points and married the third.”  
-  Oren's look ends the joke before it displaces the moment.
-- **Tavin:** “When the creature changed, did you survive by discovering what it
-  truly was—or by deciding what it meant to you?”
+  points and married the third.”
 
-The hero need not answer. Tavin does not press.
+Oren's look ends Pell's joke before it displaces the argument.
+
+As the room returns to scattered debate, Tavin clears an untouched cup near the
+hero:
+
+- **Tavin:** “Everyone in this room has decided what that relic is. Did it seem
+  so eager to decide what you are?”
+
+The hero need not answer, and Tavin does not press. The varied reactions present
+the relic as opportunity, omen, and intolerable danger without supplying the
+correct interpretation.
 
 ### C12 — Hooded Figure Response
 
