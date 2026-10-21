@@ -37,20 +37,23 @@ contracts belong in their owner documents.
 
 ## Active Priority — Opening Story Vertical Slice
 
-Status: `Active — Quest Audit Complete; Story Packet Development`
+Status: `Active — Opening Story Packet Ready for Implementation`
 
 The project remains temporarily shifted from gameplay expansion and broad
 playtesting to campaign story development. The accepted creative authority is
-[`NARRATIVE_FOUNDATION.md`](NARRATIVE_FOUNDATION.md), and the reconciled route
-is [`MAIN_STORY_OUTLINE.md`](MAIN_STORY_OUTLINE.md). Campaign chronology, the
-core cast, Joffrey and the Acolyte, and the preserve-first mapping for all six
-relics are settled. Detailed underworld names, internal factions, and minor-tear
-mechanics remain intentionally deferred and do not block the opening slice.
+[`NARRATIVE_FOUNDATION.md`](NARRATIVE_FOUNDATION.md), the reconciled route is
+[`MAIN_STORY_OUTLINE.md`](MAIN_STORY_OUTLINE.md), and the first
+implementation-ready slice is
+[`PROLOGUE_TRIANGULUS_PRODUCTION_PACKET.md`](PROLOGUE_TRIANGULUS_PRODUCTION_PACKET.md).
+Campaign chronology, the core cast, Joffrey and the Acolyte, and the
+preserve-first mapping for all six relics are settled. Detailed underworld
+names, internal factions, and minor-tear mechanics remain intentionally
+deferred and do not block the opening slice.
 
 The campaign-board audit is complete. Of the fourteen entries currently
-authored as Main, ten remain Main, `Immovable Object` becomes the first
-Progression quest, and `Payback`, `Lapidation`, and
-`No Laughing Matter` move to Side with chapter-role metadata. The full authored
+authored as Main, nine remain Main; `The Butcher` and `Immovable Object` become
+Progression quests; and `Payback`, `Lapidation`, and `No Laughing Matter` move
+to Side with chapter-role metadata. The full authored
 Side-quest audit is also complete: twenty-nine existing Side entries plus those
 three reclassifications now have accepted preserve-or-revise dispositions.
 The approved Progression category is design-complete but not yet implemented;
@@ -68,9 +71,9 @@ continuity.
 
 The ordered narrative work is:
 
-1. Produce the Prologue-through-Triangulus chapter packet with scene order,
-   dialogue, quest mapping, state, presentation, validation, and playtest
-   requirements.
+1. **Complete:** accept and runtime-verify the
+   Prologue-through-Triangulus packet with scene order, dialogue, quest mapping,
+   state, migration, presentation, validation, and playtest requirements.
 2. Implement that opening vertical slice without incidental combat, economy,
    class, map-topology, or balance changes.
 3. Playtest whether the first arc establishes an immediate human stake,

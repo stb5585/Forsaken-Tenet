@@ -759,7 +759,10 @@ than isolated line edits:
 ## First Narrative Vertical Slice
 
 The first implementation-quality story packet should cover arrival through
-Triangulus and the creation of The Holy Relics.
+Triangulus and the creation of The Holy Relics. Its accepted exact contract is
+[`PROLOGUE_TRIANGULUS_PRODUCTION_PACKET.md`](PROLOGUE_TRIANGULUS_PRODUCTION_PACKET.md);
+this foundation retains campaign authority while the packet owns implementation
+sequence and copy.
 
 It should include:
 

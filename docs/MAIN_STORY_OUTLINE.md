@@ -266,7 +266,7 @@ specific people and produces unreliable evidence.
 - Bring Him Home;
 - Rookie Mistake;
 - early dungeon exploration;
-- the Minotaur route and first-floor access;
+- the Minotaur and the only descent from level 1 to level 2;
 - first meetings with town services.
 
 These anchors do not all need to become mandatory. Timmy and the Rookie can
@@ -284,8 +284,9 @@ brought home for burial.
    contradictions repeat in a pattern.
 4. Early rescue and recovery content demonstrates that returning a person or
    their name matters to Silvana.
-5. The Minotaur is framed as a brutal gate in the same crisis, not an unrelated
-   contract placed between the player and the next level.
+5. The Minotaur remains the unavoidable Progression gate before the only stair
+   to level 2. It is not part of Edrin's level-1 patrol route and does not gate
+   the Barghest or Triangulus investigation.
 6. A small trace from an earlier explorer appears without the title Acolyte:
    disciplined notes, an unusual symbol, or a line about needing proof of who
    they were.
@@ -341,8 +342,8 @@ ancient custodian. Its forms respond to observers' expectations and fears, so
 the creature makes uncertainty about identity physically dangerous without
 deliberately administering a Guardian trial.
 
-Minotaur remains the unrelated first-floor progression gate. Existing
-placement, keys, quest rewards, and access rules remain unchanged.
+Minotaur remains the separate Progression gate from level 1 to level 2.
+Existing placement, keys, quest rewards, and access rules remain unchanged.
 
 ### Story Progression
 
@@ -361,14 +362,17 @@ placement, keys, quest rewards, and access rules remain unchanged.
 ### Recurring Character Responses
 
 - **Sergeant:** accepts the evidence but resists claiming certainty beyond it.
-- **Joffrey:** sees proof that ordinary people must act rather than wait.
-- **Waitress:** worries that necessity is becoming an excuse for people she
-  loves to enter the dungeon.
-- **Busboy:** asks whether the hero defeated the creature by discovering what it
-  was or by deciding what it meant.
-- **Hooded Figure:** suggests that a chosen name can become a vow, but never
-  tells the hero which identity to choose.
-- **Barkeep:** notices the room reacting to relic-light before anyone speaks.
+- **Joffrey:** sees possible protection for future patrols but refuses to equate
+  usefulness with trust.
+- **Waitress:** insists that understanding the relic cannot justify treating
+  further deaths as ordinary research costs.
+- **Busboy:** observes that the divided room has already decided what the relic
+  means, then asks whether the relic was equally eager to decide what the hero
+  is.
+- **Hooded Figure:** repeats the hero's stored Triangulus answer and warns
+  against letting another person's certainty replace a freely given choice.
+- **Barkeep:** contains a room divided among hope, fear, and demands to destroy
+  the relic without endorsing any interpretation.
 
 ### Fixed Outcome
 
@@ -376,9 +380,10 @@ Triangulus is recovered and the broader relic route opens.
 
 ### Variable Expression
 
-The player may later remember whether they emphasized name, endurance, memory,
-duty, curiosity, or another approved identity answer. No answer invalidates a
-class or changes the chapter's required outcome.
+Triangulus records exactly one mechanically neutral identity lens: **Chosen
+Name**, **Deeds**, **Memory**, or **Next Choice**. The Hooded Figure later
+restates the stored answer without judging it. No answer invalidates a class,
+changes rewards, or alters the chapter's required outcome.
 
 ### Handoff
 
@@ -905,7 +910,7 @@ by itself. The accepted quest roles are:
 | Current quest | Accepted category | Campaign role |
 | --- | --- | --- |
 | `Uncertain Reports` | Main | Chapters 1-2 investigation. |
-| `The Butcher` | Main | Chapter 1 crisis and first-floor access. |
+| `The Butcher` | Progression | Sole gate from level 1 to level 2; independent of the Triangulus Main route. |
 | `Cry Havoc!` | Main | Chapter 2 Barghest confrontation. |
 | `The Holy Relics` | Main | Chapters 2-8 aggregate campaign spine. |
 | `Payback` | Side | Chapter 3 supporting threat. |
@@ -940,7 +945,13 @@ with a bereaved expedition survivor rather than Liora.
 
 ## Per-Chapter Production Packet
 
-Each chapter should receive one reconciled packet before implementation:
+The first accepted packet is
+[`PROLOGUE_TRIANGULUS_PRODUCTION_PACKET.md`](PROLOGUE_TRIANGULUS_PRODUCTION_PACKET.md).
+It owns exact dialogue, state, migration, presentation, runtime mapping, and
+validation for the Prologue through Chapter 2 without duplicating that script
+here.
+
+Each later chapter should receive one reconciled packet before implementation:
 
 1. **Chapter contract:** purpose, prerequisites, entry state, exit state, and
    non-goals.
@@ -1022,15 +1033,16 @@ entries have an accepted Main, Progression, or Side role and an owning chapter
 or campaign-spine function. The full authored Side-quest audit is also complete:
 all twenty-nine existing Side entries and the three reclassified entries have a
 preserve-or-revise disposition, and their required world, state, save, copy,
-and validation consequences are recorded. The remaining production-readiness
-work is operational rather than foundational:
+and validation consequences are recorded. The Prologue-through-Triangulus
+packet is dialogue-complete, reconciled with these owners, and statically
+verified against current runtime quest, map, state, save, and presentation
+surfaces. The remaining work is implementation and evidence:
 
-- write the Prologue-through-Triangulus packet without inventing new
-  campaign-level canon;
-- define that packet's exact dialogue, state, UI, save, validation, and
-  playtest contracts;
-- implement the approved Progression category and later-chapter story-state
-  prerequisites before their owning production slices require them.
+- implement the accepted opening packet without changing combat, rewards, map
+  topology, or save policy;
+- implement the approved Progression category atomically with the opening slice;
+- run the packet's automated regressions and manual engagement playtest before
+  promoting later principle arcs into production packets.
 
 Detailed underworld naming, internal factions, later inter-realm groups, and
 minor-tear mechanics remain deferred to a later faction and quest pass.

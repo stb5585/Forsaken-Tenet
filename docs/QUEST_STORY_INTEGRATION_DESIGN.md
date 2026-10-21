@@ -1,6 +1,6 @@
 # Quest Story Integration Design
 
-Status: `Holy Relics V1 Implemented; Full Authored-Quest Audit Accepted`
+Status: `Holy Relics V1 Implemented; Quest Audit Accepted; Opening Packet Ready`
 
 This document owns quest-system changes whose purpose is to stage story
 information, preserve mystery, and keep quest guidance aligned with the
@@ -26,6 +26,10 @@ The shipped chain starts with Sergeant-led uncertainty:
 5. `The Holy Relics` then preserves the existing six-relic collection and final
    threshold gating behavior.
 
+The exact opening sequence, copy, saved choices, migration behavior, and
+verified runtime anchors are owned by
+[`PROLOGUE_TRIANGULUS_PRODUCTION_PACKET.md`](PROLOGUE_TRIANGULUS_PRODUCTION_PACKET.md).
+
 Early-game copy must not name Vesperion, Voluntas, the busboy identity, the
 Hooded Figure truth, or true-final route mechanics. It may hint at old
 principles, relic-light, sealed chambers, and incomplete reports.
@@ -38,7 +42,7 @@ under `Main` to one accepted role:
 | Current quest | Accepted category | Campaign role |
 | --- | --- | --- |
 | `Uncertain Reports` | Main | Chapters 1-2 investigation. |
-| `The Butcher` | Main | Chapter 1 crisis and first-floor access. |
+| `The Butcher` | Progression | Sole gate from level 1 to level 2; independent of the Triangulus Main route. |
 | `Cry Havoc!` | Main | Chapter 2 Barghest confrontation. |
 | `The Holy Relics` | Main | Chapters 2-8 aggregate campaign spine. |
 | `Payback` | Side | Chapter 3 supporting threat. |
@@ -63,7 +67,20 @@ The current runtime still assumes `Main`, `Side`, and `Bounty`.
 `Progression` therefore remains an accepted implementation contract until the
 loader, player state, advancement helpers, Pygame quest surfaces, serializers,
 normalization, and regressions are migrated together. Content must not move
-`Immovable Object` in isolation.
+`The Butcher` or `Immovable Object` in isolation.
+
+`The Butcher` joins `Immovable Object` in Progression. The Minotaur remains the
+unavoidable guard before the only stair from level 1 to level 2, but defeating
+it does not cause access to the level-1 Barghest, Triangulus, or first-relic
+report. Its target, level, rewards, coordinates, combat, and gate remain
+unchanged.
+
+Static verification confirms that `Cry Havoc!` currently has no `Requires`
+field and Pygame's generic prerequisite path accepts only a quest that has
+already been turned in. The opening implementation must therefore use shared
+story-state eligibility for active `Uncertain Reports` plus the completed
+ledger scene. Adding `Requires: Uncertain Reports` would be incorrect because
+it would delay the Barghest lead until after Triangulus report-back.
 
 `The Holy Relics` remains the aggregate six-relic quest. Polaris is represented
 as one of its staged milestones, and `Dracarys` unlocks only after that
@@ -99,7 +116,7 @@ completion trigger.
 | `Spores in the Dark` | Preserve | Early environmental texture and optional dungeon work. |
 | `Ticket to Ride` | Preserve | Optional town/economy texture; naturalize copy during the supporting-content pass. |
 | `An Honest Introduction` | Preserve | Early character and system introduction. Keep tutorial directions distinct from in-world dialogue. |
-| `Rookie Mistake` | Revise | Chapter 1 rescue and recovery. Preserve the rescued Rookie and mechanics; soften victim-blaming language and establish the dead companion and surviving mourner used by `Something to Cry About`. |
+| `Rookie Mistake` | Revise | Chapter 1 body recovery and burial. Preserve the Rookie's death, body-transport mechanics, and rewards; soften victim-blaming language. The revised `Something to Cry About` uses the expedition's sole survivor mourning a different dead companion. |
 | `Loose Ends` | Preserve | Chapter 3 supporting Order conflict. |
 | `Eight Is Enough` | Preserve | Optional creature-hunt texture; polish tone without promoting it to campaign causality. |
 | `The Spring's Reflection` | Preserve | Chapter 4 location and nature support. |
@@ -146,9 +163,10 @@ rather than treated as isolated JSON copy edits.
   `(18, 12)`. It must use the actual corpse position or, preferably, query the
   relevant tile rather than duplicate coordinates.
 - `Something to Cry About` keeps its escalating crying and anguished-scream
-  battle. Its opponent is the bereaved expedition survivor, not Liora, and its
-  text must make the relationship to `Rookie Mistake` legible without making
-  either quest mandatory.
+  battle. Its opponent is the sole survivor of the failed expedition, grieving
+  a different companion whose floor-2 corpse anchors the encounter. The Rookie
+  remains dead and is recovered separately on floor 1. The text must make the
+  relationship legible without making either quest mandatory.
 - Remove canonical Mad Waitress triggers from corpse interaction, enemy-defeat
   quest advancement, and Chapter 5 aftermath. Existing enemy, sprite, and audio
   data may remain for compatibility or later repurposing, but must be
@@ -290,6 +308,8 @@ relic count reflects the actual saved inventory.
 
 ## Implementation Notes
 
+- The verified implementation contract for the first slice lives in
+  `PROLOGUE_TRIANGULUS_PRODUCTION_PACKET.md`.
 - Quest content lives in `src/core/data/content/quests.json`.
 - Staged relic quest synchronization and missing-field normalization live in
   `src/core/quest_progress.py`.
