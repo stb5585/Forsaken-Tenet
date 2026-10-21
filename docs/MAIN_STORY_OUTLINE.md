@@ -362,14 +362,17 @@ Existing placement, keys, quest rewards, and access rules remain unchanged.
 ### Recurring Character Responses
 
 - **Sergeant:** accepts the evidence but resists claiming certainty beyond it.
-- **Joffrey:** sees proof that ordinary people must act rather than wait.
-- **Waitress:** worries that necessity is becoming an excuse for people she
-  loves to enter the dungeon.
-- **Busboy:** asks whether the hero defeated the creature by discovering what it
-  was or by deciding what it meant.
-- **Hooded Figure:** suggests that a chosen name can become a vow, but never
-  tells the hero which identity to choose.
-- **Barkeep:** notices the room reacting to relic-light before anyone speaks.
+- **Joffrey:** sees possible protection for future patrols but refuses to equate
+  usefulness with trust.
+- **Waitress:** insists that understanding the relic cannot justify treating
+  further deaths as ordinary research costs.
+- **Busboy:** observes that the divided room has already decided what the relic
+  means, then asks whether the relic was equally eager to decide what the hero
+  is.
+- **Hooded Figure:** repeats the hero's stored Triangulus answer and warns
+  against letting another person's certainty replace a freely given choice.
+- **Barkeep:** contains a room divided among hope, fear, and demands to destroy
+  the relic without endorsing any interpretation.
 
 ### Fixed Outcome
 
@@ -377,9 +380,10 @@ Triangulus is recovered and the broader relic route opens.
 
 ### Variable Expression
 
-The player may later remember whether they emphasized name, endurance, memory,
-duty, curiosity, or another approved identity answer. No answer invalidates a
-class or changes the chapter's required outcome.
+Triangulus records exactly one mechanically neutral identity lens: **Chosen
+Name**, **Deeds**, **Memory**, or **Next Choice**. The Hooded Figure later
+restates the stored answer without judging it. No answer invalidates a class,
+changes rewards, or alters the chapter's required outcome.
 
 ### Handoff
 
@@ -941,7 +945,13 @@ with a bereaved expedition survivor rather than Liora.
 
 ## Per-Chapter Production Packet
 
-Each chapter should receive one reconciled packet before implementation:
+The first accepted packet is
+[`PROLOGUE_TRIANGULUS_PRODUCTION_PACKET.md`](PROLOGUE_TRIANGULUS_PRODUCTION_PACKET.md).
+It owns exact dialogue, state, migration, presentation, runtime mapping, and
+validation for the Prologue through Chapter 2 without duplicating that script
+here.
+
+Each later chapter should receive one reconciled packet before implementation:
 
 1. **Chapter contract:** purpose, prerequisites, entry state, exit state, and
    non-goals.
@@ -1023,15 +1033,16 @@ entries have an accepted Main, Progression, or Side role and an owning chapter
 or campaign-spine function. The full authored Side-quest audit is also complete:
 all twenty-nine existing Side entries and the three reclassified entries have a
 preserve-or-revise disposition, and their required world, state, save, copy,
-and validation consequences are recorded. The remaining production-readiness
-work is operational rather than foundational:
+and validation consequences are recorded. The Prologue-through-Triangulus
+packet is dialogue-complete, reconciled with these owners, and statically
+verified against current runtime quest, map, state, save, and presentation
+surfaces. The remaining work is implementation and evidence:
 
-- write the Prologue-through-Triangulus packet without inventing new
-  campaign-level canon;
-- define that packet's exact dialogue, state, UI, save, validation, and
-  playtest contracts;
-- implement the approved Progression category and later-chapter story-state
-  prerequisites before their owning production slices require them.
+- implement the accepted opening packet without changing combat, rewards, map
+  topology, or save policy;
+- implement the approved Progression category atomically with the opening slice;
+- run the packet's automated regressions and manual engagement playtest before
+  promoting later principle arcs into production packets.
 
 Detailed underworld naming, internal factions, later inter-realm groups, and
 minor-tear mechanics remain deferred to a later faction and quest pass.
