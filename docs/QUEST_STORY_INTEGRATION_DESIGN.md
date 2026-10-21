@@ -1,6 +1,6 @@
 # Quest Story Integration Design
 
-Status: `Holy Relics V1 Implemented; Full Authored-Quest Audit Accepted`
+Status: `Holy Relics V1 Implemented; Quest Audit Accepted; Opening Packet Ready`
 
 This document owns quest-system changes whose purpose is to stage story
 information, preserve mystery, and keep quest guidance aligned with the
@@ -25,6 +25,10 @@ The shipped chain starts with Sergeant-led uncertainty:
    collection quest.
 5. `The Holy Relics` then preserves the existing six-relic collection and final
    threshold gating behavior.
+
+The exact opening sequence, copy, saved choices, migration behavior, and
+verified runtime anchors are owned by
+[`PROLOGUE_TRIANGULUS_PRODUCTION_PACKET.md`](PROLOGUE_TRIANGULUS_PRODUCTION_PACKET.md).
 
 Early-game copy must not name Vesperion, Voluntas, the busboy identity, the
 Hooded Figure truth, or true-final route mechanics. It may hint at old
@@ -70,6 +74,13 @@ unavoidable guard before the only stair from level 1 to level 2, but defeating
 it does not cause access to the level-1 Barghest, Triangulus, or first-relic
 report. Its target, level, rewards, coordinates, combat, and gate remain
 unchanged.
+
+Static verification confirms that `Cry Havoc!` currently has no `Requires`
+field and Pygame's generic prerequisite path accepts only a quest that has
+already been turned in. The opening implementation must therefore use shared
+story-state eligibility for active `Uncertain Reports` plus the completed
+ledger scene. Adding `Requires: Uncertain Reports` would be incorrect because
+it would delay the Barghest lead until after Triangulus report-back.
 
 `The Holy Relics` remains the aggregate six-relic quest. Polaris is represented
 as one of its staged milestones, and `Dracarys` unlocks only after that
@@ -297,6 +308,8 @@ relic count reflects the actual saved inventory.
 
 ## Implementation Notes
 
+- The verified implementation contract for the first slice lives in
+  `PROLOGUE_TRIANGULUS_PRODUCTION_PACKET.md`.
 - Quest content lives in `src/core/data/content/quests.json`.
 - Staged relic quest synchronization and missing-field normalization live in
   `src/core/quest_progress.py`.
