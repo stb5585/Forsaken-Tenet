@@ -52,6 +52,9 @@ priority, owner documents define current behavior and decision gates, and
 - [`MAIN_STORY_OUTLINE.md`](MAIN_STORY_OUTLINE.md) — reconciled prologue,
   three-act route, ten chapter functions, supporting arcs, and implementation
   order.
+- [`PROLOGUE_TRIANGULUS_PRODUCTION_PACKET.md`](PROLOGUE_TRIANGULUS_PRODUCTION_PACKET.md)
+  — implementation-ready Prologue-through-Chapter-2 scene, state, migration,
+  runtime mapping, and validation contract.
 - [`STORY_AND_ENDGAME_DESIGN.md`](STORY_AND_ENDGAME_DESIGN.md) — current
   Vesperion/Voluntas canon, route contract, and future story gates.
 - [`QUEST_STORY_INTEGRATION_DESIGN.md`](QUEST_STORY_INTEGRATION_DESIGN.md) —
