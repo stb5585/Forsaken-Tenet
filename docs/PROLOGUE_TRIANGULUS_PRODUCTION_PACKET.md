@@ -1,10 +1,10 @@
 # Prologue Through Triangulus Production Packet
 
-Status: **Draft — Dialogue Review At Hooded Figure Response**
+Status: **Draft — Dialogue Review Complete**
 
-Review checkpoint: P0–P3, C1, and C4–C11 are accepted. C12—the Hooded Figure
-response—remains to be reviewed before owner-document reconciliation and PR
-creation.
+Review checkpoint: P0–P3, C1, and C4–C12 are accepted. C2–C3 remain preserved
+implementation contracts. The packet now requires owner-document
+reconciliation and runtime verification before PR creation.
 
 This packet owns the first implementation-quality narrative slice: the Prologue,
 Chapter 1, and Chapter 2 through the recovery of Triangulus, the report back to
@@ -439,15 +439,31 @@ correct interpretation.
 
 ### C12 — Hooded Figure Response
 
-At the next transition out of the tavern:
+At the next transition out of the tavern after C11, the Hooded Figure stands
+beneath the eaves without obstructing the hero's path.
 
-- **Hooded Figure:** “A name can be inherited, imposed, discarded, or chosen.
-  Only the last can become a vow.”
-- **Hooded Figure:** “Do not mistake my words for an answer. Keep the one you
-  gave when no witness could reward you for it.”
+- **Hooded Figure:** “Inside, they have already named it promise, omen, and
+  threat. Certainty is often the first chain people offer one another.”
 
-The hero may listen or leave. The Hooded Figure does not block movement, grant
-an item, or reveal allegiance.
+The next line repeats the hero's stored `triangulus_identity_answer`:
+
+| Stored value | Hooded Figure line |
+| --- | --- |
+| `ChosenName` | “At the altar, you said what remained yours was the name you choose to answer to.” |
+| `Deeds` | “At the altar, you said what remained yours was what you have done, and what you do next.” |
+| `Memory` | “At the altar, you said what remained yours was what you refuse to forget.” |
+| `NextChoice` | “At the altar, you said what remained yours was the choice that is still yours to make.” |
+| `Unrecorded` or unavailable | “At the altar, you gave an answer no witness could reward or correct.” |
+
+The Hooded Figure concludes:
+
+- **Hooded Figure:** “Let them argue over the relic. Do not let their certainty
+  replace it. Your answer mattered because it was freely yours—not because it
+  was the answer someone else wanted.”
+
+The hero may stop and listen or continue walking. Either action completes the
+scene. The Hooded Figure does not follow, block movement, grant an item, reveal
+an allegiance, or judge which answer the hero selected.
 
 ## Quest Mapping
 
@@ -590,6 +606,8 @@ present decisions and events, not become the sole owner of story rules.
 - Only the four accepted arrival-motive values and four Triangulus-answer values
   normalize as current choices; unknown values become `Unrecorded` or
   `null` according to migration context.
+- C12 repeats the stored Triangulus answer through the matching dialogue
+  variant; `Unrecorded` uses the neutral fallback and never invents a choice.
 - New players receive fresh opening defaults.
 - Current saves do not replay P1 and do not lose quest, relic, or Rookie body
   state.
