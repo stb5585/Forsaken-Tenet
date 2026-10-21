@@ -1,10 +1,11 @@
 # Prologue Through Triangulus Production Packet
 
-Status: **Draft — Dialogue Review Complete**
+Status: **Ready for Implementation — Runtime Mapping Verified**
 
 Review checkpoint: P0–P3, C1, and C4–C12 are accepted. C2–C3 remain preserved
-implementation contracts. The packet now requires owner-document
-reconciliation and runtime verification before PR creation.
+implementation contracts. Owner-document reconciliation and static runtime
+mapping verification are complete against `master` commit
+`b38f97d5884bfdb0386f1f757341aae17da9b5cc`.
 
 This packet owns the first implementation-quality narrative slice: the Prologue,
 Chapter 1, and Chapter 2 through the recovery of Triangulus, the report back to
@@ -471,7 +472,7 @@ an allegiance, or judge which answer the hero selected.
 | --- | --- | --- | --- |
 | `Uncertain Reports` | Main | Rewrite offer/help/report copy; retain staged implementation and reward. | Offered after P2/P3; first relic advances it; turn-in creates `The Holy Relics`. |
 | `The Butcher` | Progression | Preserve target, rewards, level, and sole level-2 gate; correct its framing and category. | Independent of the Barghest/Triangulus Main route. Runtime category migration must occur atomically with the approved Progression work. |
-| `Cry Havoc!` | Main | Preserve target, reward, level, and combat; revise Barghest framing. | Requires active `Uncertain Reports`, resolved Minotaur route, ledger scene, and current level eligibility. |
+| `Cry Havoc!` | Main | Preserve target, reward, level, and combat; revise Barghest framing. | Requires active `Uncertain Reports`, the completed ledger scene, and current level eligibility. It is independent of Minotaur state. |
 | `The Holy Relics` | Main | No split. Preserve aggregate six-relic contract. | Created only when `Uncertain Reports` is turned in after Triangulus. |
 | `Bring Him Home` | Side | Preserve optional rescue and rewards; add town acknowledgement. | Never gates Main progression. |
 | `Rookie Mistake` | Side | Preserve death/body recovery mechanics and rewards; rewrite blame and add ledger reaction. | Never gates Main progression. |
@@ -493,9 +494,66 @@ an allegiance, or judge which answer the hero selected.
 | Barghest room | `(18, 2, 1)` | Preserve encounter; revise presentation and prerequisite. |
 | Relic room | `(19, 0, 1)` | C8 fragment trigger and C9 Triangulus choice/discovery. |
 
-If current route loading proves any listed coordinate is not the runtime anchor,
-implementation must correct this table from loaded world data before coding; it
-must not relocate content to make the table true.
+### Verified Runtime Anchors
+
+Static verification against the loaded level-1 map and tileset confirms every
+coordinate used by this packet:
+
+| Coordinate | Loaded tile | Verified contract |
+| --- | --- | --- |
+| `(3, 0, 1)` | GID 36 / `StairsDown` | The first descent target is correct. Its corridor is a dead end reached only through the Minotaur route. |
+| `(3, 2, 1)` | GID 26 / `MinotaurBossRoom` | Walls on both sides and the stair corridor immediately north make the Minotaur the sole level-2 gate. |
+| `(8, 8, 1)` | GID 5 / `CavePath1` | `CavePath1.rookie_body_marker` explicitly binds the Rookie encounter to this coordinate. |
+| `(11, 18, 1)` | GID 12 / `LockedDoor` | Existing Old Key and lockpick behavior remains the route gate. |
+| `(18, 2, 1)` | GID 1 / `BarghestBossRoom` | The Barghest room and existing combat anchor are correct. |
+| `(19, 0, 1)` | GID 32 / `RelicRoom` | The level-indexed relic interaction grants `Relic1`/Triangulus and performs the existing full restoration. |
+
+C8 is not a new threshold tile. Its patrol fate and fragment presentation must
+run once from the existing approach/interact flow before the first successful
+C9 interaction with the `RelicRoom` at `(19, 0, 1)`.
+
+### Verified Runtime Constraints
+
+- Runtime quest dictionaries currently contain only `Main`, `Side`, and
+  `Bounty`. `Player`, `quest_progress.ensure_quest_categories()`, and
+  Pygame `QuestManager` all encode that three-category assumption. Moving
+  `The Butcher` to `Progression` therefore requires the previously approved
+  atomic category migration; changing only quest content would lose offers,
+  advancement, presentation, or save state.
+- `Cry Havoc!` currently lives at `Sergeant/Main/20` with no `Requires`
+  field. Pygame eligibility currently checks only level plus a single
+  prerequisite that must already be turned in. The opening slice must add a
+  shared story-state eligibility predicate for active `Uncertain Reports` and
+  `opening_ledger_seen`. It must not encode `Requires: Uncertain Reports`,
+  because that would delay `Cry Havoc!` until after Triangulus is recovered
+  and reported.
+- The shipped staged chain already advances `Uncertain Reports` when the first
+  relic enters special inventory and creates `The Holy Relics` only from the
+  shared post-turn-in hook. The new scenes must preserve those owners rather
+  than duplicate quest creation.
+- Relic collection currently has two execution paths:
+  `RelicRoom.special_text()` in core and
+  `DungeonInteractionMixin._interact_relic()` in Pygame. Both grant the
+  level-indexed relic, mark the tile read, restore health and mana, and
+  synchronize quests. C8/C9 eligibility, choice persistence, grant-once
+  behavior, and restoration must be factored through one shared core transition
+  used by both paths.
+- `main_story.normalize_state()` currently treats unspecified scalar fields as
+  booleans. The three new enumerated values—`arrival_motive`,
+  `arrival_aid`, and `triangulus_identity_answer`—need explicit
+  normalization branches or they will be coerced and lost.
+- Cross-system migration cannot be inferred by `main_story.normalize_state()`
+  alone. `src/core/save_system/player.py` must run the opening-story migration
+  after special inventory and quests are restored and after `main_story` is
+  normalized, so existing relic and quest state can set the accepted
+  `Unrecorded` and seen values safely.
+- Intro pages are loaded from `special_events.json["Intro"]` through
+  `data_loader.get_intro_story()` and presented by
+  `Game.show_intro()` with `StoryCardSequence`. P1 must enter from that
+  new-game flow after the intro completes and before the ordinary town loop;
+  established saves must continue to bypass it.
+
+No map relocation or topology change is authorized to satisfy this packet.
 
 ## State Contract
 
@@ -581,21 +639,33 @@ character.
 
 ## Implementation Surfaces
 
-Expected owners include:
+Verified owners include:
 
-- `src/core/data/content/special_events.json` for revised intro and scene text;
-- `src/core/data/content/quests.json` and the maintained quest spreadsheet for
-  quest copy and prerequisites;
-- `src/core/main_story.py` for defaults, enums, and normalization;
-- `src/core/quest_progress.py` for staged relic synchronization;
-- the new-game/town flow for P1–P3 and saved choices;
-- barracks/tavern quest presentation for C1, C4, C6, C10, and C11;
-- level-1 dungeon interactions for C2, C8, and C9;
-- current map-tile and renderer owners for visibility and interaction only;
-- save loading for fresh-versus-migrated state handling.
+- `src/core/data/content/special_events.json`, specifically `Intro` and
+  event-copy entries, for revised story text;
+- `src/core/data/data_loader.py` and `src/ui_pygame/game.py` for the existing
+  intro-card handoff into the new P1–P3 arrival flow;
+- `src/core/data/content/quests.json` and
+  `docs/spreadsheets/quests/quests.csv` for synchronized quest copy, levels,
+  categories, and declarative prerequisites;
+- `src/core/main_story.py` for defaults and explicit enum-aware normalization;
+- `src/core/quest_progress.py` for staged relic synchronization and shared
+  story-eligibility helpers;
+- `src/ui_pygame/gui/quest_manager.py` plus every core/UI/save category
+  consumer for the atomic `Progression` migration and quest presentation;
+- barracks, tavern, and town-transition presentation for C1, C4, C6, and
+  C10–C12;
+- `src/core/map_tiles/rooms.py`,
+  `src/ui_pygame/gui/dungeon_manager/interactions.py`, and a shared core relic
+  transition for C8–C9;
+- `src/core/map_tiles/paths.py` and `src/core/map_tiles/rules.py` for the
+  preserved Rookie body/drop behavior;
+- `src/core/save_system/player.py` for cross-system fresh-versus-migrated
+  story-state handling after inventory and quest restoration;
+- current map-tile and renderer owners for visibility and interaction only.
 
-Use shared core helpers for eligibility and state transitions. Pygame should
-present decisions and events, not become the sole owner of story rules.
+Use shared core helpers for eligibility and state transitions. Pygame presents
+decisions and events but must not become the sole owner of story rules.
 
 ## Validation
 
@@ -664,10 +734,17 @@ present decisions and events, not become the sole owner of story rules.
 
 ## Acceptance Gate
 
-This packet is ready for implementation when:
+The design gate is complete:
 
-- the dialogue and new minor names are accepted;
-- all quest and coordinate mappings are verified against the loaded runtime;
-- the state/migration contract is accepted;
-- owner documents link to this packet without duplicating its script;
+- dialogue, minor names, scene order, and remembered choices are accepted;
+- quest identifiers, levels, rewards, staged relic behavior, coordinates, tile
+  types, and route relationships are verified against the current runtime;
+- the state and migration contract is accepted, including explicit enum
+  normalization and cross-system old-save handling;
+- owner documents and documentation indexes link to this packet without
+  duplicating its script;
 - no unresolved choice changes combat, rewards, topology, or save policy.
+
+Implementation remains responsible for the automated and manual validation
+above. This reconciliation changes documentation only; it does not claim the
+opening slice or the `Progression` category is already implemented.
