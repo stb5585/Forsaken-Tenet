@@ -1,10 +1,10 @@
 # Prologue Through Triangulus Production Packet
 
-Status: **Draft — Dialogue Review Paused After Triangulus Scene**
+Status: **Draft — Dialogue Review Paused After Barracks Report**
 
-Review checkpoint: P0–P3, C1, and C4–C9 are accepted. C10–C12—the barracks
-report, tavern aftermath, and Hooded Figure response—remain to be reviewed
-before owner-document reconciliation and PR creation.
+Review checkpoint: P0–P3, C1, and C4–C10 are accepted. C11–C12—the tavern
+aftermath and Hooded Figure response—remain to be reviewed before
+owner-document reconciliation and PR creation.
 
 This packet owns the first implementation-quality narrative slice: the Prologue,
 Chapter 1, and Chapter 2 through the recovery of Triangulus, the report back to
@@ -370,28 +370,36 @@ After the answer, grant Triangulus exactly once, set `Uncertain Reports` to
 
 ### C10 — Barracks Report
 
-Turning in `Uncertain Reports` remains the sole creator of
-`The Holy Relics`. Resolve the named patrol cost before discussing the pattern:
+Turning in `Uncertain Reports` remains the sole event that creates
+`The Holy Relics`. Caedmon resolves the expedition first:
 
+- **Caedmon:** “Before we discuss what you recovered, we finish the patrol
+  account.”
 - **Edrin:** “Tomas?”
-- **Caedmon:** “Confirmed dead at the threshold. Mira is still missing.”
+- **Caedmon:** “Found dead at the sealed threshold. Mira's route marks continued
+  beyond him, but they ended without a body.”
 - **Edrin:** “Still missing is not the same as gone.”
 - **Caedmon:** “No. It is not.”
 
-Then examine the relic evidence:
+Caedmon then lays out three old expedition ledgers beside the recovered
+Triangulus relic:
 
-- **Caedmon:** “The markings match three ledgers whose writers believed they
-  found different rooms. With your relic beside them, the lines agree.”
-- **Joffrey:** “Not a map. A repeated structure.”
-- **Edrin:** “That belongs in the empty place between the marks. Mira kept
-  saying the center mattered.”
-- **Caedmon:** “Six positions appear in the damaged record. That may mean six
-  objects, six chambers, or one clerk making the same error for a century.”
-- **Caedmon:** “We will call it a pattern when the evidence earns the word.
-  Until then, recover anything that answers this relic and bring it home.”
+- **Caedmon:** “These patrols entered by different routes and believed they had
+  found different chambers. All three copied the same markings.”
+- **Joffrey:** “The lines were incomplete. Set the relic beside them and the
+  fragments form the same arrangement.”
+- **Edrin:** “Mira kept saying the empty center mattered.”
+- **Caedmon:** “There is more. An older, damaged record shows six positions
+  arranged around that center.”
+- **Joffrey:** “Six chambers?”
+- **Caedmon:** “Perhaps. Or six objects, six stations, or one mistake repeated
+  by generations of scribes.”
+- **Caedmon:** “We have evidence of a pattern, not an explanation. Recover
+  anything that answers this relic and bring it home.”
 
-Create `The Holy Relics`, preserve its aggregate collection behavior, and do
-not name the principles or a seventh absence.
+Create `The Holy Relics` and preserve its aggregate collection behavior. The
+scene does not name the principles, identify the relics' purpose, or suggest a
+seventh absence.
 
 ### C11 — Tavern Aftermath
 
