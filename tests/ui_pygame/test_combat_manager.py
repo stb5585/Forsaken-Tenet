@@ -10,8 +10,10 @@ import pytest
 
 from src.core import abilities, enemies, items, main_story
 from src.core.classes import ability_mechanics, class_rings, promotion_kits
+from src.core.combat.action_interface import CombatActionPresentation
 from src.core.combat.battle_engine.models import ForcedAction
 from src.core.combat.targeting import ActionIntent
+from src.core.contracts import ActionAvailability
 from src.ui_pygame.gui import combat_manager
 from src.ui_pygame.gui.combat_manager.outcomes import POST_DEATH_PAUSE_MS
 from src.ui_pygame.gui.combat_view.animator import DEATH_ANIMATION_FRAMES
@@ -2135,7 +2137,7 @@ def test_all_actions_supports_mouse_wheel_scrolling_and_selection(monkeypatch):
     )
 
     assert manager._select_all_action(player, enemy) is entries[3]
-    assert renders[-1] == (3, 1)
+    assert renders[-1] == (0, 1)
 
 
 def test_render_selection_menu_refresh_background_and_pause_helpers(monkeypatch):
@@ -2624,6 +2626,48 @@ def test_execute_skill_uses_active_summon_spellbook(monkeypatch):
     assert calls["selected_actor"] is summon
     assert calls["action"] == "Use Skill"
     assert calls["choice"] == "Throw Rock"
+
+
+def test_weapon_swap_shortcut_opens_weapon_chooser(monkeypatch):
+    manager = _make_manager(monkeypatch)
+    player = _make_player()
+    enemy = _make_enemy()
+    skill = abilities.WeaponSwap()
+    replacement = SimpleNamespace(name="Mace")
+    player.spellbook["Skills"]["Weapon Swap"] = skill
+    chooser_calls = []
+    manager._select_combat_weapon = lambda actor, target, selected_skill: (
+        chooser_calls.append((actor, target, selected_skill)) or replacement
+    )
+    manager._render_combat_frame = lambda *_args, **_kwargs: None
+    manager._flush_result_frame = lambda *_args, **_kwargs: None
+    manager._show_combat_damage_effect = lambda *_args, **_kwargs: None
+    manager._show_combat_heal_text = lambda *_args, **_kwargs: None
+    manager._preserve_waitress_for_transition = lambda _enemy: None
+    monkeypatch.setattr("src.ui_pygame.gui.combat_manager.pygame.display.flip", lambda: None)
+
+    calls = {}
+    manager.engine = _intent_engine(
+        lambda action, choice=None, slot_machine_callback=None: calls.update(
+            action=action,
+            choice=choice,
+        )
+        or SimpleNamespace(message="Hero swaps weapons.\n", fled=False),
+        attacker=player,
+        flee=False,
+    )
+    shortcut = CombatActionPresentation(
+        action_id="weapon-master.skill.weapon-swap",
+        display_name="Weapon Swap",
+        engine_action="Use Skill",
+        choice="Weapon Swap",
+        availability=ActionAvailability(),
+    )
+
+    assert manager._execute_action(shortcut, player, enemy) == "action_taken"
+    assert chooser_calls == [(player, enemy, skill)]
+    assert skill.selected_weapon is replacement
+    assert calls == {"action": "Use Skill", "choice": "Weapon Swap"}
 
 
 def test_select_skill_for_active_summon_renders_player_frame(monkeypatch):

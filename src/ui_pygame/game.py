@@ -10,7 +10,7 @@ import sys
 
 import pygame
 
-from src.core import items, thieves_guild
+from src.core import items, main_story, opening_story, quest_progress, thieves_guild
 from src.core.character import Combat, Level, Resource, Stats
 from src.core.classes import archdruid, class_rings, classes_dict
 from src.core.data.data_loader import get_intro_story, get_special_events
@@ -31,14 +31,22 @@ from .gui.inn import InnManager
 from .gui.load_game import LoadGameScreen
 from .gui.main_menu import MainMenuScreen
 from .gui.modern_character_screen import ModernCharacterScreen
-from .gui.presentation_asset_screens import CharacterCreatedScreen, StoryCardSequence
+from .gui.presentation_asset_screens import (
+    DUNGEON_ENTRY_IMAGE_PATHS,
+    INTRO_STORY_IMAGE_PATHS,
+    CharacterCreatedScreen,
+    StoryCardSequence,
+    fade_to_black,
+)
 from .gui.race_selection import RaceSelectionScreen
 from .gui.shop_screen import ShopScreen
 from .gui.shop_selection import ShopSelectionScreen
 from .gui.shops import ShopManager
+from .gui.story_scene import StoryBeat, StorySceneScreen
 from .gui.town_menu import TownMenuScreen
 from .gui.town_navigation import TownNavigationScreen
 from .presentation.pygame_presenter import PygamePresenter
+from .user_settings import DIALOGUE_SPEEDS, dialogue_speed_label, save_dialogue_speed
 
 # Use enhanced combat by default
 USE_ENHANCED_COMBAT = True
@@ -185,7 +193,7 @@ class PygameGame:
             return None
         try:
             return sound_manager.play_location_music(location, boss=boss, final=final)
-        except Exception:
+        except (AttributeError, OSError, RuntimeError, pygame.error):
             return None
 
     def _stop_music(self, *, fade_ms: int = 500) -> None:
@@ -195,7 +203,7 @@ class PygameGame:
             return
         try:
             sound_manager.stop_music(fade_ms=fade_ms)
-        except Exception:
+        except (AttributeError, OSError, RuntimeError, pygame.error):
             return
 
     def special_event(self, name: str, *, message: str | None = None):
@@ -203,11 +211,15 @@ class PygameGame:
 
         Displays a formatted modal message using the Pygame confirmation popup.
         """
+        if name == "Timmy":
+            self._show_timmy_discovery()
+            return
+
         if message is None:
             try:
                 special_event_dict = get_special_events()
                 lines = special_event_dict.get(name, {}).get("Text", [])
-            except Exception:
+            except (OSError, TypeError, ValueError):
                 lines = []
 
             if lines:
@@ -228,8 +240,8 @@ class PygameGame:
                     # In town: render town (currently just black, which is fine)
                     # The TownMenuScreen would be responsible for drawing if we're in town UI
                     pass
-            except Exception:
-                pass
+            except (AttributeError, pygame.error):
+                return
 
         if name == "Funhouse Entry":
             self._play_funhouse_entry_effect(draw_current_screen)
@@ -240,6 +252,43 @@ class PygameGame:
             flush_events=True,
             require_key_release=True,
             min_display_ms=300,
+        )
+
+    def _show_timmy_discovery(self) -> None:
+        """Stage Timmy's dungeon rescue before the existing return to town."""
+        scene = StorySceneScreen(
+            self.presenter,
+            "The Dungeon — A Voice in the Rubble",
+            participants=("Timmy",),
+            background_image="dungeon.png",
+            player_char=self.player_char,
+        )
+        scene.show_dialogue(
+            (
+                StoryBeat(
+                    "Narrator",
+                    "A small voice answers your footsteps from behind a fall of loose stone.",
+                    portrait_name="",
+                ),
+                StoryBeat("Timmy", "Hello? Who's there?"),
+                StoryBeat(
+                    "Narrator",
+                    "A boy edges out of the rubble. His clothes are torn, his hands are "
+                    "scraped, and he is trying hard not to shake.",
+                    portrait_name="",
+                ),
+                StoryBeat("Timmy", "I'm Timmy. I tried to go back, but I couldn't find the door."),
+                StoryBeat(
+                    "Timmy",
+                    "Can you take me home? My mum and dad will be looking for me.",
+                ),
+                StoryBeat(
+                    "Narrator",
+                    "You give Timmy your hand and lead him toward the last route you know is "
+                    "safe. He does not let go until Silvana's lanterns are in sight.",
+                    portrait_name="",
+                ),
+            )
         )
 
     def _play_funhouse_entry_effect(self, draw_current_screen, duration_ms: int = 1100):
@@ -470,6 +519,7 @@ class PygameGame:
                 # ESC pressed
                 self.running = False
             elif menu_options[choice] == "New Game":
+                self._creation_background_draw_func = getattr(main_menu, "draw_background", None)
                 self.player_char = self.new_game()
                 if self.player_char:
                     self.run()
@@ -486,37 +536,55 @@ class PygameGame:
                 self.running = False
 
     def show_display_settings(self) -> bool:
-        """Let players select a native fullscreen or windowed render resolution."""
+        """Let players adjust display mode and persistent dialogue speed."""
         choices = (
             ("Windowed 1024 x 768", False, (1024, 768)),
             ("Windowed 1366 x 768", False, (1366, 768)),
             ("Windowed 1920 x 1080", False, (1920, 1080)),
             ("Fullscreen (active display)", True, None),
         )
-        labels = [choice[0] for choice in choices] + ["Back"]
         changed = False
         while True:
-            # Keep resolution selection in the established modal visual
-            # language instead of dropping to the legacy full-screen menu.
+            dialogue_cps = int(getattr(self.presenter, "story_dialogue_cps", 35))
+            labels = [choice[0] for choice in choices]
+            labels.extend([f"Dialogue Speed: {dialogue_speed_label(dialogue_cps)}", "Back"])
             selection = ChoicePopup(
                 self.presenter,
-                "Display Settings",
+                "Settings",
                 labels,
-                "Choose how the game is rendered. Changes apply immediately.",
+                "Choose display behavior or how quickly storyline dialogue appears.",
             ).show()
-            if selection is None or selection == len(choices):
+            if selection is None or selection == len(labels) - 1:
                 return changed
-            _label, fullscreen, resolution = choices[selection]
-            self.presenter.apply_display_mode(fullscreen=fullscreen, resolution=resolution)
-            self.fullscreen = fullscreen
+            if selection < len(choices):
+                _label, fullscreen, resolution = choices[selection]
+                self.presenter.apply_display_mode(fullscreen=fullscreen, resolution=resolution)
+                self.fullscreen = fullscreen
+                changed = True
+                continue
+
+            speed_labels = list(DIALOGUE_SPEEDS)
+            speed_selection = ChoicePopup(
+                self.presenter,
+                "Dialogue Speed",
+                speed_labels + ["Back"],
+                "Click once to complete the current line; click again to continue.",
+            ).show()
+            if speed_selection is None or speed_selection == len(speed_labels):
+                continue
+            speed = DIALOGUE_SPEEDS[speed_labels[speed_selection]]
+            self.presenter.story_dialogue_cps = speed
+            save_dialogue_speed(speed)
             changed = True
 
     def new_game(self):
         """Create a new character."""
+        background_draw_func = getattr(self, "_creation_background_draw_func", None)
         # Loop for race selection with confirmation
         while True:
             # Choose race using RaceSelectionScreen
             race_screen = RaceSelectionScreen(self.presenter)
+            race_screen.background_draw_func = background_draw_func
             race_name = race_screen.navigate(
                 self.races_dict,
                 flush_events=True,
@@ -540,6 +608,7 @@ class PygameGame:
         while True:
             # Choose class using ClassSelectionScreen
             class_screen = ClassSelectionScreen(self.presenter)
+            class_screen.background_draw_func = background_draw_func
             class_name = class_screen.navigate(
                 race_name,
                 race,
@@ -563,6 +632,7 @@ class PygameGame:
 
         # Get character name, sex, and portrait variant after race/class selection.
         name_screen = CharacterNamingScreen(self.presenter, race_name, class_name)
+        name_screen.background_draw_func = background_draw_func
         name = name_screen.navigate(
             default="Hero",
             flush_events=True,
@@ -580,10 +650,13 @@ class PygameGame:
             portrait_variant=getattr(name_screen, "selected_portrait_variant", 0),
         )
 
-        CharacterCreatedScreen(self.presenter, player_char).show(
+        created_screen = CharacterCreatedScreen(self.presenter, player_char)
+        created_screen.background_draw_func = background_draw_func
+        created_screen.show(
             flush_events=True,
             require_key_release=True,
         )
+        fade_to_black(self.presenter, duration_ms=700, hold_ms=180)
 
         self.player_char = player_char
         self.initialize_managers()  # Initialize location managers
@@ -649,9 +722,18 @@ class PygameGame:
         self.update_bounties()
 
         # Show intro story for new characters (level 1)
-        if self.player_char.level.level == 1 and not hasattr(self.player_char, "intro_shown"):
+        if self.player_char.level.level == 1 and not getattr(
+            self.player_char, "intro_shown", False
+        ):
             self.show_intro()
             self.player_char.intro_shown = True
+
+        ensure_story = getattr(self.player_char, "ensure_main_story_state", None)
+        story_state = (
+            ensure_story() if callable(ensure_story) else main_story.ensure_state(self.player_char)
+        )
+        if not story_state.get("arrival_scene_seen"):
+            self.show_opening_arrival()
 
         # Main game loop
         while True:
@@ -695,14 +777,373 @@ class PygameGame:
         """Show the game introduction story."""
         intro_texts = get_intro_story()
 
-        StoryCardSequence(self.presenter, intro_texts, title="The Story Begins").show(
+        StoryCardSequence(
+            self.presenter,
+            intro_texts,
+            title="The Story Begins",
+            image_paths=INTRO_STORY_IMAGE_PATHS,
+        ).show(
             flush_events=True,
             require_key_release=True,
+            fade_in_ms=700,
+        )
+        fade_to_black(self.presenter, duration_ms=1200, hold_ms=1500)
+
+    def show_opening_arrival(self) -> bool:
+        """Present the tavern arrival, failed patrol return, and first offer."""
+        story_state = main_story.ensure_state(self.player_char)
+        scene = StorySceneScreen(
+            self.presenter,
+            "The Thirsty Dog — A New Face",
+            participants=("Liora", "Joffrey", "Pell", "Oren", "Tavin"),
+            participant_anchors={"Pell": "Joffrey", "Tavin": "Oren"},
+            background_image="tavern.jpg",
+            player_char=self.player_char,
+        )
+        scene.show_dialogue(
+            (
+                StoryBeat(
+                    "Narrator",
+                    "Rain follows you through the door of The Thirsty Dog. The room is warm, "
+                    "crowded, and loud enough that no one notices the newcomer at first. At "
+                    "the bar, a familiar argument is already underway.",
+                    portrait_name="",
+                ),
+                StoryBeat(
+                    "Liora",
+                    "If Pell invites everyone he owes a drink, we will need three more tables "
+                    "for the wedding.",
+                ),
+                StoryBeat("Joffrey", "Only three?"),
+                StoryBeat("Pell", "Hey! I thought that was pretty good..."),
+                StoryBeat("Oren", "Too bad we don't have the room for all of them."),
+                StoryBeat(
+                    "Narrator",
+                    "Oren turns from the familiar argument and gives the newcomer his full "
+                    "attention.",
+                    portrait_name="",
+                ),
+                StoryBeat(
+                    "Oren",
+                    "Hmm, I've never seen your face before. I'm Oren Caldus, the proprietor "
+                    "of this establishment. People come to Silvana chasing something or "
+                    "fleeing it. What about you?",
+                ),
+            ),
+            fade_in_ms=900,
+        )
+        motive_options = [
+            "I came for the money.",
+            "People are missing. If I can help, I should.",
+            "I want to know what opened under this town.",
+            "I needed a fresh start.",
+        ]
+        motive_choice = scene.choose(
+            "What brought you to Silvana?",
+            motive_options,
+            allow_cancel=False,
+        )
+        scene.show_dialogue(
+            (
+                StoryBeat(
+                    "Narrator",
+                    "Oren accepts the answer with a nod. Tavin sets a drink beside you. In an "
+                    "unlit corner, a hooded figure watches without speaking.",
+                    portrait_name="",
+                ),
+            )
+        )
+
+        scene = StorySceneScreen(
+            self.presenter,
+            "The Thirsty Dog — The Patrol Returns",
+            participants=("Edrin", "Caedmon", "Joffrey", "Liora"),
+            participant_anchors={"Joffrey": "Edrin", "Liora": "Edrin"},
+            background_image="tavern.jpg",
+            player_char=self.player_char,
+        )
+        scene.show_dialogue(
+            (
+                StoryBeat(
+                    "Narrator",
+                    "The tavern door strikes the wall. Joffrey catches Edrin before he falls; "
+                    "Liora clears a table and begins binding his wounds.",
+                    portrait_name="",
+                ),
+                StoryBeat("Caedmon", "Edrin. You left with Mira and Tomas. Where are they?"),
+                StoryBeat(
+                    "Edrin",
+                    "Still below. We took the north survey route—the one Joffrey marked last "
+                    "week. Mira chalked every turn.",
+                ),
+                StoryBeat("Joffrey", "That route has two junctions before the old drainage hall."),
+                StoryBeat(
+                    "Edrin",
+                    "I counted four. Tomas swore the passage never bent. We checked the wall. "
+                    "Mira's marks were there, but not in the order she made them.",
+                ),
+                StoryBeat("Caedmon", "Then what happened?"),
+                StoryBeat(
+                    "Edrin",
+                    "The lamps went out. We heard stone moving. When the light came back, a "
+                    "sealed door stood where the passage had been. Mira and Tomas were on the "
+                    "other side.",
+                ),
+                StoryBeat("Caedmon", "Did you hear them?"),
+                StoryBeat(
+                    "Edrin",
+                    "Tomas, once. Mira kept striking the stone. She shouted that the same three "
+                    "marks were carved beneath our feet, but I saw them above the door.",
+                ),
+                StoryBeat("Joffrey", "Why did you leave?"),
+                StoryBeat(
+                    "Edrin",
+                    "Something was following me. Pale eyes. Every time I looked back, it wore a "
+                    "different shape. I came back because they need help—not because I stopped "
+                    "looking.",
+                ),
+            )
+        )
+        aid_options = [
+            "I'll clear some space. Keep the crowd back.",
+            "I'll hold him steady while Liora works.",
+            "I'll repeat the report exactly as Edrin gave it.",
+            "I'll get Caedmon's kit and clean water.",
+        ]
+        aid_choice = scene.choose("How do you help?", aid_options, allow_cancel=False)
+        aid_actions = (
+            "You clear space around Edrin and hold the gathering crowd back.",
+            "You hold Edrin steady while Liora binds his wounds.",
+            "You listen without interrupting and commit Edrin's report to memory.",
+            "You bring Caedmon's kit and clean water to Liora.",
+        )
+        scene.show_dialogue((StoryBeat("Narrator", aid_actions[aid_choice], portrait_name=""),))
+        opening_story.record_arrival(
+            story_state,
+            opening_story.ARRIVAL_MOTIVES[motive_choice],
+            opening_story.ARRIVAL_AID_CHOICES[aid_choice],
+        )
+
+        scene = StorySceneScreen(
+            self.presenter,
+            "The Thirsty Dog — An Uncertain Report",
+            participants=("Oren", "Caedmon"),
+            background_image="tavern.jpg",
+            player_char=self.player_char,
+        )
+        scene.show_dialogue(
+            (
+                StoryBeat(
+                    "Oren",
+                    "Thanks for your help, stranger. Few I've encountered are willing to aid "
+                    "without payment.",
+                ),
+                StoryBeat(
+                    "Narrator",
+                    "Oren gives Caedmon a surprised look. Caedmon does not return it.",
+                    portrait_name="",
+                ),
+                StoryBeat("Caedmon", "You seem impressed, Oren. I am not as convinced just yet."),
+                StoryBeat("Oren", "Then give them a chance to prove it."),
+                StoryBeat(
+                    "Caedmon",
+                    "Three patrols came back with reports that contradict their maps. My people "
+                    "know those routes, so they keep defending what they remember.",
+                ),
+                StoryBeat(
+                    "Caedmon",
+                    "You're new. You don't have an old map or a patrol's pride to defend. Follow "
+                    "the reports. Bring me evidence I can verify.",
+                ),
+            )
+        )
+        offer_choice = scene.choose(
+            "Will you investigate the reports?",
+            ["I'll investigate them.", "Not yet."],
+        )
+        if offer_choice == 0:
+            quest_progress.ensure_uncertain_reports_quest(self.player_char)
+            handoff_text = (
+                "Caedmon takes Edrin's report back to the barracks. He tells you the patrol "
+                "ledgers will be ready there. For now, Silvana is open to you."
+            )
+        else:
+            handoff_text = (
+                "Caedmon takes Edrin's report back to the barracks. His offer remains open if "
+                "you decide to hear it. For now, Silvana is open to you."
+            )
+        scene.show_dialogue((StoryBeat("Narrator", handoff_text, portrait_name=""),))
+        self.player_char._suppress_heal_message = True
+        return True
+
+    def choose_triangulus_identity(self) -> str | None:
+        """Ask and return the saved-value form of the Triangulus identity answer."""
+        options = [
+            "The name I choose.",
+            "What I've done and what I do next.",
+            "What I refuse to forget.",
+            "My next choice.",
+        ]
+        scene = StorySceneScreen(
+            self.presenter,
+            "The Sealed Chamber — Triangulus",
+            background_image="dungeon.png",
+            player_char=self.player_char,
+        )
+        choice = scene.choose(
+            "Take away your title, bloodline, and what others expect. What is still yours?",
+            options,
+        )
+        if choice is None:
+            return None
+        return opening_story.TRIANGULUS_IDENTITY_ANSWERS[choice]
+
+    def _story_dungeon_background(self) -> None:
+        """Redraw the current dungeon view behind a storyline scene."""
+        if self.dungeon_manager is not None:
+            self.dungeon_manager._render()
+
+    def show_triangulus_threshold(self) -> None:
+        """Present Tomas, Mira, and the prior-explorer fragment in the story UI."""
+        scene = StorySceneScreen(
+            self.presenter,
+            "The Sealed Threshold",
+            participants=("Tomas Reed", "Mira Venn"),
+            background_image="dungeon.png",
+            player_char=self.player_char,
+        )
+        scene.show_dialogue(
+            (
+                StoryBeat(
+                    "Narrator",
+                    "Beneath fallen stone lies Tomas Reed, identified by his patrol clasp. "
+                    "Mira Venn is not here. Her chalk route marks continue beyond Tomas, cross "
+                    "the threshold, and end without a body or a clear return path.",
+                    portrait_name="",
+                ),
+                StoryBeat(
+                    "Weathered Note",
+                    "I wrote my name beside every turn so the dark could not take it. At the "
+                    "seventh mark, the letters were mine but the hand was not. A name is proof "
+                    "only while someone still chooses to answer to it.",
+                    portrait_name="",
+                ),
+            )
+        )
+
+    def show_relic_discovery(self, message: str) -> None:
+        """Present a relic discovery without falling back to a generic event popup."""
+        scene = StorySceneScreen(
+            self.presenter,
+            "The Sealed Chamber",
+            background_image="dungeon.png",
+            player_char=self.player_char,
+        )
+        scene.show_dialogue((StoryBeat("Narrator", message, portrait_name=""),))
+
+    def _resolve_rookie_mistake_on_arrival(self) -> bool:
+        """Turn in the recovered recruit through the authored arrival sequence."""
+        quest = self.player_char.quest_dict.get("Side", {}).get("Rookie Mistake")
+        has_body = "Dead Soldier" in getattr(self.player_char, "special_inventory", {})
+        if not quest or not has_body or quest.get("Turned In"):
+            return False
+
+        quest["Completed"] = True
+        from .gui.quest_manager import QuestManager
+
+        manager = QuestManager(self.presenter, self.player_char)
+        return manager.turn_in_completed_quest(
+            "Rookie Mistake",
+            "Side",
+            show_end_text=False,
         )
 
     def town_menu(self):
         """Display town menu and handle selection."""
         self._play_location_music("town")
+        self._resolve_rookie_mistake_on_arrival()
+        story_state = main_story.ensure_state(self.player_char)
+        if opening_story.should_show_route_review(story_state):
+            courtyard_scene = StorySceneScreen(
+                self.presenter,
+                "Silvana Courtyard — Waiting At The Stair",
+                participants=("Joffrey", "Liora"),
+                participant_anchors={"Liora": "Joffrey"},
+                background_image="town.png",
+                player_char=self.player_char,
+            )
+            courtyard_scene.show_dialogue(
+                (
+                    StoryBeat(
+                        "Narrator",
+                        "Silvana's courtyard receives you in cold rain. Joffrey and Liora "
+                        "are waiting beyond the last stair, watching each face that returns "
+                        "from the depths.",
+                        portrait_name="",
+                    ),
+                    StoryBeat(
+                        "Liora",
+                        "There you are. Caedmon has kept the barracks map room open for us.",
+                    ),
+                    StoryBeat(
+                        "Joffrey",
+                        "Come with us. Your route changed where mine did, and we need to put "
+                        "both accounts in front of him.",
+                    ),
+                    StoryBeat(
+                        "Narrator",
+                        "They lead you across the courtyard and into the barracks before the "
+                        "rain can erase the mud from your boots.",
+                        portrait_name="",
+                    ),
+                ),
+                fade_in_ms=1400,
+                fade_hold_ms=450,
+            )
+            barracks_scene = StorySceneScreen(
+                self.presenter,
+                "Barracks — Correcting The Route",
+                participants=("Joffrey", "Caedmon", "Liora"),
+                participant_anchors={"Liora": "Joffrey"},
+                background_image="barracks.jpg",
+                player_char=self.player_char,
+            )
+            barracks_scene.show_dialogue(
+                (
+                    StoryBeat(
+                        "Narrator",
+                        "Caedmon clears the planning table. Joffrey lays two maps beside the "
+                        "patrol ledgers and pins the disputed junction beneath a brass weight.",
+                        portrait_name="",
+                    ),
+                    StoryBeat(
+                        "Joffrey",
+                        "Your route and mine disagree at the same junction. I drew mine before "
+                        "you arrived.",
+                    ),
+                ),
+                fade_in_ms=700,
+            )
+            barracks_scene.choose(
+                "How do you answer?",
+                [
+                    "We can't trust either route yet.",
+                    "I know what I saw below.",
+                    "What could have changed the junction?",
+                ],
+            )
+            barracks_scene.show_dialogue(
+                (
+                    StoryBeat(
+                        "Caedmon",
+                        "Patrols rely on these maps. We fix this before anyone goes back down.",
+                    ),
+                    StoryBeat("Liora", "And when the correction sends another patrol down?"),
+                    StoryBeat("Joffrey", "Then I go with them."),
+                    StoryBeat("Liora", "That is the answer I was afraid you would give."),
+                )
+            )
+            story_state["joffrey_route_review_seen"] = True
         # Build options list first so it can be reused for popups
         options = [
             "Barracks",
@@ -728,36 +1169,26 @@ class PygameGame:
         # Create and use the new town menu screen
         town_screen = TownMenuScreen(self.presenter)
 
-        # Auto-heal when entering town menu
-        try:
-            self.player_char.town_heal()
-            # Check if we should suppress the heal message (loading in town)
-            if not getattr(self.player_char, "_suppress_heal_message", False):
-                popup = ConfirmationPopup(
-                    self.presenter,
-                    "You rest in town. HP and MP fully restored.",
-                    show_buttons=False,
-                )
-                popup.show(
-                    **self._popup_show_kwargs(
-                        lambda town_screen=town_screen, options=options: (
-                            town_screen.draw_background(),
-                            town_screen.draw_menu_panel(options),
-                        )
+        # Auto-heal when entering town menu. Gameplay failures must remain visible.
+        self.player_char.town_heal()
+        # Check if we should suppress the heal message (loading in town)
+        if not getattr(self.player_char, "_suppress_heal_message", False):
+            popup = ConfirmationPopup(
+                self.presenter,
+                "You rest in town. HP and MP fully restored.",
+                show_buttons=False,
+            )
+            popup.show(
+                **self._popup_show_kwargs(
+                    lambda town_screen=town_screen, options=options: (
+                        town_screen.draw_background(),
+                        town_screen.draw_menu_panel(options),
                     )
                 )
-            else:
-                # Clear the flag after first use
-                self.player_char._suppress_heal_message = False
-        except Exception:
-            # If any issue occurs, continue without blocking town menu
-            pass
-
-        # The Rookie event already notifies the player; town entry only drops off the body.
-        rookie_quest = self.player_char.quest_dict.get("Side", {}).get("Rookie Mistake")
-        if "Dead Soldier" in self.player_char.special_inventory and rookie_quest is not None:
-            rookie_quest["Completed"] = True
-            self.player_char.modify_inventory(items.DeadSoldier(), subtract=True, rare=True)
+            )
+        else:
+            # Clear the flag after first use
+            self.player_char._suppress_heal_message = False
 
         while True:
             choice_idx = town_screen.navigate(
@@ -838,6 +1269,20 @@ class PygameGame:
 
     def _enter_dungeon_from_town(self) -> str:
         """Place the player at the dungeon entrance and enter exploration."""
+        story_state = main_story.ensure_state(self.player_char)
+        if not story_state.get("dungeon_entry_story_seen"):
+            StoryCardSequence(
+                self.presenter,
+                (opening_story.FIRST_DUNGEON_ENTRY_TEXT,),
+                title="The First Descent",
+                image_paths=DUNGEON_ENTRY_IMAGE_PATHS,
+            ).show(
+                flush_events=True,
+                require_key_release=True,
+                fade_in_ms=700,
+            )
+            opening_story.record_dungeon_entry_story(story_state)
+            fade_to_black(self.presenter, duration_ms=500, hold_ms=150)
         if self.player_char.location_z == 0:
             self.player_char.location_x = 5
             self.player_char.location_y = 10

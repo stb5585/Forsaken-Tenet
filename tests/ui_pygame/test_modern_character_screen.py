@@ -544,6 +544,27 @@ def test_modern_character_summary_helpers_cover_xp_equipment_resistances_and_eff
     assert screen.selected_equipment_slot(player) == "OffHand"
 
 
+def test_combat_panel_draws_encumbered_weight_in_red(monkeypatch):
+    screen = ModernCharacterScreen(_make_presenter())
+    player = _make_player()
+    player.encumbered = True
+    stat_calls = []
+
+    monkeypatch.setattr(screen, "_draw_panel", lambda _rect, _title=None: 120)
+    monkeypatch.setattr(
+        screen,
+        "_draw_character_stat_rows",
+        lambda _rows, _rect, y, **kwargs: stat_calls.append(kwargs) or (y + 120),
+    )
+    monkeypatch.setattr(screen, "_draw_divider", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr(screen, "_draw_text", lambda *_args, **_kwargs: 0)
+    monkeypatch.setattr(screen, "_draw_resistance_group", lambda *_args, **_kwargs: None)
+
+    screen.draw_combat_panel(player)
+
+    assert stat_calls[0]["value_colors"] == {"Weight": screen.colors.RED}
+
+
 def test_portrait_details_draws_long_location_without_truncating(monkeypatch):
     screen = ModernCharacterScreen(_make_presenter())
     drawn = []
@@ -2924,25 +2945,25 @@ def test_abilities_workspace_splits_icons_and_accepts_drag_to_shortcut(monkeypat
     event_batches = iter(
         [
             [
-                pygame.event.Event(
-                    pygame.MOUSEBUTTONDOWN,
+                SimpleNamespace(
+                    type=pygame.MOUSEBUTTONDOWN,
                     button=1,
                     pos=(panel.left - 1, panel.top - 1),
                 )
             ],
             [
-                pygame.event.Event(
-                    pygame.MOUSEBUTTONDOWN,
+                SimpleNamespace(
+                    type=pygame.MOUSEBUTTONDOWN,
                     button=1,
                     pos=skill_card_center,
                 ),
-                pygame.event.Event(
-                    pygame.MOUSEBUTTONUP,
+                SimpleNamespace(
+                    type=pygame.MOUSEBUTTONUP,
                     button=1,
                     pos=slot_center,
                 ),
-                pygame.event.Event(
-                    pygame.MOUSEBUTTONDOWN,
+                SimpleNamespace(
+                    type=pygame.MOUSEBUTTONDOWN,
                     button=1,
                     pos=(panel.right - 20, panel.top + 18),
                 ),
@@ -2957,7 +2978,9 @@ def test_abilities_workspace_splits_icons_and_accepts_drag_to_shortcut(monkeypat
     screen._edit_action_layout(player)
 
     assert player.action_bar_assignments[0].action_id == "warrior.cleave"
-    assert {"Skills", "Spells"}.issubset(_rendered_text(presenter))
+    rendered = _rendered_text(presenter)
+    assert {"Skills", "Spells"}.issubset(rendered)
+    assert any("Wheel or Up/Down scrolls" in text for text in rendered)
 
 
 def test_modern_character_aerial_tempo_tab_toggles_jump_mods_inline(monkeypatch):
@@ -3029,6 +3052,39 @@ def test_modern_character_menu_opens_quest_popup(monkeypatch):
 
     assert screen._open_menu_choice("Quests", player) is None
     assert opened == ["created", (True, True)]
+
+
+def test_empty_key_items_popup_redraws_character_menu_background(monkeypatch):
+    presenter = _make_presenter()
+    screen = ModernCharacterScreen(presenter)
+    player = _make_player()
+    player.special_inventory = {}
+    redraws = []
+    popup_kwargs = []
+
+    class FakeConfirmationPopup:
+        def __init__(self, _presenter, _message, show_buttons=False):
+            assert show_buttons is False
+
+        def show(self, **kwargs):
+            popup_kwargs.append(kwargs)
+            kwargs["background_draw_func"]()
+
+    import src.ui_pygame.gui.modern_character_screen as modern_module
+
+    monkeypatch.setattr(modern_module.equipment, "ConfirmationPopup", FakeConfirmationPopup)
+    monkeypatch.setattr(
+        screen,
+        "draw_all",
+        lambda drawn_player, do_flip=True: redraws.append((drawn_player, do_flip)),
+    )
+
+    screen._open_menu_choice("Key Items", player)
+
+    assert redraws == [(player, False), (player, False)]
+    assert callable(popup_kwargs[0]["background_draw_func"])
+    assert popup_kwargs[0]["flush_events"] is True
+    assert popup_kwargs[0]["require_key_release"] is True
 
 
 def test_town_character_info_uses_modern_screen_by_default(monkeypatch):

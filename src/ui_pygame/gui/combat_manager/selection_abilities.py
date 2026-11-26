@@ -71,8 +71,11 @@ class AbilitySelectionMixin:
                         return items[selected][1]
                     scroll_offset = self._scroll_offset_for_selection(selected, scroll_offset)
                 elif event.type == pygame.MOUSEWHEEL:
-                    selected = max(0, min(len(items) - 1, selected - getattr(event, "y", 0)))
-                    scroll_offset = self._scroll_offset_for_selection(selected, scroll_offset)
+                    max_scroll = max(0, len(items) - 3)
+                    scroll_offset = max(
+                        0,
+                        min(max_scroll, scroll_offset - getattr(event, "y", 0)),
+                    )
                 elif self._selection_menu_back_clicked(event, input_armed):
                     return None
                 elif event.type in (pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN):

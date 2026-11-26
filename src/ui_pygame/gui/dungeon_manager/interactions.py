@@ -8,6 +8,8 @@ from src.core import (
     enemies,
     items,
     map_tiles,
+    opening_story,
+    quest_progress,
 )
 from src.core.player import DIRECTIONS
 from src.paths import PYGAME_ASSETS_DIR
@@ -205,6 +207,12 @@ class DungeonInteractionMixin:
                 )
                 return
 
+            # The lock state changes while this interaction still owns the screen. Rebuild the
+            # cached dungeon frame now so combat and loot popups cannot retain the locked sprite.
+            self._cached_frame = None
+            self._mark_view_dirty()
+            self._refresh_cached_frame()
+
         # Check for Mimic (FunhouseMimicChest always spawns one; other chests have random chance)
         locked = int("Locked" in tile_type)
         plus = int("ChestRoom2" in tile_type)
@@ -236,6 +244,9 @@ class DungeonInteractionMixin:
 
         # Open the chest
         chest_tile.open = True
+        self._cached_frame = None
+        self._mark_view_dirty()
+        self._refresh_cached_frame()
 
         # Generate loot if not already generated
         if not hasattr(chest_tile, "loot") or chest_tile.loot is None:
@@ -390,38 +401,62 @@ class DungeonInteractionMixin:
             self.add_message("You already collected the relic from this room.")
             return
 
-        # Get the appropriate relic for this level
         z = self.player_char.location_z
-        relics = [
-            items.Relic1(),
-            items.Relic2(),
-            items.Relic3(),
-            items.Relic4(),
-            items.Relic5(),
-            items.Relic6(),
-        ]
-
-        if 1 <= z <= 6:
-            relic = relics[z - 1]
+        relic = quest_progress.relic_for_floor(z)
+        if relic is not None:
+            answer = None
+            story = self.player_char.ensure_main_story_state()
+            if z == 1:
+                if not story.get("opening_patrol_fate_seen"):
+                    show_threshold = getattr(self.game, "show_triangulus_threshold", None)
+                    if callable(show_threshold):
+                        show_threshold()
+                    elif self.game is not None:
+                        self.game.special_event(
+                            "Triangulus Threshold", message=opening_story.PATROL_FATE_TEXT
+                        )
+                    else:
+                        self.add_message(opening_story.PATROL_FATE_TEXT)
+                answer_options = [
+                    "The name I choose to answer to.",
+                    "What I have done, and what I do next.",
+                    "What I refuse to forget.",
+                    "The choice that is still mine to make.",
+                ]
+                choose_answer = getattr(self.game, "choose_triangulus_identity", None)
+                if callable(choose_answer):
+                    answer = choose_answer()
+                    choice = None
+                else:
+                    choice = self._show_dungeon_choice(
+                        "When title, blood, and expectation fall silent, what remains yours?",
+                        answer_options,
+                    )
+                    answer = (
+                        None
+                        if choice is None
+                        else opening_story.TRIANGULUS_IDENTITY_ANSWERS[choice]
+                    )
+                if answer is None:
+                    self.add_message("You leave Triangulus undisturbed.")
+                    return
             discovery_message = relic_discovery_text(relic)
-            popup_shown = False
-            try:
-                if self.game is not None:
-                    self.game.special_event("Relic Room", message=discovery_message)
-                    popup_shown = True
-            except Exception:
-                pass
-            if not popup_shown:
+            show_discovery = getattr(self.game, "show_relic_discovery", None)
+            if callable(show_discovery):
+                show_discovery(discovery_message)
+            elif self.game is not None:
+                self.game.special_event("Relic Room", message=discovery_message)
+            else:
                 self.add_message(discovery_message)
-            self.player_char.modify_inventory(relic, rare=True, quest=True)
+            result = quest_progress.collect_relic(self.player_char, z, triangulus_answer=answer)
+            if not result.collected:
+                self.add_message("The relic remains on its pedestal.")
+                return
             relic_tile.read = True
-
-            # Restore HP and MP
-            self.player_char.health.current = self.player_char.health.max
-            self.player_char.mana.current = self.player_char.mana.max
-            quest_message = self.player_char.quests()
-            if quest_message:
-                for line in quest_message.strip().splitlines():
+            self._cached_frame = None
+            self._mark_view_dirty()
+            if result.quest_message:
+                for line in result.quest_message.strip().splitlines():
                     self.add_message(line)
             self.add_message("Your health and mana have been fully restored!")
         else:

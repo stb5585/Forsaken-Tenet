@@ -52,8 +52,8 @@ class PlayerInventoryMixin:
             rare[i] = item.subtyp == "Special"
             if item.subtyp == "Quest":
                 quest_found = False
-                # Check both Main and Side quests
-                for quest_type in ["Main", "Side"]:
+                # Check authored quest categories.
+                for quest_type in ["Main", "Progression", "Side"]:
                     for info in self.quest_dict.get(quest_type, {}).values():
                         try:
                             quest_what = info["What"]

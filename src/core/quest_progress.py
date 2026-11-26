@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from dataclasses import dataclass
 from typing import Any
+
+from . import items, main_story, opening_story
 
 UNCERTAIN_REPORTS = "Uncertain Reports"
 HOLY_RELICS = "The Holy Relics"
@@ -15,6 +18,18 @@ RELIC_NAMES = (
     "Polaris",
     "Infinitas",
 )
+AUTHORED_QUEST_CATEGORIES = ("Main", "Progression", "Side")
+QUEST_CATEGORIES = (*AUTHORED_QUEST_CATEGORIES, "Bounty")
+
+
+@dataclass(frozen=True)
+class RelicCollectionResult:
+    """Outcome of the shared relic acquisition transition."""
+
+    collected: bool
+    relic: object | None = None
+    quest_message: str = ""
+    threshold_revealed: bool = False
 
 
 def ensure_quest_categories(player) -> dict[str, dict]:
@@ -23,7 +38,7 @@ def ensure_quest_categories(player) -> dict[str, dict]:
     if not isinstance(quest_dict, dict):
         quest_dict = {}
         player.quest_dict = quest_dict
-    for category in ("Main", "Side", "Bounty"):
+    for category in QUEST_CATEGORIES:
         if not isinstance(quest_dict.get(category), dict):
             quest_dict[category] = {}
     return quest_dict
@@ -80,7 +95,13 @@ def record_location(player, position: tuple[int, int, int]) -> str:
         target = quest_data.get("Target Position")
         return isinstance(target, (list, tuple)) and tuple(target) == normalized_position
 
-    return _complete_matching_side_quests(player, "Locate", matches)
+    message = _complete_matching_side_quests(player, "Locate", matches)
+    ensure_story = getattr(player, "ensure_main_story_state", None)
+    if callable(ensure_story):
+        descent_text = opening_story.record_first_descent(ensure_story(), normalized_position)
+        if descent_text:
+            message += f"{descent_text}\n"
+    return message
 
 
 def record_conversation(player, npc_name: str) -> str:
@@ -89,6 +110,19 @@ def record_conversation(player, npc_name: str) -> str:
         player,
         "Talk",
         lambda quest_data: quest_data.get("What") == npc_name,
+    )
+
+
+def has_pending_conversation(player, npc_name: str) -> bool:
+    """Return whether an active quest currently asks the player to speak to an NPC."""
+    return any(
+        isinstance(quest_data, dict)
+        and quest_data.get("Type") == "Talk"
+        and quest_data.get("What") == npc_name
+        and not quest_data.get("Completed")
+        and not quest_data.get("Turned In")
+        for category in AUTHORED_QUEST_CATEGORIES
+        for quest_data in ensure_quest_categories(player)[category].values()
     )
 
 
@@ -144,7 +178,7 @@ def sync_collection_progress(player) -> None:
     This repairs progress from saves created before ordinary enemy loot notified
     the quest system, and prevents a display count from exceeding its target.
     """
-    for category in ("Main", "Side"):
+    for category in AUTHORED_QUEST_CATEGORIES:
         for quest_data in ensure_quest_categories(player)[category].values():
             if (
                 not isinstance(quest_data, dict)
@@ -197,7 +231,7 @@ def has_all_relics(player) -> bool:
     if callable(has_relics):
         try:
             return bool(has_relics())
-        except Exception:
+        except (AttributeError, TypeError, ValueError):
             return False
     return False
 
@@ -210,6 +244,75 @@ def _sergeant_main_template(quest_name: str) -> dict[str, Any] | None:
         if quest_name in quests_at_level:
             return deepcopy(quests_at_level[quest_name])
     return None
+
+
+def ensure_uncertain_reports_quest(player) -> dict[str, Any]:
+    """Create or return the staged opening investigation quest."""
+    main_quests = ensure_quest_categories(player)["Main"]
+    quest = main_quests.get(UNCERTAIN_REPORTS)
+    if not isinstance(quest, dict):
+        quest = _copy_template_or_minimal(UNCERTAIN_REPORTS)
+        main_quests[UNCERTAIN_REPORTS] = quest
+    return quest
+
+
+def can_offer_authored_quest(player, quest_name: str) -> bool:
+    """Apply story-state prerequisites not expressible as a turned-in quest."""
+    if quest_name != "Cry Havoc!":
+        return True
+    uncertain = ensure_quest_categories(player)["Main"].get(UNCERTAIN_REPORTS)
+    if not isinstance(uncertain, dict) or uncertain.get("Turned In"):
+        return False
+    ensure_story = getattr(player, "ensure_main_story_state", None)
+    story = ensure_story() if callable(ensure_story) else main_story.ensure_state(player)
+    return bool(story.get("opening_ledger_seen"))
+
+
+def relic_for_floor(floor: int):
+    """Return the authored relic instance for floors one through six."""
+    relic_types = (
+        items.Relic1,
+        items.Relic2,
+        items.Relic3,
+        items.Relic4,
+        items.Relic5,
+        items.Relic6,
+    )
+    if not 1 <= floor <= len(relic_types):
+        return None
+    return relic_types[floor - 1]()
+
+
+def collect_relic(
+    player, floor: int, *, triangulus_answer: str | None = None
+) -> RelicCollectionResult:
+    """Grant one relic, restore resources, and synchronize its story quest."""
+    relic = relic_for_floor(floor)
+    if relic is None:
+        return RelicCollectionResult(False)
+    inventory = getattr(player, "special_inventory", {}) or {}
+    if relic.name in inventory:
+        return RelicCollectionResult(False, relic=relic)
+
+    ensure_story = getattr(player, "ensure_main_story_state", None)
+    story = ensure_story() if callable(ensure_story) else main_story.ensure_state(player)
+    threshold_revealed = False
+    if floor == 1:
+        if triangulus_answer not in opening_story.TRIANGULUS_IDENTITY_ANSWERS:
+            return RelicCollectionResult(False, relic=relic)
+        threshold_revealed = opening_story.record_triangulus_threshold(story)
+        opening_story.record_triangulus_answer(story, triangulus_answer)
+
+    player.modify_inventory(relic, rare=True, quest=True)
+    player.health.current = player.health.max
+    player.mana.current = player.mana.max
+    quest_message = sync_relic_story_progress(player)
+    return RelicCollectionResult(
+        True,
+        relic=relic,
+        quest_message=quest_message,
+        threshold_revealed=threshold_revealed,
+    )
 
 
 def _stage_help(quest_data: dict[str, Any]) -> str | None:
@@ -350,6 +453,10 @@ def migrate_relic_story_quests(player) -> None:
     """Replace old immediate Holy Relics quest state with the staged chain."""
     quest_dict = ensure_quest_categories(player)
     main_quests = quest_dict["Main"]
+    progression_quests = quest_dict["Progression"]
+    legacy_butcher = main_quests.pop("The Butcher", None)
+    if isinstance(legacy_butcher, dict) and "The Butcher" not in progression_quests:
+        progression_quests["The Butcher"] = legacy_butcher
     holy = main_quests.get(HOLY_RELICS)
     if isinstance(holy, dict) and "Stage" not in holy:
         old_turned_in = bool(holy.get("Turned In"))

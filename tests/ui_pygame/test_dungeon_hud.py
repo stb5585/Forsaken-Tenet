@@ -442,6 +442,23 @@ def test_character_info_resource_bars_stats_and_quick_info(monkeypatch):
     assert "Liminal Gap" in bundle.small_font.render_calls
 
 
+def test_encumbrance_warning_is_prominent_in_shared_hud(monkeypatch):
+    bundle = _make_hud(monkeypatch)
+    hud = bundle.hud
+    player = _make_player()
+    player.encumbered = True
+    next_y = hud._render_encumbrance_warning(player, 120)
+
+    assert next_y > 120
+    assert "ENCUMBERED" in hud.small_bold_font.render_calls
+    warning_colors = [args[1] for args, _kwargs in bundle.draw_rect_calls]
+    assert (78, 22, 22) in warning_colors
+    assert (235, 82, 72) in warning_colors
+
+    player.encumbered = False
+    assert hud._render_encumbrance_warning(player, 120) == 120
+
+
 def test_visibility_helpers_minimap_compass_and_combat_indicator(monkeypatch):
     bundle = _make_hud(monkeypatch)
     hud = bundle.hud
@@ -931,6 +948,11 @@ def test_render_hud_full_flow(monkeypatch):
     )
     monkeypatch.setattr(
         hud,
+        "_render_encumbrance_warning",
+        lambda player_char, y: calls.append(("encumbrance", player_char.name, y)) or (y + 10),
+    )
+    monkeypatch.setattr(
+        hud,
         "_render_status_icons",
         lambda player_char, y: calls.append(("status", player_char.name, y)) or (y + 10),
     )
@@ -952,9 +974,23 @@ def test_render_hud_full_flow(monkeypatch):
     )
 
     hud.render_hud(player, combat_mode=True, enemy=SimpleNamespace(name="Orc"))
-    assert [entry[0] for entry in calls] == ["combat", "info", "bars", "status", "focus"]
-    assert calls[2][3] is None
+    assert [entry[0] for entry in calls] == [
+        "combat",
+        "info",
+        "encumbrance",
+        "bars",
+        "status",
+        "focus",
+    ]
+    assert calls[3][3] is None
 
     calls.clear()
     hud.render_hud(player, combat_mode=False, enemy=None)
-    assert [entry[0] for entry in calls] == ["info", "location", "bars", "compass", "map"]
+    assert [entry[0] for entry in calls] == [
+        "info",
+        "location",
+        "encumbrance",
+        "bars",
+        "compass",
+        "map",
+    ]

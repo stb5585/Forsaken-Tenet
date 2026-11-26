@@ -15,6 +15,7 @@ import pygame
 from src.core.events import EventType, get_event_bus
 from src.ui_pygame.gui.mouse_helpers import hit_index, is_left_click, mouse_position
 from src.ui_pygame.screen_runtime import get_events
+from src.ui_pygame.user_settings import load_dialogue_speed
 
 from ..display_scaling import DisplayConfiguration, LayoutMetrics
 from .interface import GamePresenter
@@ -58,6 +59,15 @@ DAMAGE_COLORS = {
     "Arcane": (138, 43, 226),
     "Drain": (139, 0, 0),
 }
+
+
+def _artistic_story_font(size: int, *, title: bool = False) -> pygame.font.Font:
+    """Return a reproducible serif face for authored narrative cards."""
+    font_path = pygame.font.match_font("dejavuserif,liberationserif,georgia,timesnewroman")
+    font = pygame.font.Font(font_path, size)
+    font.set_italic(not title)
+    font.set_bold(title)
+    return font
 
 
 class FloatingText:
@@ -111,6 +121,8 @@ class PygamePresenter(GamePresenter):
         self.large_font = pygame.font.Font(None, self.layout_metrics.font_size(36))
         self.normal_font = pygame.font.Font(None, self.layout_metrics.font_size(24))
         self.small_font = pygame.font.Font(None, self.layout_metrics.font_size(18))
+        self.story_font = _artistic_story_font(self.layout_metrics.font_size(34))
+        self.story_title_font = _artistic_story_font(self.layout_metrics.font_size(44), title=True)
 
         # Clock for FPS control
         self.clock = pygame.time.Clock()
@@ -147,6 +159,7 @@ class PygamePresenter(GamePresenter):
 
         # Debug mode
         self.debug_mode = False  # Default debug mode, can be overridden by game launcher
+        self.story_dialogue_cps = load_dialogue_speed()
 
     def pointer_position(self, event) -> tuple[int, int] | None:
         """Return native render coordinates for a mouse or forwarded pointer event."""
@@ -198,6 +211,8 @@ class PygamePresenter(GamePresenter):
         self.large_font = pygame.font.Font(None, self.layout_metrics.font_size(36))
         self.normal_font = pygame.font.Font(None, self.layout_metrics.font_size(24))
         self.small_font = pygame.font.Font(None, self.layout_metrics.font_size(18))
+        self.story_font = _artistic_story_font(self.layout_metrics.font_size(34))
+        self.story_title_font = _artistic_story_font(self.layout_metrics.font_size(44), title=True)
 
     def _subscribe_to_events(self):
         """Subscribe to combat events for animations."""
@@ -508,6 +523,8 @@ class PygamePresenter(GamePresenter):
         image_path: str = "",
         split_layout: bool = False,
         background_draw_func: Callable[[], None] | None = None,
+        flush_events: bool = False,
+        require_key_release: bool = False,
     ) -> int:
         """Render a menu and return selected option index.
 
@@ -517,6 +534,16 @@ class PygamePresenter(GamePresenter):
             selected_index: Initially selected option
             use_grid: If True, render options in a 2-column grid layout
         """
+        from src.ui_pygame.gui.input_guards import (
+            prepare_guarded_input,
+            release_guard_allows_input,
+        )
+
+        input_armed = prepare_guarded_input(
+            flush_events=flush_events,
+            require_key_release=require_key_release,
+        )
+
         if split_layout:
             selected = selected_index
             scroll_offset = 0
@@ -548,10 +575,11 @@ class PygamePresenter(GamePresenter):
 
                     if os.path.exists(image_path):
                         loaded_image = pygame.image.load(image_path).convert_alpha()
-                except Exception:
+                except (OSError, pygame.error):
                     loaded_image = None
 
             while True:
+                input_armed = release_guard_allows_input(require_key_release, input_armed)
                 outer_rect = pygame.Rect(
                     int(self.width * 0.06),
                     int(self.height * 0.08),
@@ -592,6 +620,8 @@ class PygamePresenter(GamePresenter):
                         import sys
 
                         sys.exit()
+                    if not input_armed:
+                        continue
                     if event.type in (pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN):
                         hovered = hit_index(option_rects, mouse_position(event))
                         if hovered is not None:
@@ -696,6 +726,7 @@ class PygamePresenter(GamePresenter):
         scroll_offset = 0
 
         while True:
+            input_armed = release_guard_allows_input(require_key_release, input_armed)
             title_lines = title.split("\n")
             title_y = 80 + (len(title_lines) * 40)
             menu_start_y = max(250, title_y + 30)
@@ -734,6 +765,8 @@ class PygamePresenter(GamePresenter):
                     import sys
 
                     sys.exit()
+                if not input_armed:
+                    continue
                 if event.type in (pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN):
                     hovered = hit_index(option_rects, mouse_position(event))
                     if hovered is not None:

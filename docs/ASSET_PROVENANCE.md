@@ -13,6 +13,40 @@ The owner reports that the current visual assets were generated with GPT image
 generation through the Codex plugin in VS Code. No third-party artist or stock
 library is currently recorded for these categories.
 
+The Thirsty Dog exterior and interior opening backgrounds were generated with
+the built-in Codex image-generation workflow on November 19, 2026. Their
+checked-in comparison is `docs/assets/review-sheets/opening-location-backgrounds.png`.
+
+The Silvana barracks map-room background was generated with the built-in Codex
+image-generation workflow on November 25, 2026. The prompt requested an empty,
+wide dark-fantasy military planning room with a scarred ledger table, practical
+weapon storage, rainy windows, warm lantern light, and stable left/center/right
+zones for staged dialogue cutouts. The 1672×941 generation is retained as the
+high-resolution runtime variant; the 1024×768 export uses the same art and a
+centered cover crop. Both appear on the opening-location review sheet above.
+
+The Silvana graveyard background was generated with the built-in Codex
+image-generation workflow on November 26, 2026. The prompt requested an empty,
+rain-dark medieval graveyard beside Silvana's walls, with a fresh grave, simple
+marker, funeral lanterns, a weathered chapel, and open left/center/right staging
+zones for the existing dialogue cutouts. The 1448×1086 generation is retained
+as the high-resolution runtime variant; the 1024×768 runtime export uses the
+same composition.
+
+The 70 transparent `player_dialogue/` cutouts were generated with the built-in
+Codex image-generation workflow on November 21, 2026. Each race/sex/variant
+asset used its corresponding character-creation face-atlas cell as the identity
+and style reference; the previously approved `human_male_5.png` pilot remains
+part of that complete set.
+
+The transparent `timmy.png`, `timmy_mother.png`, and `timmy_father.png`
+dialogue cutouts were generated with the built-in Codex image-generation
+workflow on November 25, 2026. Timmy used the approved Waitress and Caedmon
+cutouts as style references; each parent used Timmy for family resemblance and
+the approved town NPCs for rendering direction. The 1024×1536 generation
+outputs were exported as 512×768 runtime PNGs; Timmy retains additional
+transparent margin so he stages at a child-appropriate height.
+
 | Runtime directory | Purpose | Distribution |
 | --- | --- | --- |
 | `ability_icons/`, `effects/`, `item_icons/`, `ui/` | Ability, effect, item, and interface atlases/icons | Required |
@@ -21,6 +55,7 @@ library is currently recorded for these categories.
 | `dungeon_tiles/` | First-person dungeon surfaces and special-tile art | Required |
 | `item_art/`, `key_items/` | Equipment, consumable, material, and story-item renders | Required |
 | `portraits/`, `sprites/` | Player portraits, tokens, and NPC sprites | Required |
+| `player_dialogue/` | Appearance-ID-matched transparent player dialogue cutouts | Required |
 
 The packaged map definitions and their 32-pixel editor tiles live under
 `src/core/data/maps/`. Map JSON/TMX metadata is project-authored runtime data;

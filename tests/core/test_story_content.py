@@ -20,8 +20,9 @@ def test_new_game_intro_story_content_is_shared_and_spoiler_safe():
     intro_text = "\n".join(pages)
 
     assert len(pages) == 6
-    for expected in ("Silvana", "relics", "guardians", "Step below"):
+    for expected in ("Silvana", "symbols", "missing names", "The Thirsty Dog"):
         assert expected in intro_text
+    assert "Step below" not in intro_text
     for spoiler in ("Vesperion", "Voluntas", "busboy", "Hooded Figure", "true final"):
         assert spoiler not in intro_text
 
@@ -141,3 +142,16 @@ def test_red_dragon_continuity_copy_separates_route_meanings():
     assert "progression victory is complete for every hero" in dracarys_text
     for legacy_final_boss_framing in ("ultimate challenge...me", "futility", "my wrath"):
         assert legacy_final_boss_framing not in dracarys_text
+
+
+def test_timmy_events_cover_discovery_and_both_parent_reunion():
+    clear_cache()
+
+    events = get_special_events()
+    discovery = "\n".join(events["Timmy"]["Text"])
+    reunion = "\n".join(events["Timmy Home"]["Text"])
+
+    assert "mum and dad" in discovery
+    assert "Timmy's Mother" in reunion
+    assert "Timmy's Father" in reunion
+    assert "family back together" in reunion

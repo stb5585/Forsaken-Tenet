@@ -7,6 +7,7 @@ from types import SimpleNamespace
 
 import pygame
 
+from src.core import main_story
 from src.ui_pygame.gui import inn
 
 
@@ -35,7 +36,56 @@ def _make_player(*, level=10):
         level=SimpleNamespace(exp=0, exp_to_gain=10),
         max_level=lambda: False,
         modify_inventory=lambda _item: None,
+        main_story=main_story.default_state(),
     )
+
+
+def test_first_relic_aftermath_and_hooded_echo_are_one_time(monkeypatch):
+    FakePopup.messages = []
+    FakePopup.show_kwargs = []
+    player = _make_player()
+    player.quest_dict["Main"]["The Holy Relics"] = {"Completed": False}
+    player.main_story["triangulus_identity_answer"] = "NextChoice"
+    presenter = _make_presenter()
+    monkeypatch.setattr(
+        inn.InnManager, "_load_background", lambda self: setattr(self, "background", None)
+    )
+    scenes = []
+
+    class FakeStoryScene:
+        def __init__(self, _presenter, title, **kwargs):
+            self.title = title
+            self.kwargs = kwargs
+            self.beats = []
+            scenes.append(self)
+
+        def show_dialogue(self, beats):
+            self.beats.extend(beats)
+
+    monkeypatch.setattr("src.ui_pygame.gui.inn.StorySceneScreen", FakeStoryScene)
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.inn.LevelUpScreen",
+        lambda *_args, **_kwargs: SimpleNamespace(show_level_up=lambda *_a, **_k: None),
+    )
+    manager = inn.InnManager(presenter, player)
+
+    manager._show_first_relic_aftermath()
+    manager._show_first_relic_aftermath()
+    manager._show_hooded_triangulus_response()
+    manager._show_hooded_triangulus_response()
+
+    assert player.main_story["first_relic_tavern_aftermath_seen"] is True
+    assert player.main_story["hooded_figure_triangulus_response_seen"] is True
+    assert [scene.title for scene in scenes] == [
+        "The Thirsty Dog — After Triangulus",
+        "Outside The Thirsty Dog",
+    ]
+    assert scenes[0].beats[0].speaker == "Narrator"
+    assert scenes[0].kwargs["background_image"] == "tavern.jpg"
+    assert "background_draw_func" not in scenes[0].kwargs
+    assert any("clears an untouched cup" in beat.text for beat in scenes[0].beats)
+    assert scenes[-1].beats[0].speaker == "Narrator"
+    assert "your next choice is still yours" in scenes[-1].beats[2].text
 
 
 def _make_presenter():
@@ -76,7 +126,7 @@ def test_visit_inn_and_patron_helpers(monkeypatch):
     location_portraits = []
 
     class FakeLocationMenuScreen:
-        def __init__(self, _presenter, _title):
+        def __init__(self, _presenter, _title, **_kwargs):
             pass
 
         def set_location_portrait(self, npc_name):
@@ -98,16 +148,16 @@ def test_visit_inn_and_patron_helpers(monkeypatch):
 
     player.quest_dict["Main"] = {"A Bad Dream": {"Turned In": False}}
     assert manager._build_patron_list() == [
-        "Barkeep",
-        "Waitress",
-        "Drunkard",
-        "Soldier",
+        "Oren",
+        "Liora",
+        "Pell",
+        "Joffrey",
         "Hooded Figure",
         "Back",
     ]
 
     player.quest_dict["Main"] = {"A Bad Dream": {"Turned In": True}}
-    assert "Busboy" in manager._build_patron_list()
+    assert "Tavin" in manager._build_patron_list()
 
     monkeypatch.setattr("src.ui_pygame.gui.inn.random.choice", lambda seq: seq[0])
     comment = manager._random_patron_comment("Drunkard")
@@ -127,13 +177,13 @@ def test_talk_to_patrons_accepts_quest_or_shows_hint(monkeypatch):
         lambda *_args, **_kwargs: SimpleNamespace(show_level_up=lambda *_a, **_k: None),
     )
     manager = inn.InnManager(presenter, player)
-    monkeypatch.setattr(manager, "_build_patron_list", lambda: ["Barkeep", "Back"])
+    monkeypatch.setattr(manager, "_build_patron_list", lambda: ["Oren", "Back"])
     monkeypatch.setattr(manager, "_random_patron_comment", lambda patron: f"{patron} comment")
 
     rendered = []
 
     class FakeLocationMenuScreen:
-        def __init__(self, _presenter, _title):
+        def __init__(self, _presenter, _title, **_kwargs):
             pass
 
         def set_option_portraits(self, _npc_names):
@@ -163,7 +213,7 @@ def test_talk_to_patrons_accepts_quest_or_shows_hint(monkeypatch):
 
     manager.talk_to_patrons()
 
-    assert rendered == [("Barkeep hint", "Barkeep")]
+    assert rendered == [("Barkeep hint", "Oren")]
 
 
 def test_bounty_accept_turn_in_and_view(monkeypatch):
@@ -195,7 +245,7 @@ def test_bounty_accept_turn_in_and_view(monkeypatch):
     manager = inn.InnManager(presenter, player)
 
     class FakeLocationMenuScreen:
-        def __init__(self, _presenter, title):
+        def __init__(self, _presenter, title, **_kwargs):
             self.title = title
 
         def set_location_portrait(self, _npc_name):
@@ -273,7 +323,7 @@ def test_bounty_accept_starts_at_zero_despite_prior_defeats(monkeypatch):
     manager = inn.InnManager(presenter, player)
 
     class FakeLocationMenuScreen:
-        def __init__(self, _presenter, title):
+        def __init__(self, _presenter, title, **_kwargs):
             self.title = title
 
         def set_location_portrait(self, _npc_name):
@@ -315,7 +365,7 @@ def test_empty_bounty_popup_uses_bounty_board_background(monkeypatch):
     board_calls = 0
 
     class FakeLocationMenuScreen:
-        def __init__(self, _presenter, title):
+        def __init__(self, _presenter, title, **_kwargs):
             self.title = title
 
         def navigate(self, options, reset_cursor=False, **_kwargs):
@@ -367,7 +417,7 @@ def test_bounty_board_can_abandon_active_bounty(monkeypatch):
     drawn_frames = []
 
     class FakeLocationMenuScreen:
-        def __init__(self, _presenter, title):
+        def __init__(self, _presenter, title, **_kwargs):
             self.title = title
 
         def set_location_portrait(self, _npc_name):
@@ -439,7 +489,7 @@ def test_abandon_bounty_reopens_selection_after_cancel(monkeypatch):
             return False
 
     class FakeLocationMenuScreen:
-        def __init__(self, _presenter, _title):
+        def __init__(self, _presenter, _title, **_kwargs):
             pass
 
         def navigate_with_content(self, options, **_kwargs):
@@ -486,7 +536,7 @@ def test_accept_bounty_stays_open_until_no_bounties_remain(monkeypatch):
     menu_titles = []
 
     class FakeLocationMenuScreen:
-        def __init__(self, _presenter, title):
+        def __init__(self, _presenter, title, **_kwargs):
             self.title = title
 
         def set_location_portrait(self, _npc_name):

@@ -501,8 +501,22 @@ class CavePath1(CavePath):
 
 class CavePath2(CavePath):
 
+    def encounter_level(self) -> str:
+        """Return the stronger encounter band, except on the protected entry floor."""
+        return str(self.z if self.z <= 0 else self.z + 1)
+
+    def danger_sense_text(self, player_char) -> str:
+        """Describe the stronger encounter when the explorer can read the warning signs."""
+        if self.z <= 0:
+            return ""
+        skills = getattr(player_char, "spellbook", {}).get("Skills", {})
+        wisdom = int(getattr(getattr(player_char, "stats", None), "wisdom", 0) or 0)
+        if "Keen Eye" not in skills and not items.has_oculus(player_char) and wisdom < 13:
+            return ""
+        return "Your instincts warn that something stronger than this floor's usual threats waits ahead."
+
     def enter_combat(self, player_char):
-        self.enemy = quest_biased_random_enemy(player_char, str(self.z + 1))
+        self.enemy = quest_biased_random_enemy(player_char, self.encounter_level())
         _apply_cambion_antimagic(self, player_char, self.enemy)
         player_char.state = "fight"
 

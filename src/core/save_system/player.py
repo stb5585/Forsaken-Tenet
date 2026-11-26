@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import asdict
 from typing import TYPE_CHECKING
 
-from .. import main_story, quest_progress, thieves_guild
+from .. import main_story, opening_story, quest_progress, thieves_guild
 from .. import town as town_core
 from ..character import Combat, Level, Resource, Stats
 from ..classes import bard, promotion_kits, transformation
@@ -503,7 +503,7 @@ class PlayerDataSerializer:
 
         # Restore quest/kill dicts
         player.quest_dict = QuestDataSerializer.deserialize_quest_dict(
-            data.get("quest_dict", {"Bounty": {}, "Main": {}, "Side": {}})
+            data.get("quest_dict", {"Bounty": {}, "Main": {}, "Progression": {}, "Side": {}})
         )
         quest_progress.migrate_relic_story_quests(player)
         player.bounty_board_state = town_core.normalize_bounty_board_state(
@@ -646,9 +646,16 @@ class PlayerDataSerializer:
         )
         if hasattr(player, "ensure_wizard_affinity"):
             player.ensure_wizard_affinity()
-        player.main_story = data.get("main_story", getattr(player, "main_story", None))
+        raw_main_story = data.get("main_story")
+        player.main_story = raw_main_story
         if hasattr(player, "ensure_main_story_state"):
             player.ensure_main_story_state()
+        opening_story.migrate_loaded_state(
+            player.main_story,
+            raw_main_story,
+            quest_dict=player.quest_dict,
+            special_inventory=player.special_inventory,
+        )
         player.thieves_guild = data.get("thieves_guild", getattr(player, "thieves_guild", None))
         if hasattr(player, "ensure_thieves_guild_state"):
             player.ensure_thieves_guild_state()

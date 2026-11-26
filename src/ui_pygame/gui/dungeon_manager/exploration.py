@@ -30,6 +30,11 @@ class DungeonExplorationMixin:
         # Check current tile (for stairs, shops, enemies you're standing on)
         current_tile = self.get_current_tile()
         if current_tile:
+            current_position = (
+                self.player_char.location_x,
+                self.player_char.location_y,
+                self.player_char.location_z,
+            )
             intro_text = current_tile.intro_text(self.game).strip("\n")
             tile_type = type(current_tile).__name__
 
@@ -96,8 +101,10 @@ class DungeonExplorationMixin:
                 current_tile,
                 current_tile=True,
             )
-            if gathering_message:
+            gathering_key = ("gathering", *current_position)
+            if gathering_message and gathering_key not in self._announced_perception_positions:
                 messages.append(gathering_message)
+                self._announced_perception_positions.add(gathering_key)
 
         # Check tile ahead (for interactive objects like chests, doors, relics)
         direction = self.player_char.facing
@@ -109,6 +116,16 @@ class DungeonExplorationMixin:
         ahead_tile = self.player_char.world_dict.get((ahead_x, ahead_y, ahead_z))
         if ahead_tile:
             tile_type = type(ahead_tile).__name__
+
+            danger_sense = getattr(ahead_tile, "danger_sense_text", None)
+            danger_key = ("danger", ahead_x, ahead_y, ahead_z)
+            if (
+                callable(danger_sense)
+                and danger_key not in self._announced_perception_positions
+                and (danger_message := danger_sense(self.player_char))
+            ):
+                messages.append(danger_message)
+                self._announced_perception_positions.add(danger_key)
 
             if "Chest" in tile_type:
                 if hasattr(ahead_tile, "open") and ahead_tile.open:
@@ -176,8 +193,10 @@ class DungeonExplorationMixin:
                 ahead_tile,
                 current_tile=False,
             )
-            if gathering_message:
+            gathering_key = ("gathering", ahead_x, ahead_y, ahead_z)
+            if gathering_message and gathering_key not in self._announced_perception_positions:
                 messages.append(gathering_message)
+                self._announced_perception_positions.add(gathering_key)
 
         return messages if messages else None
 
@@ -609,6 +628,8 @@ class DungeonExplorationMixin:
                     break
                 else:
                     self.presenter.show_message("This menu is not yet implemented in the dungeon.")
+            self._cached_frame = None
+            self._mark_view_dirty()
         elif command is UiCommand.DEBUG_LEVEL_UP and getattr(self.game, "debug_mode", False):
             self.game.debug_level_up()
         elif command is UiCommand.OPEN_MENU:
@@ -670,6 +691,8 @@ class DungeonExplorationMixin:
                     break
                 else:
                     self.presenter.show_message("This menu is not yet implemented in the dungeon.")
+            self._cached_frame = None
+            self._mark_view_dirty()
 
         elif menu_options[choice] == "Settings":
             show_display_settings = getattr(self.game, "show_display_settings", None)

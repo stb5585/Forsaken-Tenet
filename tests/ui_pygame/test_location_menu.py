@@ -147,6 +147,24 @@ def test_location_menu_draw_helpers(monkeypatch):
 
 
 @pytest.mark.parametrize("size", ((900, 700), (1080, 1920)))
+def test_location_menu_uses_location_background_with_town_fallback(size):
+    presenter = _make_presenter(size)
+    tavern = location_menu.LocationMenuScreen(
+        presenter,
+        "The Thirsty Dog",
+        background_image="tavern.jpg",
+    )
+    fallback = location_menu.LocationMenuScreen(
+        presenter,
+        "Missing Location",
+        background_image="missing-location.png",
+    )
+
+    assert tavern.background is not None
+    assert fallback.background is not None
+
+
+@pytest.mark.parametrize("size", ((900, 700), (1080, 1920)))
 def test_bounty_rows_use_shared_measured_rects_at_supported_viewports(monkeypatch, size):
     presenter = _make_presenter(size)
     screen = location_menu.LocationMenuScreen(presenter, "Accept Bounty")
@@ -167,10 +185,13 @@ def test_bounty_rows_use_shared_measured_rects_at_supported_viewports(monkeypatc
     assert option_rect in draw_calls
 
     item_rect = dict(screen.content_row_rects(3))[0]
+    _content_rect, _height, _visible, cursor_x, _item_x, quantity_x = screen._content_item_layout()
     assert item_rect.height >= presenter.large_font.get_height() + (
         presenter.layout_metrics.unit(4) * 2
     )
     assert screen._content_rect().contains(item_rect)
+    assert item_rect.left <= cursor_x
+    assert item_rect.right > quantity_x
 
     screen.draw_content(
         items_data=[
@@ -429,7 +450,8 @@ def test_location_menu_navigation_and_item_navigation(monkeypatch):
     monkeypatch.setattr(
         "src.ui_pygame.gui.location_menu.pygame.event.get", lambda: next(event_batches, [])
     )
-    assert screen.navigate_with_content(items) == 1
+    assert screen.navigate_with_content(items) == 0
+    assert screen.scroll_offset == 1
 
     screen.current_option = 0
     screen.scroll_offset = 0

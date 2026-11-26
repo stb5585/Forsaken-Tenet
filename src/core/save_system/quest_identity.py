@@ -12,7 +12,7 @@ def _authored_quest_names() -> set[str]:
     for giver_data in document.values():
         if not isinstance(giver_data, dict):
             continue
-        for category in ("Main", "Side"):
+        for category in ("Main", "Progression", "Side"):
             levels = giver_data.get(category, {})
             if not isinstance(levels, dict):
                 continue

@@ -6,15 +6,73 @@ from __future__ import annotations
 from copy import deepcopy
 from types import SimpleNamespace
 
-from src.core import items, quest_progress
+from src.core import items, opening_story, quest_progress
 from src.core.data.data_loader import get_quests
 from tests.test_framework import TestGameState
 
 
 def _player():
     return SimpleNamespace(
-        quest_dict={"Main": {}, "Side": {}, "Bounty": {}},
+        quest_dict={"Main": {}, "Progression": {}, "Side": {}, "Bounty": {}},
         special_inventory={},
+    )
+
+
+def test_progression_category_migrates_the_butcher_atomically():
+    player = _player()
+    player.quest_dict["Main"]["The Butcher"] = {"Completed": True, "Turned In": False}
+
+    quest_progress.migrate_relic_story_quests(player)
+
+    assert "The Butcher" not in player.quest_dict["Main"]
+    assert player.quest_dict["Progression"]["The Butcher"] == {
+        "Completed": True,
+        "Turned In": False,
+    }
+
+
+def test_cry_havoc_requires_active_opening_report_and_reviewed_ledger():
+    player = TestGameState.create_player(level=20)
+    quest_progress.ensure_uncertain_reports_quest(player)
+
+    assert quest_progress.can_offer_authored_quest(player, "Cry Havoc!") is False
+    opening_story.record_ledger_review(player.ensure_main_story_state())
+    assert quest_progress.can_offer_authored_quest(player, "Cry Havoc!") is True
+    player.quest_dict["Main"][quest_progress.UNCERTAIN_REPORTS]["Turned In"] = True
+    assert quest_progress.can_offer_authored_quest(player, "Cry Havoc!") is False
+
+
+def test_first_descent_story_text_is_returned_once():
+    player = TestGameState.create_player()
+
+    first = quest_progress.record_location(player, opening_story.FIRST_DESCENT_POSITION)
+    second = quest_progress.record_location(player, opening_story.FIRST_DESCENT_POSITION)
+
+    assert "older arch" in first
+    assert second == ""
+    assert player.main_story["first_descent_story_seen"] is True
+
+
+def test_triangulus_collection_requires_answer_and_updates_story_once():
+    player = TestGameState.create_player()
+    player.health.current = 1
+    player.mana.current = 0
+    quest_progress.ensure_uncertain_reports_quest(player)
+
+    rejected = quest_progress.collect_relic(player, 1)
+    result = quest_progress.collect_relic(player, 1, triangulus_answer="ChosenName")
+
+    assert rejected.collected is False
+    assert result.collected is True
+    assert result.threshold_revealed is True
+    assert "Triangulus" in player.special_inventory
+    assert player.health.current == player.health.max
+    assert player.mana.current == player.mana.max
+    assert player.main_story["opening_patrol_fate_seen"] is True
+    assert player.main_story["acolyte_triangulus_fragment_seen"] is True
+    assert player.main_story["triangulus_identity_answer"] == "ChosenName"
+    assert player.quest_dict["Main"][quest_progress.UNCERTAIN_REPORTS]["Stage"] == (
+        "report_first_relic"
     )
 
 
@@ -148,6 +206,19 @@ def test_staged_talk_objective_advances_to_its_combat_objective():
     assert quest_progress.record_defeat(player, "Bandit") == ""
     assert quest_progress.record_defeat(player, "Bandit") == "The route is clear. Return to Mara.\n"
     assert quest["Completed"] is True
+
+
+def test_pending_conversation_detects_active_cross_giver_objective():
+    player = _player()
+    player.quest_dict["Side"]["An Honest Introduction"] = {
+        "Type": "Talk",
+        "What": "Griswold",
+        "Completed": False,
+        "Turned In": False,
+    }
+
+    assert quest_progress.has_pending_conversation(player, "Griswold") is True
+    assert quest_progress.has_pending_conversation(player, "Mara Vale") is False
 
 
 def test_bounty_kills_also_advance_matching_side_defeat_objectives():

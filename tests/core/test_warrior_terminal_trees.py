@@ -307,6 +307,19 @@ def test_weapon_swap_equips_the_selected_carried_weapon():
     assert "swaps Bastard Sword for Mace" in message
 
 
+def test_weapon_swap_requires_an_explicit_carried_weapon_selection():
+    player = _player("Grandmaster of Arms")
+    original = items.Bastard()
+    replacement = items.Mace()
+    player.equipment["Weapon"] = original
+    player.inventory[replacement.name] = [replacement]
+
+    message = abilities.WeaponSwap().use(player)
+
+    assert player.equipment["Weapon"] is original
+    assert message == "Choose a carried weapon before using Weapon Swap.\n"
+
+
 def test_reckless_onslaught_stacks_tradeoff_and_prones_user_when_parried(
     monkeypatch,
 ):

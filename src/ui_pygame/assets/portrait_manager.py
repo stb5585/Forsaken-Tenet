@@ -231,13 +231,19 @@ class PortraitManager:
         )
 
     @staticmethod
-    def variant_entry_key(race: Any, gender: Any, variant: Any = None) -> str:
+    def appearance_id(race: Any, gender: Any, variant: Any = None) -> str:
+        """Return the canonical ID shared by face and dialogue appearance art."""
         variant_index = 0
         try:
             variant_index = int(variant or 0)
         except (TypeError, ValueError):
             variant_index = 0
         return f"{PortraitManager.entry_key(race, gender)}_{variant_index + 1}"
+
+    @staticmethod
+    def variant_entry_key(race: Any, gender: Any, variant: Any = None) -> str:
+        """Return the legacy atlas name for a canonical appearance ID."""
+        return PortraitManager.appearance_id(race, gender, variant)
 
     def cache_key(
         self,

@@ -67,7 +67,7 @@ include = ["src*"]
     "maps/*.tsx",
     "maps/tileset/*.png",
 ]
-"src.ui_pygame.assets" = ["**/*.json", "**/*.png", "**/*.wav", "**/*.ogg"]
+"src.ui_pygame.assets" = ["**/*.jpg", "**/*.json", "**/*.png", "**/*.wav", "**/*.ogg"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

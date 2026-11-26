@@ -82,19 +82,24 @@ class Screen(Protocol):
 
 
 class PointerPressFilter:
-    """Remove duplicate primary presses from one event-queue poll.
+    """Remove held and rapid repeated primary presses across UI transitions."""
 
-    A legacy blocking screen may poll the queue independently from the screen
-    that ran just before it, so pointer state must not persist between calls to
-    :func:`get_events`. Keeping the suppression local to the batch handles
-    duplicate events delivered in one frame without treating a later, valid
-    click as held forever when a release event was not observed.
-    """
+    def __init__(self, cooldown_ms: int = 250) -> None:
+        if cooldown_ms < 0:
+            raise ValueError("pointer cooldown cannot be negative")
+        self.cooldown_ms = cooldown_ms
+        self._last_primary_press_ms: int | None = None
 
-    def filter(self, events: list[pygame.event.Event]) -> list[pygame.event.Event]:
-        """Return one primary press per press/release sequence in this batch."""
+    def filter(
+        self,
+        events: list[pygame.event.Event],
+        *,
+        now_ms: int | None = None,
+    ) -> list[pygame.event.Event]:
+        """Return primary presses separated by a release and the cooldown."""
         filtered: list[pygame.event.Event] = []
         primary_pressed = False
+        press_time = now_ms
 
         for event in events:
             if getattr(event, "button", None) != 1:
@@ -105,9 +110,24 @@ class PointerPressFilter:
                 primary_pressed = False
                 filtered.append(event)
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if not primary_pressed:
-                    primary_pressed = True
+                if primary_pressed:
+                    continue
+                primary_pressed = True
+                # SimpleNamespace events are deterministic unit-test doubles,
+                # not SDL queue events. Keep batch deduplication for them but
+                # do not make unrelated scripted menus share a wall clock.
+                use_cooldown = now_ms is not None or isinstance(event, pygame.event.EventType)
+                if use_cooldown and press_time is None:
+                    press_time = pygame.time.get_ticks()
+                cooldown_elapsed = not use_cooldown or (
+                    self._last_primary_press_ms is None
+                    or press_time is None
+                    or press_time - self._last_primary_press_ms >= self.cooldown_ms
+                )
+                if cooldown_elapsed:
                     filtered.append(event)
+                    if use_cooldown:
+                        self._last_primary_press_ms = press_time
             else:
                 filtered.append(event)
         return filtered

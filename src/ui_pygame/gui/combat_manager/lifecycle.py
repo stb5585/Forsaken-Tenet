@@ -876,8 +876,11 @@ class CombatLifecycleMixin:
                         return entries[selected]
                     scroll_offset = self._scroll_offset_for_selection(selected, scroll_offset)
                 elif event.type == pygame.MOUSEWHEEL:
-                    selected = max(0, min(len(entries) - 1, selected - getattr(event, "y", 0)))
-                    scroll_offset = self._scroll_offset_for_selection(selected, scroll_offset)
+                    max_scroll = max(0, len(entries) - 3)
+                    scroll_offset = max(
+                        0,
+                        min(max_scroll, scroll_offset - getattr(event, "y", 0)),
+                    )
                 elif self._selection_menu_back_clicked(event, input_armed):
                     return None
                 elif event.type in (pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN):
@@ -1103,6 +1106,16 @@ class CombatLifecycleMixin:
             if not callable(is_disarmed) or not is_disarmed():
                 self.combat_view.add_combat_message("Not disarmed!")
                 return None
+
+        if engine_action == "Use Skill" and choice == "Weapon Swap":
+            skill_obj = actor.spellbook.get("Skills", {}).get(choice)
+            if skill_obj is None:
+                return None
+            if getattr(skill_obj, "selected_weapon", None) is None:
+                selected_weapon = self._select_combat_weapon(actor, enemy, skill_obj)
+                if selected_weapon is None:
+                    return None
+                skill_obj.selected_weapon = selected_weapon
 
         if choice is not None:
             self._render_combat_frame(self._selection_frame_player(player_char), enemy, [], -1)

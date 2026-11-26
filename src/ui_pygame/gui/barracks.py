@@ -3,12 +3,13 @@ Barracks system for GUI - handles quests and storage.
 Implements the core barracks logic from town.py adapted for Pygame presenter.
 """
 
-from src.core import enemies, items, map_tiles
+from src.core import enemies, items, main_story, map_tiles, opening_story
 from src.core.classes import class_rings, grandmaster
 from src.core.data.data_loader import get_special_events
 
 from .confirmation_popup import ConfirmationPopup
 from .location_menu import LocationMenuScreen
+from .story_scene import StoryBeat, StorySceneScreen
 from .town_base import TownScreenBase
 
 
@@ -122,6 +123,11 @@ class BarracksManager(TownScreenBase):
     def visit_barracks(self):
         """Visit the barracks for quests and storage."""
         barracks_options = ["Quests", "Storage Locker"]
+        story_state = main_story.ensure_state(self.player_char)
+        quest_dict = getattr(self.player_char, "quest_dict", {})
+        uncertain = quest_dict.get("Main", {}).get("Uncertain Reports")
+        if isinstance(uncertain, dict) and not story_state.get("opening_ledger_seen"):
+            barracks_options.insert(1, "Review Patrol Ledgers")
         if self._berserker_duel_available():
             barracks_options.append("No Healing Duel")
         if self._legacy_barracks_trial_available():
@@ -130,9 +136,13 @@ class BarracksManager(TownScreenBase):
             barracks_options.append("Secret Hall")
         barracks_options.append("Leave")
 
-        barracks_screen = LocationMenuScreen(self.presenter, "Barracks")
+        barracks_screen = LocationMenuScreen(
+            self.presenter,
+            "Barracks",
+            background_image="barracks.jpg",
+        )
         barracks_screen.options_list = barracks_options
-        barracks_screen.set_location_portrait("Sergeant")
+        barracks_screen.set_location_portrait("Caedmon Varr")
 
         # Pre-render barracks frame so entry popups draw over the proper background.
         barracks_screen.draw_all()
@@ -148,7 +158,7 @@ class BarracksManager(TownScreenBase):
             # Show special event text over barracks background.
             try:
                 lines = get_special_events().get("Joffrey's Key", {}).get("Text", [])
-            except Exception:
+            except (OSError, TypeError, ValueError):
                 lines = []
             event_message = (
                 " ".join(line.strip() for line in lines if line is not None).strip()
@@ -208,11 +218,16 @@ class BarracksManager(TownScreenBase):
                     self.presenter,
                     self.player_char,
                     quest_text_renderer=lambda text: barracks_screen.display_quest_text(
-                        text, npc_name="Sergeant"
+                        text, npc_name="Caedmon Varr"
                     ),
                     renderer_preserve_formatting=True,
+                    story_background_draw_func=draw_barracks_background,
                 )
                 qm.check_and_offer("Sergeant")
+
+            elif choice_label == "Review Patrol Ledgers":
+                self._review_opening_ledgers(draw_barracks_background)
+                barracks_options.remove("Review Patrol Ledgers")
 
             elif choice_label == "Storage Locker":
                 self.manage_storage()
@@ -240,6 +255,66 @@ class BarracksManager(TownScreenBase):
 
             elif choice_label == "Secret Hall":
                 self.visit_grandmaster_secret_hall(draw_barracks_background)
+
+    def _review_opening_ledgers(self, background_draw_func=None) -> None:
+        """Let the player inspect the three contradictory patrol entries in any order."""
+        entries = {
+            "Route entry": (
+                "North passage, fourteen turns. The returning scout remembers nine. "
+                "Both maps bear the same hand."
+            ),
+            "Time entry": (
+                "Patrol absent two nights. Every survivor insists they were below for less "
+                "than an hour."
+            ),
+            "Threshold entry": (
+                "Sealed stone, three marks around an empty center. Witnesses disagree whether "
+                "the marks stood above, below, or behind the door."
+            ),
+        }
+        scene = StorySceneScreen(
+            self.presenter,
+            "Barracks — Patrol Ledgers",
+            participants=("Caedmon", "Edrin", "Joffrey"),
+            participant_anchors={"Joffrey": "Caedmon"},
+            background_image="barracks.jpg",
+            player_char=self.player_char,
+        )
+        scene.show_dialogue(
+            (
+                StoryBeat(
+                    "Narrator",
+                    "Caedmon places three patrol ledgers on the table and opens each to a "
+                    "marked entry.",
+                    portrait_name="",
+                ),
+            )
+        )
+        while entries:
+            labels = list(entries)
+            choice = scene.choose(
+                "Which patrol entry do you inspect?",
+                labels,
+                speaker="Caedmon",
+                record_selection=False,
+            )
+            if choice is None:
+                continue
+            label = labels[choice]
+            scene.show_dialogue((StoryBeat("Patrol Ledger", entries.pop(label), portrait_name=""),))
+
+        opening_story.record_ledger_review(main_story.ensure_state(self.player_char))
+        scene.show_dialogue(
+            (
+                StoryBeat("Edrin", "I know what I saw. I just do not know when I saw it."),
+                StoryBeat(
+                    "Joffrey",
+                    "Bad maps can drift. They don't repeat the same mistake in three different "
+                    "hands.",
+                ),
+                StoryBeat("Caedmon", "Then find what is repeating."),
+            )
+        )
 
     def _grandmaster_hall_available(self):
         return grandmaster.is_grandmaster(
@@ -521,7 +596,7 @@ class BarracksManager(TownScreenBase):
 
     def _quest_turned_in(self, quest_name):
         quest_dict = getattr(self.player_char, "quest_dict", {})
-        for quest_type in ("Main", "Side"):
+        for quest_type in ("Main", "Progression", "Side"):
             quest_data = quest_dict.get(quest_type, {}).get(quest_name)
             if isinstance(quest_data, dict) and quest_data.get("Turned In"):
                 return True

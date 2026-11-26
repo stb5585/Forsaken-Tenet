@@ -2588,6 +2588,21 @@ def test_scene_renderer_scales_ladder_down_as_pit_floor_sprite():
     ) < SceneRenderer._get_floor_sprite_ratio(1, "boulder")
 
 
+def test_relic_and_empty_altars_keep_the_same_runtime_canvas():
+    pygame.init()
+    pygame.display.set_mode((1, 1))
+    textures = TextureLibrary()
+
+    relic = textures.get_special_texture("triangulus_altar", size=120)
+    empty = textures.get_special_texture("empty_altar", size=120)
+
+    assert relic is not None and empty is not None
+    assert relic.get_size() == empty.get_size()
+    assert relic.get_bounding_rect().bottom == empty.get_bounding_rect().bottom
+
+    pygame.quit()
+
+
 def test_scene_renderer_places_dead_body_lower_than_default_floor_anchor(monkeypatch):
     class RecordingScreen:
         def __init__(self):
@@ -2711,6 +2726,40 @@ def test_scene_renderer_places_center_ladder_down_on_next_floor_slot():
     assert lateral_view is False
     assert abs(rect.y - round(expected_bounds.y)) <= 1
     assert abs(rect.bottom - round(expected_bounds.y + expected_bounds.h)) <= 1
+
+    pygame.quit()
+
+
+def test_scene_renderer_draws_ladder_down_on_the_current_floor_slot():
+    pygame.init()
+    screen = pygame.display.set_mode((640, 480))
+    presenter = DummyPresenter(width=640, height=480, screen=screen)
+    scene_renderer = SceneRenderer(presenter, TextureLibrary())
+    player = DummyPlayer()
+    world = {
+        (0, 0, 1): LadderDown(),
+        (1, 0, 1): OpenTile(),
+        (2, 0, 1): WallTile(),
+        (0, -1, 1): WallTile(),
+        (0, 1, 1): WallTile(),
+        (1, -1, 1): WallTile(),
+        (1, 1, 1): WallTile(),
+    }
+    rendered = []
+
+    def recording_render_special_tile(tile, rect, darkness, depth, side=None, lateral_view=False):
+        if isinstance(tile, LadderDown):
+            rendered.append((rect.copy(), depth, side, lateral_view))
+
+    scene_renderer._render_special_tile = recording_render_special_tile
+    scene_renderer.render(player, world)
+
+    current_draws = [entry for entry in rendered if entry[1] == 1]
+    assert current_draws
+    rect, _depth, side, lateral_view = current_draws[0]
+    assert rect.width > 0 and rect.height > 0
+    assert side is None
+    assert lateral_view is False
 
     pygame.quit()
 

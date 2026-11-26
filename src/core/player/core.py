@@ -98,7 +98,7 @@ class Player(
         self.special_inventory = {}
         self.world_dict = {}
         self.dungeon_trap_seed = random.SystemRandom().randrange(2**32)
-        self.quest_dict = {"Bounty": {}, "Main": {}, "Side": {}}
+        self.quest_dict = {"Bounty": {}, "Main": {}, "Progression": {}, "Side": {}}
         self.bounty_board_state = town.default_bounty_board_state()
         self.kill_dict = {}
         self.last_defeated_enemy = None

@@ -787,11 +787,13 @@ class ShopScreen(TownScreenBase):
                 if event.type == pygame.MOUSEWHEEL:
                     if not self.item_list:
                         continue
-                    direction = -1 if getattr(event, "y", 0) > 0 else 1
-                    self.current_item = max(
-                        0, min(len(self.item_list) - 1, self.current_item + direction)
+                    self.scroll_offset = max(
+                        0,
+                        min(
+                            self._max_scroll_offset(),
+                            self.scroll_offset - getattr(event, "y", 0),
+                        ),
                     )
-                    self._keep_current_item_visible()
                     continue
                 if event.type in (pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN):
                     pos = mouse_position(event)

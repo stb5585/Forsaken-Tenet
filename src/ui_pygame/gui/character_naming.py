@@ -12,6 +12,7 @@ from src.ui_pygame.assets.portrait_manager import PORTRAIT_ROOT, PortraitManager
 from src.ui_pygame.screen_runtime import get_events
 
 from .confirmation_popup import ConfirmationPopup
+from .creation_theme import draw_creation_background, draw_creation_panel
 from .input_guards import (
     prepare_guarded_input,
     release_guard_allows_input,
@@ -27,7 +28,14 @@ SEX_OPTIONS = ("Male", "Female")
 class CharacterNamingScreen:
     """Name-entry screen that previews the selected character identity."""
 
-    def __init__(self, presenter, race_name: str, class_name: str, sex: str = "Male"):
+    def __init__(
+        self,
+        presenter,
+        race_name: str,
+        class_name: str,
+        sex: str = "Male",
+        background_draw_func=None,
+    ):
         self.presenter = presenter
         self.screen = presenter.screen
         self.width = presenter.width
@@ -40,6 +48,7 @@ class CharacterNamingScreen:
         self.large_font = presenter.large_font
         self.normal_font = presenter.normal_font
         self.small_font = presenter.small_font
+        self.background_draw_func = background_draw_func
         self.text = ""
         self.portrait_manager = PortraitManager()
         self.portrait_variant_count = self.portrait_manager.variant_count()
@@ -102,8 +111,12 @@ class CharacterNamingScreen:
         )
 
     def draw_header(self) -> None:
-        pygame.draw.rect(self.screen, self.colors.BLACK, self.header_rect)
-        pygame.draw.rect(self.screen, self.colors.BORDER_COLOR, self.header_rect, 2)
+        draw_creation_panel(
+            self.screen,
+            self.header_rect,
+            self.colors.BORDER_COLOR,
+            self.background_draw_func,
+        )
         title = self.normal_font.render("Name your character", True, self.colors.GOLD)
         title_rect = title.get_rect(centerx=self.width // 2, centery=self.header_rect.centery)
         self.screen.blit(title, title_rect)
@@ -124,8 +137,12 @@ class CharacterNamingScreen:
         return portrait_rect
 
     def draw_preview(self) -> None:
-        pygame.draw.rect(self.screen, self.colors.BLACK, self.preview_rect)
-        pygame.draw.rect(self.screen, self.colors.BORDER_COLOR, self.preview_rect, 2)
+        draw_creation_panel(
+            self.screen,
+            self.preview_rect,
+            self.colors.BORDER_COLOR,
+            self.background_draw_func,
+        )
 
         portrait_rect = self.portrait_preview_rect()
         pygame.draw.rect(self.screen, self.colors.DARK_GRAY, portrait_rect)
@@ -221,8 +238,12 @@ class CharacterNamingScreen:
         return y + button_height
 
     def draw_name_entry(self) -> None:
-        pygame.draw.rect(self.screen, self.colors.BLACK, self.name_rect)
-        pygame.draw.rect(self.screen, self.colors.BORDER_COLOR, self.name_rect, 2)
+        draw_creation_panel(
+            self.screen,
+            self.name_rect,
+            self.colors.BORDER_COLOR,
+            self.background_draw_func,
+        )
 
         x = self.name_rect.left + 42
         title_y = self.name_rect.top + 52
@@ -258,7 +279,12 @@ class CharacterNamingScreen:
         self.screen.blit(preview, preview_rect)
 
     def draw(self) -> None:
-        self.screen.fill(self.colors.BLACK)
+        draw_creation_background(
+            self.screen,
+            (self.width, self.height),
+            self.background_draw_func,
+            fallback_color=self.colors.BLACK,
+        )
         self.draw_header()
         self.draw_preview()
         self.draw_name_entry()

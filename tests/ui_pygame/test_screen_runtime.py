@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 import pygame
+import pytest
 
 from src.ui_common.input import UiCommand
 from src.ui_pygame.screen_runtime import (
@@ -128,19 +129,41 @@ def test_pointer_press_filter_deduplicates_within_one_queue_poll():
         pygame.event.Event(pygame.MOUSEBUTTONDOWN, pos=(9, 3), button=1),
     ]
 
-    filtered = press_filter.filter(events)
+    filtered = press_filter.filter(events, now_ms=1000)
 
     assert [event.type for event in filtered] == [
         pygame.MOUSEBUTTONDOWN,
         pygame.MOUSEBUTTONUP,
-        pygame.MOUSEBUTTONDOWN,
     ]
-    assert filtered[-1].pos == (9, 3)
 
     next_poll = press_filter.filter(
-        [pygame.event.Event(pygame.MOUSEBUTTONDOWN, pos=(4, 6), button=1)]
+        [pygame.event.Event(pygame.MOUSEBUTTONDOWN, pos=(4, 6), button=1)],
+        now_ms=1249,
     )
-    assert [event.type for event in next_poll] == [pygame.MOUSEBUTTONDOWN]
+    assert next_poll == []
+
+    later_poll = press_filter.filter(
+        [pygame.event.Event(pygame.MOUSEBUTTONDOWN, pos=(4, 6), button=1)],
+        now_ms=1250,
+    )
+    assert [event.type for event in later_poll] == [pygame.MOUSEBUTTONDOWN]
+
+
+def test_pointer_press_filter_rejects_invalid_cooldown():
+    with pytest.raises(ValueError, match="cooldown"):
+        PointerPressFilter(cooldown_ms=-1)
+
+
+def test_pointer_press_filter_does_not_read_clock_without_primary_press(monkeypatch):
+    press_filter = PointerPressFilter()
+    monkeypatch.setattr(
+        pygame.time,
+        "get_ticks",
+        lambda: pytest.fail("clock should only be read for a primary press"),
+    )
+    quit_event = pygame.event.Event(pygame.QUIT)
+
+    assert press_filter.filter([quit_event]) == [quit_event]
 
 
 def test_runtime_does_not_click_through_pointer_initiated_transition(monkeypatch):

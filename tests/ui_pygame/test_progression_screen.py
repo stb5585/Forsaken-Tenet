@@ -257,7 +257,7 @@ def test_spend_button_commits_entire_distribution_once(monkeypatch):
     assert screen.pending_attributes == {}
 
 
-def test_spend_distribution_confirms_permanent_node_closures(monkeypatch):
+def test_spend_distribution_does_not_repeat_closed_node_confirmation(monkeypatch):
     screen = progression_screen.ProgressionScreen.__new__(progression_screen.ProgressionScreen)
     screen.player_char = SimpleNamespace(
         cls=SimpleNamespace(name="Mage"),
@@ -266,35 +266,24 @@ def test_spend_distribution_confirms_permanent_node_closures(monkeypatch):
     screen.pending_node_ids = ["mage.ability.arcane-tradition"]
     screen.pending_attributes = {}
     screen.presenter = object()
-    screen._popup_background = lambda: None
-    screen._selected_tree_id = lambda: "Mage"
-    popup_messages = []
+    screen.background_draw_func = None
     applied = []
 
     class FakePopup:
-        def __init__(self, _presenter, message, show_buttons=False):
-            popup_messages.append((message, show_buttons))
-
-        def show(self, **_kwargs):
-            return False
+        def __init__(self, *_args, **_kwargs):
+            raise AssertionError("ordinary talent spending should not request confirmation")
 
     monkeypatch.setattr(progression_screen, "ConfirmationPopup", FakePopup)
     monkeypatch.setattr(
         progression_screen,
-        "permanent_closures_for_plan",
-        lambda *_args, **_kwargs: ("Classical Force",),
-    )
-    monkeypatch.setattr(
-        progression_screen,
         "apply_progression_plan",
-        lambda *_args, **_kwargs: applied.append(True),
+        lambda *_args, **_kwargs: applied.append(True) or PurchaseResult(True, "Spent 1 point."),
     )
 
     screen._spend_pending()
 
-    assert "Classical Force" in popup_messages[0][0]
-    assert popup_messages[0][1] is True
-    assert applied == []
+    assert applied == [True]
+    assert screen.pending_node_ids == []
 
 
 def test_attribute_incrementer_adds_and_subtracts_without_mutating_player():

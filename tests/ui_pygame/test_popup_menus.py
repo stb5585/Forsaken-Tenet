@@ -265,7 +265,7 @@ def test_base_popup_supports_mouse_hover_click_and_wheel(monkeypatch):
     )
     monkeypatch.setattr("src.ui_pygame.gui.popup_menus.pygame.event.get", lambda: next(events, []))
 
-    assert popup.show(player) == ("selected", "Beta")
+    assert popup.show(player) == ("selected", "Alpha")
 
 
 def test_base_popup_scrollbar_click_repositions_an_overflowing_list(monkeypatch):
@@ -1282,6 +1282,8 @@ def test_equipment_selection_popup_right_aligns_values_and_shows_handedness(monk
     assert render_calls == [("Bastard Sword", (88, 92))]
     rendered = presenter.large_font.render_calls + presenter.normal_font.render_calls
     assert "Bastard Sword (2H)" in rendered
+    assert "Type" in rendered
+    assert "Longsword" in rendered
     assert (
         popup._equipment_display_name(DummyItem("Dirk", typ="Weapon", subtyp="Dagger"))
         == "Dirk (1H)"
@@ -1336,6 +1338,18 @@ def test_equipment_popup_offhand_includes_allowed_weapons(monkeypatch):
     assert any(item.name == "Indra's Fist" for item in equippable)
     assert any(item.name == "Buckler" for item in equippable)
     assert all(item.name != "Offhand Sword" for item in equippable)
+
+
+def test_equipment_popup_uses_player_dual_wield_rule_for_offhand(monkeypatch):
+    _patch_visuals(monkeypatch)
+    player = _make_player()
+    dagger = DummyItem("Offhand Dirk", typ="Weapon", subtyp="Dagger")
+    player.inventory = {"Weapons": [dagger]}
+    player.cls = SimpleNamespace(equip_check=lambda _item, _slot: False)
+    player.can_equip_item = lambda item, slot: item is dagger and slot == "OffHand"
+    popup = popup_menus.EquipmentPopupMenu(_make_presenter(), _make_parent())
+
+    assert popup._get_equippable_items_for_slot(player, "OffHand") == [dagger]
 
 
 def test_equipment_popup_weapon_slot_excludes_class_restricted_weapons(monkeypatch):

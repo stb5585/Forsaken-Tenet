@@ -182,6 +182,30 @@ def test_pre_turn_duration_one_stun_still_skips_current_turn():
     assert player.status_effects["Stun"].active is False
 
 
+def test_disarm_cancels_pending_weapon_charge_before_forced_release():
+    engine, player = _make_engine_with_player_attacking()
+    charge = abilities.Charge()
+    charge.charging = True
+    player.spellbook["Skills"]["Charge"] = charge
+    actor_id = engine._actor_id_for(player)
+    engine.pending_actions[actor_id] = {
+        "action": "Use Skill",
+        "choice": "Charge",
+        "ability": charge,
+    }
+    engine.charging_ability = (player, "Charge", charge)
+    player.physical_effects["Disarm"].active = True
+
+    forced = engine.get_forced_action()
+
+    assert forced is not None
+    assert forced.intent is None
+    assert "interrupted" in forced.cancel_message.lower()
+    assert charge.charging is False
+    assert engine.pending_actions == {}
+    assert engine.charging_ability is None
+
+
 def test_resolve_skill_ignores_silence_and_spends_resolve():
     engine, player = _make_engine_with_player_attacking()
     player.cls = SimpleNamespace(name="Sentinel")

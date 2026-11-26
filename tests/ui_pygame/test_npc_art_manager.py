@@ -22,7 +22,6 @@ V1_NPC_KEYS = {
     "nimue",
     "old_warehouse_guard",
     "priest",
-    "sergeant",
     "seraphine_voss",
     "soldier",
     "waitress",
@@ -69,12 +68,28 @@ def test_npc_art_manager_resolves_mapped_paths_and_aliases(tmp_path):
         json.dumps({"Sergeant": "sergeant", "The Hooded Figure": "hooded_figure"}),
         encoding="utf-8",
     )
+    facing_path = art_root / "npc_art_facing.json"
+    facing_path.write_text(json.dumps({"sergeant": "right"}), encoding="utf-8")
 
-    manager = NpcArtManager(art_root=art_root, art_map_path=map_path)
+    manager = NpcArtManager(
+        art_root=art_root,
+        art_map_path=map_path,
+        facing_map_path=facing_path,
+    )
 
     assert manager.get_image_path("Sergeant") == str(art_root / "sergeant.png")
     assert manager.get_image_path("The Hooded Figure") == str(art_root / "hooded_figure.png")
     assert manager.get_image_path("Hooded Figure") == str(art_root / "hooded_figure.png")
+    assert manager.should_mirror("Sergeant", stage_side="right")
+    assert not manager.should_mirror("Sergeant", stage_side="left")
+    assert not manager.should_mirror("The Hooded Figure", stage_side="right")
+
+
+def test_liora_faces_inward_on_either_side_of_dialogue_stage():
+    manager = NpcArtManager()
+
+    assert not manager.should_mirror("Liora", stage_side="left")
+    assert manager.should_mirror("Liora", stage_side="right")
 
 
 def test_npc_art_manager_tolerates_missing_map_and_missing_files(tmp_path):
@@ -124,6 +139,31 @@ def test_default_npc_art_map_covers_v2_story_npcs():
     assert manager.get_image_path("Reflection").endswith("reflection.png")
     assert manager.get_image_path("Reflection Psychopomp").endswith("reflection.png")
     assert manager.get_image_path("Vesperion").endswith("vesperion.png")
+
+
+def test_default_npc_art_map_covers_opening_story_aliases():
+    art_root = build_npc_art_sheet.DEFAULT_ART_ROOT
+    map_path = art_root / "npc_art_map.json"
+    manager = NpcArtManager(art_root=art_root, art_map_path=map_path)
+
+    expected = {
+        "Caedmon": "caedmon_varr.png",
+        "Edrin": "edrin_shaw.png",
+        "Joffrey": "joffrey.png",
+        "Liora": "waitress.png",
+        "Oren": "barkeep.png",
+        "Pell": "drunkard.png",
+        "Tavin": "busboy.png",
+        "Excited Patron": "excited_patron.png",
+        "Uneasy Patron": "uneasy_patron.png",
+        "Angry Patron": "angry_patron.png",
+        "Sergeant": "caedmon_varr.png",
+        "Timmy": "timmy.png",
+        "Timmy's Mother": "timmy_mother.png",
+        "Timmy's Father": "timmy_father.png",
+    }
+    for character, filename in expected.items():
+        assert manager.get_image_path(character).endswith(filename)
 
 
 def test_default_npc_portraits_use_transparent_cutout_assets():

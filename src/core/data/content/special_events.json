@@ -3,28 +3,31 @@
         "Text": [
             "Silvana was never meant to be famous.\n\nIt was a lantern town at the kingdom's edge, a place of rain-slick roofs, warm tavern smoke, and old roads that ended at a sealed dungeon stair.",
             "Then the stair opened.\n\nAt first came treasure-seekers, soldiers, scholars, and fools. They entered with bright steel and louder promises. Most did not return.",
-            "Those who did come back spoke of relics older than the kingdom, rooms that remembered sins, and guardians bound to principles no living priest could fully name.",
-            "Now the town waits in the shadow of the dungeon.\n\nThe tavern keeps a candle in the window. The barracks counts missing names. The church prays for heroes it has not met yet.",
-            "You arrive with your own reasons.\n\nFame, duty, coin, grief, curiosity, redemption: whatever brought you here, the dungeon will ask what it is worth.",
-            "Silvana has sent out its plea.\n\nStep below, if you choose. Return with answers, if the dark allows it."
+            "Those who came back spoke of doors where no door should be, symbols repeated in rooms that shared no map, and hours none of them could remember the same way.",
+            "Now the tavern keeps a candle in the window. The barracks counts missing names. The church prays for people it has not met yet.",
+            "You arrive with reasons of your own: fortune, service, knowledge, or the chance to become someone your old life would not permit.",
+            "By nightfall, the road brings you through Silvana's gates. Rain has closed the market and emptied the streets, but one public house is still lit: The Thirsty Dog. Newcomers find a meal, work, and news there. You step inside."
             ]
     },
     "Timmy": {
         "Text": [
-            "'Hello...who's there?'",
-            "You see a small child peak out from behind some rubble.",
-            "'This place is scary...I want to go home.'",
-            "'Can you help me find my way out of here?'",
-            "You have found the little boy, Timmy, and escort him home."
+            "A small voice answers your footsteps from behind a fall of loose stone.",
+            "Timmy: Hello? Who's there?",
+            "A boy edges out of the rubble. His clothes are torn, his hands are scraped, and he is trying hard not to shake.",
+            "Timmy: I'm Timmy. I tried to go back, but I couldn't find the door.",
+            "Timmy: Can you take me home? My mum and dad will be looking for me.",
+            "You give Timmy your hand and lead him toward the last route you know is safe. He does not let go until Silvana's lanterns are in sight."
             ]
     },
     "Timmy Home": {
         "Text": [
-            "A woman rushes past the Sergeant before he can finish thanking you.",
-            "Timmy hides behind her coat, still dusty from the dungeon, but alive.",
-            "'I told them someone brave would find me,' he says, trying very hard not to cry.",
-            "The Sergeant looks away for a moment and clears his throat.",
-            "'You did more than complete an assignment today. You brought a family back together.'"
+            "Before Caedmon can finish the report, Timmy's parents rush across the barracks yard.",
+            "Timmy's Mother: Timmy.",
+            "She drops to her knees and pulls him close. His father stops beside them, one hand over his mouth.",
+            "Timmy: I told them someone would find me. I knew someone would come.",
+            "Timmy's Father: We looked everywhere we were allowed to go. Thank you for bringing him back to us.",
+            "Timmy's Mother: Come on. You're going home, and you're not leaving our sight again.",
+            "Caedmon: You did more than complete an assignment today. You brought a family back together."
             ]
     },
     "Unobtainium": {

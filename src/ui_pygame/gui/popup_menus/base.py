@@ -130,6 +130,11 @@ class BasePopupMenu:
                 break
         self._ensure_visible()
 
+    def _scroll_view(self, delta: int) -> None:
+        """Scroll the visible list without changing the active selection."""
+        max_scroll = max(0, len(self.items) - self.visible_row_count())
+        self.scroll_offset = max(0, min(max_scroll, self.scroll_offset + delta))
+
     def _page_selection(self, delta_pages: int) -> None:
         if not self.items:
             self._ensure_visible()
@@ -700,7 +705,7 @@ class BasePopupMenu:
                         and getattr(event, "button", None) in (4, 5)
                         and self.items
                     ):
-                        self._move_selection(-1 if event.button == 4 else 1)
+                        self._scroll_view(-1 if event.button == 4 else 1)
                         self._quick_scroll_frame = 0
                         continue
                     if is_left_click(event) and self._scroll_to_pointer(
@@ -726,9 +731,7 @@ class BasePopupMenu:
                     elif event.type == pygame.MOUSEWHEEL and self.items:
                         wheel_y = getattr(event, "y", 0)
                         if wheel_y:
-                            direction = -1 if wheel_y > 0 else 1
-                            for _ in range(abs(wheel_y)):
-                                self._move_selection(direction)
+                            self._scroll_view(-wheel_y)
                             self._quick_scroll_frame = 0
                     if event.type == pygame.KEYUP:
                         continue

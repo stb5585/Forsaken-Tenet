@@ -1,6 +1,6 @@
 # The Forsaken Tenet Development Roadmap
 
-*Updated: October 20, 2026*
+*Updated: November 19, 2026*
 
 This roadmap contains the current priority, completed baseline summaries needed
 for sequencing, ordered candidates, and deferred decision gates. Detailed
@@ -37,7 +37,7 @@ contracts belong in their owner documents.
 
 ## Active Priority — Opening Story Vertical Slice
 
-Status: `Active — Opening Story Packet Ready for Implementation`
+Status: `Active — Opening Story Implemented; Manual Playtest Pending`
 
 The project remains temporarily shifted from gameplay expansion and broad
 playtesting to campaign story development. The accepted creative authority is
@@ -56,8 +56,9 @@ Progression quests; and `Payback`, `Lapidation`, and `No Laughing Matter` move
 to Side with chapter-role metadata. The full authored
 Side-quest audit is also complete: twenty-nine existing Side entries plus those
 three reclassifications now have accepted preserve-or-revise dispositions.
-The approved Progression category is design-complete but not yet implemented;
-the current runtime and save paths still recognize Main, Side, and Bounty.
+The approved Progression category is now implemented across runtime, journal,
+quest completion, and save paths. `The Butcher` is the first migrated quest;
+later reclassifications remain owned by their narrative slices.
 
 The audit's most consequential implementation contract separates two bodies:
 the existing level-2 corpse remains the anchor for a revised
@@ -74,16 +75,30 @@ The ordered narrative work is:
 1. **Complete:** accept and runtime-verify the
    Prologue-through-Triangulus packet with scene order, dialogue, quest mapping,
    state, migration, presentation, validation, and playtest requirements.
-2. Implement that opening vertical slice without incidental combat, economy,
-   class, map-topology, or balance changes.
-3. Playtest whether the first arc establishes an immediate human stake,
+2. **Complete:** implement that opening vertical slice without incidental
+   combat, economy, class, map-topology, or balance changes.
+3. **Complete:** add a reusable town-style storyline scene surface with active
+   speaker portraits, a persistent highlighted transcript, configurable
+   slow-print dialogue, click-protected advancement, and popup response menus.
+4. **Complete:** add a thematic new-game handoff that carries the title art
+   through character creation, fades into illustrated and click-protected P0
+   cards, establishes The Thirsty Dog exterior and interior before P1, hands
+   cleanly into town control, and reserves the descent illustration for the
+   first deliberate dungeon entry.
+5. **Complete playtest polish:** add a dedicated barracks map-room venue, move
+   the first post-descent route review through a courtyard reception into that
+   room, resolve dialogue-bearing quest outcomes before settlement, give
+   `Rookie Mistake` a town-arrival reception and full burial consequence, and
+   expose encumbrance consistently across exploration, character, and combat
+   views.
+6. **Next:** playtest whether the first arc establishes an immediate human stake,
    recurring mystery, visible town consequence, and reason to continue.
-4. Use that evidence before promoting the remaining principle arcs into
+7. Use that evidence before promoting the remaining principle arcs into
    production packets.
-5. Implement the Progression category and later-chapter story-state
-   prerequisites with the first production slice that requires them; do not
-   move content between runtime categories before that complete migration.
-6. Apply each accepted Side-quest revision in its owning slice, including its
+8. **Progression runtime complete:** add later-chapter story-state prerequisites
+   with the first production slice that requires them; do not move additional
+   content between runtime categories before its owning migration.
+9. Apply each accepted Side-quest revision in its owning slice, including its
    mapped world, dialogue, save-migration, reward, and regression consequences;
    do not treat the audit as a copy-only rewrite.
 
@@ -173,8 +188,9 @@ sex/stat screens, generic sprite tools, alternate presenters, composite-effect
 facade, and the completed taxonomy migration script were removed.
 
 CI now checks Ruff B004/B023/B039, strict types for the new stable contracts,
-and a committed asset budget: a 240,718,690-byte baseline, 5 MiB aggregate
-allowance, and 4 MiB per-file cap.
+and a committed asset budget: a 240,718,690-byte baseline, 50 MiB aggregate
+allowance, and 4 MiB per-file cap. The allowance includes the complete set of
+70 appearance-matched, transparent player dialogue cutouts.
 
 Bounded implementation backlog:
 
@@ -282,3 +298,7 @@ needs before changing shop availability.
 - Full restoration (like when looting a relic) should appear as a wash over of green/blue energy
 - Barghest was nerfed too much; instead of scaling power, increase endurance for a longer 
 - Combine Action Layout with Abilities
+- Add an equipment-screen character silhouette with distinct silhouettes for
+  each race and sex, aligned to the equipment slots.
+- Improve enemy AI conditionals so they don't waste as many turns
+  - Wayward Priest needs conditional on Cleanse

@@ -48,7 +48,7 @@ class QuestDataSerializer:
             if category == "Bounty":
                 serialized[category] = QuestDataSerializer._serialize_bounties(quests)
                 continue
-            if category not in {"Main", "Side"}:
+            if category not in {"Main", "Progression", "Side"}:
                 serialized[category] = dict(quests)
                 continue
 
@@ -119,7 +119,7 @@ class QuestDataSerializer:
             if category == "Bounty":
                 quest_dict[category] = QuestDataSerializer._deserialize_bounties(quests)
                 continue
-            if category not in {"Main", "Side"}:
+            if category not in {"Main", "Progression", "Side"}:
                 quest_dict[category] = dict(quests)
                 continue
             decoded: dict[str, Any] = {}

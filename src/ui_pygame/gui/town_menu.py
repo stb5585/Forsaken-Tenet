@@ -27,7 +27,8 @@ class TownMenuScreen(TownScreenBase):
 
     LOCATION_DETAILS = {
         "Barracks": (
-            "Sergeant's maps, casualty ledgers, and the quartermaster's storage lockers crowd the command room."
+            "Caedmon Varr's maps, casualty ledgers, and the quartermaster's storage "
+            "lockers crowd the command room."
         ),
         "Shops": (
             "Lanterns burn over the counters while Griswold, the Alchemist, the Jeweler, Seraphine Voss, and Mara Vale prepare their wares."

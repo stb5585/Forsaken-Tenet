@@ -7,7 +7,7 @@ from types import SimpleNamespace
 
 import pygame
 
-from src.core import items
+from src.core import items, main_story
 from src.core.classes import class_rings, grandmaster
 from src.ui_pygame.gui import barracks
 
@@ -79,6 +79,36 @@ def _make_player():
     )
 
 
+def test_opening_ledgers_use_clean_barracks_background(monkeypatch):
+    scenes = []
+
+    class FakeStoryScene:
+        def __init__(self, _presenter, title, **kwargs):
+            self.title = title
+            self.kwargs = kwargs
+            self.beats = []
+            scenes.append(self)
+
+        def show_dialogue(self, beats, **_kwargs):
+            self.beats.extend(beats)
+
+        def choose(self, _prompt, _options, **_kwargs):
+            return 0
+
+    player = _make_player()
+    player.main_story = main_story.default_state()
+    manager = barracks.BarracksManager.__new__(barracks.BarracksManager)
+    manager.presenter = _make_presenter()
+    manager.player_char = player
+    monkeypatch.setattr(barracks, "StorySceneScreen", FakeStoryScene)
+
+    manager._review_opening_ledgers()
+
+    assert scenes[0].title == "Barracks — Patrol Ledgers"
+    assert scenes[0].kwargs["background_image"] == "barracks.jpg"
+    assert player.main_story["opening_ledger_seen"] is True
+
+
 def test_visit_barracks_routes_and_special_event(monkeypatch):
     FakePopup.messages = []
     FakePopup.calls = []
@@ -114,16 +144,18 @@ def test_visit_barracks_routes_and_special_event(monkeypatch):
 
     nav_values = iter([0, 1, 2])
     rendered = []
+    portraits = []
 
     class FakeLocationMenuScreen:
-        def __init__(self, _presenter, _title):
+        def __init__(self, _presenter, _title, **kwargs):
             self.options_list = []
+            assert kwargs["background_image"] == "barracks.jpg"
 
         def draw_all(self):
             return None
 
-        def set_location_portrait(self, _npc_name):
-            return None
+        def set_location_portrait(self, npc_name):
+            portraits.append(npc_name)
 
         def navigate(self, _options, reset_cursor=False, **_kwargs):
             return next(nav_values)
@@ -136,7 +168,8 @@ def test_visit_barracks_routes_and_special_event(monkeypatch):
 
     manager.visit_barracks()
 
-    assert rendered == [("Sergeant quest", "Sergeant")]
+    assert portraits == ["Caedmon Varr"]
+    assert rendered == [("Sergeant quest", "Caedmon Varr")]
     assert storage_calls == [True]
     assert any("Joffrey's Letter" in message for message in FakePopup.messages)
     assert any(call.get("flush_events") for call in FakePopup.calls)

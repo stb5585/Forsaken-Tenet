@@ -82,6 +82,16 @@ GATHERING_FLOOR_OVERLAYS = {
 
 SPECIAL_TEXTURE_PATHS = dict(DEFAULT_SPECIAL_TEXTURE_PATHS)
 
+RELIC_ALTAR_TEXTURE_KEYS = {
+    "empty_altar",
+    "hexagonum_altar",
+    "infinitas_altar",
+    "luna_altar",
+    "polaris_altar",
+    "quadrata_altar",
+    "triangulus_altar",
+}
+
 FALLBACK_COLORS = {
     "wall": (90, 90, 104),
     "wall_funhouse": (54, 40, 70),
@@ -412,8 +422,12 @@ class TextureLibrary:
         cache_key = (texture_key, size)
         scaled = self._special_scaled_cache.get(cache_key)
         if scaled is None:
-            trimmed = self._trim_transparent_surface(base)
-            scaled = self._scale_surface_to_fit(trimmed, size)
+            source = (
+                base
+                if texture_key in RELIC_ALTAR_TEXTURE_KEYS
+                else self._trim_transparent_surface(base)
+            )
+            scaled = self._scale_surface_to_fit(source, size)
             self._special_scaled_cache[cache_key] = scaled
         return scaled
 

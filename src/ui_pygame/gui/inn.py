@@ -5,6 +5,7 @@ Implements the core tavern logic from town.py adapted for Pygame presenter.
 
 import random
 
+from src.core import main_story
 from src.core.town import (
     MAX_ACTIVE_BOUNTIES,
     PATRON_DIALOGUES,
@@ -15,11 +16,23 @@ from src.core.town import (
 from .confirmation_popup import ConfirmationPopup
 from .level_up import LevelUpScreen
 from .location_menu import LocationMenuScreen
+from .story_scene import StoryBeat, StorySceneScreen
 from .town_base import TownScreenBase
 
 
 class InnManager(TownScreenBase):
     """Manages inn/tavern interactions with pygame presenter."""
+
+    background_image = "tavern.jpg"
+    background_fallback_image = "town.png"
+    PATRON_ROLES = {
+        "Oren": "Barkeep",
+        "Liora": "Waitress",
+        "Pell": "Drunkard",
+        "Tavin": "Busboy",
+        "Joffrey": "Soldier",
+        "Hooded Figure": "Hooded Figure",
+    }
 
     def __init__(self, presenter, player_char):
         super().__init__(presenter)
@@ -30,8 +43,13 @@ class InnManager(TownScreenBase):
         """Visit the inn/tavern - integrates with The Thirsty Dog tavern."""
         inn_options = ["Talk to Patrons", "Bounty Board", "Leave"]
 
-        inn_screen = LocationMenuScreen(self.presenter, "The Thirsty Dog Tavern")
+        inn_screen = LocationMenuScreen(
+            self.presenter,
+            "The Thirsty Dog Tavern",
+            background_image="tavern.jpg",
+        )
         self._popup_background_draw_func = lambda: inn_screen.draw_frame(do_flip=False)
+        self._show_first_relic_aftermath()
 
         while True:
             choice_idx = inn_screen.navigate(
@@ -42,6 +60,7 @@ class InnManager(TownScreenBase):
             )
 
             if choice_idx is None or choice_idx == 2:  # Leave
+                self._show_hooded_triangulus_response()
                 popup = ConfirmationPopup(
                     self.presenter, "Come back whenever you'd like.", show_buttons=False
                 )
@@ -53,6 +72,121 @@ class InnManager(TownScreenBase):
 
             elif choice_idx == 1:  # Bounty Board
                 self.show_bounty_board()
+
+    def _show_first_relic_aftermath(self) -> None:
+        """Show the one-time tavern debate after the Triangulus report."""
+        story = main_story.ensure_state(self.player_char)
+        holy = self.player_char.quest_dict.get("Main", {}).get("The Holy Relics")
+        if not isinstance(holy, dict) or story.get("first_relic_tavern_aftermath_seen"):
+            return
+        scene = StorySceneScreen(
+            self.presenter,
+            "The Thirsty Dog — After Triangulus",
+            participants=("Oren", "Liora", "Joffrey", "Pell", "Tavin"),
+            participant_anchors={"Joffrey": "Oren", "Pell": "Oren", "Tavin": "Oren"},
+            background_image="tavern.jpg",
+            player_char=self.player_char,
+        )
+        scene.show_dialogue(
+            (
+                StoryBeat(
+                    "Narrator",
+                    "Several conversations stop when you enter. The first reactions come from "
+                    "different sides of the room at once.",
+                    portrait_name="",
+                ),
+                StoryBeat(
+                    "Excited Patron",
+                    "If one of those can make sense of the old records, imagine what six could show us.",
+                ),
+                StoryBeat(
+                    "Uneasy Patron",
+                    "Those records describe changing passages and missing hours. Maybe they "
+                    "were hidden for a reason.",
+                ),
+                StoryBeat(
+                    "Angry Patron",
+                    "Tomas is dead, Mira is gone, and we brought the thing they found home? Break it before it costs another name.",
+                ),
+                StoryBeat(
+                    "Oren",
+                    "No one is breaking anything in my tavern. No one is calling it our salvation, either.",
+                ),
+                StoryBeat(
+                    "Liora", "Put it somewhere people do not have to die proving what it is."
+                ),
+                StoryBeat(
+                    "Joffrey",
+                    "If it explains the routes, it may keep the next patrol alive. That is reason enough to study it—not reason enough to trust it.",
+                ),
+                StoryBeat(
+                    "Pell",
+                    "Three points. Knew a fellow with a three-point plan once. Lost two points and married the third.",
+                ),
+                StoryBeat("Narrator", "Oren's look ends the joke.", portrait_name=""),
+                StoryBeat(
+                    "Narrator",
+                    "As the room returns to scattered debate, Tavin clears an untouched cup "
+                    "near you.",
+                    portrait_name="",
+                ),
+                StoryBeat(
+                    "Tavin",
+                    "Everyone here has decided what the relic means. Did it tell you anything "
+                    "itself?",
+                ),
+            )
+        )
+        story["first_relic_tavern_aftermath_seen"] = True
+
+    def _show_hooded_triangulus_response(self) -> None:
+        """Echo the player's altar answer on the first post-aftermath tavern exit."""
+        story = main_story.ensure_state(self.player_char)
+        if not story.get("first_relic_tavern_aftermath_seen") or story.get(
+            "hooded_figure_triangulus_response_seen"
+        ):
+            return
+        echoes = {
+            "ChosenName": ("At the altar, you said the name you choose is still yours."),
+            "Deeds": (
+                "At the altar, you said what you've done and what you do next are still yours."
+            ),
+            "Memory": "At the altar, you said what you refuse to forget is still yours.",
+            "NextChoice": ("At the altar, you said your next choice is still yours."),
+        }
+        echo = echoes.get(
+            story.get("triangulus_identity_answer"),
+            "At the altar, you gave an answer no witness could reward or correct.",
+        )
+        scene = StorySceneScreen(
+            self.presenter,
+            "Outside The Thirsty Dog",
+            participants=("Hooded Figure",),
+            background_image="intro_06_thirsty_dog.jpg",
+            player_char=self.player_char,
+        )
+        scene.show_dialogue(
+            (
+                StoryBeat(
+                    "Narrator",
+                    "Outside, the Hooded Figure stands beneath the eaves without blocking your "
+                    "path.",
+                    portrait_name="",
+                ),
+                StoryBeat(
+                    "Hooded Figure",
+                    "Inside, they've called it a promise, an omen, and a threat. They don't know "
+                    "which one it is.",
+                ),
+                StoryBeat("Hooded Figure", echo),
+                StoryBeat(
+                    "Hooded Figure",
+                    "Let them argue. Keep your own answer. It mattered because you chose it, not "
+                    "because anyone approved.",
+                ),
+            )
+        )
+        story["hooded_figure_triangulus_response_seen"] = True
 
     def _random_patron_comment(self, patron: str) -> str | None:
         # Gather patron-specific dialogues eligible for the player's level
@@ -75,30 +209,35 @@ class InnManager(TownScreenBase):
 
     def _build_patron_list(self):
         """Build the list of available patrons based on quest state."""
-        options = ["Barkeep"]
+        options = ["Oren"]
         if "A Bad Dream" in self.player_char.quest_dict.get("Main", {}):
             if not self.player_char.quest_dict["Main"]["A Bad Dream"].get("Turned In"):
-                options.append("Waitress")
+                options.append("Liora")
             else:
-                options.append("Busboy")
+                options.append("Tavin")
         else:
-            options.append("Waitress")
-        if self.player_char.player_level() >= 8:
-            options.append("Drunkard")
-            if self.player_char.player_level() >= 10:
-                options.append("Soldier")
-                if self.player_char.player_level() >= 25:
-                    if "Red Dragon" in self.player_char.quest_dict.get("Main", {}):
-                        if not self.player_char.quest_dict["Main"]["Red Dragon"].get("Turned In"):
-                            options.append("Hooded Figure")
-                    else:
+            options.append("Liora")
+        # Pell is present in the arrival scene, so he remains available from
+        # the player's first deliberate tavern visit onward.
+        options.append("Pell")
+        if self.player_char.player_level() >= 10:
+            options.append("Joffrey")
+            if self.player_char.player_level() >= 25:
+                if "Red Dragon" in self.player_char.quest_dict.get("Main", {}):
+                    if not self.player_char.quest_dict["Main"]["Red Dragon"].get("Turned In"):
                         options.append("Hooded Figure")
+                else:
+                    options.append("Hooded Figure")
         options.append("Back")
         return options
 
     def talk_to_patrons(self):
         """Talk to tavern patrons and access their quests."""
-        patrons_screen = LocationMenuScreen(self.presenter, "The Thirsty Dog - Patrons")
+        patrons_screen = LocationMenuScreen(
+            self.presenter,
+            "The Thirsty Dog - Patrons",
+            background_image="tavern.jpg",
+        )
 
         while True:
             # Rebuild patron list each iteration to reflect quest state changes
@@ -116,8 +255,16 @@ class InnManager(TownScreenBase):
                 return
 
             patron = options[choice]
+            patron_role = self.PATRON_ROLES[patron]
             # Route to quest manager for applicable quest givers
-            if patron in ("Barkeep", "Waitress", "Soldier", "Busboy", "Hooded Figure", "Drunkard"):
+            if patron_role in (
+                "Barkeep",
+                "Waitress",
+                "Soldier",
+                "Busboy",
+                "Hooded Figure",
+                "Drunkard",
+            ):
                 from .quest_manager import QuestManager
 
                 qm = QuestManager(
@@ -129,15 +276,15 @@ class InnManager(TownScreenBase):
                     renderer_preserve_formatting=True,
                 )
                 did_action, showed_message = qm.check_and_offer(
-                    patron, show_help=False, suppress_no_quests_message=True
+                    patron_role, show_help=False, suppress_no_quests_message=True
                 )
                 if not did_action and not showed_message:
                     # Mix a random patron comment with a random quest help hint
                     pool = []
-                    hint = qm.get_random_help_hint(patron)
+                    hint = qm.get_random_help_hint(patron_role)
                     if hint:
                         pool.append(hint)
-                    comment = self._random_patron_comment(patron)
+                    comment = self._random_patron_comment(patron_role)
                     if comment:
                         pool.append(comment)
                     if pool:
@@ -155,7 +302,9 @@ class InnManager(TownScreenBase):
         # Check for completable bounties
         bounty_dict = self.player_char.quest_dict.get("Bounty", {})
 
-        bounty_screen = LocationMenuScreen(self.presenter, "Bounty Board")
+        bounty_screen = LocationMenuScreen(
+            self.presenter, "Bounty Board", background_image="tavern.jpg"
+        )
         previous_background_draw_func = self._popup_background_draw_func
         self._popup_background_draw_func = lambda: bounty_screen.draw_frame(do_flip=False)
 
@@ -203,7 +352,9 @@ class InnManager(TownScreenBase):
     def accept_bounty(self):
         """Accept a bounty from the board."""
         bounty_dict = self.player_char.quest_dict.get("Bounty", {})
-        bounty_screen = LocationMenuScreen(self.presenter, "Accept Bounty")
+        bounty_screen = LocationMenuScreen(
+            self.presenter, "Accept Bounty", background_image="tavern.jpg"
+        )
 
         while True:
             if active_bounty_count(self.player_char) >= MAX_ACTIVE_BOUNTIES:
@@ -284,7 +435,9 @@ class InnManager(TownScreenBase):
             popup.show(**self.popup_show_kwargs())
             return
 
-        bounty_screen = LocationMenuScreen(self.presenter, "Turn In Bounty")
+        bounty_screen = LocationMenuScreen(
+            self.presenter, "Turn In Bounty", background_image="tavern.jpg"
+        )
         remaining = list(completable)
         while remaining:
             bounty_options = [(name, 0) for name in remaining]
@@ -365,7 +518,9 @@ class InnManager(TownScreenBase):
             popup.show(**self.popup_show_kwargs())
             return
 
-        bounty_screen = LocationMenuScreen(self.presenter, "Abandon Bounty")
+        bounty_screen = LocationMenuScreen(
+            self.presenter, "Abandon Bounty", background_image="tavern.jpg"
+        )
         while bounty_dict:
             bounty_options = [(name, 0) for name in bounty_dict]
             bounty_options.append(("Back", 0))
@@ -416,7 +571,9 @@ class InnManager(TownScreenBase):
             popup.show(**self.popup_show_kwargs())
             return
 
-        bounty_screen = LocationMenuScreen(self.presenter, "Active Bounties")
+        bounty_screen = LocationMenuScreen(
+            self.presenter, "Active Bounties", background_image="tavern.jpg"
+        )
 
         # Build display list
         bounty_display = []

@@ -106,7 +106,13 @@ class RendererSpecialTileMixin:
     def _render_center_floor_special_tiles(self, scene, zones) -> None:
         for visible_depth in scene.depths:
             tile = visible_depth.source_tile
-            if tile is None or "WarpPoint" not in type(tile).__name__:
+            if tile is None:
+                continue
+
+            tile_type = type(tile).__name__
+            is_warp_point = "WarpPoint" in tile_type
+            is_current_down_ladder = visible_depth.depth == 1 and "LadderDown" in tile_type
+            if not is_warp_point and not is_current_down_ladder:
                 continue
 
             quad = self._get_center_floor_slot_quad(
@@ -114,9 +120,25 @@ class RendererSpecialTileMixin:
                 depth=visible_depth.depth,
                 slot_suffix="x0",
             )
-            self._render_center_floor_warp_point(
-                quad,
-                darkness=self._get_layer_darkness(visible_depth.depth),
+            darkness = self._get_layer_darkness(visible_depth.depth)
+            if is_warp_point:
+                self._render_center_floor_warp_point(
+                    quad,
+                    darkness=darkness,
+                    depth=visible_depth.depth,
+                )
+                continue
+
+            bounds = quad.bounding_rect()
+            self._render_special_tile(
+                tile,
+                pygame.Rect(
+                    round(bounds.x),
+                    round(bounds.y),
+                    max(1, round(bounds.w)),
+                    max(1, round(bounds.h)),
+                ),
+                darkness=darkness,
                 depth=visible_depth.depth,
             )
 

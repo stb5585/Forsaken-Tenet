@@ -905,8 +905,8 @@ class WeaponSwap(Skill):
         weapon = kwargs.get("weapon") or self.selected_weapon
         self.selected_weapon = None
         choices = self.available_weapons(user)
-        if weapon is None and choices:
-            weapon = choices[0]
+        if weapon is None:
+            return "Choose a carried weapon before using Weapon Swap.\n"
         if weapon not in choices:
             return "There is no different weapon available to equip.\n"
         old_name = user.equipment["Weapon"].name
