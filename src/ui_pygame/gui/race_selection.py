@@ -6,6 +6,7 @@ import pygame
 
 from src.ui_pygame.screen_runtime import get_events
 
+from .creation_theme import draw_creation_background, draw_creation_panel
 from .input_guards import (
     prepare_guarded_input,
     release_guard_allows_input,
@@ -22,7 +23,7 @@ class RaceSelectionScreen:
     Right panel: List of available races
     """
 
-    def __init__(self, presenter):
+    def __init__(self, presenter, background_draw_func=None):
         self.presenter = presenter
         self.screen = presenter.screen
         self.width = presenter.width
@@ -41,6 +42,7 @@ class RaceSelectionScreen:
         self.title_font = presenter.title_font
         self.normal_font = presenter.normal_font
         self.small_font = presenter.small_font
+        self.background_draw_func = background_draw_func
 
         # State
         self.current_selection = 0
@@ -82,8 +84,9 @@ class RaceSelectionScreen:
 
     def draw_header(self):
         """Draw the header with title."""
-        pygame.draw.rect(self.screen, self.BLACK, self.header_rect)
-        pygame.draw.rect(self.screen, self.BORDER_COLOR, self.header_rect, 2)
+        draw_creation_panel(
+            self.screen, self.header_rect, self.BORDER_COLOR, self.background_draw_func
+        )
 
         title = self.normal_font.render("Select the race for your character", True, self.GOLD)
         title_rect = title.get_rect(centerx=self.width // 2, centery=self.header_rect.centery)
@@ -91,8 +94,9 @@ class RaceSelectionScreen:
 
     def draw_race_details(self):
         """Draw the detailed race information panel."""
-        pygame.draw.rect(self.screen, self.BLACK, self.details_rect)
-        pygame.draw.rect(self.screen, self.BORDER_COLOR, self.details_rect, 2)
+        draw_creation_panel(
+            self.screen, self.details_rect, self.BORDER_COLOR, self.background_draw_func
+        )
 
         if not self.races or self.current_selection >= len(self.races):
             return
@@ -312,8 +316,9 @@ class RaceSelectionScreen:
 
     def draw_race_list(self):
         """Draw the race list panel."""
-        pygame.draw.rect(self.screen, self.BLACK, self.list_rect)
-        pygame.draw.rect(self.screen, self.BORDER_COLOR, self.list_rect, 2)
+        draw_creation_panel(
+            self.screen, self.list_rect, self.BORDER_COLOR, self.background_draw_func
+        )
 
         if not self.races:
             no_races = self.normal_font.render("No races available", True, self.GRAY)
@@ -345,7 +350,12 @@ class RaceSelectionScreen:
 
     def draw_all(self):
         """Draw all UI elements."""
-        self.screen.fill(self.BLACK)
+        draw_creation_background(
+            self.screen,
+            (self.width, self.height),
+            self.background_draw_func,
+            fallback_color=self.BLACK,
+        )
         self.draw_header()
         self.draw_race_details()
         self.draw_race_list()

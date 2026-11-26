@@ -6,6 +6,7 @@ import pygame
 
 from src.ui_pygame.screen_runtime import get_events
 
+from .creation_theme import draw_creation_background, draw_creation_panel
 from .input_guards import (
     prepare_guarded_input,
     release_guard_allows_input,
@@ -32,7 +33,7 @@ class ClassSelectionScreen:
     Right panel: List of available classes for the selected race
     """
 
-    def __init__(self, presenter):
+    def __init__(self, presenter, background_draw_func=None):
         self.presenter = presenter
         self.screen = presenter.screen
         self.width = presenter.width
@@ -51,6 +52,7 @@ class ClassSelectionScreen:
         self.title_font = presenter.title_font
         self.normal_font = presenter.normal_font
         self.small_font = presenter.small_font
+        self.background_draw_func = background_draw_func
 
         # State
         self.current_selection = 0
@@ -94,8 +96,9 @@ class ClassSelectionScreen:
 
     def draw_header(self):
         """Draw the header with title."""
-        pygame.draw.rect(self.screen, self.BLACK, self.header_rect)
-        pygame.draw.rect(self.screen, self.BORDER_COLOR, self.header_rect, 2)
+        draw_creation_panel(
+            self.screen, self.header_rect, self.BORDER_COLOR, self.background_draw_func
+        )
 
         title = self.normal_font.render(
             f"Select the class for your {self.race_name} character", True, self.GOLD
@@ -105,8 +108,9 @@ class ClassSelectionScreen:
 
     def draw_class_details(self):
         """Draw the detailed class information panel."""
-        pygame.draw.rect(self.screen, self.BLACK, self.details_rect)
-        pygame.draw.rect(self.screen, self.BORDER_COLOR, self.details_rect, 2)
+        draw_creation_panel(
+            self.screen, self.details_rect, self.BORDER_COLOR, self.background_draw_func
+        )
 
         if not self.available_classes or self.current_selection >= len(self.available_classes):
             return
@@ -232,8 +236,9 @@ class ClassSelectionScreen:
 
     def draw_class_list(self):
         """Draw the class list panel."""
-        pygame.draw.rect(self.screen, self.BLACK, self.list_rect)
-        pygame.draw.rect(self.screen, self.BORDER_COLOR, self.list_rect, 2)
+        draw_creation_panel(
+            self.screen, self.list_rect, self.BORDER_COLOR, self.background_draw_func
+        )
 
         if not self.available_classes:
             no_classes = self.normal_font.render("No classes available", True, self.GRAY)
@@ -265,7 +270,12 @@ class ClassSelectionScreen:
 
     def draw_all(self):
         """Draw all UI elements."""
-        self.screen.fill(self.BLACK)
+        draw_creation_background(
+            self.screen,
+            (self.width, self.height),
+            self.background_draw_func,
+            fallback_color=self.BLACK,
+        )
         self.draw_header()
         self.draw_class_details()
         self.draw_class_list()

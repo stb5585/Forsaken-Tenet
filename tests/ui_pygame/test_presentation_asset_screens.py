@@ -107,6 +107,16 @@ def test_character_created_screen_draws_summary_and_accepts_keyboard(monkeypatch
         portrait_variant=2,
         health=SimpleNamespace(max=42),
         mana=SimpleNamespace(max=31),
+        equipment={"OffHand": SimpleNamespace(typ="Armor")},
+        check_mod=lambda mod: {
+            "weapon": 14,
+            "armor": 9,
+            "magic": 18,
+            "magic def": 11,
+            "shield": 12,
+            "speed": 7,
+        }[mod],
+        critical_chance=lambda _attack_type: 0.075,
     )
     manager = SimpleNamespace(get_portrait=lambda *args, **kwargs: portrait)
     screen = presentation_asset_screens.CharacterCreatedScreen(
@@ -122,14 +132,19 @@ def test_character_created_screen_draws_summary_and_accepts_keyboard(monkeypatch
         + presenter.small_font.render_calls
     )
     assert "Character Created" in rendered
-    assert "Ready for Silvana" in rendered
     assert "Ada" in rendered
     assert "Elf" in rendered
     assert "Female" in rendered
     assert "Mage" in rendered
     assert "42" in rendered
     assert "31" in rendered
-    assert any("1 Progression Point" in text for text in rendered)
+    assert "Combat Stats" in rendered
+    assert "Attack" in rendered
+    assert "Magic Defense" in rendered
+    assert "14" in rendered
+    assert "7.5%" in rendered
+    assert "12%" in rendered
+    assert all("Progression Point" not in text for text in rendered)
 
     event_batches = iter([[SimpleNamespace(type=pygame.KEYDOWN, key=pygame.K_RETURN)]])
     monkeypatch.setattr(
@@ -151,8 +166,12 @@ def test_character_created_screen_survives_portrait_fallback(monkeypatch):
         health=SimpleNamespace(max=20),
         mana=SimpleNamespace(max=10),
     )
+    fallback = pygame.Surface((225, 400), pygame.SRCALPHA)
     manager = SimpleNamespace(
-        get_portrait=lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError("missing"))
+        get_portrait=lambda *args, **kwargs: (_ for _ in ()).throw(
+            pygame.error("missing composed portrait")
+        ),
+        base_portrait=lambda *args, **kwargs: fallback,
     )
     screen = presentation_asset_screens.CharacterCreatedScreen(
         presenter, player, portrait_manager=manager
@@ -160,7 +179,7 @@ def test_character_created_screen_survives_portrait_fallback(monkeypatch):
 
     screen.draw()
 
-    assert screen.portrait is None
+    assert screen.portrait is fallback
     assert presenter.screen.blit_calls
 
 
@@ -176,6 +195,8 @@ def test_story_card_sequence_advances_with_keyboard_mouse_and_can_skip(monkeypat
     event_batches = iter(
         [
             [SimpleNamespace(type=pygame.KEYDOWN, key=pygame.K_SPACE)],
+            [SimpleNamespace(type=pygame.KEYDOWN, key=pygame.K_SPACE)],
+            [SimpleNamespace(type=pygame.MOUSEBUTTONDOWN, button=1, pos=(40, 40))],
             [SimpleNamespace(type=pygame.MOUSEBUTTONDOWN, button=1, pos=(450, 620))],
         ]
     )
@@ -186,9 +207,13 @@ def test_story_card_sequence_advances_with_keyboard_mouse_and_can_skip(monkeypat
 
     assert sequence.show() is True
     assert sequence.page_index == 1
-    assert "The Story Begins" in presenter.title_font.render_calls
-    assert "1/2" in presenter.small_font.render_calls
-    assert "2/2" in presenter.small_font.render_calls
+    assert "The Story Begins" not in presenter.title_font.render_calls
+    assert "1/2" not in presenter.small_font.render_calls
+    assert "2/2" not in presenter.small_font.render_calls
+    assert "Click to reveal this passage" not in presenter.small_font.render_calls
+    assert "Click to continue" not in presenter.small_font.render_calls
+    assert "First page of the story." in presenter.large_font.render_calls
+    assert "Second page of the story." in presenter.large_font.render_calls
 
     skip_sequence = presentation_asset_screens.StoryCardSequence(
         presenter, ["Only page"], title="Skip Me"
@@ -200,3 +225,95 @@ def test_story_card_sequence_advances_with_keyboard_mouse_and_can_skip(monkeypat
     )
 
     assert skip_sequence.show() is False
+
+
+def test_story_card_sequence_uses_configured_reveal_speed():
+    presenter = _make_presenter()
+    presenter.story_dialogue_cps = 12
+    sequence = presentation_asset_screens.StoryCardSequence(
+        presenter,
+        ["A passage revealed one character at a time."],
+    )
+    sequence._page_started_ms = 1000
+
+    assert sequence._visible_character_count(1500) == 6
+    sequence._page_complete = True
+    assert sequence._visible_character_count(1500) == len(
+        sequence._wrapped_story_text(sequence.pages[0])
+    )
+
+
+def test_story_card_sequence_wraps_complete_words_before_revealing():
+    presenter = _make_presenter()
+    presenter.width = 180
+    presenter.screen = RecordingScreen((180, 700))
+    sequence = presentation_asset_screens.StoryCardSequence(
+        presenter,
+        ["Alpha beta gamma"],
+    )
+
+    wrapped = sequence._wrapped_story_text(sequence.pages[0])
+
+    assert wrapped == "Alpha beta\ngamma"
+    assert wrapped[:12].splitlines() == ["Alpha beta", "g"]
+
+
+def test_story_card_sequence_fades_each_card_in_and_out(monkeypatch):
+    _patch_drawing(monkeypatch)
+    presenter = _make_presenter()
+    sequence = presentation_asset_screens.StoryCardSequence(
+        presenter,
+        ["First page.", "Second page."],
+    )
+    fades = []
+    monkeypatch.setattr(
+        sequence,
+        "_fade_in",
+        lambda duration: fades.append(("in", sequence.page_index, duration)),
+    )
+    monkeypatch.setattr(
+        sequence,
+        "_fade_out",
+        lambda duration: fades.append(("out", sequence.page_index, duration)),
+    )
+    event_batches = iter(
+        [
+            [SimpleNamespace(type=pygame.KEYDOWN, key=pygame.K_SPACE)],
+            [SimpleNamespace(type=pygame.KEYDOWN, key=pygame.K_SPACE)],
+            [SimpleNamespace(type=pygame.KEYDOWN, key=pygame.K_SPACE)],
+            [SimpleNamespace(type=pygame.KEYDOWN, key=pygame.K_SPACE)],
+        ]
+    )
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.presentation_asset_screens.pygame.event.get",
+        lambda: next(event_batches, []),
+    )
+
+    assert sequence.show(fade_in_ms=300) is True
+    assert fades == [
+        ("in", 0, 300),
+        ("out", 0, 300),
+        ("in", 1, 300),
+        ("out", 1, 300),
+    ]
+
+
+def test_fade_to_black_rejects_negative_durations():
+    presenter = _make_presenter()
+
+    with pytest.raises(ValueError, match="durations"):
+        presentation_asset_screens.fade_to_black(presenter, duration_ms=-1)
+
+
+def test_intro_story_images_are_complete_landscape_set():
+    paths = presentation_asset_screens.INTRO_STORY_IMAGE_PATHS
+
+    assert len(paths) == 6
+    for path in paths:
+        assert path.exists()
+        assert pygame.image.load(str(path)).get_size() == (1280, 720)
+
+    assert presentation_asset_screens.DUNGEON_ENTRY_IMAGE_PATHS[0].exists()
+    assert pygame.image.load(
+        str(presentation_asset_screens.DUNGEON_ENTRY_IMAGE_PATHS[0])
+    ).get_size() == (1280, 720)

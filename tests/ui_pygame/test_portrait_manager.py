@@ -142,6 +142,7 @@ def test_portrait_key_normalization_variants():
     assert (
         PortraitManager.entry_key(SimpleNamespace(name="Half Orc"), "Female") == "half_orc_female"
     )
+    assert PortraitManager.appearance_id("Human", "Male", 4) == "human_male_5"
 
 
 def test_base_portrait_lookup_uses_selected_sheet_variant(tmp_path):

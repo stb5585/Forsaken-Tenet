@@ -153,7 +153,10 @@ def _install_presenter_fakes(monkeypatch, *, fullscreen=False):
     large_font = RecordingFont()
     normal_font = RecordingFont()
     small_font = RecordingFont()
+    story_font = RecordingFont()
+    story_title_font = RecordingFont()
     fonts = iter([title_font, large_font, normal_font, small_font])
+    story_fonts = iter([story_font, story_title_font])
     flip_calls = []
     captions = []
     quit_calls = []
@@ -186,6 +189,11 @@ def _install_presenter_fakes(monkeypatch, *, fullscreen=False):
     monkeypatch.setattr(
         "src.ui_pygame.presentation.pygame_presenter.pygame.font.Font",
         lambda *_args, **_kwargs: next(fonts),
+    )
+    monkeypatch.setattr(
+        pygame_presenter,
+        "_artistic_story_font",
+        lambda *_args, **_kwargs: next(story_fonts),
     )
     monkeypatch.setattr(
         "src.ui_pygame.presentation.pygame_presenter.pygame.time.Clock",
