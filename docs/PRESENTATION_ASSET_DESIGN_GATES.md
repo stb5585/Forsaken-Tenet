@@ -31,15 +31,66 @@ in, and fallbacks remain valid.
 ## Screen Polish V1
 
 Character creation should end with a presentation screen, not a plain text
-popup. The screen shows the selected portrait, name, race, sex, class, HP, and
-MP. It has a single clear continue action and accepts keyboard confirm or mouse
-click. The screen is presentation-only and must not change character creation,
-save fields, starting stats, inventory, or class/race selection behavior.
+popup. The screen shows the selected portrait, identity and resource summary,
+then the newly created character's attack, defense, magic attack, magic defense,
+critical chance, block, and speed. It has a single clear continue action and
+accepts keyboard confirm or mouse click. The screen is presentation-only and
+must not change character creation, save fields, starting stats, inventory, or
+class/race selection behavior.
 
-New Game intro text should use reusable story cards. Story cards show a title,
-page counter, wrapped body text, and a clear continue action. They should accept
-keyboard confirm or mouse click, and may allow Escape to skip the remaining
-story sequence without cancelling character creation.
+New Game intro text uses reusable illustrated story cards. Each card shows only
+slow-printed story text over full-screen art: no title, text box, page counter,
+or continue label. Complete passages are wrapped before their characters are
+revealed so a partly typed word never jumps between lines. Every card fades in
+and out. Keyboard confirm or mouse click first completes the current passage
+and a second activation advances; Escape may skip the remaining story sequence
+without cancelling character creation. After the final card, hold on black long
+enough to create a clear break before opening dialogue.
+
+The sixth card now ends at the illuminated Thirsty Dog rather than showing the
+dungeon prematurely. P1 fades into a dedicated tavern interior with an
+establishing narration beat; that background is shared by the tavern menus and
+later tavern scenes, with the town art as fallback. The former sixth-card
+descent art appears once when the player deliberately enters the dungeon.
+Story-scene dialogue follows the same complete-passage wrapping rule as cards.
+Story scenes use a dark visual-novel composition rather than a cumulative
+transcript: the background remains visible, one beat occupies a lower dialogue
+box, and no more than three existing portraits are staged at once. Principal
+participants hold opposite sides, associated third participants use a smaller
+recessed position, and only the least-relevant slot changes when another speaker
+enters. Narration retains the staged scene without naming or picturing a
+narrator. Dialogue history provides access to earlier authored beats.
+
+Player dialogue bodies are transparent full-figure cutouts mapped from the same
+canonical appearance ID as the character-creation face atlas. All 70 playable
+race, sex, and portrait-variant combinations are populated; character creation
+continues to use its existing face crops.
+The hero consumes one of the three staged-character slots and follows the same
+beat-relevance rotation as NPCs: it enters for authored player beats, can remain
+visible while relevant, and rotates out without special protection. Each mapped
+cutout may declare its native facing; the renderer mirrors that same surface
+when its stage side would otherwise point it away from the exchange. Missing
+dialogue-body assets remain absent rather than displaying a generic body,
+rectangular face crop, or framed portrait.
+
+NPC dialogue cutouts use the same inward-facing contract. Their native facing
+is recorded by art key, aliases inherit that metadata, and the renderer mirrors
+the existing surface only when its fixed stage side would point it off-screen.
+Listeners remain fully opaque and are subdued by darkening their color values;
+the scene background must never show through solid areas of a character cutout.
+Story scenes use clean venue artwork rather than snapshots of navigable menus,
+so unrelated option lists, borders, and selection state do not appear behind
+dialogue.
+
+The barracks owns a dedicated empty map-room background with normal and
+high-resolution runtime variants. Patrol-ledger review and the post-descent
+route correction use that interior. The latter first establishes Joffrey and
+Liora waiting in the rainy courtyard, then moves the cast into the barracks;
+it must not imply that Caedmon convened military route work in the tavern.
+
+Character-creation panels remain translucent so the title backdrop is visible.
+The accepted-character screen uses the selected portrait, with the matching
+base portrait as a fallback if class-layer composition is unavailable.
 
 Shop screen mouse support has shipped for main shop options, item rows, subtype
 tabs, and item-list wheel scrolling while preserving keyboard behavior and
@@ -166,10 +217,8 @@ sprite when an approved Warp Point asset is absent.
 
 Town/NPC/Venue renderings are batch-gated by art direction, target list,
 dimensions, and review workflow. Approved shipped targets include recurring
-town NPCs, Old Warehouse guards, staffed Warp Point scientists, and selected
-endgame story figures. Remaining candidate scene targets:
-
-- Bring Him Home family and child scenes.
+town NPCs, Old Warehouse guards, staffed Warp Point scientists, selected
+endgame story figures, and the `Bring Him Home` child/family cast.
 
 ### NPC Artistic Renderings
 
@@ -252,8 +301,6 @@ panels, shop panes, combat HUDs, enemy info panels, bounty boards, or ending
 text unless that future pass explicitly adds a matching runtime surface.
 
 - `joffrey_body`: Joffrey discovery/dead-body story art.
-- `timmy_found`: Timmy found in the dungeon.
-- `timmy_home`: Timmy reunited with family.
 - `waitress_grief`: Waitress locket/Joffrey grief scene or variant.
 - `waitress_mad`: optional hostile grief-transformed variant, separate from
   the existing Mad Waitress enemy sprite.
@@ -263,6 +310,14 @@ text unless that future pass explicitly adds a matching runtime surface.
   a principle, not a person or portrait target.
 - `thirsty_dog_epilogue`: optional tavern aftermath art after
   `main_story_complete`, focused on absence and aftermath rather than triumph.
+
+`Bring Him Home` now uses the shared staged-dialogue surface at both quest
+moments. `timmy`, `timmy_mother`, and `timmy_father` are transparent full-body
+cutouts used only by those scenes. Discovery retains the clean dungeon
+background and occurs before the existing automatic return to town; reunion
+uses the clean town background before quest rewards, experience, level-up, and
+the turned-in flag are applied, then rotates Timmy, both parents, and Caedmon
+through the three-portrait limit.
 
 Venue-wide scenes and location-panel art remain deferred to a separate future
 batch.

@@ -288,6 +288,9 @@ structural work.
   catalog with an icon-based, drag-and-drop shortcut editor; All Actions is a
   read-only combat catalog. Mouse and controller navigation provide equivalent
   selection, target, detail, and cancellation operations.
+- Weapon Swap always opens the carried-weapon chooser, including when invoked
+  from a shortcut. Cancelling the chooser spends no turn; the core action never
+  selects an inventory weapon implicitly.
 - Ordinary cave paths can contain persistent gathering nodes. Every character
   sees the node overlay, but Druid/Archdruid identify and harvest Acorn, Vine
   Seed, Fungus Spore, and Hemlock Root, while Assassin identifies and harvests
@@ -315,6 +318,10 @@ structural work.
   Defeated actor badges remain through their sprite fade. Up to three prioritized
   class-resource rows are supplied under stable provider keys; extra rows collapse
   behind an accessible `+N` detail entry.
+- Encumbrance remains a core player-state rule rather than a frontend-only
+  calculation. The shared dungeon/combat HUD presents a text-complete warning,
+  and the Character Menu reinforces the same state by coloring the carry-weight
+  value red.
 - The minimum supported layout remains 1024x720 and the existing two enemy
   lanes remain authoritative. Concealed lanes show only a generic presence.
 - Dungeon and paid Inn resting are deferred. Current town auto-heal remains
@@ -369,7 +376,10 @@ Current slice status:
   target through subsequent charge ticks, and refunds nothing on cancellation
   or target loss. Forced actions are complete: canonical intents cannot bypass
   Berserk, charge, Jump, or cancellation decisions, and a cancellation stays
-  enforced for its owner opportunity after clearing its charge state.
+  enforced for its owner opportunity after clearing its charge state. If an
+  actor becomes disarmed while a weapon-tagged action is charging, turn
+  preparation cancels the pending intent and ability charge before it can be
+  forced to release; non-weapon charges are unaffected.
   Reactions now resolve inside their triggering result without advancing
   readiness and cannot re-enter through a counter-result. Statuses now tick
   only at their owner's pre-turn readiness opportunity, including Paladin

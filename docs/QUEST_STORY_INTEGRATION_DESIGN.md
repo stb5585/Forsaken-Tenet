@@ -116,7 +116,7 @@ completion trigger.
 | `Spores in the Dark` | Preserve | Early environmental texture and optional dungeon work. |
 | `Ticket to Ride` | Preserve | Optional town/economy texture; naturalize copy during the supporting-content pass. |
 | `An Honest Introduction` | Preserve | Early character and system introduction. Keep tutorial directions distinct from in-world dialogue. |
-| `Rookie Mistake` | Revise | Chapter 1 body recovery and burial. Preserve the Rookie's death, body-transport mechanics, and rewards; soften victim-blaming language. The revised `Something to Cry About` uses the expedition's sole survivor mourning a different dead companion. |
+| `Rookie Mistake` | Revised | Chapter 1 body recovery and burial. Returning through Silvana's gate with the body now triggers Caedmon's courtyard reception and a Priest-led graveyard burial before the body is consumed or rewards settle. The revised `Something to Cry About` uses the expedition's sole survivor mourning a different dead companion. |
 | `Loose Ends` | Preserve | Chapter 3 supporting Order conflict. |
 | `Eight Is Enough` | Preserve | Optional creature-hunt texture; polish tone without promoting it to campaign causality. |
 | `The Spring's Reflection` | Preserve | Chapter 4 location and nature support. |

@@ -1,6 +1,11 @@
 # Prologue Through Triangulus Production Packet
 
-Status: **Ready for Implementation — Runtime Mapping Verified**
+Status: **Implemented — Automated Validation Complete; Manual Playtest Pending**
+
+Implementation landed on October 24, 2026. P0–C12 now use persistent opening
+state, the shared relic transition, atomic Progression-category save migration,
+and story-gated `Cry Havoc!` eligibility. The manual prompts at the end of this
+packet remain the release evidence gate.
 
 Review checkpoint: P0–P3, C1, and C4–C12 are accepted. C2–C3 remain preserved
 implementation contracts. Owner-document reconciliation and static runtime
@@ -115,32 +120,38 @@ adjust line wrapping and contractions but must not add early spoilers.
    counts missing names. The church prays for people it has not met yet.”
 5. **The hero:** “You arrive with reasons of your own: fortune, service,
    knowledge, or the chance to become someone your old life would not permit.”
-6. **The choice:** “Silvana has sent out its plea. Step below, if you choose.
-   Return with answers, if the dark allows it.”
+6. **The tavern:** “By nightfall, the road brings you through Silvana's gates.
+   Rain has closed the market and emptied the streets, but one public house is
+   still lit: The Thirsty Dog. Newcomers find a meal, work, and news there. You
+   step inside.”
 
 ### P1 — Ordinary Evening And Arrival Motive
 
-The scene opens on work already in progress.
+The scene fades in over a dedicated tavern interior. It opens with one
+establishing narration beat before showing work already in progress:
+
+> Rain follows you through the door of The Thirsty Dog. The room is warm,
+> crowded, and loud enough that no one notices the newcomer at first. At the
+> bar, a familiar argument is already underway.
 
 - **Liora:** “If Pell invites everyone he owes a drink, we will need three more
   tables for the wedding.”
 - **Joffrey:** “Only three?”
-- **Pell:** “A debt is a kind of invitation.”
-- **Oren:** “Not in my tavern.”
+- **Pell:** “Hey! I thought that was pretty good...yeah, you're right. That does seem low.”
+- **Oren:** Too bad we don't have room for all of them.”
 
 Oren turns to the hero.
 
-- **Oren:** “New face. Oren Caldus. People come to Silvana chasing something or
-  fleeing it. What brought you to my door?”
+- **Oren:** “Hmm, I've never seen your face before. I'm Oren Caldus, the proprietor of this establishment. People come to Silvana chasing something or fleeing it. What about you?”
 
 The player chooses exactly one saved motive:
 
 | Value | Player-facing answer |
 | --- | --- |
-| `Fortune` | “The opened depths promise a better fortune than the road behind me.” |
+| `Fortune` | “I came for the money.” |
 | `Service` | “People are missing. If I can help, I should.” |
-| `Knowledge` | “I want to know what opened beneath this town.” |
-| `Reinvention` | “I needed a place where my old life would not choose for me.” |
+| `Knowledge` | “I want to know what opened under this town.” |
+| `Reinvention` | “I needed a fresh start.” |
 
 Oren acknowledges without judging the answer. Tavin places the drink Oren
 offered beside the hero before they ask twice. The Hooded Figure is visible in
@@ -178,29 +189,32 @@ set one remembered expression:
 
 | Value | Player-facing action |
 | --- | --- |
-| `ClearSpace` | Clear a place for Edrin and keep the crowd back. |
-| `SteadySurvivor` | Steady Edrin while Liora binds the wound. |
-| `RememberAccount` | Listen closely and repeat the account to Caedmon without embellishment. |
-| `FetchHelp` | Bring Caedmon's kit and Oren's clean water before being asked. |
+| `ClearSpace` | “I'll clear some space. Keep the crowd back.” |
+| `SteadySurvivor` | “I'll hold him steady while Liora works.” |
+| `RememberAccount` | “I'll repeat the report exactly as Edrin gave it.” |
+| `FetchHelp` | “I'll get Caedmon's kit and clean water.” |
 
 Oren later vouches for the conduct he observed. No response awards an item,
 experience, reputation, or mechanical bonus.
 
 ### P3 — Caedmon's Offer
 
-- **Oren:** “They helped before anyone promised coin.”
-- **Caedmon:** “That tells me why you trust their hands. It does not tell me
-  whether I trust their judgment.”
-- **Oren:** “Then give them something small enough to prove it.”
-- **Caedmon:** “Three patrols have returned with reports that contradict their
-  own maps. My people know those routes too well; every one of them begins by
-  defending what they remember.”
-- **Caedmon, to the hero:** “You are new. You have no old map to protect and no
-  comrade's pride to excuse. I do not need another confident story. Follow the
-  reports and bring me something the ledger cannot argue with.”
+- **Oren:** “Thanks for your help, stranger. Few I've encountered are willing
+  to aid without payment.”
+- Oren gives Caedmon a look to indicate his surprise. Caedmon does not return the look.
+- **Caedmon:** “You seem impressed, Oren. I am not as convinced just yet.”
+- **Oren:** “Then give them a chance to prove it.”
+- **Caedmon:** “Three patrols came back with reports that contradict their maps.
+  My people know those routes, so they keep defending what they remember.”
+- **Caedmon, to the hero:** “You're new. You don't have an old map or a patrol's
+  pride to defend. Follow the reports. Bring me evidence I can verify.”
 
 The player may accept `Uncertain Reports` or defer. Deferral returns control to
 town and leaves the offer available from Caedmon. It does not replay P1 or P2.
+Before town control returns, narration states that Caedmon has taken Edrin's
+report to the barracks. Acceptance points directly to the patrol ledgers;
+deferral states that the offer remains open. The first town frame suppresses
+the routine rest notice so it does not interrupt this handoff.
 
 ### C1 — Ledger Examination
 
@@ -216,7 +230,7 @@ The barracks presents three concise entries in any order:
 After all three are inspected:
 
 - **Edrin:** “I know what I saw. I just do not know when I saw it.”
-- **Joffrey:** “Bad maps drift. They do not repeat the same mistake in three
+- **Joffrey:** “Bad maps can drift. They don't repeat the same mistake in three
   different hands.”
 - **Caedmon:** “Then find what is repeating.”
 
@@ -224,6 +238,16 @@ Set `joffrey_patrol_briefing_seen`. This is the second required living Joffrey
 scene.
 
 ### C2 — First Descent
+
+The first deliberate `Enter Dungeon` selection presents the preserved descent
+illustration once:
+
+> The opened stair lies below the last town lantern. Behind you, Silvana keeps
+> its fires lit. Ahead, the steps vanish into the dark.
+>
+> You begin the descent. Return with answers, if the dark allows it.
+
+This illustrated threshold is separate from the later environmental evidence.
 
 At the existing north-edge descent target `(3, 0, 1)`, show once:
 
@@ -238,6 +262,9 @@ Guardian foundation.
 `Bring Him Home` and `Rookie Mistake` remain optional.
 
 - Timmy returns alive through the existing encounter and `Timmy Home` event.
+  Both moments now use staged dialogue: his discovery precedes the unchanged
+  automatic return to town, and his post-settlement reunion includes both
+  parents and Caedmon without changing rewards or Main-story gates.
   Oren, Liora, and Caedmon receive short repeat-safe acknowledgement lines.
 - The Rookie remains dead. Preserve the body at `(8, 8, 1)`, the two-Zombie
   encounter, the `Dead Soldier` inventory state, death-drop recovery, burial
@@ -256,14 +283,21 @@ companion on floor 2; the Rookie was not rescued.
 
 ### C4 — Joffrey's First Living Work Scene
 
-On the first eligible town return after the ledger is read:
+On the first eligible town return after the ledger is read, the town-loading
+handoff holds briefly on black and fades into Silvana's rainy courtyard. Joffrey
+and Liora are waiting beyond the last stair because the player's altered route
+matches Joffrey's earlier survey. They lead the player to Caedmon in the
+barracks map room; the clean barracks interior replaces both the town exterior
+and the unrelated tavern venue for the actual review.
+
+At the planning table:
 
 - **Joffrey:** “Your route and mine disagree at the same junction. I drew mine
   before you arrived.”
 - **Hero response:** acknowledge uncertainty, defend the observation, or ask
   what changed. The response is local flavor and need not persist in V1.
-- **Caedmon:** “A map is a promise to the next patrol. We correct it before we
-  ask someone else to trust it.”
+- **Caedmon:** “Patrols rely on these maps. We fix this before anyone goes back
+  down.”
 - **Liora:** “And when the correction sends another patrol down?”
 - **Joffrey:** “Then I go with them.”
 - **Liora:** “That is the answer I was afraid you would give.”
@@ -353,14 +387,14 @@ generic discovery copy with:
 
 Before granting the relic, ask:
 
-> When title, blood, and expectation fall silent, what remains yours?
+> Take away your title, bloodline, and what others expect. What is still yours?
 
 | Value | Player-facing answer |
 | --- | --- |
-| `ChosenName` | “The name I choose to answer to.” |
-| `Deeds` | “What I have done, and what I do next.” |
+| `ChosenName` | “The name I choose.” |
+| `Deeds` | “What I've done and what I do next.” |
 | `Memory` | “What I refuse to forget.” |
-| `NextChoice` | “The choice that is still mine to make.” |
+| `NextChoice` | “My next choice.” |
 
 Every answer is valid. It does not change stats, rewards, class legality,
 relic access, or quest completion. Store the answer for later dialogue,
@@ -412,7 +446,7 @@ The first reactions overlap:
 - **Excited patron:** “If one of those can make sense of the old records,
   imagine what six could show us.”
 - **Uneasy patron:** “Those records describe changing passages and missing
-  hours. Perhaps some things were hidden for a reason.”
+  hours. Maybe they were hidden for a reason.”
 - **Angry patron:** “Tomas is dead, Mira is gone, and we brought the thing they
   found home? Break it before it costs another name.”
 - **Oren:** “No one is breaking anything in my tavern. No one is calling it our
@@ -431,8 +465,8 @@ Oren's look ends Pell's joke before it displaces the argument.
 As the room returns to scattered debate, Tavin clears an untouched cup near the
 hero:
 
-- **Tavin:** “Everyone in this room has decided what that relic is. Did it seem
-  so eager to decide what you are?”
+- **Tavin:** “Everyone here has decided what the relic means. Did it tell you
+  anything itself?”
 
 The hero need not answer, and Tavin does not press. The varied reactions present
 the relic as opportunity, omen, and intolerable danger without supplying the
@@ -443,24 +477,23 @@ correct interpretation.
 At the next transition out of the tavern after C11, the Hooded Figure stands
 beneath the eaves without obstructing the hero's path.
 
-- **Hooded Figure:** “Inside, they have already named it promise, omen, and
-  threat. Certainty is often the first chain people offer one another.”
+- **Hooded Figure:** “Inside, they've called it a promise, an omen, and a threat.
+  They don't know which one it is.”
 
 The next line repeats the hero's stored `triangulus_identity_answer`:
 
 | Stored value | Hooded Figure line |
 | --- | --- |
-| `ChosenName` | “At the altar, you said what remained yours was the name you choose to answer to.” |
-| `Deeds` | “At the altar, you said what remained yours was what you have done, and what you do next.” |
-| `Memory` | “At the altar, you said what remained yours was what you refuse to forget.” |
-| `NextChoice` | “At the altar, you said what remained yours was the choice that is still yours to make.” |
+| `ChosenName` | “At the altar, you said the name you choose is still yours.” |
+| `Deeds` | “At the altar, you said what you've done and what you do next are still yours.” |
+| `Memory` | “At the altar, you said what you refuse to forget is still yours.” |
+| `NextChoice` | “At the altar, you said your next choice is still yours.” |
 | `Unrecorded` or unavailable | “At the altar, you gave an answer no witness could reward or correct.” |
 
 The Hooded Figure concludes:
 
-- **Hooded Figure:** “Let them argue over the relic. Do not let their certainty
-  replace it. Your answer mattered because it was freely yours—not because it
-  was the answer someone else wanted.”
+- **Hooded Figure:** “Let them argue. Keep your own answer. It mattered because
+  you chose it, not because anyone approved.”
 
 The hero may stop and listen or continue walking. Either action completes the
 scene. The Hooded Figure does not follow, block movement, grant an item, reveal
@@ -566,6 +599,7 @@ Add these normalized fields to `main_story`:
 | `arrival_aid` | `null` | `ClearSpace`, `SteadySurvivor`, `RememberAccount`, `FetchHelp`, or `Unrecorded`. |
 | `hooded_figure_observed` | `false` | The silent P1 observation has occurred. |
 | `opening_ledger_seen` | `false` | All three C1 entries and their conclusion have been presented. |
+| `dungeon_entry_story_seen` | `false` | The illustrated first-entry threshold has been shown or skipped. |
 | `first_descent_story_seen` | `false` | C2 environmental text has appeared. |
 | `joffrey_tavern_scene_seen` | `false` | P1 has completed; this is the first required living Joffrey scene. |
 | `joffrey_patrol_briefing_seen` | `false` | C1 has completed; this is the second required living Joffrey scene. |
@@ -583,6 +617,7 @@ owners.
 ### Retry And Repeat Behavior
 
 - P1–P2 run once on a fresh game after the intro cards.
+- The first-entry illustration runs once and does not consume the later C2 environmental observation.
 - P3 can be deferred and remains available through Caedmon.
 - Closing a presentation early must leave the current scene eligible to replay
   unless its mandatory state and choice were committed.
@@ -600,6 +635,8 @@ Current saves must not be forced through a new arrival scene retroactively.
 - New-player construction receives the fresh defaults above.
 - Loading a save created before these fields existed sets already-passed opening
   scenes to seen and records unavailable choices as `Unrecorded`.
+- Saves created before `dungeon_entry_story_seen` existed backfill it to seen;
+  only fresh characters receive the illustrated first-entry transition.
 - Migrated saves treat all three opening Joffrey living scenes as seen if
   `The Holy Relics` already exists; they must not be forced to replay scenes
   solely to satisfy the later Chapter 5 gate.
@@ -620,12 +657,50 @@ character.
 
 ## Presentation Contract
 
-- Use the existing `StoryCardSequence` for P0.
-- Use existing dialogue/special-event surfaces for P1–P3, C1, C4, and C10–C12.
-- Reuse current NPC art when available. No new portrait, map, or cinematic asset
-  is required for V1.
+- Use `StoryCardSequence` for P0 as a six-image illustrated prologue. Keep each
+  image relevant but ambiguous, render prose in the dedicated serif story face
+  at the player-selected dialogue speed, and require one input to complete the
+  current card before a separate input can advance it.
+- The sixth P0 card establishes The Thirsty Dog rather than depicting a dungeon
+  descent that has not happened. Preserve the former descent image for the
+  first deliberate `Enter Dungeon` transition.
+- Retain the title backdrop beneath the complete new-character flow. After the
+  accepted character summary, fade to black before P0; after P0, fade to black
+  again and hold briefly before the P1 tavern conversation begins.
+- Use the reusable Pygame `StorySceneScreen` for P1–P3, C1, C4, and C8–C12.
+  It retains the current town or dungeon setting and presents one authored beat
+  at a time in a restrained lower dialogue box. Stage at most three mapped
+  portraits in stable left, right, and associated-support positions; emphasize
+  the current speaker while keeping listeners visible but subdued. Narration
+  has no speaker name or portrait and does not change the staged cast. When a
+  fourth speaker enters, replace only the least-relevant visible portrait at
+  the beat boundary. The selected hero occupies one of those three slots and
+  enters, listens, and rotates out by the same future-relevance rule as NPCs;
+  do not seed or protect the hero independently of authored beats. Resolve hero
+  dialogue art from the same canonical race, sex, and variant appearance ID
+  used by character creation. Store its native facing with that mapping and
+  mirror the surface at render time when its stage side would point it away
+  from the exchange. Never substitute the face crop, a framed inset, or a
+  generic body when that ID has no populated dialogue asset. Prior beats remain
+  available through dialogue history.
+- Dialogue slow-prints at the player-selected Settings speed. One click or
+  confirmation completes the current line; a separate input advances to the
+  next speaker. Wrap complete beats before revealing characters so words never
+  jump between lines. Opening inputs and buffered double-clicks must not skip
+  beats.
+- Use the modal `StoryChoicePopup` for storyline responses and inspect-in-any-
+  order selections. Do not place story decisions in generic location menus or
+  flatten multi-speaker scenes into confirmation text.
+- Use mapped project-local portrait art for every speaking character. Named
+  characters sharing a scene must not resolve to the same generic portrait.
+- Caedmon Varr is the Sergeant, not a separate quest owner. Player-facing
+  barracks and quest presentation uses his personal name and portrait after
+  P2; the internal `Sergeant` giver key remains only as a compatibility boundary.
+  Deferring P3 leaves the offer with Caedmon at the barracks.
 - Keep the hero's motive and Triangulus answers in explicit selectable menus;
   do not encode them as free text.
+- Motive and aid choices are mandatory and do not expose an Escape action. P3
+  remains explicitly deferrable through its authored response.
 - Clear or release buffered input between consecutive cards, dialogue, and
   choice menus so one action cannot skip multiple beats.
 - Every scene must support keyboard and the existing semantic command path.

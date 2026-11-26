@@ -2,6 +2,78 @@
 
 ## [Unreleased]
 
+### Prologue Through Triangulus
+
+- Added the playable Silvana arrival, wounded-patrol interruption, remembered
+  motive and aid choices, deferrable `Uncertain Reports` offer, patrol-ledger
+  investigation, first-descent observation, and Joffrey route review.
+- Added Tomas and Mira's threshold outcome, the anonymous prior-explorer
+  fragment, a required saved Triangulus identity answer, the barracks report,
+  tavern aftermath, and answer-specific Hooded Figure response.
+- Added a staged visual-novel storyline UI with up to three persistent portraits,
+  active-speaker emphasis, one slow-printed beat at a time, dialogue history,
+  click-protected advance behavior, and popup choice menus; the opening tavern,
+  patrol ledger, first relic, and aftermath scenes now use it.
+- Reworked the new-game presentation so character creation retains the title
+  backdrop behind lighter translucent panels, character acceptance reliably
+  shows the selected portrait, and six ambiguous illustrated prologue cards
+  present only configurable slow-print serif prose over the art. Protected
+  reveal/advance clicks and a longer final fade-to-black hold separate the cards
+  from the tavern arrival.
+- Replaced the premature final-card descent with a Thirsty Dog exterior,
+  introduced a shared tavern-interior background and establishing arrival beat,
+  added explicit accepted/deferred town handoffs, and moved the preserved
+  descent illustration to the first deliberate dungeon entry.
+- Made required arrival choices non-cancellable, stabilized word wrapping in
+  slow-printed story dialogue, suppressed the first redundant town-rest notice,
+  and persisted the one-time first-entry presentation across saves.
+- Player-selected story responses use the selected appearance's canonical ID.
+  All 70 playable race, sex, and portrait variants now resolve to matching
+  transparent full-body dialogue art, enter and leave the three-slot cast
+  through the same beat-relevance rotation as NPCs, and mirror at render time
+  when their native facing would point off-screen. NPC dialogue art now follows
+  the same metadata-driven inward-facing rule; missing mappings still do not
+  fall back to a framed face or generic hero body.
+- Added distinct portrait art for Caedmon, Edrin, Joffrey, and the three tavern
+  reaction speakers, with blank portrait presentation for narration.
+- Kept non-speaking dialogue cutouts fully opaque while darkening them, corrected
+  Liora's inward-facing stage metadata, and moved barracks, dungeon, and later
+  tavern story scenes onto clean location art instead of captured menu frames.
+- Named the regular tavern roster in the patron menu and made Pell available
+  from the first post-arrival visit while retaining role-based quest routing.
+- Replaced both `Bring Him Home` text popups with staged dialogue: Timmy is now
+  discovered against a clean dungeon backdrop and reunited with both parents
+  and Caedmon before rewards and quest settlement. Added matching transparent
+  dialogue cutouts for Timmy and his parents.
+- Reworked `Rookie Mistake` so returning to town with the recruit's body
+  automatically begins a courtyard reception with Caedmon, continues into a
+  graveyard burial with the Priest, hero, and gathered townspeople, and only
+  then consumes the body and settles rewards. Added normal and high-resolution
+  Silvana graveyard backgrounds for the burial scene.
+- Added a dedicated Silvana barracks map-room background in normal and
+  high-resolution variants, moved patrol-ledger dialogue onto it, and changed
+  the first post-descent route review to begin with Joffrey and Liora in the
+  courtyard before continuing with Caedmon in the barracks.
+- Kept empty Key Items notices over the Character Menu, refreshed locked/open
+  chest sprites during the interaction that changes them, exposed Griswold as
+  a direct conversation target for cross-giver talk objectives, and suppressed
+  repeated gathering perception notices after their ahead-of-player discovery.
+- Added perceptible warnings for stronger-than-floor encounter tiles, protected
+  level-zero paths from the stronger encounter upshift, and cancelled pending
+  weapon charges when Disarm makes their required weapon unavailable.
+- Added a shared red encumbrance banner to both dungeon exploration and combat,
+  and made the Character Menu's carry-weight value turn red while the player is
+  encumbered.
+- Unified the Barracks `Sergeant` role label with Caedmon Varr's named portrait,
+  normalized the new story portraits to the established close framing, and
+  added a shared primary-click cooldown to prevent rapid click-through into
+  nested menus.
+- Added the Progression quest category across runtime and version-2 saves,
+  migrated `The Butcher` without changing its target or rewards, and gated
+  `Cry Havoc!` on the active opening investigation and completed ledger review.
+- Unified both relic interaction paths behind one core acquisition transition
+  and replaced silent broad exception handling in the touched relic flow.
+
 ### Repository Reliability Hardening
 
 - Fixed the Devil's Regen modifier crash and uninitialized resistance fallback,
@@ -32,6 +104,20 @@
 - Scoped duplicate primary-pointer filtering to one event-queue poll, preserving
   release events while preventing one physical click from activating multiple
   overlapping UI handlers.
+- Extended storage-row selection across the cursor, item, and quantity; removed
+  the redundant closed-talent confirmation; and added visible Action Layout
+  scrolling plus a wrapped cursor-relative ability tooltip.
+- Made mouse-wheel input scroll list viewports without moving the active option
+  across shared popups, location inventories, shops, save files, and combat
+  submenus; returning from the Character Menu now invalidates the dungeon frame
+  immediately.
+- Weapon Swap now requires the player to choose a carried weapon even when used
+  from a shortcut, and the equipment picker uses skill-aware equip legality so
+  Dual Wield weapons appear in the offhand list. Equipment comparisons now show
+  the item's weapon or armor type.
+- Refreshed the relic-room view as soon as an altar is looted, kept occupied and
+  empty relic altars on a shared runtime canvas, rendered down ladders beneath
+  the player, and staged the first route-correction scene in The Thirsty Dog.
 
 ### Foundational Gameplay Baseline
 
@@ -735,7 +821,9 @@
 - Added `docs/PRESENTATION_ASSET_DESIGN_GATES.md` as the durable spec map for
   presentation, generated bitmap, visual-cue, and screen-polish gates.
 - Replaced the plain pygame Character Created popup with a visual summary screen
-  and moved New Game intro text into reusable story-card pages.
+  that includes starting combat stats, moved New Game intro text into reusable
+  story-card pages with stable pre-wrapped slow printing and per-card fades, and
+  added narrator action beats to key opening-story movements.
 - Added reusable combat impact cues for reflected damage, hard-control hits,
   and elemental weapon strikes.
 
