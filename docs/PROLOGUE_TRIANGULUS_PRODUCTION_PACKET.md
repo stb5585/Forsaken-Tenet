@@ -76,7 +76,7 @@ yet known.
 | C3 | Chapter 1 | Level 1 routes | Hero; Timmy or the Rookie when their optional quests are active | Existing exploration and quest interactions. | Optional rescue and burial outcomes gain multi-character reactions but never gate the main route. |
 | C4 | Chapter 1 | Tavern or barracks | Joffrey, Caedmon, Liora, hero | Short mandatory scene on next eligible town return. | Joffrey compares the hero's observations with his own maps; Liora challenges the normalization of repeated risk; complete Joffrey's route-review scene. |
 | C5 | Chapter 1 | Minotaur route at `(3, 2, 1)` | Hero, Minotaur | Existing boss interaction and combat; timing is independent of the Main route. | The Butcher remains the sole Progression gate to the level-2 stair at `(3, 0, 1)`, not a relic custodian or prerequisite for the Barghest. Mechanics and rewards remain unchanged. |
-| C6 | Chapter 1 | Barracks | Caedmon, Joffrey, hero | Report current evidence. | Caedmon identifies the Barghest account as the one lead that survives every rewrite. `Cry Havoc!` becomes available when its level requirement is also met. |
+| C6 | Chapter 1 | Barracks | Edrin, Joffrey, Caedmon, hero | Accept or defer the assignment. | Caedmon identifies the Barghest account as the one lead that survives every rewrite. `Cry Havoc!` becomes available when its level requirement is also met. |
 | C7 | Chapter 2 | Barghest route at `(18, 2, 1)` | Hero, Barghest | Existing boss interaction and combat. | Witness descriptions are reconciled as different forms of the same creature. The Barghest remains a later occupant, not a Guardian. |
 | C8 | Chapter 2 | Sealed-chamber threshold | Hero | Inspect or continue; the patrol discovery and fragment must be presented before relic interaction. | Confirm Tomas Reed's death, preserve Mira Venn as missing, and recover the first unnamed prior-explorer fragment without using the title Acolyte. |
 | C9 | Chapter 2 | Relic room at `(19, 0, 1)` | Hero, Triangulus response | Choose one of four identity lenses. | Record Chosen Name, Deeds, Memory, or Next Choice; recover Triangulus; advance `Uncertain Reports` to report-back. |
@@ -134,15 +134,12 @@ establishing narration beat before showing work already in progress:
 > crowded, and loud enough that no one notices the newcomer at first. At the
 > bar, a familiar argument is already underway.
 
-- **Liora:** “If Pell invites everyone he owes a drink, we will need three more
-  tables for the wedding.”
-- **Joffrey:** “Only three?”
-- **Pell:** “Hey! I thought that was pretty good...yeah, you're right. That does seem low.”
-- **Oren:** Too bad we don't have room for all of them.”
-
-Oren turns to the hero.
-
-- **Oren:** “Hmm, I've never seen your face before. I'm Oren Caldus, the proprietor of this establishment. People come to Silvana chasing something or fleeing it. What about you?”
+- **Liora** “If Pell invites everyone he owes a drink, we will need three more tables for the wedding.”
+- **Joffrey** “Only three?”
+- **Pell** “Hey! I thought that was pretty good...”
+- **Oren** “Too bad we don't have the room for all of them.”
+- **Narrator** “Oren moves a stack of empty plates off the stool beside you.”
+- **Oren** “Sit down while there's a seat. I'm Oren. What brings you in?”
 
 The player chooses exactly one saved motive:
 
@@ -153,9 +150,7 @@ The player chooses exactly one saved motive:
 | `Knowledge` | “I want to know what opened under this town.” |
 | `Reinvention` | “I needed a fresh start.” |
 
-Oren acknowledges without judging the answer. Tavin places the drink Oren
-offered beside the hero before they ask twice. The Hooded Figure is visible in
-an unlit corner but does not speak.
+Oren nods. Tavin sets a drink beside the hero. The Hooded Figure watches from the unlit corner.
 
 Set `joffrey_tavern_scene_seen`. This is the first of the four required living
 Joffrey scenes and must not be replayed later as new information.
@@ -165,49 +160,38 @@ Joffrey scenes and must not be replayed later as new information.
 The tavern door strikes the wall. Joffrey catches Edrin before he falls; Liora
 clears a table and begins binding his wounds.
 
-- **Caedmon:** “Edrin. You left with Mira and Tomas. Where are they?”
-- **Edrin:** “Still below. We took the north survey route—the one Joffrey
-  marked last week. Mira chalked every turn.”
-- **Joffrey:** “That route has two junctions before the old drainage hall.”
-- **Edrin:** “I counted four. Tomas swore the passage never bent. We checked the
-  wall. Mira's marks were there, but not in the order she made them.”
-- **Caedmon:** “Then what happened?”
-- **Edrin:** “The lamps went out. We heard stone moving. When the light came
-  back, a sealed door stood where the passage had been. Mira and Tomas were on
-  the other side.”
-- **Caedmon:** “Did you hear them?”
-- **Edrin:** “Tomas, once. Mira kept striking the stone. She shouted that the
-  same three marks were carved beneath our feet, but I saw them above the
-  door.”
-- **Joffrey:** “Why did you leave?”
-- **Edrin:** “Something was following me. Pale eyes. Every time I looked back,
-  it wore a different shape. I came back because they need help—not because I
-  stopped looking.”
+- **Caedmon** “Edrin. You left with Mira and Tomas. Where are they?”
+- **Edrin** “Still down there. We took your north route, Joffrey. Mira chalked the turns.”
+- **Joffrey** “Two junctions before the drainage hall?”
+- **Edrin** “Four. I counted. Tomas said we'd walked straight the whole way. Even the chalk was wrong. We passed Mira's last mark before her first.”
+- **Caedmon** “Where did you lose them?”
+- **Edrin** “Our lamps went out. Stone grinding somewhere. When I got mine lit, there was a door between us.”
+- **Caedmon** “Could you hear them through it?”
+- **Edrin** “I heard Tomas once. Mira kept knocking. She said there were three marks underfoot. I could see all three above the door.”
+- **Joffrey** “Was she still knocking when you left?”
+- **Edrin** “I stayed as long as I could. There was something behind me. Every time I looked it had a different shape. Same pale eyes, though.”
+- **Joffrey** “Here, lean on me. I'm trying to work out where to dig.”
 
 The hero chooses one response. All are compassionate, mechanically neutral, and
 set one remembered expression:
 
-| Value | Player-facing action |
-| --- | --- |
-| `ClearSpace` | “I'll clear some space. Keep the crowd back.” |
-| `SteadySurvivor` | “I'll hold him steady while Liora works.” |
-| `RememberAccount` | “I'll repeat the report exactly as Edrin gave it.” |
-| `FetchHelp` | “I'll get Caedmon's kit and clean water.” |
+| Value | Player-facing action | Immediate response |
+| --- | --- | --- |
+| `ClearSpace` | “I'll clear some space. Keep the crowd back.” | With room to work, Liora checks whether Edrin can see her. |
+| `SteadySurvivor` | “I'll hold him steady while Liora works.” | Liora places the hero's hand. Edrin sees the blood on their sleeve. |
+| `RememberAccount` | “I'll write it down while it's fresh.” | Oren lends his drinks bill. Caedmon asks how many junctions the hero recorded. The hero repeats Edrin's count of four. |
+| `FetchHelp` | “I'll get the kit and some clean water.” | Liora directs the hero to set the basin by her knee. |
 
 Oren later vouches for the conduct he observed. No response awards an item,
 experience, reputation, or mechanical bonus.
 
 ### P3 — Caedmon's Offer
 
-- **Oren:** “Thanks for your help, stranger. Few I've encountered are willing
-  to aid without payment.”
-- Oren gives Caedmon a look to indicate his surprise. Caedmon does not return the look.
-- **Caedmon:** “You seem impressed, Oren. I am not as convinced just yet.”
-- **Oren:** “Then give them a chance to prove it.”
-- **Caedmon:** “Three patrols came back with reports that contradict their maps.
-  My people know those routes, so they keep defending what they remember.”
-- **Caedmon, to the hero:** “You're new. You don't have an old map or a patrol's
-  pride to defend. Follow the reports. Bring me evidence I can verify.”
+- **Oren** “Caedmon, take this one along. Saw what needed doing.”
+- **Caedmon** “Ever been down those stairs before?”
+- **Oren** “Just got in. Hasn't even touched that drink.”
+- **Caedmon** “Good. I've had three patrols in my map room this week. Ask any of them where a passage goes and they'll trace it with their eyes shut.”
+- **Caedmon** “Read their reports. Then go down and tell me what you actually find. I need somewhere to start looking for those two.”
 
 The player may accept `Uncertain Reports` or defer. Deferral returns control to
 town and leaves the offer available from Caedmon. It does not replay P1 or P2.
@@ -251,8 +235,7 @@ This illustrated threshold is separate from the later environmental evidence.
 
 At the existing north-edge descent target `(3, 0, 1)`, show once:
 
-> The worked stone nearest Silvana bears recent tool marks and drainage cuts.
-> Beneath them, an older arch continues into masonry no town ledger claims.
+> A fresh drainage cut runs along the foot of the stair. Where it meets the wall, the blocks curve into an older arch. Its opening is bricked up. The cut runs straight under it.
 
 This establishes layered practical construction without explaining the deeper
 Guardian foundation.
@@ -283,24 +266,20 @@ companion on floor 2; the Rookie was not rescued.
 
 ### C4 — Joffrey's First Living Work Scene
 
-On the first eligible town return after the ledger is read, the town-loading
-handoff holds briefly on black and fades into Silvana's rainy courtyard. Joffrey
-and Liora are waiting beyond the last stair because the player's altered route
-matches Joffrey's earlier survey. They lead the player to Caedmon in the
-barracks map room; the clean barracks interior replaces both the town exterior
-and the unrelated tavern venue for the actual review.
+After the hero has seen the stair and reviewed the ledgers, Joffrey and Liora meet them in the courtyard. Joffrey asks about the stonework and brings them to the barracks. On his earlier map, a single slab fills the spot where the hero saw the bricked-up arch.
 
-At the planning table:
+| Hero | Joffrey |
+| --- | --- |
+| “An old arch. Right where you've drawn that wall.” | “Right there? Give me the pencil. I'll put your arch beside my wall.” |
+| “I saw an arch. I couldn't tell where it led.” | “Fair enough. I'll mark the arch. No passage until we've seen one.” |
+| “You're sure that was a wall when you drew it?” | “One unbroken slab. I sat with my back against it to draw the stair.” |
 
-- **Joffrey:** “Your route and mine disagree at the same junction. I drew mine
-  before you arrived.”
-- **Hero response:** acknowledge uncertainty, defend the observation, or ask
-  what changed. The response is local flavor and need not persist in V1.
-- **Caedmon:** “Patrols rely on these maps. We fix this before anyone goes back
-  down.”
-- **Liora:** “And when the correction sends another patrol down?”
-- **Joffrey:** “Then I go with them.”
-- **Liora:** “That is the answer I was afraid you would give.”
+If the player dismisses the question, the meeting continues. The answer stays local to the scene.
+
+- **Caedmon** “Leave both marks. I want the next patrol to see them.”
+- **Liora** “And if they get down there and neither mark fits?”
+- **Joffrey** “Then I go with them.”
+- **Liora** “I thought you might say that.”
 
 Set `joffrey_route_review_seen`. This is the third required living Joffrey
 scene. Chapter 5 owns the fourth, his missing-patrol departure. Later gates must
@@ -329,17 +308,15 @@ and is not a prerequisite for `Cry Havoc!`, the Barghest, or Triangulus.
 
 ### C6 — Barghest Lead
 
-When `Uncertain Reports` is active, the ledger scene is complete, and the
-existing level requirement is met:
+When the existing quest and level prerequisites are met, the barracks offer opens on Joffrey's bestiary.
 
-- **Caedmon:** “One account survives every rewrite: a dog-shaped thing near a
-  sealed chamber. Each witness gives it a different body and the same eyes.”
-- **Joffrey:** “Barghest, if the old bestiary is useful. Fear gives a
-  shapeshifter plenty to work with.”
-- **Caedmon:** “Put it down. Search the chamber. Bring back evidence, not a name
-  from a book.”
+- **Narrator** “Joffrey props the bestiary open so Edrin can see the drawing.”
+- **Joffrey** “The hound on this page. Does it look familiar?”
+- **Edrin** “The eyes do. It was taller when it came after me.”
+- **Joffrey** “Barghest. Turn the page. That's still the same beast.”
+- **Caedmon** “I've got two other reports of those eyes. Both by the sealed chamber.”
 
-This offers `Cry Havoc!`. Its target, reward, and experience remain unchanged.
+Caedmon asks the hero to hunt the Barghest and search the chamber. If the beast is already dead, he asks for the hero's account instead. A player who defers gets the current question on their next visit. The target, rewards, level requirement, and turn-in remain the same.
 
 ### C7 — Barghest Encounter
 
@@ -599,6 +576,7 @@ Add these normalized fields to `main_story`:
 | `arrival_aid` | `null` | `ClearSpace`, `SteadySurvivor`, `RememberAccount`, `FetchHelp`, or `Unrecorded`. |
 | `hooded_figure_observed` | `false` | The silent P1 observation has occurred. |
 | `opening_ledger_seen` | `false` | All three C1 entries and their conclusion have been presented. |
+| `barghest_briefing_seen` | `false` | Edrin has identified the eyes in the bestiary. Future offers skip straight to Caedmon’s question. |
 | `dungeon_entry_story_seen` | `false` | The illustrated first-entry threshold has been shown or skipped. |
 | `first_descent_story_seen` | `false` | C2 environmental text has appeared. |
 | `joffrey_tavern_scene_seen` | `false` | P1 has completed; this is the first required living Joffrey scene. |

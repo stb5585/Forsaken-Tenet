@@ -12,8 +12,19 @@ from src.core.classes import class_rings
 from src.ui_pygame import game as pygame_game
 
 
-def test_opening_arrival_records_choices_and_can_accept_first_report(monkeypatch):
-    choices = iter([2, 3, 0])
+@pytest.mark.parametrize(
+    ("aid", "saved_aid", "observed_reply"),
+    [
+        (0, "ClearSpace", "Edrin, can you see me?"),
+        (1, "SteadySurvivor", "Your sleeve."),
+        (2, "RememberAccount", "Four. That's how many Edrin counted."),
+        (3, "FetchHelp", "Set it by my knee."),
+    ],
+)
+def test_opening_arrival_records_choices_and_can_accept_first_report(
+    monkeypatch, aid, saved_aid, observed_reply
+):
+    choices = iter([2, aid, 0])
     choice_calls = []
     scenes = []
 
@@ -46,7 +57,7 @@ def test_opening_arrival_records_choices_and_can_accept_first_report(monkeypatch
     assert game.show_opening_arrival() is True
 
     assert player.main_story["arrival_motive"] == "Knowledge"
-    assert player.main_story["arrival_aid"] == "FetchHelp"
+    assert player.main_story["arrival_aid"] == saved_aid
     assert player.main_story["joffrey_tavern_scene_seen"] is True
     assert "Uncertain Reports" in player.quest_dict["Main"]
     assert [scene.title for scene in scenes] == [
@@ -59,9 +70,8 @@ def test_opening_arrival_records_choices_and_can_accept_first_report(monkeypatch
     assert "Rain follows you" in scenes[0].beats[0].text
     assert scenes[0].show_calls[0] == {"fade_in_ms": 900}
     assert [beat.speaker for beat in scenes[1].beats[:3]] == ["Narrator", "Caedmon", "Edrin"]
-    assert any("gives the newcomer" in beat.text for beat in scenes[0].beats)
     assert any("hooded figure watches" in beat.text for beat in scenes[0].beats)
-    assert any("clean water" in beat.text for beat in scenes[1].beats)
+    assert observed_reply in scenes[1].beats[-1].text
     assert "patrol ledgers will be ready" in scenes[2].beats[-1].text
     assert player._suppress_heal_message is True
     assert choice_calls[0][2]["allow_cancel"] is False
@@ -1158,7 +1168,11 @@ def test_gameplay_statistics_popup_and_town_menu_entry(monkeypatch):
     assert popup_kwargs[-1]["require_key_release"] is True
 
 
-def test_post_descent_route_review_moves_from_courtyard_to_barracks(monkeypatch):
+@pytest.mark.parametrize(
+    ("choice", "reply"),
+    [(0, "pencil"), (1, "No passage"), (2, "my back against it"), (None, None)],
+)
+def test_post_descent_route_review_moves_from_courtyard_to_barracks(monkeypatch, choice, reply):
     story_state = main_story.default_state()
     story_state.update(
         {
@@ -1192,7 +1206,7 @@ def test_post_descent_route_review_moves_from_courtyard_to_barracks(monkeypatch)
             self.show_calls.append(kwargs)
 
         def choose(self, _prompt, _options, **_kwargs):
-            return 0
+            return choice
 
     class FakeTownMenu:
         def __init__(self, _presenter):
@@ -1232,6 +1246,11 @@ def test_post_descent_route_review_moves_from_courtyard_to_barracks(monkeypatch)
     assert scenes[0].show_calls[0] == {"fade_in_ms": 1400, "fade_hold_ms": 450}
     assert scenes[1].kwargs["background_image"] == "barracks.jpg"
     assert "barracks map room" in scenes[0].beats[1].text
+    replies = [beat.text for beat in scenes[1].beats if beat.speaker == "Joffrey"]
+    if reply is None:
+        assert len(replies) == 2  # The map question and his promise to join the patrol.
+    else:
+        assert any(reply in text for text in replies)
     assert player.main_story["joffrey_route_review_seen"] is True
 
 

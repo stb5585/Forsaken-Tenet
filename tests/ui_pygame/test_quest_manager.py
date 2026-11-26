@@ -327,6 +327,43 @@ def test_can_offer_and_already_killed_helpers():
     assert manager._already_killed("Slime") is False
 
 
+def test_barghest_briefing_remembers_deferral_and_recognizes_an_early_kill(monkeypatch):
+    manager = _manager(_make_player(level=20))
+    player = manager.player_char
+    quest = get_quests()["Sergeant"]["Main"]["20"]["Cry Havoc!"]
+    beats = []
+    prompts = []
+    choices = iter([1, 0])
+
+    class Briefing:
+        def __init__(self, _presenter, _title, **kwargs):
+            assert kwargs["background_image"] == "barracks.jpg"
+
+        def show_dialogue(self, lines):
+            beats.extend(lines)
+
+        def choose(self, prompt, _options, **kwargs):
+            assert kwargs["speaker"] == "Caedmon"
+            prompts.append(prompt)
+            return next(choices)
+
+    monkeypatch.setattr(quest_manager, "StorySceneScreen", Briefing)
+    assert manager._offer("Sergeant", "Cry Havoc!", quest, "Main") is False
+    assert "Cry Havoc!" not in player.quest_dict["Main"]
+    assert player.main_story["barghest_briefing_seen"] is True
+    assert [beat.speaker for beat in beats].count("Edrin") == 1
+
+    beats.clear()
+    player.world_dict = {(18, 2, 1): BarghestBossRoom()}
+    assert manager._offer("Sergeant", "Cry Havoc!", quest, "Main") is True
+    assert not beats
+    assert "Barghest" in prompts[0]
+    assert "give me your account" in prompts[1]
+    accepted = player.quest_dict["Main"]["Cry Havoc!"]
+    assert accepted["Completed"] and not accepted["Turned In"]
+    assert accepted["Reward"] == [core_items.PowerRing]
+
+
 def test_check_and_offer_autocompletes_defeated_boss_room_without_kill_entry(monkeypatch):
     player = _make_player(level=12)
     player.world_dict = {(5, 5, 1): BarghestBossRoom()}

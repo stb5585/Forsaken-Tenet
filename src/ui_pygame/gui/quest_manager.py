@@ -10,7 +10,7 @@ import random
 import textwrap
 from typing import Any
 
-from src.core import items, quest_progress
+from src.core import items, main_story, quest_progress
 from src.core.player.combat import has_special_power_reward
 from src.core.town import (
     RESPONSE_MAP,
@@ -785,9 +785,43 @@ class QuestManager:
     def _already_killed(self, enemy_name: str) -> bool:
         return already_defeated_enemy(self.player_char, enemy_name)
 
-    def _offer(self, giver: str, quest_name: str, q: dict[str, Any], typ: str) -> bool:
-        # Offer quest via presenter
-        text = q.get("Start Text", "")
+    def _offer_barghest_briefing(self) -> bool:
+        """Ask for the assignment in the barracks, shortening subsequent visits."""
+        story = main_story.ensure_state(self.player_char)
+        scene = StorySceneScreen(
+            self.presenter,
+            "Barracks — Cry Havoc!",
+            participants=("Joffrey", "Edrin", "Caedmon"),
+            participant_anchors={"Caedmon": "Joffrey"},
+            background_image="barracks.jpg",
+            player_char=self.player_char,
+        )
+        if not story["barghest_briefing_seen"]:
+            scene.show_dialogue(
+                (
+                    StoryBeat(
+                        "Narrator", "Joffrey props the bestiary open so Edrin can see the drawing."
+                    ),
+                    StoryBeat("Joffrey", "The hound on this page. Does it look familiar?"),
+                    StoryBeat("Edrin", "The eyes do. It was taller when it came after me."),
+                    StoryBeat("Joffrey", "Barghest. Turn the page. That's still the same beast."),
+                    StoryBeat(
+                        "Caedmon",
+                        "I've got two other reports of those eyes. Both by the sealed chamber.",
+                    ),
+                )
+            )
+            story["barghest_briefing_seen"] = True
+        if self._already_killed("Barghest"):
+            prompt = "You've been to that chamber. Will you give me your account?"
+            answers = ["I'll make my report.", "Another time."]
+        else:
+            prompt = "Will you take the Barghest and have a look inside that chamber?"
+            answers = ["I'll go.", "Not yet."]
+        return scene.choose(prompt, answers, speaker="Caedmon") == 0
+
+    def _confirm_standard_offer(self, quest_name: str, text: str) -> bool:
+        """Show a quest giver's offer and ask whether to accept it."""
         # Display quest text - use renderer if available, otherwise the standard confirmation popup
         if self.quest_text_renderer:
             if self.renderer_preserve_formatting:
@@ -810,10 +844,16 @@ class QuestManager:
         # Separate Accept/Decline menu
         if self.quest_choice_renderer:
             choice = self.quest_choice_renderer("Accept this quest?", ["Accept", "Decline"])
-            accepted = choice == 0
+            return choice == 0
+        popup = ConfirmationPopup(self.presenter, "Accept this quest?")
+        return bool(self._show_popup(popup))
+
+    def _offer(self, giver: str, quest_name: str, q: dict[str, Any], typ: str) -> bool:
+        barghest_briefing = quest_name == "Cry Havoc!"
+        if barghest_briefing:
+            accepted = self._offer_barghest_briefing()
         else:
-            popup = ConfirmationPopup(self.presenter, "Accept this quest?")
-            accepted = self._show_popup(popup)
+            accepted = self._confirm_standard_offer(quest_name, q.get("Start Text", ""))
 
         if accepted:
             # Add a copy of quest to player quest log
@@ -845,6 +885,9 @@ class QuestManager:
                 except Exception:
                     pass
 
+            if barghest_briefing:
+                return True
+
             # Use personalized response from RESPONSE_MAP
             response = RESPONSE_MAP.get(
                 giver, ["Quest accepted! Check your quest log for details.", "Maybe next time."]
@@ -864,6 +907,9 @@ class QuestManager:
                 self._show_popup(popup)
             return True
         else:
+            if barghest_briefing:
+                return False
+
             # Use personalized rejection response from RESPONSE_MAP
             response = RESPONSE_MAP.get(
                 giver, ["Quest accepted! Check your quest log for details.", "Maybe next time."]

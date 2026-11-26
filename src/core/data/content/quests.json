@@ -423,7 +423,7 @@
               "Trigger": "first_relic_found"
             }
           },
-          "Start Text": "Three patrols have returned with reports that contradict their own maps. My people know those routes too well; every one of them begins by defending what they remember. You are new. You have no old map to protect and no comrade's pride to excuse. I do not need another confident story. Follow the reports and bring me something the ledger cannot argue with.",
+          "Start Text": "Still willing to look into those reports? The ledgers are here. Read them before you go down. If you find a mark you recognize, make a copy and bring it back.",
           "End Text": "Caedmon: Before we discuss what you recovered, we finish the patrol account. Edrin: Tomas? Caedmon: Found dead at the sealed threshold. Mira's route marks continued beyond him, but they ended without a body. Edrin: Still missing is not the same as gone. Caedmon: No. It is not. These patrols entered by different routes and believed they had found different chambers. All three copied the same markings. Joffrey: The lines were incomplete. Set the relic beside them and the fragments form the same arrangement. Edrin: Mira kept saying the empty center mattered. Caedmon: There is more. An older, damaged record shows six positions arranged around that center. Joffrey: Six chambers? Caedmon: Perhaps. Or six objects, six stations, or one mistake repeated by generations of scribes. We have evidence of a pattern, not an explanation. Recover anything that answers this relic and bring it home.",
           "Help Text": "Follow the Sergeant's leads into the dungeon and watch for sealed chambers, old symbols, or anything the patrol ledgers cannot explain.",
           "Reward": [],
@@ -439,9 +439,9 @@
           "Type": "Defeat",
           "What": "Barghest",
           "Total": 1,
-          "Start Text": "One account survives every rewrite: a dog-shaped thing near a sealed chamber. Each witness gives it a different body and the same eyes. Joffrey calls it a Barghest, if the old bestiary is useful. Fear gives a shapeshifter plenty to work with. Put it down. Search the chamber. Bring back evidence, not a name from a book.",
-          "End Text": "Glad to hear you took care of that beast, soldier. Take this ring, it will make your physical attacks more powerful.",
-          "Help Text": "The Barghest has 3 forms: a Goblin, a Direwolf, and its natural hybrid form. Search for the sealed chamber behind the locked door to the south of town.",
+          "Start Text": "Edrin recognized the pale eyes in Joffrey's bestiary. Two other patrols saw them near the sealed chamber. Hunt the Barghest and search the chamber.",
+          "End Text": "Here. The ring's yours. I'll tell the next patrol they can search that stretch again.",
+          "Help Text": "The locked door south of town leads toward the sealed chamber. Watch the eyes if it changes shape.",
           "Reward": ["PowerRing"],
           "Reward Number": 1,
           "Experience": 500,
