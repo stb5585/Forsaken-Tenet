@@ -7,9 +7,190 @@ from types import SimpleNamespace
 
 import pytest
 
-from src.core import items
+from src.core import items, main_story
 from src.core.classes import class_rings
 from src.ui_pygame import game as pygame_game
+
+
+def test_opening_arrival_records_choices_and_can_accept_first_report(monkeypatch):
+    choices = iter([2, 3, 0])
+    choice_calls = []
+    scenes = []
+
+    class FakeStoryScene:
+        def __init__(self, _presenter, title, **kwargs):
+            self.title = title
+            self.kwargs = kwargs
+            self.beats = []
+            self.show_calls = []
+            scenes.append(self)
+
+        def show_dialogue(self, beats, **kwargs):
+            self.beats.extend(beats)
+            self.show_calls.append(kwargs)
+
+        def choose(self, prompt, options, **kwargs):
+            choice_calls.append((prompt, options, kwargs))
+            return next(choices)
+
+    monkeypatch.setattr(pygame_game, "StorySceneScreen", FakeStoryScene)
+    presenter = SimpleNamespace()
+    player = SimpleNamespace(
+        main_story=main_story.default_state(),
+        quest_dict={"Main": {}, "Progression": {}, "Side": {}, "Bounty": {}},
+    )
+    game = pygame_game.PygameGame.__new__(pygame_game.PygameGame)
+    game.presenter = presenter
+    game.player_char = player
+
+    assert game.show_opening_arrival() is True
+
+    assert player.main_story["arrival_motive"] == "Knowledge"
+    assert player.main_story["arrival_aid"] == "FetchHelp"
+    assert player.main_story["joffrey_tavern_scene_seen"] is True
+    assert "Uncertain Reports" in player.quest_dict["Main"]
+    assert [scene.title for scene in scenes] == [
+        "The Thirsty Dog — A New Face",
+        "The Thirsty Dog — The Patrol Returns",
+        "The Thirsty Dog — An Uncertain Report",
+    ]
+    assert all(scene.kwargs["background_image"] == "tavern.jpg" for scene in scenes)
+    assert scenes[0].beats[0].speaker == "Narrator"
+    assert "Rain follows you" in scenes[0].beats[0].text
+    assert scenes[0].show_calls[0] == {"fade_in_ms": 900}
+    assert [beat.speaker for beat in scenes[1].beats[:3]] == ["Narrator", "Caedmon", "Edrin"]
+    assert any("gives the newcomer" in beat.text for beat in scenes[0].beats)
+    assert any("hooded figure watches" in beat.text for beat in scenes[0].beats)
+    assert any("clean water" in beat.text for beat in scenes[1].beats)
+    assert "patrol ledgers will be ready" in scenes[2].beats[-1].text
+    assert player._suppress_heal_message is True
+    assert choice_calls[0][2]["allow_cancel"] is False
+    assert choice_calls[1][2]["allow_cancel"] is False
+    assert len(choice_calls) == 3
+
+
+def test_opening_arrival_deferral_keeps_caedmon_offer_open(monkeypatch):
+    choices = iter([0, 0, 1])
+    scenes = []
+
+    class FakeStoryScene:
+        def __init__(self, _presenter, _title, **_kwargs):
+            self.beats = []
+            scenes.append(self)
+
+        def show_dialogue(self, beats, **_kwargs):
+            self.beats.extend(beats)
+
+        def choose(self, _prompt, _options, **_kwargs):
+            return next(choices)
+
+    monkeypatch.setattr(pygame_game, "StorySceneScreen", FakeStoryScene)
+    player = SimpleNamespace(
+        main_story=main_story.default_state(),
+        quest_dict={"Main": {}, "Progression": {}, "Side": {}, "Bounty": {}},
+    )
+    game = pygame_game.PygameGame.__new__(pygame_game.PygameGame)
+    game.presenter = SimpleNamespace()
+    game.player_char = player
+
+    assert game.show_opening_arrival() is True
+    assert "Uncertain Reports" not in player.quest_dict["Main"]
+    assert "offer remains open" in scenes[-1].beats[-1].text
+
+
+def test_dungeon_story_scenes_use_clean_location_background(monkeypatch):
+    scenes = []
+
+    class FakeStoryScene:
+        def __init__(self, _presenter, title, **kwargs):
+            self.title = title
+            self.kwargs = kwargs
+            scenes.append(self)
+
+        def show_dialogue(self, _beats, **_kwargs):
+            return None
+
+        def choose(self, _prompt, _options, **_kwargs):
+            return 0
+
+    monkeypatch.setattr(pygame_game, "StorySceneScreen", FakeStoryScene)
+    game = pygame_game.PygameGame.__new__(pygame_game.PygameGame)
+    game.presenter = SimpleNamespace()
+    game.player_char = SimpleNamespace(name="Hero")
+
+    assert game.choose_triangulus_identity() == "ChosenName"
+    game.show_triangulus_threshold()
+    game.show_relic_discovery("A relic waits in the stone.")
+
+    assert len(scenes) == 3
+    assert all(scene.kwargs["background_image"] == "dungeon.png" for scene in scenes)
+    assert all("background_draw_func" not in scene.kwargs for scene in scenes)
+
+
+def test_false_intro_flag_still_plays_intro_once():
+    story_state = main_story.default_state()
+    story_state["arrival_scene_seen"] = True
+    player = SimpleNamespace(
+        level=SimpleNamespace(level=1),
+        intro_shown=False,
+        quit=True,
+        main_story=story_state,
+        ensure_main_story_state=lambda: story_state,
+    )
+    game = pygame_game.PygameGame.__new__(pygame_game.PygameGame)
+    game.player_char = player
+    intro_calls = []
+    game.update_bounties = lambda: None
+    game.show_intro = lambda: intro_calls.append(True)
+
+    game.run()
+
+    assert intro_calls == [True]
+    assert player.intro_shown is True
+
+
+def test_first_dungeon_entry_card_is_one_time_and_keeps_later_observation(monkeypatch):
+    player = SimpleNamespace(
+        location_x=5,
+        location_y=10,
+        location_z=0,
+        facing="north",
+        main_story=main_story.default_state(),
+    )
+    game = pygame_game.PygameGame.__new__(pygame_game.PygameGame)
+    game.player_char = player
+    game.presenter = SimpleNamespace()
+    sequences = []
+
+    class FakeStorySequence:
+        def __init__(self, _presenter, pages, **kwargs):
+            sequences.append((tuple(pages), kwargs, []))
+
+        def show(self, **kwargs):
+            sequences[-1][2].append(kwargs)
+            return False
+
+    monkeypatch.setattr(pygame_game, "StoryCardSequence", FakeStorySequence)
+    fade_calls = []
+    monkeypatch.setattr(
+        pygame_game,
+        "fade_to_black",
+        lambda _presenter, **kwargs: fade_calls.append(kwargs),
+    )
+
+    assert game._enter_dungeon_from_town() == "dungeon"
+    player.location_z = 0
+    assert game._enter_dungeon_from_town() == "dungeon"
+
+    assert len(sequences) == 1
+    assert sequences[0][0] == (pygame_game.opening_story.FIRST_DUNGEON_ENTRY_TEXT,)
+    assert sequences[0][1]["image_paths"] == pygame_game.DUNGEON_ENTRY_IMAGE_PATHS
+    assert sequences[0][2] == [
+        {"flush_events": True, "require_key_release": True, "fade_in_ms": 700}
+    ]
+    assert fade_calls == [{"duration_ms": 500, "hold_ms": 150}]
+    assert player.main_story["dungeon_entry_story_seen"] is True
+    assert player.main_story["first_descent_story_seen"] is False
 
 
 def test_signal_handler_quits_and_exits(monkeypatch):
@@ -98,9 +279,10 @@ def test_display_settings_uses_popup_and_applies_selected_native_mode(monkeypatc
     applied = []
     game.presenter = SimpleNamespace(
         apply_display_mode=lambda **kwargs: applied.append(kwargs),
+        story_dialogue_cps=35,
     )
     game.fullscreen = False
-    selections = iter([1, 4])
+    selections = iter([1, 5])
     popup_calls = []
 
     class FakeChoicePopup:
@@ -115,8 +297,33 @@ def test_display_settings_uses_popup_and_applies_selected_native_mode(monkeypatc
     assert game.show_display_settings() is True
     assert applied == [{"fullscreen": False, "resolution": (1366, 768)}]
     assert game.fullscreen is False
-    assert popup_calls[0][0] == "Display Settings"
+    assert popup_calls[0][0] == "Settings"
     assert popup_calls[0][1][-1] == "Back"
+
+
+def test_settings_updates_and_persists_story_dialogue_speed(monkeypatch):
+    game = pygame_game.PygameGame.__new__(pygame_game.PygameGame)
+    game.presenter = SimpleNamespace(
+        apply_display_mode=lambda **_kwargs: None,
+        story_dialogue_cps=35,
+    )
+    game.fullscreen = False
+    selections = iter([4, 2, 5])
+    saved = []
+
+    class FakeChoicePopup:
+        def __init__(self, _presenter, _title, _options, _header_message):
+            pass
+
+        def show(self):
+            return next(selections)
+
+    monkeypatch.setattr(pygame_game, "ChoicePopup", FakeChoicePopup)
+    monkeypatch.setattr(pygame_game, "save_dialogue_speed", saved.append)
+
+    assert game.show_display_settings() is True
+    assert game.presenter.story_dialogue_cps == 60
+    assert saved == [60]
 
 
 def test_init_build_character_and_default_character(monkeypatch):
@@ -591,6 +798,7 @@ def test_main_menu_load_game_show_intro_warp_point_save_and_character_info(monke
     assert any("Random encounters enabled" in msg for msg in popup_messages)
     assert popup_kwargs[-1]["flush_events"] is True
     assert popup_kwargs[-1]["require_key_release"] is True
+
     assert any("Settings" in opts for opts in menu_calls)
     assert game.running is False
     assert stop_calls == [{"fade_ms": 250}]
@@ -636,14 +844,20 @@ def test_main_menu_load_game_show_intro_warp_point_save_and_character_info(monke
     story_calls = []
 
     class FakeStorySequence:
-        def __init__(self, presenter_obj, pages, title=""):
-            story_calls.append(("init", tuple(pages), title))
+        def __init__(self, presenter_obj, pages, title="", image_paths=()):
+            story_calls.append(("init", tuple(pages), title, tuple(image_paths)))
 
         def show(self, **kwargs):
             story_calls.append(("show", kwargs))
             return True
 
     monkeypatch.setattr(pygame_game, "StoryCardSequence", FakeStorySequence)
+    fade_calls = []
+    monkeypatch.setattr(
+        pygame_game,
+        "fade_to_black",
+        lambda presenter_obj, **kwargs: fade_calls.append((presenter_obj, kwargs)),
+    )
     presenter_messages.clear()
     game.show_intro()
     assert len(presenter_messages) == 0
@@ -651,12 +865,18 @@ def test_main_menu_load_game_show_intro_warp_point_save_and_character_info(monke
     intro_pages = story_calls[0][1]
     assert len(intro_pages) == 6
     assert story_calls[0][2] == "The Story Begins"
+    assert story_calls[0][3] == pygame_game.INTRO_STORY_IMAGE_PATHS
     intro_text = "\n".join(intro_pages)
-    for expected in ("Silvana", "relics", "guardians", "Step below"):
+    for expected in ("Silvana", "symbols", "missing names", "The Thirsty Dog"):
         assert expected in intro_text
+    assert "Step below" not in intro_text
     for spoiler in ("Vesperion", "Voluntas", "busboy", "Hooded Figure", "true final"):
         assert spoiler not in intro_text
-    assert story_calls[1] == ("show", {"flush_events": True, "require_key_release": True})
+    assert story_calls[1] == (
+        "show",
+        {"flush_events": True, "require_key_release": True, "fade_in_ms": 700},
+    )
+    assert fade_calls == [(presenter, {"duration_ms": 1200, "hold_ms": 1500})]
 
     confirm_results = iter([True, False])
     popup_kwargs.clear()
@@ -936,6 +1156,83 @@ def test_gameplay_statistics_popup_and_town_menu_entry(monkeypatch):
     assert all("Explore Town" not in options for options in options_seen)
     assert popup_kwargs[-1]["flush_events"] is True
     assert popup_kwargs[-1]["require_key_release"] is True
+
+
+def test_post_descent_route_review_moves_from_courtyard_to_barracks(monkeypatch):
+    story_state = main_story.default_state()
+    story_state.update(
+        {
+            "opening_ledger_seen": True,
+            "first_descent_story_seen": True,
+            "joffrey_route_review_seen": False,
+        }
+    )
+    player = SimpleNamespace(
+        main_story=story_state,
+        cls=SimpleNamespace(name="Warrior"),
+        town_heal=lambda: None,
+        _suppress_heal_message=True,
+        special_inventory={},
+        quest_dict={"Main": {}, "Progression": {}, "Side": {}, "Bounty": {}},
+        warp_point=False,
+        quit=False,
+    )
+    scenes = []
+
+    class FakeStoryScene:
+        def __init__(self, _presenter, title, **kwargs):
+            self.title = title
+            self.kwargs = kwargs
+            self.show_calls = []
+            self.beats = []
+            scenes.append(self)
+
+        def show_dialogue(self, beats, **kwargs):
+            self.beats.extend(beats)
+            self.show_calls.append(kwargs)
+
+        def choose(self, _prompt, _options, **_kwargs):
+            return 0
+
+    class FakeTownMenu:
+        def __init__(self, _presenter):
+            pass
+
+        def draw_background(self):
+            return None
+
+        def draw_menu_panel(self, _options):
+            return None
+
+        def navigate(self, options, **_kwargs):
+            return len(options) - 1
+
+    class FakePopup:
+        def __init__(self, _presenter, _message, show_buttons=True):
+            self.show_buttons = show_buttons
+
+        def show(self, **_kwargs):
+            return True
+
+    game = pygame_game.PygameGame.__new__(pygame_game.PygameGame)
+    game.presenter = SimpleNamespace()
+    game.player_char = player
+    game._play_location_music = lambda *_args, **_kwargs: None
+    monkeypatch.setattr(pygame_game, "StorySceneScreen", FakeStoryScene)
+    monkeypatch.setattr(pygame_game, "TownMenuScreen", FakeTownMenu)
+    monkeypatch.setattr(pygame_game, "ConfirmationPopup", FakePopup)
+
+    assert game.town_menu() == "quit"
+
+    assert [scene.title for scene in scenes] == [
+        "Silvana Courtyard — Waiting At The Stair",
+        "Barracks — Correcting The Route",
+    ]
+    assert scenes[0].kwargs["background_image"] == "town.png"
+    assert scenes[0].show_calls[0] == {"fade_in_ms": 1400, "fade_hold_ms": 450}
+    assert scenes[1].kwargs["background_image"] == "barracks.jpg"
+    assert "barracks map room" in scenes[0].beats[1].text
+    assert player.main_story["joffrey_route_review_seen"] is True
 
 
 def test_old_warehouse_footpad_ring_jobs_require_visible_dormant_ring(monkeypatch):
@@ -1431,7 +1728,42 @@ def test_special_event_message_override_uses_popup_text(monkeypatch):
     assert popup_kwargs[0]["flush_events"] is True
 
 
-def test_town_menu_silently_drops_off_rookie_body_without_extra_popup(monkeypatch):
+def test_timmy_special_event_uses_staged_dungeon_scene(monkeypatch):
+    scenes = []
+
+    class FakeStoryScene:
+        def __init__(self, _presenter, title, **kwargs):
+            self.title = title
+            self.kwargs = kwargs
+            self.beats = ()
+            scenes.append(self)
+
+        def show_dialogue(self, beats):
+            self.beats = tuple(beats)
+
+    game = pygame_game.PygameGame.__new__(pygame_game.PygameGame)
+    game.presenter = SimpleNamespace()
+    game.player_char = SimpleNamespace(name="Hero")
+    monkeypatch.setattr(pygame_game, "StorySceneScreen", FakeStoryScene)
+
+    game.special_event("Timmy")
+
+    assert len(scenes) == 1
+    assert scenes[0].title == "The Dungeon — A Voice in the Rubble"
+    assert scenes[0].kwargs["background_image"] == "dungeon.png"
+    assert scenes[0].kwargs["participants"] == ("Timmy",)
+    assert [beat.speaker for beat in scenes[0].beats] == [
+        "Narrator",
+        "Timmy",
+        "Narrator",
+        "Timmy",
+        "Timmy",
+        "Narrator",
+    ]
+    assert "mum and dad" in scenes[0].beats[4].text
+
+
+def test_town_menu_auto_turns_in_rookie_body_before_menu(monkeypatch):
     game = pygame_game.PygameGame.__new__(pygame_game.PygameGame)
     game.presenter = SimpleNamespace()
     game.player_char = SimpleNamespace(
@@ -1442,16 +1774,21 @@ def test_town_menu_silently_drops_off_rookie_body_without_extra_popup(monkeypatc
         warp_point=False,
         quit=False,
     )
-    removed_items = []
-
-    def modify_inventory(item, subtract=False, rare=False, **_kwargs):
-        removed_items.append((item.name, subtract, rare))
-        game.player_char.special_inventory[item.name].pop(0)
-        if not game.player_char.special_inventory[item.name]:
-            del game.player_char.special_inventory[item.name]
-
-    game.player_char.modify_inventory = modify_inventory
     popup_messages = []
+    turn_ins = []
+
+    class FakeQuestManager:
+        def __init__(self, presenter, player_char):
+            assert presenter is game.presenter
+            self.player_char = player_char
+
+        def turn_in_completed_quest(self, quest_name, typ, *, show_end_text=True):
+            turn_ins.append((quest_name, typ, show_end_text))
+            quest = self.player_char.quest_dict[typ][quest_name]
+            assert quest["Completed"] is True
+            quest["Turned In"] = True
+            del self.player_char.special_inventory["Dead Soldier"]
+            return True
 
     class FakePopup:
         def __init__(self, _presenter, message, show_buttons=False, **_kwargs):
@@ -1475,11 +1812,16 @@ def test_town_menu_silently_drops_off_rookie_body_without_extra_popup(monkeypatc
 
     monkeypatch.setattr(pygame_game, "ConfirmationPopup", FakePopup)
     monkeypatch.setattr(pygame_game, "TownMenuScreen", FakeTownMenu)
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.quest_manager.QuestManager",
+        FakeQuestManager,
+    )
 
     assert game.town_menu() == "quit"
-    assert removed_items == [("Dead Soldier", True, True)]
+    assert turn_ins == [("Rookie Mistake", "Side", False)]
     assert "Dead Soldier" not in game.player_char.special_inventory
     assert game.player_char.quest_dict["Side"]["Rookie Mistake"]["Completed"] is True
+    assert game.player_char.quest_dict["Side"]["Rookie Mistake"]["Turned In"] is True
     assert "You have completed the quest Rookie Mistake." not in popup_messages
 
 
@@ -1487,7 +1829,13 @@ def test_explore_town_prototype_routes_existing_location_actions(monkeypatch):
     game = pygame_game.PygameGame.__new__(pygame_game.PygameGame)
     calls = []
     game.presenter = SimpleNamespace()
-    game.player_char = SimpleNamespace(location_x=5, location_y=10, location_z=0, facing="north")
+    game.player_char = SimpleNamespace(
+        location_x=5,
+        location_y=10,
+        location_z=0,
+        facing="north",
+        main_story={"dungeon_entry_story_seen": True},
+    )
     game._play_location_music = lambda location, **_kwargs: calls.append(("music", location))
     game.visit_barracks = lambda: calls.append("barracks")
     game.visit_shop = lambda: calls.append("shops")

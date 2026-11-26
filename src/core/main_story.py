@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from copy import deepcopy
 
+from . import opening_story
+
 GUARDIAN_TRIALS = (
     "Triangulus",
     "Quadrata",
@@ -142,6 +144,7 @@ for _guardian, _definition in GUARDIAN_TRIAL_DEFINITIONS.items():
     }
 
 DEFAULT_MAIN_STORY_STATE = {
+    **opening_story.copied_defaults(),
     "vesperion_false_final_triggered": False,
     "pending_liminal_gap_entry": False,
     "liminal_gap_entered": False,
@@ -239,6 +242,9 @@ def normalize_state(state: object = None) -> dict[str, object]:
                     saved_answer if saved_answer in REFLECTION_VOLUNTAS_ANSWERS else None
                 )
                 continue
+            if key in opening_story.OPENING_STATE_DEFAULTS:
+                normalized[key] = state.get(key, normalized[key])
+                continue
             normalized[key] = bool(state.get(key, normalized[key]))
     if (
         normalized.get("class_voluntas_affirmed")
@@ -248,6 +254,7 @@ def normalize_state(state: object = None) -> dict[str, object]:
         normalized["class_voluntas_affirmed_archetype"] = class_voluntas_archetype(
             normalized.get("class_voluntas_affirmed_class")
         )
+    opening_story.normalize_opening_fields(normalized)
     return normalized
 
 

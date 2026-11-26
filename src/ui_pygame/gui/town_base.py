@@ -69,8 +69,16 @@ class TownScreenBase:
 
     def _load_background(self):
         """Load a native or downscaled town background without upscaling source art."""
-        bg_path = self._background_asset_path(getattr(self, "background_image", "town.png"))
-        if bg_path is not None:
+        requested = getattr(self, "background_image", "town.png")
+        fallback = getattr(self, "background_fallback_image", None)
+        filenames = [requested]
+        if fallback and fallback != requested:
+            filenames.append(fallback)
+        load_error: OSError | RuntimeError | pygame.error | None = None
+        for filename in filenames:
+            bg_path = self._background_asset_path(filename)
+            if bg_path is None:
+                continue
             try:
                 bg_image = pygame.image.load(bg_path)
                 # The supplied town art is 1024x768.  Downscaling a larger
@@ -92,9 +100,13 @@ class TownScreenBase:
                 else:
                     self.background = bg_image
                     self._background_is_native_fallback = True
-            except Exception as e:
-                print(f"Warning: Could not load town background: {e}")
-                self.background = None
+                return
+            except (OSError, RuntimeError, pygame.error) as error:
+                load_error = error
+                continue
+        self.background = None
+        if load_error is not None:
+            print(f"Warning: Could not load town background: {load_error}")
         else:
             print("Warning: Town background not found")
 

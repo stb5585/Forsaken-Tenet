@@ -21,6 +21,7 @@ from src.core.town import (
 
 from .confirmation_popup import ConfirmationPopup, RewardSelectionPopup
 from .level_up import LevelUpScreen
+from .story_scene import PLAYER_PORTRAIT_KEY, StoryBeat, StorySceneScreen
 
 
 class QuestManager:
@@ -32,6 +33,7 @@ class QuestManager:
         quest_choice_renderer=None,
         wrap_width=50,
         renderer_preserve_formatting: bool = False,
+        story_background_draw_func=None,
     ):
         self.presenter = presenter
         self.screen = presenter.screen
@@ -40,6 +42,7 @@ class QuestManager:
         self.quest_choice_renderer = quest_choice_renderer
         self.wrap_width = wrap_width  # characters
         self.renderer_preserve_formatting = renderer_preserve_formatting
+        self.story_background_draw_func = story_background_draw_func
 
     @staticmethod
     def _popup_show_kwargs() -> dict[str, bool]:
@@ -127,7 +130,8 @@ class QuestManager:
         mains, sides = self._eligible_quests(giver)
         hints: list[str] = []
         for name, _ in flatten(mains):
-            pdata = self.player_char.quest_dict.get("Main", {}).get(name)
+            category = self._quest_category(giver, name, "Main")
+            pdata = self.player_char.quest_dict.get(category, {}).get(name)
             if pdata and not pdata.get("Turned In"):
                 ht = pdata.get("Help Text", "")
                 if isinstance(ht, str) and ht.strip():
@@ -149,17 +153,33 @@ class QuestManager:
         for lvl, q in data.get("Main", {}).items():
             if level >= int(lvl):
                 main_list.append(q)
+        for lvl, q in data.get("Progression", {}).items():
+            if level >= int(lvl):
+                main_list.append(q)
         for lvl, q in data.get("Side", {}).items():
             if level >= int(lvl):
                 side_list.append(q)
         return main_list, side_list
 
+    def _quest_category(self, giver: str, quest_name: str, fallback: str) -> str:
+        """Return the authored/runtime category for one named quest."""
+        giver_data = quest_dict.get(giver, {})
+        player_quests = getattr(self.player_char, "quest_dict", {})
+        for category in quest_progress.AUTHORED_QUEST_CATEGORIES:
+            for quests_at_level in giver_data.get(category, {}).values():
+                if quest_name in quests_at_level:
+                    return category
+            if quest_name in player_quests.get(category, {}):
+                return category
+        return fallback
+
     def has_available_or_active_quest(self, giver: str) -> bool:
         """Return whether a giver merits a Quests menu entry for this player."""
         mains, sides = self._eligible_quests(giver)
-        for quest_type, groups in (("Main", mains), ("Side", sides)):
+        for default_type, groups in (("Main", mains), ("Side", sides)):
             for group in groups:
                 for name, definition in group.items():
+                    quest_type = self._quest_category(giver, name, default_type)
                     player_quests = getattr(self.player_char, "quest_dict", {})
                     if not isinstance(player_quests, dict):
                         player_quests = {}
@@ -170,13 +190,19 @@ class QuestManager:
                         return True
         return False
 
+    def has_pending_conversation(self, npc_name: str) -> bool:
+        """Return whether an active objective requires speaking with this NPC."""
+        return quest_progress.has_pending_conversation(self.player_char, npc_name)
+
     def _can_offer_quest(self, quest_name: str, q: dict[str, Any], typ: str) -> bool:
         """Check if quest can be offered based on prerequisites."""
+        if not quest_progress.can_offer_authored_quest(self.player_char, quest_name):
+            return False
         # Check if quest requires another quest to be turned in first
         required_quest = q.get("Requires")
         if required_quest:
             # Look for the required quest in both Main and Side
-            for quest_type in ["Main", "Side"]:
+            for quest_type in quest_progress.AUTHORED_QUEST_CATEGORIES:
                 if required_quest in self.player_char.quest_dict.get(quest_type, {}):
                     req_data = self.player_char.quest_dict[quest_type][required_quest]
                     if not req_data.get("Turned In", False):
@@ -228,7 +254,81 @@ class QuestManager:
 
         return {"categories": categories, "totals": totals}
 
-    def _turn_in(self, quest_name: str, typ: str) -> None:
+    def _show_uncertain_reports_completion(self) -> None:
+        """Resolve the first relic report as an authored multi-speaker scene."""
+        scene = StorySceneScreen(
+            self.presenter,
+            "Barracks — The First Relic",
+            participants=("Caedmon", "Edrin", "Joffrey"),
+            participant_anchors={"Joffrey": "Caedmon"},
+            background_image="town.png",
+            player_char=self.player_char,
+        )
+        scene.show_dialogue(
+            (
+                StoryBeat(
+                    "Caedmon",
+                    "Before we discuss what you recovered, we finish the patrol account.",
+                ),
+                StoryBeat("Edrin", "Tomas?"),
+                StoryBeat(
+                    "Caedmon",
+                    "Found dead at the sealed threshold. Mira's route marks continued beyond "
+                    "him, but they ended without a body.",
+                ),
+                StoryBeat("Edrin", "Still missing is not the same as gone."),
+                StoryBeat("Caedmon", "No. It is not."),
+                StoryBeat(
+                    "Narrator",
+                    "Caedmon lays three old expedition ledgers beside the recovered "
+                    "Triangulus relic.",
+                    portrait_name="",
+                ),
+                StoryBeat(
+                    "Caedmon",
+                    "These patrols entered by different routes and believed they had found "
+                    "different chambers. All three copied the same markings.",
+                ),
+                StoryBeat(
+                    "Joffrey",
+                    "The lines were incomplete. Set the relic beside them and the fragments "
+                    "form the same arrangement.",
+                ),
+                StoryBeat("Edrin", "Mira kept saying the empty center mattered."),
+                StoryBeat(
+                    "Caedmon",
+                    "There is more. An older, damaged record shows six positions arranged "
+                    "around that center.",
+                ),
+                StoryBeat("Joffrey", "Six chambers?"),
+                StoryBeat(
+                    "Caedmon",
+                    "Perhaps. Or six objects, six stations, or one mistake repeated by "
+                    "generations of scribes.",
+                ),
+                StoryBeat(
+                    "Caedmon",
+                    "We have evidence of a pattern, not an explanation. Recover anything "
+                    "that answers this relic and bring it home.",
+                ),
+            )
+        )
+
+    def turn_in_completed_quest(
+        self,
+        quest_name: str,
+        typ: str,
+        *,
+        show_end_text: bool = True,
+    ) -> bool:
+        """Turn in one known completed quest without opening the giver menu."""
+        qdata = self.player_char.quest_dict.get(typ, {}).get(quest_name)
+        if not qdata or not qdata.get("Completed") or qdata.get("Turned In"):
+            return False
+        self._turn_in(quest_name, typ, show_end_text=show_end_text)
+        return bool(qdata.get("Turned In"))
+
+    def _turn_in(self, quest_name: str, typ: str, *, show_end_text: bool = True) -> None:
         qdata = self.player_char.quest_dict[typ][quest_name]
         reward = qdata.get("Reward", [])
         reward_num = qdata.get("Reward Number", 1)
@@ -236,9 +336,16 @@ class QuestManager:
             self._show_hint("Complete your second promotion before claiming the Power Core reward.")
             return
 
+        # Narrative resolutions belong to the quest outcome itself. Stage them before any
+        # settlement mutates inventory, experience, level, or the Turned In flag.
+        self._handle_pre_turn_in_quest_events(quest_name)
+
         # Show end-of-quest text from quest giver if available
         end_text = qdata.get("End Text", "")
-        if end_text:
+        if quest_name == "Uncertain Reports":
+            self._show_uncertain_reports_completion()
+            end_text = ""
+        if end_text and show_end_text:
             if self.quest_text_renderer:
                 if self.renderer_preserve_formatting:
                     self.quest_text_renderer(f"Quest Complete: {quest_name}\n\n{end_text}")
@@ -314,24 +421,17 @@ class QuestManager:
             if isinstance(item_or_cls, type):
                 # It's a class, instantiate it Reward Number times
                 for _ in range(reward_num):
-                    try:
-                        item = item_or_cls()
-                        self.player_char.modify_inventory(item)
-                        if not reward_str or reward_str == "":
-                            reward_str = f"{item.name} x{reward_num}"
-                    except Exception:
-                        pass
+                    item = item_or_cls()
+                    self.player_char.modify_inventory(item)
+                    if not reward_str:
+                        reward_str = f"{item.name} x{reward_num}"
             else:
                 # It's an instance, grant Reward Number copies of the same type
                 for _ in range(reward_num):
-                    try:
-                        # Create a new instance of the same class
-                        item = item_or_cls.__class__()
-                        self.player_char.modify_inventory(item)
-                        if not reward_str or reward_str == "":
-                            reward_str = f"{item.name} x{reward_num}"
-                    except Exception:
-                        pass
+                    item = item_or_cls.__class__()
+                    self.player_char.modify_inventory(item)
+                    if not reward_str:
+                        reward_str = f"{item.name} x{reward_num}"
         else:
             # If multiple reward choices, let player pick one (with inspect) instead of granting all
             chosen_names = []
@@ -342,12 +442,9 @@ class QuestManager:
             ):
                 reward_items = []
                 for entry in reward:
-                    try:
-                        item = ensure_item_instance(entry)
-                        if item is not None:
-                            reward_items.append(item)
-                    except Exception:
-                        pass
+                    item = ensure_item_instance(entry)
+                    if item is not None:
+                        reward_items.append(item)
                 if reward_items:
                     while True:
                         popup = RewardSelectionPopup(
@@ -372,13 +469,10 @@ class QuestManager:
                 names = []
                 for _ in range(reward_num):
                     for cls in reward:
-                        try:
-                            item = new_item_copy(cls)
-                            if item is not None:
-                                self.player_char.modify_inventory(item)
-                                names.append(item.name)
-                        except Exception:
-                            pass
+                        item = new_item_copy(cls)
+                        if item is not None:
+                            self.player_char.modify_inventory(item)
+                            names.append(item.name)
                 reward_str = ", ".join(names) if names else ""
 
         # Show quest completion and rewards first
@@ -475,8 +569,6 @@ class QuestManager:
             level_up_screen.show_level_up(self.player_char, None)
         qdata["Turned In"] = True
 
-        # Quest-specific post-turn-in events
-        self._handle_quest_events(quest_name)
         quest_progress.handle_quest_turn_in(self.player_char, quest_name)
 
     def _remove_lucky_locket_for_bad_dream(self) -> None:
@@ -488,7 +580,7 @@ class QuestManager:
             special_inventory.pop("Lucky Locket", None)
 
     def _handle_quest_events(self, quest_name: str) -> None:
-        """Handle special events triggered by specific quest turn-ins."""
+        """Handle narrative and special events before a quest is settled."""
 
         def show_special_event_text(event_name: str) -> None:
             from src.core.data.data_loader import get_special_events
@@ -538,10 +630,157 @@ class QuestManager:
                         self._show_popup(popup)
         elif quest_name == "The Wizard's Folly":
             show_special_event_text("Nimue After Merzhin")
-        elif quest_name == "Bring Him Home":
-            show_special_event_text("Timmy Home")
         elif quest_name == "This Thing's Nuclear":
             show_special_event_text("Power Up")
+
+    def _handle_pre_turn_in_quest_events(self, quest_name: str) -> None:
+        """Show quest-resolution scenes before rewards and completion settlement."""
+        if quest_name == "Bring Him Home":
+            self._show_timmy_home_scene()
+        elif quest_name == "Rookie Mistake":
+            self._show_rookie_burial_scenes()
+        self._handle_quest_events(quest_name)
+
+    def _show_rookie_burial_scenes(self) -> None:
+        """Receive the fallen recruit in the courtyard, then hold his burial."""
+        player_name = str(getattr(self.player_char, "name", "Hero") or "Hero")
+        courtyard = StorySceneScreen(
+            self.presenter,
+            "Silvana Courtyard — A Rookie Returns",
+            participants=("Caedmon", "Soldier"),
+            participant_anchors={"Soldier": "Caedmon"},
+            background_image="town.png",
+            player_char=self.player_char,
+        )
+        courtyard.show_dialogue(
+            (
+                StoryBeat(
+                    "Narrator",
+                    "The gate watch falls silent when you enter Silvana carrying the fallen "
+                    "recruit. Caedmon crosses the courtyard before anyone can call for him.",
+                    portrait_name="",
+                ),
+                StoryBeat("Caedmon", "Clear the gate. Give them room."),
+                StoryBeat(
+                    player_name,
+                    "I found him on the first level. He did not make it back.",
+                    portrait_name=PLAYER_PORTRAIT_KEY,
+                ),
+                StoryBeat(
+                    "Caedmon",
+                    "I sent him below before he was ready. That failure is mine, not his.",
+                ),
+                StoryBeat(
+                    "Narrator",
+                    "Caedmon takes the recruit's patrol clasp and closes his hand around it. "
+                    "The Priest is waiting at the graveyard.",
+                    portrait_name="",
+                ),
+            ),
+            fade_in_ms=900,
+            fade_hold_ms=250,
+        )
+
+        graveyard = StorySceneScreen(
+            self.presenter,
+            "Silvana Graveyard — The Last Watch",
+            participants=("Priest", "Caedmon"),
+            participant_anchors={
+                "Soldier": "Caedmon",
+                "Joffrey": "Caedmon",
+                "Liora": "Priest",
+            },
+            background_image="graveyard.jpg",
+            player_char=self.player_char,
+        )
+        graveyard.show_dialogue(
+            (
+                StoryBeat(
+                    "Narrator",
+                    "At the graveyard, the Priest waits beside an open grave. Soldiers, "
+                    "Joffrey, Liora, and townspeople stand together in the rain.",
+                    portrait_name="",
+                ),
+                StoryBeat(
+                    "Priest",
+                    "We are here to remember a life, not to turn a needless death into a "
+                    "lesson about courage.",
+                ),
+                StoryBeat(
+                    "Narrator",
+                    "You and Caedmon lower the wrapped recruit into the earth. A soldier sets "
+                    "his patrol clasp on the simple wooden marker.",
+                    portrait_name="",
+                ),
+                StoryBeat(
+                    player_name,
+                    "He came home. He will not be left in the dark.",
+                    portrait_name=PLAYER_PORTRAIT_KEY,
+                ),
+                StoryBeat("Soldier", "We should have gone with him."),
+                StoryBeat("Liora", "Then remember that the next time someone calls risk honor."),
+                StoryBeat("Joffrey", "His name stays in the patrol ledger."),
+                StoryBeat(
+                    "Priest",
+                    "Let the dead rest, and let the living carry the truth of how he died.",
+                ),
+                StoryBeat(
+                    "Caedmon",
+                    "This death goes in my ledger. Thank you for bringing him home.",
+                ),
+            ),
+            fade_in_ms=1000,
+            fade_hold_ms=300,
+        )
+
+        if "Dead Soldier" in getattr(self.player_char, "special_inventory", {}):
+            self.player_char.modify_inventory(items.DeadSoldier(), subtract=True, rare=True)
+
+    def _show_timmy_home_scene(self) -> None:
+        """Stage Timmy's reunion without changing quest settlement."""
+        scene = StorySceneScreen(
+            self.presenter,
+            "Silvana — Timmy Comes Home",
+            participants=("Timmy's Mother", "Timmy's Father", "Timmy", "Caedmon"),
+            participant_anchors={"Timmy": "Timmy's Mother"},
+            background_image="town.png",
+            player_char=self.player_char,
+        )
+        scene.show_dialogue(
+            (
+                StoryBeat(
+                    "Narrator",
+                    "Before Caedmon can finish the report, Timmy's parents rush across the "
+                    "barracks yard.",
+                    portrait_name="",
+                ),
+                StoryBeat("Timmy's Mother", "Timmy."),
+                StoryBeat(
+                    "Narrator",
+                    "She drops to her knees and pulls him close. His father stops beside them, "
+                    "one hand over his mouth.",
+                    portrait_name="",
+                ),
+                StoryBeat(
+                    "Timmy",
+                    "I told them someone would find me. I knew someone would come.",
+                ),
+                StoryBeat(
+                    "Timmy's Father",
+                    "We looked everywhere we were allowed to go. Thank you for bringing him "
+                    "back to us.",
+                ),
+                StoryBeat(
+                    "Timmy's Mother",
+                    "Come on. You're going home, and you're not leaving our sight again.",
+                ),
+                StoryBeat(
+                    "Caedmon",
+                    "You did more than complete an assignment today. You brought a family "
+                    "back together.",
+                ),
+            )
+        )
 
     def _already_killed(self, enemy_name: str) -> bool:
         return already_defeated_enemy(self.player_char, enemy_name)
@@ -593,13 +832,10 @@ class QuestManager:
             # If it's the Relics collection quest and player already has all relics,
             # mark as completed immediately so it can be turned in.
             if q.get("Type") == "Collect" and q.get("What") == "Relics":
-                try:
-                    if getattr(
-                        self.player_char, "has_relics"
-                    )() and not self.player_char.quest_dict[typ][quest_name].get("Completed"):
-                        self.player_char.quest_dict[typ][quest_name]["Completed"] = True
-                except Exception:
-                    pass
+                if quest_progress.has_all_relics(
+                    self.player_char
+                ) and not self.player_char.quest_dict[typ][quest_name].get("Completed"):
+                    self.player_char.quest_dict[typ][quest_name]["Completed"] = True
 
             # If the quest grants an initial item (for example Naivete's empty vial),
             # replicate minimal cases here if needed.
@@ -668,7 +904,8 @@ class QuestManager:
             return out
 
         for name, q in flatten(mains):
-            pdata = self.player_char.quest_dict.get("Main", {}).get(name)
+            category = self._quest_category(giver, name, "Main")
+            pdata = self.player_char.quest_dict.get(category, {}).get(name)
             if (
                 pdata
                 and not pdata.get("Completed")
@@ -678,21 +915,18 @@ class QuestManager:
                 if self._already_killed(q["What"]):
                     pdata["Completed"] = True
             # Safety: auto-complete Relics collect quest if already fulfilled but not marked
-            pdata = self.player_char.quest_dict.get("Main", {}).get(name)
+            pdata = self.player_char.quest_dict.get(category, {}).get(name)
             if (
                 pdata
                 and not pdata.get("Completed")
                 and q.get("Type") == "Collect"
                 and q.get("What") == "Relics"
             ):
-                try:
-                    if getattr(self.player_char, "has_relics")():
-                        pdata["Completed"] = True
-                except Exception:
-                    pass
-            pdata = self.player_char.quest_dict.get("Main", {}).get(name)
+                if quest_progress.has_all_relics(self.player_char):
+                    pdata["Completed"] = True
+            pdata = self.player_char.quest_dict.get(category, {}).get(name)
             if pdata and pdata.get("Completed") and not pdata.get("Turned In"):
-                self._turn_in(name, "Main")
+                self._turn_in(name, category)
                 did_action = True
                 showed_message = True
                 return did_action, showed_message
@@ -715,12 +949,13 @@ class QuestManager:
 
         # Offer new quests, main first then side
         for name, q in flatten(mains):
-            if name not in self.player_char.quest_dict.get("Main", {}):
+            category = self._quest_category(giver, name, "Main")
+            if name not in self.player_char.quest_dict.get(category, {}):
                 # Check prerequisites before offering
-                if not self._can_offer_quest(name, q, "Main"):
+                if not self._can_offer_quest(name, q, category):
                     continue
                 quest_was_offered = True
-                if self._offer(giver, name, q, "Main"):
+                if self._offer(giver, name, q, category):
                     return True, True
                 showed_message = True  # declined quest still showed a popup
         for name, q in flatten(sides):
@@ -746,7 +981,8 @@ class QuestManager:
         # If no actions, show help text from active quests for this giver if any
         help_texts = []
         for name, q in flatten(mains):
-            pdata = self.player_char.quest_dict.get("Main", {}).get(name)
+            category = self._quest_category(giver, name, "Main")
+            pdata = self.player_char.quest_dict.get(category, {}).get(name)
             if pdata and not pdata.get("Turned In"):
                 help_texts.append(pdata.get("Help Text", ""))
         for name, q in flatten(sides):

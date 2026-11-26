@@ -213,13 +213,11 @@ class PlayerProgressionMixin:
                 self.quest_dict["Side"]["Something to Cry About"]["Completed"] = True
                 quest_message += "You have completed the quest Something to Cry About.\n"
             else:
-                for quest in self.quest_dict["Main"]:
-                    if (
-                        self.quest_dict["Main"][quest]["What"] == enemy.name
-                        and not self.quest_dict["Main"][quest]["Completed"]
-                    ):
-                        self.quest_dict["Main"][quest]["Completed"] = True
-                        quest_message += f"You have completed the quest {quest}.\n"
+                for category in ("Main", "Progression"):
+                    for quest, quest_data in self.quest_dict.get(category, {}).items():
+                        if quest_data["What"] == enemy.name and not quest_data["Completed"]:
+                            quest_data["Completed"] = True
+                            quest_message += f"You have completed the quest {quest}.\n"
 
                 quest_message += quest_progress.record_defeat(self, enemy.name)
         elif item is not None:

@@ -297,7 +297,7 @@ def test_old_key_quest_rewards_are_intentionally_generous():
     data_loader.clear_cache()
     quests = data_loader.get_quests()
 
-    butcher = quests["Barkeep"]["Main"]["10"]["The Butcher"]
+    butcher = quests["Barkeep"]["Progression"]["10"]["The Butcher"]
     bad_dream = quests["Waitress"]["Main"]["35"]["A Bad Dream"]
 
     assert butcher["Reward"] == [items.OldKey]

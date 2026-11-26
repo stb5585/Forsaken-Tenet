@@ -165,9 +165,21 @@ def test_first_relic_report_turn_in_creates_holy_relics(monkeypatch):
     player.special_inventory["Triangulus"] = [core_items.Relic1()]
     rendered = []
     manager = _manager(player, quest_text_renderer=lambda text: rendered.append(text))
+    scenes = []
+    scene_kwargs = []
+
+    class FakeStoryScene:
+        def __init__(self, _presenter, title, **kwargs):
+            self.title = title
+            self.kwargs = kwargs
+            scene_kwargs.append(kwargs)
+
+        def show_dialogue(self, beats):
+            scenes.append(tuple(beats))
 
     FakeLevelUpScreen.calls = []
     monkeypatch.setattr(quest_manager, "LevelUpScreen", FakeLevelUpScreen)
+    monkeypatch.setattr(quest_manager, "StorySceneScreen", FakeStoryScene)
 
     acted, showed = manager.check_and_offer("Sergeant")
 
@@ -177,6 +189,18 @@ def test_first_relic_report_turn_in_creates_holy_relics(monkeypatch):
     assert holy["Completed"] is False
     assert holy["Stage"] == "collecting"
     assert "Recovered 1/6 relics" in holy["Help Text"]
+    assert [beat.speaker for beat in scenes[0][:5]] == [
+        "Caedmon",
+        "Edrin",
+        "Caedmon",
+        "Edrin",
+        "Caedmon",
+    ]
+    assert scenes[0][5].speaker == "Narrator"
+    assert "ledgers" in scenes[0][5].text
+    assert scene_kwargs[0]["background_image"] == "town.png"
+    assert "background_draw_func" not in scene_kwargs[0]
+    assert all("Quest Complete: Uncertain Reports" not in message for message in rendered)
 
 
 def test_formatting_and_chalice_hint_helpers(monkeypatch):
@@ -486,20 +510,22 @@ def test_turn_in_handles_reward_selection_and_bad_dream_event(monkeypatch):
 
 def test_content_old_key_rewards_turn_in_through_pygame_manager(monkeypatch):
     player = _make_player()
-    player.quest_dict["Main"]["The Butcher"] = _content_quest("Barkeep", "Main", "The Butcher")
+    player.quest_dict["Progression"] = {
+        "The Butcher": _content_quest("Barkeep", "Progression", "The Butcher")
+    }
     player.quest_dict["Main"]["A Bad Dream"] = _content_quest("Waitress", "Main", "A Bad Dream")
     rendered = []
     manager = _manager(player, quest_text_renderer=lambda text: rendered.append(text))
     monkeypatch.setattr(quest_manager, "LevelUpScreen", FakeLevelUpScreen)
     monkeypatch.setattr(manager, "_handle_quest_events", lambda _quest_name: None)
 
-    manager._turn_in("The Butcher", "Main")
+    manager._turn_in("The Butcher", "Progression")
     manager._turn_in("A Bad Dream", "Main")
 
     assert [call[0] for call in player.inventory_calls].count("Old Key") == 5
     assert any("Reward: Old Key x2" in text for text in rendered)
     assert any("Reward: Old Key x3" in text for text in rendered)
-    assert player.quest_dict["Main"]["The Butcher"]["Turned In"] is True
+    assert player.quest_dict["Progression"]["The Butcher"]["Turned In"] is True
     assert player.quest_dict["Main"]["A Bad Dream"]["Turned In"] is True
 
 
@@ -511,12 +537,105 @@ def test_bring_him_home_turn_in_shows_timmy_home_event(monkeypatch):
     rendered = []
     manager = _manager(player, quest_text_renderer=lambda text: rendered.append(text))
     monkeypatch.setattr(quest_manager, "LevelUpScreen", FakeLevelUpScreen)
+    scenes = []
+
+    class FakeStoryScene:
+        def __init__(self, _presenter, title, **kwargs):
+            self.title = title
+            self.kwargs = kwargs
+            self.beats = ()
+            scenes.append(self)
+
+        def show_dialogue(self, beats):
+            assert player.inventory_calls == []
+            assert player.quest_dict["Side"]["Bring Him Home"]["Turned In"] is False
+            self.beats = tuple(beats)
+
+    monkeypatch.setattr(quest_manager, "StorySceneScreen", FakeStoryScene)
 
     manager._turn_in("Bring Him Home", "Side")
 
     assert player.quest_dict["Side"]["Bring Him Home"]["Turned In"] is True
-    assert any("Timmy hides behind her coat" in text for text in rendered)
-    assert any("brought a family back together" in text for text in rendered)
+    assert any("Quest turned in: Bring Him Home" in text for text in rendered)
+    assert len(scenes) == 1
+    assert scenes[0].title == "Silvana — Timmy Comes Home"
+    assert scenes[0].kwargs["background_image"] == "town.png"
+    assert scenes[0].kwargs["participants"] == (
+        "Timmy's Mother",
+        "Timmy's Father",
+        "Timmy",
+        "Caedmon",
+    )
+    assert [beat.speaker for beat in scenes[0].beats] == [
+        "Narrator",
+        "Timmy's Mother",
+        "Narrator",
+        "Timmy",
+        "Timmy's Father",
+        "Timmy's Mother",
+        "Caedmon",
+    ]
+    assert "family back together" in scenes[0].beats[-1].text
+
+
+def test_rookie_mistake_arrival_scenes_precede_rewards_and_consume_body(monkeypatch):
+    player = _make_player(level=12)
+    player.name = "Mara"
+    player.quest_dict["Side"]["Rookie Mistake"] = _content_quest(
+        "Sergeant", "Side", "Rookie Mistake"
+    )
+    player.special_inventory["Dead Soldier"] = [core_items.DeadSoldier()]
+    original_modify_inventory = player.modify_inventory
+
+    def modify_inventory(item, num=1, subtract=False, rare=False):
+        original_modify_inventory(item, num=num, subtract=subtract, rare=rare)
+        if subtract and rare and item.name == "Dead Soldier":
+            del player.special_inventory[item.name]
+
+    player.modify_inventory = modify_inventory
+    rendered = []
+    manager = _manager(player, quest_text_renderer=rendered.append)
+    scenes = []
+
+    class FakeStoryScene:
+        def __init__(self, _presenter, title, **kwargs):
+            self.title = title
+            self.kwargs = kwargs
+            self.beats = ()
+            self.show_kwargs = {}
+            scenes.append(self)
+
+        def show_dialogue(self, beats, **kwargs):
+            assert player.quest_dict["Side"]["Rookie Mistake"]["Turned In"] is False
+            assert all(call[0] != "Mana Potion" for call in player.inventory_calls)
+            self.beats = tuple(beats)
+            self.show_kwargs = kwargs
+
+    monkeypatch.setattr(quest_manager, "LevelUpScreen", FakeLevelUpScreen)
+    monkeypatch.setattr(quest_manager, "StorySceneScreen", FakeStoryScene)
+
+    assert manager.turn_in_completed_quest(
+        "Rookie Mistake", "Side", show_end_text=False
+    ) is True
+
+    assert [scene.title for scene in scenes] == [
+        "Silvana Courtyard — A Rookie Returns",
+        "Silvana Graveyard — The Last Watch",
+    ]
+    assert scenes[0].kwargs["background_image"] == "town.png"
+    assert scenes[1].kwargs["background_image"] == "graveyard.jpg"
+    assert scenes[1].kwargs["participants"] == ("Priest", "Caedmon")
+    hero_beats = [
+        beat
+        for scene in scenes
+        for beat in scene.beats
+        if beat.portrait_name == quest_manager.PLAYER_PORTRAIT_KEY
+    ]
+    assert [beat.speaker for beat in hero_beats] == ["Mara", "Mara"]
+    assert "Dead Soldier" not in player.special_inventory
+    assert player.quest_dict["Side"]["Rookie Mistake"]["Turned In"] is True
+    assert sum(call[0] == "Mana Potion" for call in player.inventory_calls) == 4
+    assert all("This death belongs in my ledger" not in message for message in rendered)
 
 
 def test_check_and_offer_covers_turnin_offer_help_and_noquest(monkeypatch):

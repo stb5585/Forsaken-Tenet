@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from src.core import main_story
+from src.core import main_story, opening_story
 from src.core.player import LIMINAL_GAP_ENTRY_FACING, LIMINAL_GAP_ENTRY_POS, LIMINAL_GAP_LEVEL
 from src.core.save_system import PlayerDataSerializer
 from tests.test_framework import TestGameState
@@ -15,18 +15,94 @@ def test_new_players_initialize_main_story_defaults():
     assert player.can_enter_true_final() is False
 
 
-def test_legacy_player_save_deserializes_main_story_defaults():
+def test_opening_choices_normalize_only_documented_values():
+    state = main_story.normalize_state(
+        {
+            "arrival_motive": "Knowledge",
+            "arrival_aid": "FetchHelp",
+            "triangulus_identity_answer": "Memory",
+        }
+    )
+
+    assert state["arrival_motive"] == "Knowledge"
+    assert state["arrival_aid"] == "FetchHelp"
+    assert state["triangulus_identity_answer"] == "Memory"
+    invalid = main_story.normalize_state(
+        {
+            "arrival_motive": "Power",
+            "arrival_aid": "Ignore",
+            "triangulus_identity_answer": "CorrectAnswer",
+        }
+    )
+    assert invalid["arrival_motive"] is None
+    assert invalid["arrival_aid"] is None
+    assert invalid["triangulus_identity_answer"] is None
+
+
+def test_legacy_player_save_skips_new_opening_scenes_with_unrecorded_choices():
     player = TestGameState.create_player()
     data = PlayerDataSerializer.serialize(player)
     data.pop("main_story")
 
     loaded = PlayerDataSerializer.deserialize(data, skip_tiles=True)
 
-    assert loaded.ensure_main_story_state() == main_story.default_state()
+    state = loaded.ensure_main_story_state()
+    assert state["arrival_scene_seen"] is True
+    assert state["joffrey_tavern_scene_seen"] is True
+    assert state["arrival_motive"] == opening_story.MIGRATED_CHOICE
+    assert state["arrival_aid"] == opening_story.MIGRATED_CHOICE
+    assert state["dungeon_entry_story_seen"] is True
+    assert state["vesperion_false_final_triggered"] is False
+
+
+def test_legacy_triangulus_save_backfills_threshold_without_replaying_it():
+    player = TestGameState.create_player()
+    raw_state = {
+        key: value
+        for key, value in main_story.default_state().items()
+        if key not in opening_story.OPENING_STATE_DEFAULTS
+    }
+    state = main_story.normalize_state(raw_state)
+
+    opening_story.migrate_loaded_state(
+        state,
+        raw_state,
+        quest_dict={
+            "Main": {
+                "Uncertain Reports": {
+                    "Stage": "report_first_relic",
+                    "Completed": True,
+                }
+            }
+        },
+        special_inventory={"Triangulus": [object()]},
+    )
+
+    assert state["opening_ledger_seen"] is True
+    assert state["opening_patrol_fate_seen"] is True
+    assert state["acolyte_triangulus_fragment_seen"] is True
+    assert state["triangulus_identity_answer"] == opening_story.MIGRATED_CHOICE
+
+
+def test_existing_opening_save_backfills_dungeon_entry_transition_as_seen():
+    raw_state = main_story.default_state()
+    raw_state.pop("dungeon_entry_story_seen")
+    state = main_story.normalize_state(raw_state)
+
+    opening_story.migrate_loaded_state(
+        state,
+        raw_state,
+        quest_dict={"Main": {}},
+        special_inventory={},
+    )
+
+    assert state["dungeon_entry_story_seen"] is True
+    assert state["first_descent_story_seen"] is False
 
 
 def test_main_story_round_trips_through_player_serializer():
     player = TestGameState.create_player()
+    player.main_story["dungeon_entry_story_seen"] = True
     player.main_story["vesperion_false_final_triggered"] = True
     player.main_story["liminal_gap_entered"] = True
     player.main_story["voluntas_revealed"] = True
@@ -71,6 +147,7 @@ def test_main_story_round_trips_through_player_serializer():
     )
 
     assert loaded.main_story["vesperion_false_final_triggered"] is True
+    assert loaded.main_story["dungeon_entry_story_seen"] is True
     assert loaded.main_story["liminal_gap_entered"] is True
     assert loaded.main_story["voluntas_revealed"] is True
     assert loaded.main_story["seventh_seat_revealed"] is True
