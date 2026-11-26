@@ -266,9 +266,7 @@ def test_player_uses_same_three_character_rotation_as_npcs(monkeypatch):
     )
 
     assert len(scene._staged_portraits) == 3
-    assert scene._staged_portraits["right"] == story_scene.StagedPortrait(
-        "Liora", "Liora", "right"
-    )
+    assert scene._staged_portraits["right"] == story_scene.StagedPortrait("Liora", "Liora", "right")
     assert {staged.speaker for staged in scene._staged_portraits.values()} == {
         "Liora",
         "Edrin",
@@ -434,9 +432,11 @@ def test_story_scene_stages_three_portraits_and_replaces_only_one(monkeypatch):
         participant_anchors={"Joffrey": "Edrin", "Liora": "Edrin"},
     )
 
-    assert {
-        slot: staged.speaker for slot, staged in scene._staged_portraits.items()
-    } == {"left": "Edrin", "right": "Caedmon", "left_support": "Joffrey"}
+    assert {slot: staged.speaker for slot, staged in scene._staged_portraits.items()} == {
+        "left": "Edrin",
+        "right": "Caedmon",
+        "left_support": "Joffrey",
+    }
 
     scene._stage_for_beat(
         story_scene.StoryBeat("Liora", "Hold still."),
@@ -446,9 +446,11 @@ def test_story_scene_stages_three_portraits_and_replaces_only_one(monkeypatch):
         ),
     )
 
-    assert {
-        slot: staged.speaker for slot, staged in scene._staged_portraits.items()
-    } == {"left": "Edrin", "right": "Caedmon", "left_support": "Liora"}
+    assert {slot: staged.speaker for slot, staged in scene._staged_portraits.items()} == {
+        "left": "Edrin",
+        "right": "Caedmon",
+        "left_support": "Liora",
+    }
 
 
 def test_narration_does_not_change_portrait_staging(monkeypatch):

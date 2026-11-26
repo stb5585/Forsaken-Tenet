@@ -328,8 +328,7 @@ class TurnPreparationMixin:
                 (
                     candidate
                     for candidate in self.attacker.spellbook.get("Skills", {}).values()
-                    if getattr(candidate, "charging", False)
-                    and getattr(candidate, "weapon", False)
+                    if getattr(candidate, "charging", False) and getattr(candidate, "weapon", False)
                 ),
                 None,
             )

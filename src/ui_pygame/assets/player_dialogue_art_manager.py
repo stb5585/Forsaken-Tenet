@@ -38,7 +38,9 @@ class PlayerDialogueArtManager:
         try:
             data = json.loads(self.mapping_path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError) as error:
-            logger.warning("Could not load player dialogue art map %s: %s", self.mapping_path, error)
+            logger.warning(
+                "Could not load player dialogue art map %s: %s", self.mapping_path, error
+            )
             return {}, {}
         assets = data.get("assets")
         if not isinstance(assets, dict):

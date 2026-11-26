@@ -33,9 +33,7 @@ INTRO_STORY_IMAGE_PATHS = tuple(
     )
 )
 
-DUNGEON_ENTRY_IMAGE_PATHS = (
-    PYGAME_ASSETS_DIR / "backgrounds" / "intro_06_descent.jpg",
-)
+DUNGEON_ENTRY_IMAGE_PATHS = (PYGAME_ASSETS_DIR / "backgrounds" / "intro_06_descent.jpg",)
 
 
 def fade_to_black(presenter, *, duration_ms: int = 650, hold_ms: int = 0) -> None:
@@ -436,9 +434,7 @@ class StoryCardSequence(_PresentationScreenBase):
 
     def _wrapped_story_text(self, text: str) -> str:
         """Wrap a complete passage before revealing it to keep words on one line."""
-        return "\n".join(
-            self._wrap_text(text, self.story_font, self._story_body_rect().width)
-        )
+        return "\n".join(self._wrap_text(text, self.story_font, self._story_body_rect().width))
 
     def draw(
         self,

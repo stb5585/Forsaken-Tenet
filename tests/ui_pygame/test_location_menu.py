@@ -185,9 +185,7 @@ def test_bounty_rows_use_shared_measured_rects_at_supported_viewports(monkeypatc
     assert option_rect in draw_calls
 
     item_rect = dict(screen.content_row_rects(3))[0]
-    _content_rect, _height, _visible, cursor_x, _item_x, quantity_x = (
-        screen._content_item_layout()
-    )
+    _content_rect, _height, _visible, cursor_x, _item_x, quantity_x = screen._content_item_layout()
     assert item_rect.height >= presenter.large_font.get_height() + (
         presenter.layout_metrics.unit(4) * 2
     )

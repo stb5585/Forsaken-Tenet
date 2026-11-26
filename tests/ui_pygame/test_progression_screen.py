@@ -277,8 +277,7 @@ def test_spend_distribution_does_not_repeat_closed_node_confirmation(monkeypatch
     monkeypatch.setattr(
         progression_screen,
         "apply_progression_plan",
-        lambda *_args, **_kwargs: applied.append(True)
-        or PurchaseResult(True, "Spent 1 point."),
+        lambda *_args, **_kwargs: applied.append(True) or PurchaseResult(True, "Spent 1 point."),
     )
 
     screen._spend_pending()

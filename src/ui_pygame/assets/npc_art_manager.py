@@ -28,9 +28,7 @@ class NpcArtManager:
     ) -> None:
         self.art_root = Path(art_root or NPC_ART_ROOT)
         self.art_map_path = Path(art_map_path or self.art_root / "npc_art_map.json")
-        self.facing_map_path = Path(
-            facing_map_path or self.art_root / NPC_ART_FACING_MAP.name
-        )
+        self.facing_map_path = Path(facing_map_path or self.art_root / NPC_ART_FACING_MAP.name)
         self.available_keys = {path.stem for path in self.art_root.glob("*.png") if path.is_file()}
         self.art_map: dict[str, str] = {}
         self.facing_map: dict[str, str] = {}

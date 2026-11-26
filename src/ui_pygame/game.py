@@ -917,9 +917,7 @@ class PygameGame:
             "You listen without interrupting and commit Edrin's report to memory.",
             "You bring Caedmon's kit and clean water to Liora.",
         )
-        scene.show_dialogue(
-            (StoryBeat("Narrator", aid_actions[aid_choice], portrait_name=""),)
-        )
+        scene.show_dialogue((StoryBeat("Narrator", aid_actions[aid_choice], portrait_name=""),))
         opening_story.record_arrival(
             story_state,
             opening_story.ARRIVAL_MOTIVES[motive_choice],

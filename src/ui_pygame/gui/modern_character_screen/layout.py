@@ -361,9 +361,7 @@ class CharacterLayoutMixin:
             row_gap=stat_gap,
             bottom_limit=resistance_top - self.presenter.layout_metrics.unit(12),
             value_colors=(
-                {"Weight": self.colors.RED}
-                if getattr(player_char, "encumbered", False)
-                else None
+                {"Weight": self.colors.RED} if getattr(player_char, "encumbered", False) else None
             ),
         )
 

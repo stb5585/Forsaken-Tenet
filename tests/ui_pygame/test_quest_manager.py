@@ -614,9 +614,7 @@ def test_rookie_mistake_arrival_scenes_precede_rewards_and_consume_body(monkeypa
     monkeypatch.setattr(quest_manager, "LevelUpScreen", FakeLevelUpScreen)
     monkeypatch.setattr(quest_manager, "StorySceneScreen", FakeStoryScene)
 
-    assert manager.turn_in_completed_quest(
-        "Rookie Mistake", "Side", show_end_text=False
-    ) is True
+    assert manager.turn_in_completed_quest("Rookie Mistake", "Side", show_end_text=False) is True
 
     assert [scene.title for scene in scenes] == [
         "Silvana Courtyard — A Rookie Returns",

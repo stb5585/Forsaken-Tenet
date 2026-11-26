@@ -217,9 +217,7 @@ class StorySceneScreen(TownScreenBase):
         self.participant_anchors = dict(participant_anchors or {})
         self.background_draw_func = background_draw_func
         self.player_char = player_char or getattr(presenter, "player", None)
-        self.player_dialogue_art_manager = (
-            player_dialogue_art_manager or PlayerDialogueArtManager()
-        )
+        self.player_dialogue_art_manager = player_dialogue_art_manager or PlayerDialogueArtManager()
         self.current_beat = StoryBeat("Narrator", "")
         self.transcript: list[StoryBeat] = []
         self._staged_portraits: dict[str, StagedPortrait] = {}
@@ -264,11 +262,7 @@ class StorySceneScreen(TownScreenBase):
 
         anchor = self.participant_anchors.get(speaker)
         anchor_slot = next(
-            (
-                staged.slot
-                for staged in self._staged_portraits.values()
-                if staged.speaker == anchor
-            ),
+            (staged.slot for staged in self._staged_portraits.values() if staged.speaker == anchor),
             "left",
         )
         return "right_support" if anchor_slot.startswith("right") else "left_support"
@@ -394,12 +388,16 @@ class StorySceneScreen(TownScreenBase):
             support_width,
             support_height,
         )
-        return title_rect, dialogue_rect, {
-            "left": left,
-            "right": right,
-            "left_support": left_support,
-            "right_support": right_support,
-        }
+        return (
+            title_rect,
+            dialogue_rect,
+            {
+                "left": left,
+                "right": right,
+                "left_support": left_support,
+                "right_support": right_support,
+            },
+        )
 
     def _wrapped_beat_text(self, beat: StoryBeat, text_width: int | None = None) -> str:
         """Wrap a full beat before reveal so partially typed words cannot move."""
@@ -637,9 +635,7 @@ class StorySceneScreen(TownScreenBase):
                     self._fade_in_dialogue(beat, fade_in_ms, fade_hold_ms)
                 else:
                     self._fade_in_dialogue(beat, fade_in_ms)
-                input_armed = prepare_guarded_input(
-                    flush_events=True, require_key_release=True
-                )
+                input_armed = prepare_guarded_input(flush_events=True, require_key_release=True)
             started_ms = pygame.time.get_ticks()
             force_complete = getattr(self.presenter, "debug_mode", False)
             display_length = len(self._wrapped_beat_text(beat))

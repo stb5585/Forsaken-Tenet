@@ -10,8 +10,8 @@ import pytest
 
 from src.core import abilities, enemies, items, main_story
 from src.core.classes import ability_mechanics, class_rings, promotion_kits
-from src.core.combat.battle_engine.models import ForcedAction
 from src.core.combat.action_interface import CombatActionPresentation
+from src.core.combat.battle_engine.models import ForcedAction
 from src.core.combat.targeting import ActionIntent
 from src.core.contracts import ActionAvailability
 from src.ui_pygame.gui import combat_manager

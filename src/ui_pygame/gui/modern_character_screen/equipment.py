@@ -619,9 +619,7 @@ class CharacterEquipmentMixin:
                     tooltip_width - (tooltip_padding * 2),
                 )
                 tooltip_line_height = self.small_font.get_height() + unit(3)
-                tooltip_height = (tooltip_padding * 2) + (
-                    len(tooltip_lines) * tooltip_line_height
-                )
+                tooltip_height = (tooltip_padding * 2) + (len(tooltip_lines) * tooltip_line_height)
                 tooltip_left = max(
                     panel.left + panel_padding,
                     min(

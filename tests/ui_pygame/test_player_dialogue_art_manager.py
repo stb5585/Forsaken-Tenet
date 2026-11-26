@@ -8,7 +8,6 @@ import pygame
 from src.ui_pygame.assets.player_dialogue_art_manager import PlayerDialogueArtManager
 from src.ui_pygame.assets.portrait_manager import PortraitManager
 
-
 EXPECTED_APPEARANCE_IDS = {
     f"{race}_{sex}_{variant}"
     for race in ("human", "elf", "half_elf", "half_giant", "gnome", "dwarf", "half_orc")
