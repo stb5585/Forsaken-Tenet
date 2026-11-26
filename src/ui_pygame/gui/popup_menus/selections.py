@@ -145,6 +145,11 @@ class EquipmentSelectionPopup(BasePopupMenu):
         self.screen.blit(name_text, (x, y))
         y += name_text.get_height() + 8
 
+        if actual_item is not None:
+            subtype = str(getattr(actual_item, "subtyp", "") or "")
+            if subtype and subtype != "None":
+                y = self._render_aligned_detail_row("Type", subtype, x, y)
+
         # Handle different option types
         if item_str == "Cancel":
             return  # Don't show diff for cancel

@@ -33,6 +33,9 @@ class ShopManager(TownScreenBase):
     def _shop_options(quest_manager, giver: str, *, craft_option: str | None = None) -> list[str]:
         """Build shop actions without an inert Quests entry."""
         options = ["Buy", "Sell"]
+        has_pending_conversation = getattr(quest_manager, "has_pending_conversation", None)
+        if callable(has_pending_conversation) and has_pending_conversation(giver):
+            options.append(f"Talk to {giver}")
         has_quest = getattr(quest_manager, "has_available_or_active_quest", None)
         if not callable(has_quest) or has_quest(giver):
             options.append("Quests")
@@ -98,8 +101,9 @@ class ShopManager(TownScreenBase):
                 shop_screen.shop_message = "Griswold's Blacksmith"
             elif choice == "Sell":
                 self.sell_items()
-            elif choice == "Quests":
+            elif choice in {"Quests", "Talk to Griswold"}:
                 qm.check_and_offer("Griswold")
+                shop_screen.set_options(self._shop_options(qm, "Griswold"))
 
     def _offer_ultimate_weapon_crafting(self):
         """Offer the Unobtainium ultimate weapon craft through the pygame UI."""

@@ -79,6 +79,7 @@ class DungeonCoreMixin:
         self.max_messages = 50
         self.message_lines_per_page = 4
         self.message_scroll_offset = 0
+        self._announced_perception_positions: set[tuple[str, int, int, int]] = set()
 
         # Control state
         self.running = True
@@ -366,6 +367,8 @@ class DungeonCoreMixin:
             image_path=image_path,
             split_layout=True,
             background_draw_func=self._dungeon_dialog_background,
+            flush_events=True,
+            require_key_release=True,
         )
 
     def _show_special_event_dialogue(self, event_name: str, title: str = "", image_path: str = ""):

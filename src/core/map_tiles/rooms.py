@@ -1,6 +1,6 @@
 """Chest, door, quest, and event-room tiles."""
 
-from .. import enemies, items
+from .. import enemies, items, opening_story, quest_progress
 from .bosses import BossRoom
 from .paths import CavePath, MapTile, SpecialTile, Wall
 from .rules import chalice_altar_visible, relic_discovery_text
@@ -340,24 +340,38 @@ class RelicRoom(SpecialTile):
 
     def special_text(self, game):
         if not self.read:
-            game.special_event("Relic Room")
-            relics = [
-                items.Relic1(),
-                items.Relic2(),
-                items.Relic3(),
-                items.Relic4(),
-                items.Relic5(),
-                items.Relic6(),
-            ]
-            relic = relics[game.player_char.location_z - 1]
-            game.player_char.modify_inventory(relic, rare=True, quest=True)
+            floor = game.player_char.location_z
+            answer = None
+            story = game.player_char.ensure_main_story_state()
+            if floor == 1:
+                if not story.get("opening_patrol_fate_seen"):
+                    show_threshold = getattr(game, "show_triangulus_threshold", None)
+                    if callable(show_threshold):
+                        show_threshold()
+                    else:
+                        game.special_event(
+                            "Triangulus Threshold", message=opening_story.PATROL_FATE_TEXT
+                        )
+                choose_answer = getattr(game, "choose_triangulus_identity", None)
+                if not callable(choose_answer):
+                    return "The relic waits for an answer you have not yet given.\n"
+                answer = choose_answer()
+                if answer is None:
+                    return "You leave Triangulus undisturbed.\n"
+            relic = quest_progress.relic_for_floor(floor)
+            if relic is None:
+                return "The pedestal is empty.\n"
+            discovery_message = relic_discovery_text(relic)
+            show_discovery = getattr(game, "show_relic_discovery", None)
+            if callable(show_discovery):
+                show_discovery(discovery_message)
+            else:
+                game.special_event("Relic Room", message=discovery_message)
+            result = quest_progress.collect_relic(game.player_char, floor, triangulus_answer=answer)
+            if not result.collected:
+                return "The pedestal is empty.\n"
             self.read = True
-            game.player_char.health.current = game.player_char.health.max
-            game.player_char.mana.current = game.player_char.mana.max
-            game.player_char.quests()
-            return (
-                f"{relic_discovery_text(relic)}Your health and mana have been restored to full!\n"
-            )
+            return f"{result.quest_message}Your health and mana have been restored to full!\n"
         return ""
 
 

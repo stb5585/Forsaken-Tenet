@@ -112,6 +112,7 @@ class DungeonHUD:
             y_offset += 12
 
         y_offset = self._render_environmental_effects(player_char, y_offset)
+        y_offset = self._render_encumbrance_warning(player_char, y_offset)
 
         # Health and Mana bars
         y_offset = self._render_resource_bars(player_char, y_offset)
@@ -184,6 +185,18 @@ class DungeonHUD:
         pygame.draw.rect(self.screen, (190, 118, 205), rect, 1, border_radius=4)
         label = f"{effect.icon_label} {effect.label}"
         surface = self.small_font.render(label, True, (247, 226, 245))
+        self.screen.blit(surface, surface.get_rect(center=rect.center))
+        return rect.bottom + 12
+
+    def _render_encumbrance_warning(self, player_char, y_offset: int) -> int:
+        """Render a prominent carry-weight warning in exploration and combat."""
+        if not getattr(player_char, "encumbered", False):
+            return y_offset
+
+        rect = pygame.Rect(self.hud_x + 16, y_offset, self.hud_width - 32, 36)
+        pygame.draw.rect(self.screen, (78, 22, 22), rect, border_radius=4)
+        pygame.draw.rect(self.screen, (235, 82, 72), rect, 2, border_radius=4)
+        surface = self.small_bold_font.render("ENCUMBERED", True, (255, 225, 215))
         self.screen.blit(surface, surface.get_rect(center=rect.center))
         return rect.bottom + 12
 

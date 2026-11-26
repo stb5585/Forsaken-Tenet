@@ -135,7 +135,12 @@ class BarghestBossRoom(BossRoom):
     def intro_text(self, game):
         if not self.enemy:
             return "A slumped mass of fur and blood mark where the Barghest was slain.\n"
-        return super().intro_text(game)
+        return (
+            super().intro_text(game)
+            + "The shape in the chamber will not hold. Wolf, goblin, hound, and something "
+            "between them pass across the same pair of spectral eyes. Every form looks "
+            "briefly like the one you expected to see.\n"
+        )
 
 
 class PseudodragonBossRoom(BossRoom):

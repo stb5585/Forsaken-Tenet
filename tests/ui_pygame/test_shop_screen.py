@@ -587,9 +587,11 @@ def test_shop_item_navigation_supports_mouse_rows_wheel_and_tabs(monkeypatch):
 
     choice = screen.navigate_items(flush_events=True, require_key_release=True)
 
-    assert choice[0] == "Item 1"
-    assert screen.current_item == 1
+    assert choice[0] == "Item 0"
+    assert screen.current_item == 0
+    assert screen.scroll_offset == 1
 
+    screen.scroll_offset = 0
     click_pos = screen.item_row_rects()[3][1].center
     row_events = iter(
         [

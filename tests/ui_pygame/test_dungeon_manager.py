@@ -767,6 +767,8 @@ def test_interact_chest_covers_unlock_mimic_loot_and_empty_cases(monkeypatch):
     manager.combat_manager.start_combat = (
         lambda player_char, enemy, tile: combat_calls.append((enemy.level, tile)) or True
     )
+    dirty_calls = []
+    manager._mark_view_dirty = lambda: dirty_calls.append("dirty")
     manager._refresh_cached_frame = lambda: manager.messages.append("refresh")
 
     class MimicEnemy:
@@ -809,6 +811,7 @@ def test_interact_chest_covers_unlock_mimic_loot_and_empty_cases(monkeypatch):
     assert loot_calls[-1][2]["flush_events"] is True
     assert loot_calls[-1][2]["require_key_release"] is True
     assert callable(loot_calls[-1][2]["background_draw_func"])
+    assert dirty_calls[:2] == ["dirty", "dirty"]
 
     funhouse = SimpleNamespace(
         open=False,
@@ -853,6 +856,47 @@ def test_interact_chest_covers_unlock_mimic_loot_and_empty_cases(monkeypatch):
     assert "This chest has already been opened." in manager.messages
 
 
+def test_perception_hints_are_announced_once_before_entering_tile(monkeypatch):
+    manager, _presenter, player, _game = _make_manager(monkeypatch)
+    player.cls = SimpleNamespace(name="Assassin")
+    current = WarningTile()
+    resource = DeathcapGatheringTile()
+    resource.intro_text = lambda _game: ""
+    current_position = (player.location_x, player.location_y, player.location_z)
+    ahead_position = (player.location_x, player.location_y - 1, player.location_z)
+    player.world_dict[current_position] = current
+    player.world_dict[ahead_position] = resource
+
+    first = manager._get_tile_intro()
+    repeated = manager._get_tile_intro()
+    player.location_y -= 1
+    entered = manager._get_tile_intro()
+
+    assert sum("Deathcap Mushroom" in message for message in first) == 1
+    assert any("press O to harvest" in message for message in first)
+    assert not repeated or all("Deathcap Mushroom" not in message for message in repeated)
+    assert not entered or all("Deathcap Mushroom" not in message for message in entered)
+
+
+def test_stronger_encounter_hint_requires_perception_and_is_not_repeated(monkeypatch):
+    manager, _presenter, player, _game = _make_manager(monkeypatch)
+    player.stats = SimpleNamespace(wisdom=13)
+    current = WarningTile()
+    stronger = dungeon_manager.map_tiles.CavePath2(
+        player.location_x,
+        player.location_y - 1,
+        player.location_z,
+    )
+    player.world_dict[(player.location_x, player.location_y, player.location_z)] = current
+    player.world_dict[(player.location_x, player.location_y - 1, player.location_z)] = stronger
+
+    first = manager._get_tile_intro()
+    repeated = manager._get_tile_intro()
+
+    assert any("stronger than this floor" in message for message in first)
+    assert not repeated or all("stronger than this floor" not in message for message in repeated)
+
+
 def test_interact_chest_requires_lockpick_kit_for_lockpick_skill(monkeypatch):
     manager, _presenter, player, _game = _make_manager(monkeypatch)
     loot_calls = []
@@ -891,7 +935,7 @@ def test_interact_chest_requires_lockpick_kit_for_lockpick_skill(monkeypatch):
 
 def test_relic_discovery_text_mapping_and_fallback():
     expected = {
-        "Triangulus": "old oath",
+        "Triangulus": "remembered choice",
         "Quadrata": "measured and contained",
         "Hexagonum": "Something patient",
         "Luna": "silence around it",
@@ -949,6 +993,7 @@ def test_interact_door_relic_warp_terminal_and_room_pickups(monkeypatch):
     manager._interact_relic(relic_tile)
     assert special_events == [("Relic Room", {"message": "You found a relic: Relic 2!"})]
     assert relic_tile.read is True
+    assert dirty_calls[-1] == "dirty"
     assert player.health.current == player.health.max
     assert player.mana.current == player.mana.max
     assert "You found a relic: Relic 2!" not in manager.messages
@@ -2894,6 +2939,48 @@ def test_explore_dungeon_does_not_render_after_keypress_returns_to_town(monkeypa
     assert manager._cached_frame is None
 
 
+def test_explore_dungeon_refreshes_damage_flash_without_input(monkeypatch):
+    manager, _presenter, player, game = _make_manager(monkeypatch)
+    player.world_dict[(player.location_x, player.location_y, player.location_z)] = DummyTile()
+    game.debug_mode = False
+    manager._show_dungeon_loading_screen = lambda *_args, **_kwargs: None
+    manager._suppress_navigation_input = lambda *_args, **_kwargs: None
+    manager.add_message = lambda _message: None
+    manager.reset_message_log = lambda: None
+    manager._check_random_cry = lambda: None
+    manager._cached_view = "cached"
+    manager.view_dirty = False
+    manager.ui_dirty = False
+    manager.renderer = SimpleNamespace(_damage_flash_active=True, trap_feedback_active=False)
+    render_calls = []
+
+    def render_frame():
+        render_calls.append(len(render_calls) + 1)
+        manager._cached_view = "cached"
+        manager.view_dirty = False
+        manager.ui_dirty = False
+        if len(render_calls) == 2:
+            manager.renderer._damage_flash_active = False
+
+    manager._render = render_frame
+    monkeypatch.setattr("src.ui_pygame.gui.dungeon_manager.pygame.event.get", lambda: [])
+    monkeypatch.setattr("src.ui_pygame.gui.dungeon_manager.pygame.display.flip", lambda: None)
+    ticks = []
+
+    def tick(_fps):
+        ticks.append(True)
+        if len(ticks) == 3:
+            player.to_town()
+
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.dungeon_manager.pygame.time.Clock",
+        lambda: SimpleNamespace(tick=tick),
+    )
+
+    assert manager.explore_dungeon() is True
+    assert render_calls == [1, 2]
+
+
 def test_additional_tile_intro_effect_menu_and_render_error_branches(monkeypatch):
     manager, presenter, player, game = _make_manager(monkeypatch)
     player.name = "Hero"
@@ -3054,8 +3141,14 @@ def test_remaining_menu_and_popup_branches_push_dungeon_manager_over_target(monk
     )
     manager.running = True
 
+    manager._cached_frame = "character-menu-frame"
+    manager.view_dirty = False
+    manager.ui_dirty = False
     manager._handle_keypress(pygame.K_c)
     assert notices == ["This menu is not yet implemented in the dungeon."]
+    assert manager._cached_frame is None
+    assert manager.view_dirty is True
+    assert manager.ui_dirty is True
 
     popup_events = iter([[SimpleNamespace(type=pygame.KEYDOWN, key=pygame.K_ESCAPE)]])
     monkeypatch.setattr(

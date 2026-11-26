@@ -325,8 +325,9 @@ CAMBION_ROTATOR_FLAVOR = {
 
 RELIC_DISCOVERY_TEXT = {
     "Triangulus": (
-        "Triangulus rises from the altar, its three points bright with mind, body, and spirit. "
-        "The room steadies as if an old oath has remembered its shape."
+        "Triangulus rises from the altar, its three points bright with mind, body, and "
+        "remembered choice. The chamber steadies, but the relic does not feel complete or "
+        "self-explanatory."
     ),
     "Quadrata": (
         "Quadrata settles into your hands, steady as a vow carved into stone. "
@@ -381,7 +382,7 @@ def active_random_encounter_quest_targets(player_char) -> set[str]:
     targets: set[str] = set()
     quest_dict = getattr(player_char, "quest_dict", {}) or {}
 
-    for category in ("Main", "Side"):
+    for category in ("Main", "Progression", "Side"):
         quests = quest_dict.get(category, {}) or {}
         for quest_data in quests.values():
             if not isinstance(quest_data, dict):

@@ -330,6 +330,32 @@ def test_visit_blacksmith_quest_renderer_uses_griswold_portrait(monkeypatch):
     assert FakeShopScreen.instances[0].last_quest_npc_name == "Griswold"
 
 
+def test_blacksmith_offers_direct_talk_action_for_cross_giver_objective(monkeypatch):
+    manager = _manager(monkeypatch, level=12)
+    manager.player_char.quest_dict = {
+        "Main": {},
+        "Progression": {},
+        "Side": {
+            "An Honest Introduction": {
+                "Type": "Talk",
+                "What": "Griswold",
+                "Completed": False,
+                "Turned In": False,
+            }
+        },
+        "Bounty": {},
+    }
+    FakeShopScreen.option_sequences = [["Talk to Griswold", "Leave"]]
+    monkeypatch.setattr(shops, "ShopScreen", FakeShopScreen)
+    monkeypatch.setattr(shops, "ConfirmationPopup", FakePopup)
+
+    manager.visit_blacksmith()
+
+    assert "Talk to Griswold" in FakeShopScreen.instances[0].set_calls[0]
+    assert manager.player_char.quest_dict["Side"]["An Honest Introduction"]["Completed"] is True
+    assert "Talk to Griswold" not in FakeShopScreen.instances[0].set_calls[-1]
+
+
 def test_blacksmith_buy_submenu_keeps_griswold_portrait(monkeypatch):
     manager = _manager(monkeypatch, level=12)
     manager._active_shopkeeper_portrait = "Griswold"

@@ -263,6 +263,10 @@ class TurnPreparationMixin:
         if cached_cancellation is not None:
             return cached_cancellation
 
+        invalid_weapon_charge = self._cancel_disarmed_weapon_charge()
+        if invalid_weapon_charge is not None:
+            return invalid_weapon_charge
+
         # Jump in progress. Resolve the airborne/charging state before Berserk
         # can force a basic attack, especially when Unstoppable is active.
         if self.attacker.class_effects["Jump"].active:
@@ -307,6 +311,47 @@ class TurnPreparationMixin:
             return ForcedAction(intent=self._forced_intent("Attack"))
 
         return None
+
+    def _cancel_disarmed_weapon_charge(self) -> ForcedAction | None:
+        """Cancel a pending weapon charge when its owner no longer has the weapon available."""
+        is_disarmed = getattr(self.attacker, "is_disarmed", None)
+        if not callable(is_disarmed) or not is_disarmed():
+            return None
+
+        actor_id = self.current_actor_id or self._actor_id_for(self.attacker)
+        pending = self._pending_charge(actor_id)
+        skill = pending.get("ability") if pending is not None else None
+        if skill is None and self.charging_ability and self.charging_ability[0] is self.attacker:
+            skill = self.charging_ability[2]
+        if skill is None:
+            skill = next(
+                (
+                    candidate
+                    for candidate in self.attacker.spellbook.get("Skills", {}).values()
+                    if getattr(candidate, "charging", False)
+                    and getattr(candidate, "weapon", False)
+                ),
+                None,
+            )
+        if skill is None or not getattr(skill, "weapon", False):
+            return None
+
+        try:
+            message = skill.cancel_charge(self.attacker)
+        except AttributeError:
+            skill.charging = False
+            if hasattr(skill, "charge_turns"):
+                skill.charge_turns = 0
+            if hasattr(skill, "charge_target"):
+                skill.charge_target = None
+            message = ""
+        self._clear_pending_charge(actor_id, skill)
+        if not message:
+            message = (
+                f"{self.attacker.name}'s {getattr(skill, 'name', 'weapon charge')} is "
+                "cancelled because their weapon is unavailable.\n"
+            )
+        return self._remember_forced_cancellation(message)
 
     def _forced_intent(self, action_id: str, choice: str | None = None) -> ActionIntent:
         """Build the fully targeted intent for an engine-owned forced action."""

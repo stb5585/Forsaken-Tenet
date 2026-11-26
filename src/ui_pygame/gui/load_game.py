@@ -284,19 +284,12 @@ class LoadGameScreen:
         self.scroll_offset = max(0, min(self.scroll_offset, self.max_scroll_offset()))
 
     def scroll_file_list(self, delta: int) -> None:
-        """Scroll the visible save list and keep the selection in view."""
+        """Scroll the visible save list without changing the selection."""
         if not self.save_data:
             self.scroll_offset = 0
             self.current_selection = 0
             return
         self.scroll_offset = max(0, min(self.scroll_offset + int(delta), self.max_scroll_offset()))
-        if self.current_selection < self.scroll_offset:
-            self.current_selection = self.scroll_offset
-        last_visible = min(
-            len(self.save_data) - 1, self.scroll_offset + self.max_visible_saves() - 1
-        )
-        if self.current_selection > last_visible:
-            self.current_selection = last_visible
 
     def save_row_rects(self) -> list[pygame.Rect]:
         """Return clickable rectangles for visible save rows."""

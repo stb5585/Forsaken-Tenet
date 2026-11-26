@@ -12,7 +12,6 @@ from src.core.progression import (
     NodeState,
     apply_progression_plan,
     available_nodes,
-    permanent_closures_for_plan,
     prerequisite_groups,
     progression_class_name,
 )
@@ -310,29 +309,6 @@ class ProgressionScreen(ProgressionPanelMixin, ProgressionTreeMixin, TownScreenB
     def _spend_pending(self):
         if not self.has_pending_changes():
             return
-        closures = ()
-        if (
-            getattr(self.player_char, "cls", None) is not None
-            and getattr(self.player_char, "progression", None) is not None
-        ):
-            closures = permanent_closures_for_plan(
-                self.player_char,
-                self._selected_tree_id(),
-                self.pending_node_ids,
-            )
-        if closures:
-            names = "\n".join(f"- {name}" for name in closures)
-            confirmed = ConfirmationPopup(
-                self.presenter,
-                (
-                    "Confirm Permanent Choice?\n\n"
-                    "Spending this distribution will permanently close:\n"
-                    f"{names}\n\nThese abilities cannot be learned later."
-                ),
-                show_buttons=True,
-            ).show(background_draw_func=self._popup_background)
-            if not confirmed:
-                return
         promotion_choices_by_node: dict[str, dict] = {}
         node_choices: dict[str, dict] = {}
         for node_id in self.pending_node_ids:

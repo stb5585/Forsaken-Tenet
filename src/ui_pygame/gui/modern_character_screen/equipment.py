@@ -24,6 +24,7 @@ from ..popup_menus.equipment import EquipmentPopupMenu
 from ..popup_menus.inventory import InventoryPopupMenu
 from ..popup_menus.journals import BestiaryPopupMenu, QuestPopupMenu
 from ..popup_menus.mechanics import SimpleListPopupMenu, TotemAspectsPopupMenu
+from ..town_base import wrap_text_to_pixel_width
 from .models import EQUIPMENT_SLOT_ORDER, EquipmentSlotSummary, ResistanceSummary
 
 
@@ -321,7 +322,11 @@ class CharacterEquipmentMixin:
                 popup = ConfirmationPopup(
                     self.presenter, "You do not have any key items.", show_buttons=False
                 )
-                popup.show(flush_events=True, require_key_release=True)
+                popup.show(
+                    background_draw_func=lambda: self.draw_all(player_char, do_flip=False),
+                    flush_events=True,
+                    require_key_release=True,
+                )
             else:
                 popup = SimpleListPopupMenu(
                     self.presenter, self, title="Key Items", source_fn=self._get_key_items_list
@@ -412,7 +417,8 @@ class CharacterEquipmentMixin:
                 panel.top + unit(14),
             )
             self._draw_text(
-                "Drag an icon to a shortcut slot · Enter assign · Backspace clear · Esc or X close",
+                "Drag to a shortcut · Wheel or Up/Down scrolls · Enter assigns · "
+                "Backspace clears · Esc closes",
                 self.small_font,
                 self.colors.LIGHT_GRAY,
                 panel.left + panel_padding,
@@ -440,6 +446,7 @@ class CharacterEquipmentMixin:
                 ],
             }
             action_rows = []
+            column_rects = {}
             icon_manager = get_ability_icon_manager()
             visible_count = max(1, (catalog_rect.height - unit(34)) // (row_height + row_gap))
             for column, category in enumerate(("Skill", "Spell")):
@@ -449,6 +456,7 @@ class CharacterEquipmentMixin:
                     column_width,
                     catalog_rect.height,
                 )
+                column_rects[category] = column_rect
                 pygame.draw.rect(self.screen, self.colors.BORDER_COLOR, column_rect, 1)
                 self._draw_text(
                     f"{category}s",
@@ -508,6 +516,32 @@ class CharacterEquipmentMixin:
                         rect.width - unit(52),
                     )
                     y += row_height + row_gap
+                max_offset = max(0, len(entries) - visible_count)
+                if max_offset:
+                    track = pygame.Rect(
+                        column_rect.right - unit(5),
+                        column_rect.top + unit(34),
+                        unit(3),
+                        column_rect.height - unit(40),
+                    )
+                    pygame.draw.rect(self.screen, (56, 56, 64), track, border_radius=2)
+                    thumb_height = max(
+                        unit(18),
+                        int(track.height * min(1.0, visible_count / len(entries))),
+                    )
+                    thumb_travel = max(0, track.height - thumb_height)
+                    thumb_top = track.top + round(thumb_travel * offset / max_offset)
+                    thumb = pygame.Rect(track.left, thumb_top, track.width, thumb_height)
+                    pygame.draw.rect(self.screen, self.colors.GOLD, thumb, border_radius=2)
+                    if offset < max_offset:
+                        more_text = self.small_font.render("MORE v", True, self.colors.GOLD)
+                        self.screen.blit(
+                            more_text,
+                            more_text.get_rect(
+                                right=column_rect.right - unit(10),
+                                bottom=column_rect.bottom - unit(4),
+                            ),
+                        )
 
             slot_rows = []
             slot_y = panel.bottom - unit(116)
@@ -566,6 +600,7 @@ class CharacterEquipmentMixin:
                     rect.width - unit(10),
                 )
             hovered_description = ""
+            hovered_row_rect = None
             try:
                 pointer = pygame.mouse.get_pos()
             except pygame.error:
@@ -573,24 +608,49 @@ class CharacterEquipmentMixin:
             for index, _category, rect in action_rows:
                 if rect.collidepoint(pointer):
                     hovered_description = str(actions[index].description or "")
+                    hovered_row_rect = rect
                     break
-            if hovered_description:
-                tooltip = pygame.Rect(
+            if hovered_description and hovered_row_rect is not None:
+                tooltip_width = min(unit(420), panel.width - (panel_padding * 2))
+                tooltip_padding = unit(10)
+                tooltip_lines = wrap_text_to_pixel_width(
+                    hovered_description,
+                    self.small_font,
+                    tooltip_width - (tooltip_padding * 2),
+                )
+                tooltip_line_height = self.small_font.get_height() + unit(3)
+                tooltip_height = (tooltip_padding * 2) + (
+                    len(tooltip_lines) * tooltip_line_height
+                )
+                tooltip_left = max(
                     panel.left + panel_padding,
-                    slot_y - unit(70),
-                    panel.width - (panel_padding * 2),
-                    unit(38),
+                    min(
+                        pointer[0] + unit(14),
+                        panel.right - panel_padding - tooltip_width,
+                    ),
+                )
+                below_top = hovered_row_rect.bottom + unit(8)
+                if below_top + tooltip_height <= slot_y - unit(8):
+                    tooltip_top = below_top
+                else:
+                    tooltip_top = hovered_row_rect.top - tooltip_height - unit(8)
+                tooltip_top = max(
+                    panel.top + header_height,
+                    min(tooltip_top, slot_y - unit(8) - tooltip_height),
+                )
+                tooltip = pygame.Rect(
+                    tooltip_left,
+                    tooltip_top,
+                    tooltip_width,
+                    tooltip_height,
                 )
                 pygame.draw.rect(self.screen, (20, 20, 26), tooltip, border_radius=4)
                 pygame.draw.rect(self.screen, self.colors.BORDER_COLOR, tooltip, 1, border_radius=4)
-                self._draw_text(
-                    hovered_description,
-                    self.small_font,
-                    self.colors.LIGHT_GRAY,
-                    tooltip.left + unit(8),
-                    tooltip.top + unit(9),
-                    tooltip.width - unit(16),
-                )
+                text_y = tooltip.top + tooltip_padding
+                for line in tooltip_lines:
+                    text = self.small_font.render(line, True, self.colors.LIGHT_GRAY)
+                    self.screen.blit(text, (tooltip.left + tooltip_padding, text_y))
+                    text_y += tooltip_line_height
             if dragged_action is not None and dragged_position is not None:
                 drag_icon = pygame.transform.smoothscale(
                     icon_manager.get_icon(actions[dragged_action].icon_key),
@@ -631,8 +691,8 @@ class CharacterEquipmentMixin:
                             assign_shortcut(player_char, selected_slot, reference)
                 elif event.type == pygame.MOUSEWHEEL:
                     position = pygame.mouse.get_pos()
-                    for _index, category, rect in action_rows:
-                        if rect.collidepoint(position):
+                    for category, column_rect in column_rects.items():
+                        if column_rect.collidepoint(position):
                             entries = categories[category]
                             category_offsets[category] = max(
                                 0,

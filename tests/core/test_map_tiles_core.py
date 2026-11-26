@@ -58,7 +58,7 @@ def _make_player(*, class_name="Warrior", race_name="Human", level=10, pro_level
 def _make_game(player):
     events = []
 
-    def special_event(name):
+    def special_event(name, *, message=None):
         events.append(name)
         return True
 
@@ -67,11 +67,43 @@ def _make_game(player):
         _random_combat=False,
         presenter=None,
         special_event=special_event,
+        choose_triangulus_identity=lambda: "ChosenName",
         events=events,
     )
 
 
 class TestMapTileHelpers:
+    def test_stronger_path_protects_level_zero_from_upshifted_encounters(self, monkeypatch):
+        player = _make_player(level=1)
+        requested_levels = []
+        monkeypatch.setattr(
+            "src.core.map_tiles.paths.quest_biased_random_enemy",
+            lambda _player, level: requested_levels.append(level)
+            or SimpleNamespace(anti_magic_active=False),
+        )
+
+        map_tiles.CavePath2(1, 1, 0).enter_combat(player)
+        map_tiles.CavePath2(1, 1, 2).enter_combat(player)
+
+        assert requested_levels == ["0", "3"]
+
+    def test_timmy_discovery_still_completes_quest_and_returns_to_town(self, monkeypatch):
+        player = _make_player(level=3)
+        player.location_z = 1
+        player.quest_dict["Side"]["Bring Him Home"] = {
+            "Completed": False,
+            "Turned In": False,
+        }
+        player.check_mod = lambda *_args, **_kwargs: 0
+        game = _make_game(player)
+        monkeypatch.setattr("src.core.map_tiles.random.randint", lambda _low, _high: 0)
+
+        map_tiles.CavePath0(1, 1, 1).modify_player(game)
+
+        assert game.events == ["Timmy"]
+        assert player.quest_dict["Side"]["Bring Him Home"]["Completed"] is True
+        assert player.location_z == 0
+
     def test_fake_wall_detection_and_map_tile_intro_text(self):
         player = _make_player()
         player.spellbook["Skills"]["Keen Eye"] = SimpleNamespace(name="Keen Eye")
@@ -733,9 +765,9 @@ class TestSpecialTiles:
         assert relic_room.read is True
         assert player.health.current == player.health.max
         assert player.mana.current == player.mana.max
-        assert "old oath" in relic_message
         assert "health and mana" in relic_message
         assert any(name == "Triangulus" for name, *_rest in calls)
+        assert player.main_story["triangulus_identity_answer"] == "ChosenName"
 
         warp = map_tiles.WarpPoint(1, 1, 1)
         warp.modify_player(game)

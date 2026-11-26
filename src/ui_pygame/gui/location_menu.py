@@ -22,7 +22,9 @@ class LocationMenuScreen(TownScreenBase):
     Uses a two-column layout similar to ShopScreen: options on left, content area on right.
     """
 
-    def __init__(self, presenter, location_name):
+    def __init__(self, presenter, location_name, *, background_image: str = "town.png"):
+        self.background_image = background_image
+        self.background_fallback_image = "town.png" if background_image != "town.png" else None
         super().__init__(presenter)
         self.location_name = location_name
 
@@ -142,7 +144,7 @@ class LocationMenuScreen(TownScreenBase):
         """Return visible content-row indexes and clickable rectangles."""
         if item_count <= 0:
             return []
-        content_rect, line_height, max_visible, _cursor_x, item_x, _quantity_x = (
+        content_rect, line_height, max_visible, cursor_x, _item_x, _quantity_x = (
             self._content_item_layout()
         )
         max_scroll = max(0, item_count - max_visible)
@@ -156,9 +158,9 @@ class LocationMenuScreen(TownScreenBase):
                 + (visible_idx * line_height)
             )
             row_rect = pygame.Rect(
-                item_x - self.presenter.layout_metrics.unit(8),
+                cursor_x - self.presenter.layout_metrics.unit(8),
                 row_top,
-                content_rect.right - item_x - self.presenter.layout_metrics.unit(20),
+                content_rect.right - cursor_x - self.presenter.layout_metrics.unit(4),
                 line_height,
             )
             rows.append(
@@ -197,6 +199,11 @@ class LocationMenuScreen(TownScreenBase):
             return
         self.current_option = (self.current_option + delta) % item_count
         self._ensure_content_selection_visible(item_count, max_visible)
+
+    def _scroll_content_view(self, delta: int, item_count: int, max_visible: int) -> None:
+        """Scroll content rows without moving the keyboard-active option."""
+        max_scroll = max(0, item_count - max(1, max_visible))
+        self.scroll_offset = max(0, min(max_scroll, self.scroll_offset + delta))
 
     def draw_all(self):
         """Draw the location menu interface."""
@@ -539,9 +546,7 @@ class LocationMenuScreen(TownScreenBase):
                 elif event.type == pygame.MOUSEWHEEL and items_data:
                     wheel_y = getattr(event, "y", 0)
                     if wheel_y:
-                        direction = -1 if wheel_y > 0 else 1
-                        for _ in range(abs(wheel_y)):
-                            self._move_content_selection(direction, len(items_data), max_visible)
+                        self._scroll_content_view(-wheel_y, len(items_data), max_visible)
                 if event.type == pygame.KEYDOWN:
                     if not input_armed:
                         continue

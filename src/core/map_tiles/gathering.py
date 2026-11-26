@@ -81,7 +81,7 @@ def gathering_hint(player_char: object, tile: object, *, current_tile: bool) -> 
         return ""
     location = "here" if current_tile else "ahead"
     if can_identify_gathering_node(player_char, tile):
-        action = " Press O to harvest." if current_tile else ""
+        action = " Press O to harvest." if current_tile else " Step onto it and press O to harvest."
         return f"You recognize {definition.item_class().name} growing {location}.{action}"
     return f"You notice unfamiliar growth {location}, but lack the knowledge to harvest it."
 

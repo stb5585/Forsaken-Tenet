@@ -156,6 +156,13 @@ class EquipmentPopupMenu(BasePopupMenu):
         """Get all items from inventory that can be equipped in the given slot."""
         equippable = []
         seen_item_names = set()
+        can_equip_item = getattr(player_char, "can_equip_item", None)
+        equip_check = getattr(getattr(player_char, "cls", None), "equip_check", None)
+
+        def can_equip(candidate, candidate_slot):
+            if callable(can_equip_item):
+                return can_equip_item(candidate, candidate_slot)
+            return not callable(equip_check) or equip_check(candidate, candidate_slot)
 
         # Map slot to item types
         slot_to_typ = {
@@ -180,17 +187,15 @@ class EquipmentPopupMenu(BasePopupMenu):
                 if item_name in seen_item_names:
                     continue
 
-                equip_check = getattr(getattr(player_char, "cls", None), "equip_check", None)
-
                 # Direct type match
                 if item_typ == target_typ:
-                    if callable(equip_check) and not equip_check(inv_item, slot):
+                    if not can_equip(inv_item, slot):
                         continue
                     equippable.append(inv_item)
                     seen_item_names.add(item_name)
                 # One-handed weapons that pass class restrictions can be equipped offhand.
                 elif slot == "OffHand" and item_typ == "Weapon":
-                    if callable(equip_check) and equip_check(inv_item, "OffHand"):
+                    if can_equip(inv_item, "OffHand"):
                         equippable.append(inv_item)
                         seen_item_names.add(item_name)
                 # Handle accessories (Ring/Pendant)
@@ -199,7 +204,7 @@ class EquipmentPopupMenu(BasePopupMenu):
                     if (subtyp == "Ring" and slot == "Ring") or (
                         subtyp == "Pendant" and slot == "Pendant"
                     ):
-                        if callable(equip_check) and not equip_check(inv_item, slot):
+                        if not can_equip(inv_item, slot):
                             continue
                         equippable.append(inv_item)
                         seen_item_names.add(item_name)

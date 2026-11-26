@@ -171,6 +171,7 @@ class CharacterLayoutMixin:
         preferred_font,
         row_gap: int,
         bottom_limit: int,
+        value_colors: dict[str, tuple[int, int, int]] | None = None,
     ) -> int:
         """Draw Character-tab stats in measured, non-overlapping columns."""
         label_rect, value_rect, label_font = self.character_stat_column_rects(
@@ -181,7 +182,8 @@ class CharacterLayoutMixin:
             if y + row_height > bottom_limit:
                 break
             label_surface = label_font.render(label, True, self.colors.GRAY)
-            value_surface = preferred_font.render(value, True, self.colors.WHITE)
+            value_color = (value_colors or {}).get(label, self.colors.WHITE)
+            value_surface = preferred_font.render(value, True, value_color)
             self.screen.blit(
                 label_surface,
                 (label_rect.left, y + (row_height - label_surface.get_height()) // 2),
@@ -358,6 +360,11 @@ class CharacterLayoutMixin:
             preferred_font=stat_font,
             row_gap=stat_gap,
             bottom_limit=resistance_top - self.presenter.layout_metrics.unit(12),
+            value_colors=(
+                {"Weight": self.colors.RED}
+                if getattr(player_char, "encumbered", False)
+                else None
+            ),
         )
 
         y = max(y + metrics.unit(12), resistance_top)
