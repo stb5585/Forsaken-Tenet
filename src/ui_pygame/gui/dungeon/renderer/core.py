@@ -30,6 +30,9 @@ class RendererCoreMixin:
         self._force_field_seed_counter = 0
         self._jester_force_field_body_cache: dict[tuple[int, int, int], pygame.Surface] = {}
         self._last_debug_snapshot: str | None = None
+        self._structure_key: tuple | None = None
+        self._structure_layer: pygame.Surface | None = None
+        self._structure_overdraw: list[tuple[pygame.Surface, tuple[int, int], pygame.Rect]] = []
 
     @property
     def screen(self) -> pygame.Surface:
@@ -44,9 +47,7 @@ class RendererCoreMixin:
     def render(self, player_char, world_dict) -> None:
         self.textures.ensure_loaded()
         self.player_char = player_char
-        screen = self.screen
         view_w, view_h = self._get_viewport_size()
-        screen.fill((0, 0, 0), pygame.Rect(0, 0, view_w, view_h))
 
         scene = extract_visible_scene(player_char, world_dict, max_depth=3)
         self._configure_surface_slot_overrides(scene)
@@ -62,15 +63,7 @@ class RendererCoreMixin:
 
         commands = self._build_render_commands(scene, zones)
         self._emit_debug_snapshot(scene, commands)
-        for command in sorted(commands, key=lambda item: (-item.depth, item.order)):
-            projected = self.textures.get_projected_surface(
-                panel_id=command.panel_id,
-                texture_key=command.texture_key,
-                quad=command.quad,
-                darkness=command.darkness,
-                view_size=(view_w, view_h),
-            )
-            screen.blit(projected.surface, projected.topleft)
+        self._render_structure(commands, (view_w, view_h))
 
         self._render_special_tiles(scene, zones)
         self._render_jester_force_fields(scene, zones)
@@ -79,6 +72,54 @@ class RendererCoreMixin:
 
         if self.debug_geometry:
             self._render_debug_overlay(zones, scene)
+
+    def _render_structure(self, commands: list[RenderCommand], view_size: tuple[int, int]) -> None:
+        """Reuse the most recent opaque dungeon geometry beneath live effects."""
+        screen = self.screen
+        viewport = pygame.Rect((0, 0), view_size)
+        can_cache = (
+            screen.get_bitsize() > 8
+            and not screen.get_flags() & pygame.SRCALPHA
+            and screen.get_clip().contains(viewport)
+        )
+        key = (
+            view_size,
+            screen.get_bitsize(),
+            screen.get_masks(),
+            self.textures.get_surface_slot_overrides(),
+            tuple(commands),
+        )
+        if can_cache and self._structure_layer is not None and key == self._structure_key:
+            screen.blit(self._structure_layer, viewport.topleft)
+            screen.blits(self._structure_overdraw, doreturn=False)
+            return
+
+        screen.fill((0, 0, 0), viewport)
+        overdraw = []
+        for command in sorted(commands, key=lambda item: (-item.depth, item.order)):
+            projected = self.textures.get_projected_surface(
+                panel_id=command.panel_id,
+                texture_key=command.texture_key,
+                quad=command.quad,
+                darkness=command.darkness,
+                view_size=view_size,
+            )
+            screen.blit(projected.surface, projected.topleft)
+            if can_cache:
+                x, y = projected.topleft
+                width, height = projected.surface.get_size()
+                # Perspective panels can extend into the HUD column. Blend
+                # those pixels against the current destination as before.
+                cut = max(0, viewport.right - x)
+                if cut < width:
+                    overdraw.append(
+                        (projected.surface, (x + cut, y), pygame.Rect(cut, 0, width - cut, height))
+                    )
+
+        if can_cache:
+            self._structure_layer = screen.subsurface(viewport).copy()
+            self._structure_key = key
+            self._structure_overdraw = overdraw
 
     def _configure_surface_slot_overrides(self, scene) -> None:
         desired_overrides: dict[str, str] = {}
