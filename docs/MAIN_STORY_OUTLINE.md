@@ -883,6 +883,15 @@ The Thirsty Dog after the Evening Star is gone. Someone lights the window
 candle, leaves a chair empty, opens the door, or chooses to descend for their
 own reason. The world continues because choice continues.
 
+### Act III in-game verification
+
+| Chapter | Playtest route | What to check |
+| --- | --- | --- |
+| 8 | Turn in the six relics to Caedmon. Visit the inn after Pell’s last-watch conversation. | The rubbings share a blank space. Oren cannot date Tavin’s first shift. Tavin’s notes still provide access to his quest business. |
+| 8 | Enter the final chamber and reach the scripted turn in combat. | The six lights leave a gap. The first confrontation sends the hero to the Liminal Gap. |
+| 9 | Try the Seventh Seat early, then revisit it after the six trials. Speak to the Acolyte and face Reflection. | Each trial can recall its corresponding town scene. Unrecorded choices stay unspoken. The seat reveals the succession and the cost of the Hollowing. The Acolyte puts the fragments in order. |
+| 10 | Return through the threshold and defeat Vesperion. | Tavin’s habits give him away. The confrontation recalls the player’s account to Liora when available. The final tavern scene lets the player welcome a traveler in one of three ways. |
+
 ## Supporting Arc Placement
 
 | Arc | Primary chapters | Function |

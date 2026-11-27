@@ -107,29 +107,22 @@
     },
     "Final Boss": {
         "Text": [
-            "You enter a massive room where twilight hangs in the air like a second sky.",
-            "A pale star burns above the far altar, bright enough to hurt and cold enough to silence the breath in your chest.",
-            "The figure waiting beneath it is neither fiend nor king.",
-            "'You carried every relic here and still do not understand what they guard,' Vesperion says.",
-            "'Choice made every wound you passed on the way to me. Every grief. Every betrayal. Every brave, doomed hope.'",
-            "The six relics answer in your pack, but their light feels incomplete.",
-            "'If Voluntas is sacred, champion, then choose what its suffering is worth.'"
-            ]
+            "Six hollows in the stone take the light of the six relics. Between the first and last is a handspan of bare stone. You put your palm there. Nothing answers.",
+            "The man beneath the star watches you try again. ‘They left that space on purpose,’ Vesperion says. ‘I used to stand there.’"
+        ]
     },
     "Vesperion False Final": {
         "Text": [
-            "The Evening Star descends.",
-            "For one impossible breath you see every choice you ever made arranged in a perfect, merciless pattern.",
-            "Vesperion closes his hand, and the pattern breaks.",
-            "'You mistake endurance for freedom,' he says. 'Now witness what choice leaves behind.'"
-            ]
+            "You bring the six lights together. For a moment you can see straight through the floor to the passages below.",
+            "Vesperion puts his hand in the gap you couldn't close. The floor gives way under you. He stays where he is."
+        ]
     },
     "Liminal Gap Arrival": {
         "Text": [
             "You wake on cold stone beneath a sky with no horizon, wounded but alive.",
             "The Liminal Gap stretches around you: neither dungeon nor afterlife, but a gray sanctuary caught between a last breath and the next choice.",
             "A hidden guide speaks from somewhere beyond the veil, voice thin with pain.",
-            "'Voluntas is not lost. Not yet. Come to the center, and do not mistake survival for escape.'"
+            "‘Over here. Take your time. That first step cost me a rib.’"
             ]
     },
     "Liminal Gap Blocker": {
@@ -141,12 +134,10 @@
     },
     "Hooded Figure Liminal Reveal": {
         "Text": [
-            "The Hooded Figure kneels beside a dim white flame, one hand pressed against a wound that bleeds starlight instead of blood.",
-            "The same presence that haunted your path now looks smaller, older, and terribly tired.",
-            "'Yes,' the figure says. 'I guided you. I frightened you. I withheld more than I should have.'",
-            "'But Vesperion has thrown you where his mercy cannot fully reach. Here, in the Liminal Gap, the forgotten principle still has an echo.'",
-            "'I am not your enemy. Not anymore, if I ever was.'"
-            ]
+            "The Figure sits with their back against the flame's plinth. There is blood on the cuff that reached for your map.",
+            "‘I could have asked,’ they say. ‘I thought you'd turn away. I wanted you here badly enough to let you think I meant you harm.’",
+            "They take their hand off the plinth. ‘Those six left something of themselves in the relics before they died. You can hear them here. I'll wait.’"
+        ]
     },
     "Liminal Guide Save": {
         "Text": [
@@ -608,18 +599,16 @@
     },
     "Seventh Seat Reveal": {
         "Text": [
-            "The empty Seventh Seat does not fill.",
-            "No relic appears. No crown descends. No hidden weapon waits in the gray light.",
-            "Instead, the six awakened clues bend toward the absence and name what was removed.",
-            "Voluntas: the choice that gives every other principle meaning.",
-            "Vesperion once guarded this seat. Then he hollowed it from history because he mistook peace for silence."
+            "Six handprints glow on the arms of six chairs. The seventh has a thumb-worn groove of its own. Someone used to sit here.",
+            "Under the dust on the seat you find a word scratched twice, first in a steady hand and then in a learner's. Voluntas."
         ]
     },
     "Hooded Figure Witness Reveal": {
         "Text": [
-            "The Hooded Figure lowers their gaze before the empty seat.",
-            "'I am not Voluntas,' they say. 'I am only one of its witnesses, wounded and left behind when Vesperion broke the road.'",
-            "'I preserved enough of the path for one soul to choose it again. That must be you, if you can face every self you did not become.'"
+            "‘I watched the first Guardian teach him those letters. Vesperion was the pupil she chose to take her place. He was mortal then.’",
+            "‘When the cities went to war a second time, each army marched under a different teaching. The six shut the archives and withdrew. People died outside those doors. He never forgave them for that.’",
+            "‘He knew they'd stay at their seals if he tore the seventh teaching out. They did. Each left a memory for whoever came after. You've heard their voices. All six died there.’",
+            "The Figure presses a hand against the split in the stone. ‘The Hollowing tore through him too. The breaches kept him alive. They've opened and closed for centuries. He hasn't aged a day.’"
         ]
     },
     "Acolyte Liminal Waiting": {
@@ -631,10 +620,10 @@
     },
     "Acolyte Liminal Mirror": {
         "Text": [
-            "The Acolyte looks up, and for a moment you see the outline of someone who once stood where you stand.",
-            "'I chose until choosing broke me,' they say. 'Vesperion offered mercy. No more wrong turns. No more grief born from my own hand.'",
-            "'At first it felt like peace. Then I understood: a life without choice can no longer wound, but it can no longer love either.'",
-            "They turn back toward the gray light. 'Go on, then. Prove your burden means something.'"
+            "The stranger traces a keyhole in the dust. ‘I locked the door to keep her safe. Did you find that one?’ You know the cramped letters now.",
+            "‘The tag came first. She went home without me. After that came the bite in the roots. I wrote my rules while my hand was healing. Then he drew half a route on linen and waited for me to fill in the rest.’",
+            "‘That last scrap, where I asked him to tell me whether to keep walking? He made me ask twice. He needed somebody who knew the way out to stay of their own accord. Then he could say it had been kind.’",
+            "You ask what they'd like you to do with the pages. Their thumb smooths the same crease again and again. At last you put them down within reach."
         ]
     },
     "Class Voluntas Affirmation": {
@@ -1054,9 +1043,8 @@
     },
     "Hooded Figure Witness Farewell": {
         "Text": [
-            "The Hooded Figure keeps their hood drawn even now.",
-            "'A name would turn the witness into the answer,' they say. 'I am not the answer.'",
-            "'I kept a door from closing. You chose to walk through it. That is enough.'"
+            "At the threshold the Figure takes your elbow, feels you steady yourself, and lets go.",
+            "‘Can you get back across?’ you ask. They settle onto the step. ‘In a while. You go when you're ready.’"
         ]
     },
     "Return From Liminal Gap": {
@@ -1068,57 +1056,45 @@
     },
     "True Final Prelude": {
         "Text": [
-            "The final chamber recognizes you differently now.",
-            "Vesperion turns beneath the Evening Star, and the face behind the busboy's borrowed kindness is no longer hidden.",
-            "'You found the wound I spared the world from naming,' he says.",
-            "'Look at Joffrey. Look at the Waitress. Look at every ruin choice left behind. Tell me again that Voluntas is mercy.'",
-            "The six relics answer, incomplete no longer.",
-            "You step forward with every choice that made you."
+            "Vesperion is rolling up his sleeves, one narrow turn and then another. You've seen Tavin do that a hundred times before putting his hands in the wash water.",
+            "‘Oren always kept it too hot,’ he says. He sees where you're looking and leaves the second cuff undone."
         ]
     },
     "Vesperion Choice Argument": {
         "Text": [
-            "Vesperion studies the path that followed you back from the Liminal Gap.",
-            "'You call it freedom because you survived long enough to name it,' he says.",
-            "'But every answer you carry is another wound you were forced to make meaningful.'"
+            "‘I went to the archives while the city burned. Six people inside, each free to unbolt the door. I waited outside with a child whose name I never learned.’",
+            "‘Yes, I knew the six would die if they held the seals. I let them hold. Tell me how many more cities I ought to have let burn while I waited for decent people to agree.’"
         ]
     },
     "Vesperion Tragedy Reframing": {
         "Text": [
-            "'The tavern boy smiled because it was useful,' Vesperion says, and the borrowed gentleness is gone.",
-            "'Joffrey died. The Waitress broke. You watched grief become another proof you could not bear to surrender.'",
-            "'I did not invent pain. I offered the only mercy that would have ended its need for permission.'"
+            "‘I asked how long it took to reach the pens,’ Vesperion says, using Tavin's voice. ‘Joffrey did the sum. Liora has to live with his answer.’",
+            "‘You saw the one who came before you. I let them walk away. They asked me to take the choice out of their hands. Why would it have been kinder to refuse?’"
         ]
     },
     "Vesperion True Final Victory": {
         "Text": [
-            "The Evening Star fractures without falling.",
-            "Vesperion reaches for the pattern one last time, but the six awakened principles refuse to close around your will.",
-            "For the first time, his mercy has no command inside it.",
-            "'Then choose,' he whispers, no longer triumphant. 'Choose all of it. Even the pain.'",
-            "The light breaks, and the hollow where Voluntas was erased begins to remember its own name.",
-            "The final chamber does not crown you. It opens.",
-            "You do not take Voluntas. You leave it free."
+            "Vesperion reaches for the break between the lights. This time his hand passes through it. For a moment he looks his age.",
+            "The light goes out of the breaches one by one. Somewhere below, a latch drops. The final chamber opens onto stairs you can climb on your own."
         ]
     },
     "The Forsaken Tenet Ending": {
         "Text": [
-            "The Liminal Gap exhales through the world.",
-            "Self, Order, Nature, Love, Guidance, and Eternity remain, but none of them stand alone anymore.",
-            "Voluntas is not restored as a relic or throne. It returns wherever a soul can answer yes, no, stay, go, forgive, refuse, begin again.",
-            "The grief Vesperion used does not vanish. Joffrey is still gone. The Waitress still suffered. The Acolyte still chose peace until peace became empty.",
-            "But grief is no longer proof that choice should be buried.",
-            "The Hooded Figure watches from the threshold as dawn reaches places twilight tried to keep.",
-            "The Forsaken Tenet is remembered."
+            "At the foot of the stairs you count what you carry. All six relics are there. The seventh seat stays where you left it.",
+            "Above you somebody is knocking stones loose from the blocked stair. ‘Stand clear!’ a voice calls. Daylight comes through first. A hand follows."
+        ]
+    },
+    "Liora After the Evening Star": {
+        "Text": [
+            "Liora is in the kitchen with her sleeves rolled up. The little chain at her waist catches on a drawer pull. She frees it with a practiced flick of her thumb.",
+            "‘Here, taste this. I used to give Joffrey the first spoonful because he'd eat anything.’ She watches your face. ‘Oh, that much salt? Pass me a potato.’"
         ]
     },
     "The Thirsty Dog Epilogue": {
         "Text": [
-            "For a moment, memory returns to the tavern where so many choices first tangled.",
-            "The bar is quieter now. One table remains unset, and no busboy comes to clear it.",
-            "No miracle gives Joffrey back to the Waitress, and no ending makes grief harmless.",
-            "Some patrons speak more softly. Some do not speak at all. The ordinary work of cups, chairs, and surviving continues.",
-            "But the silence is no longer command. It is a place where the living may choose what to do with love, loss, and morning."
+            "Oren keeps reaching under the counter for a dry cup. Tavin used to stack them there. After the third time he moves the crate himself.",
+            "Pell has taken Joffrey's old stool to the window to mend its loose rung. ‘Sit there and you'll go through it,’ he tells the first customer. She takes another chair.",
+            "At closing time someone knocks. Oren has the bolt halfway across. He slides it back. ‘Kitchen's cold,’ he says, opening the door. ‘There's bread.’"
         ]
     },
     "Relic Room": {

@@ -510,3 +510,16 @@ def test_liminal_gap_map_loads_with_hub_tiles():
         "PolarisGate",
         "InfinitasGate",
     }.issubset(tile_names)
+
+
+def test_guardian_memories_only_recall_witnessed_events():
+    story = main_story.normalize_state({"triangulus_identity_answer": "Unrecorded"})
+    assert all(
+        main_story.guardian_memory(story, guardian) is None
+        for guardian in main_story.GUARDIAN_TRIALS
+    )
+    story.update(triangulus_identity_answer="Memory", liora_reply="tracks", polaris_advice="refuse")
+    assert "refuse to forget" in main_story.guardian_memory(story, "Triangulus")
+    assert "boot prints" in main_story.guardian_memory(story, "Luna")
+    assert "button" in main_story.guardian_memory(story, "Polaris")
+    assert main_story.normalize_state({"epilogue_choice": "coat"})["epilogue_choice"] == "coat"

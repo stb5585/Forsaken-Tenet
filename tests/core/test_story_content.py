@@ -112,7 +112,7 @@ def test_story_polish_content_keys_are_present_and_spoiler_scoped():
     endgame_tragedy_text = "\n".join(events["Vesperion Tragedy Reframing"]["Text"])
     assert "Vesperion" in endgame_tragedy_text
     assert "Joffrey" in endgame_tragedy_text
-    assert "Waitress" in endgame_tragedy_text
+    assert "Liora" in endgame_tragedy_text
 
     ending_text = "\n".join(
         line
@@ -123,8 +123,8 @@ def test_story_polish_content_keys_are_present_and_spoiler_scoped():
         )
         for line in events[key]["Text"]
     )
-    assert "The final chamber does not crown you" in ending_text
-    assert "ordinary work" in ending_text
+    assert "six relics" in ending_text
+    assert "opens" in ending_text and "bread" in ending_text
 
 
 def test_red_dragon_continuity_copy_separates_route_meanings():

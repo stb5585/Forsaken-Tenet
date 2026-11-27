@@ -640,3 +640,27 @@ def test_late_act_two_scenes_remember_choices_across_visits(monkeypatch):
     assert player.main_story["liora_letter_read"]
     assert player.main_story["polaris_advice"] == "refuse"
     assert player.main_story["infinitas_return"] == "help"
+
+
+def test_closing_wage_book_preserves_the_missing_patrons_quest_access(monkeypatch):
+    manager = object.__new__(inn.InnManager)
+    manager.presenter = object()
+    player = manager.player_char = _make_player(level=65)
+    player.main_story.update(infinitas_return="help", joffrey_found=True)
+    player.quest_dict["Main"]["A Bad Dream"] = {"Turned In": True}
+    scenes = []
+    monkeypatch.setattr(
+        inn,
+        "StorySceneScreen",
+        lambda *args, **kwargs: SimpleNamespace(show_dialogue=scenes.append),
+    )
+    manager._show_late_relic_scene()
+    assert not scenes
+    player.quest_dict["Main"]["The Holy Relics"] = {"Turned In": True}
+    manager._show_late_relic_scene()
+    manager._show_late_relic_scene()
+    assert len(scenes) == 1
+    options = manager._build_patron_list()
+    assert "Liora" in options and "Tavin" not in options
+    assert manager.PATRON_ROLES["Tavin’s notes"] == "Busboy"
+    assert "Tavin’s notes" in options

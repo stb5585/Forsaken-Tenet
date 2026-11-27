@@ -151,12 +151,65 @@ ACT_TWO_ANSWERS = {
     "infinitas_return": ("rest", "help", "continue"),
 }
 
+# Memories belong to the choices the player actually witnessed in Silvana.
+GUARDIAN_MEMORIES = {
+    "Quadrata": (
+        "route_order",
+        {
+            "Escort": "A key knocks against a litter pole. You put its bearer at the head of the crew.",
+            "Exception": "You remember the key dropping into the soldier's palm. His sister knew his voice.",
+            "SignOut": "You can see the landing written beside his name. Someone knew where to send the blanket.",
+        },
+    ),
+    "Hexagonum": (
+        "hexagonum_report_seen",
+        {
+            True: "White threads cling to a jar. You hear Mara asking what the people in the queue are supposed to drink."
+        },
+    ),
+    "Luna": (
+        "liora_reply",
+        {
+            "burial": "For an instant the weight in your hands is the last stone you laid by the pen.",
+            "tracks": "You see two boot prints beyond the bent bars. Liora wanted to know where they went.",
+            "map": "You remember Liora's fingertip resting on the spot you showed her.",
+        },
+    ),
+    "Polaris": (
+        "polaris_advice",
+        {
+            "inspect": "You unfold the survey again in memory. An ink doorway. Solid stone under your palm.",
+            "refuse": "Your fingers find the button you fastened over your map. The Figure moved aside when you asked.",
+        },
+    ),
+    "Infinitas": (
+        "infinitas_return",
+        {
+            "rest": "A hinge turns without a sound. Oren kept his word and let you sleep.",
+            "help": "You remember Pell holding the lamp while Oren checked the strap on your pack.",
+            "continue": "The smell of the supper you stayed for comes back before you can recall the road.",
+        },
+    ),
+}
+
+
+def guardian_memory(story, guardian):
+    """Recall a witnessed scene, leaving missing or migrated answers unspoken."""
+    if guardian == "Triangulus":
+        answer = opening_story.TRIANGULUS_ANSWER_TEXT.get(story.get("triangulus_identity_answer"))
+        return f"Your own voice comes back from the first altar. ‘{answer}’" if answer else None
+    key, memories = GUARDIAN_MEMORIES[guardian]
+    return memories.get(story.get(key))
+
+
 DEFAULT_MAIN_STORY_STATE = {
     "route_order": None,
     "joffrey_departed": False,
     "joffrey_found": False,
     "liora_letter_read": False,
     "luna_report_seen": False,
+    "closing_tavern_seen": False,
+    "epilogue_choice": None,
     "liora_reply": None,
     "polaris_advice": None,
     "infinitas_return": None,
@@ -258,6 +311,10 @@ def normalize_state(state: object = None) -> dict[str, object]:
             if key in ACT_TWO_ANSWERS:
                 answer = state.get(key)
                 normalized[key] = answer if answer in ACT_TWO_ANSWERS[key] else None
+                continue
+            if key == "epilogue_choice":
+                choice = state.get(key)
+                normalized[key] = choice if choice in ("chair", "bread", "coat") else None
                 continue
             if key == "route_order":
                 order = state.get(key)

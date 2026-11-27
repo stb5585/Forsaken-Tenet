@@ -30,6 +30,7 @@ class InnManager(TownScreenBase):
         "Liora": "Waitress",
         "Pell": "Drunkard",
         "Tavin": "Busboy",
+        "Tavin’s notes": "Busboy",
         "Joffrey": "Soldier",
         "Duty Soldier": "Soldier",
         "Hooded Figure": "Hooded Figure",
@@ -360,6 +361,45 @@ class InnManager(TownScreenBase):
             )
             story["infinitas_return"] = main_story.ACT_TWO_ANSWERS["infinitas_return"][answer]
 
+        elif (
+            story["infinitas_return"]
+            and self.player_char.quest_dict.get("Main", {})
+            .get("The Holy Relics", {})
+            .get("Turned In")
+            and not story["closing_tavern_seen"]
+        ):
+            scene = StorySceneScreen(
+                self.presenter,
+                "The Thirsty Dog — The Wage Book",
+                participants=("Oren", "Pell", "Hooded Figure"),
+                background_image="tavern.jpg",
+                player_char=self.player_char,
+            )
+            scene.show_dialogue(
+                (
+                    StoryBeat(
+                        "Oren", "When did I take Tavin on? I'm a week short in the wage book."
+                    ),
+                    StoryBeat(
+                        "Pell", "Before the rains. He brought me my boots when the cellar flooded."
+                    ),
+                    StoryBeat("Oren", "I bought this place after the flood."),
+                    StoryBeat(
+                        "Narrator",
+                        "Oren turns back to the first page. The Figure leans past your shoulder to see the book. Their sleeve brushes your cheek.",
+                    ),
+                    StoryBeat(
+                        "Hooded Figure",
+                        "Take the six with you. They'll open the threshold. Keep your hand out of the space between them.",
+                    ),
+                    StoryBeat(
+                        "Narrator",
+                        "You ask what belongs there. The Figure pulls their sleeve away and lets you pass.",
+                    ),
+                )
+            )
+            story["closing_tavern_seen"] = True
+
     def _random_patron_comment(self, patron: str) -> str | None:
         # Gather patron-specific dialogues eligible for the player's level
         combined_pool: list[str] = []
@@ -395,7 +435,11 @@ class InnManager(TownScreenBase):
             else:
                 if getattr(self.player_char, "main_story", {}).get("joffrey_found"):
                     options.append("Liora")
-                options.append("Tavin")
+                options.append(
+                    "Tavin’s notes"
+                    if getattr(self.player_char, "main_story", {}).get("closing_tavern_seen")
+                    else "Tavin"
+                )
         else:
             options.append("Liora")
         # Pell is present in the arrival scene, so he remains available from
@@ -471,7 +515,11 @@ class InnManager(TownScreenBase):
                     hint = qm.get_random_help_hint(patron_role)
                     if hint:
                         pool.append(hint)
-                    comment = self._random_patron_comment(patron_role)
+                    comment = (
+                        "Several folded slips lie under the wage book."
+                        if patron == "Tavin’s notes"
+                        else self._random_patron_comment(patron_role)
+                    )
                     if comment:
                         pool.append(comment)
                     if pool:

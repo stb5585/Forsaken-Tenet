@@ -263,6 +263,9 @@ class DungeonStoryMixin:
         if intro_event:
             self._show_special_event_dialogue(intro_event, title=guardian_name)
         self._show_guardian_trial_v2_threshold(guardian_name)
+        memory = main_story.guardian_memory(story_state, guardian_name)
+        if memory:
+            self._show_dungeon_dialogue(memory, title=guardian_name)
         answer_options = list(main_story.guardian_trial_choices(guardian_name))
         answer_choice = self._popup_menu(
             main_story.guardian_trial_question(guardian_name),
@@ -588,6 +591,13 @@ class DungeonStoryMixin:
             return False
         self._show_special_event_dialogue("Vesperion Choice Argument", title="Vesperion")
         self._show_special_event_dialogue("Vesperion Tragedy Reframing", title="Vesperion")
+        answer = {
+            "burial": "You remember Liora asking where he lay. She wanted to know someone stayed with him. Vesperion remembers the question he asked. You remember hers.",
+            "tracks": "You told Liora about the footprints. The first thing she wanted was for Caedmon to find whoever had made it out.",
+            "map": "You remember Liora leaning across the counter to see the place for herself. Vesperion talks straight over that part.",
+        }.get(story_state.get("liora_reply"))
+        if answer:
+            self._show_dungeon_dialogue(answer, title="The Lower Pens")
         self._add_voluntas_path_summary_messages(story_state)
         return True
 

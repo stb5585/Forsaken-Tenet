@@ -340,7 +340,13 @@ class QuestManager:
         end_text = qdata.get("End Text", "")
         if quest_name == "Uncertain Reports":
             self._show_uncertain_reports_completion()
-        if quest_name in ("Uncertain Reports", "Bring Him Home", "Rookie Mistake", "Lapidation"):
+        if quest_name in (
+            "Uncertain Reports",
+            "Bring Him Home",
+            "Rookie Mistake",
+            "Lapidation",
+            "The Holy Relics",
+        ):
             end_text = ""
         if quest_name == "A Bad Dream" and getattr(self.player_char, "main_story", {}).get(
             "joffrey_found"
@@ -696,7 +702,32 @@ class QuestManager:
 
     def _handle_pre_turn_in_quest_events(self, quest_name: str) -> None:
         """Show quest-resolution scenes before rewards and completion settlement."""
-        if quest_name == "Bring Him Home":
+        if quest_name == "The Holy Relics":
+            scene = StorySceneScreen(
+                self.presenter,
+                "Barracks — The Last Rubbing",
+                participants=("Caedmon", "Soldier"),
+                background_image="barracks.jpg",
+                player_char=self.player_char,
+            )
+            scene.show_dialogue(
+                (
+                    StoryBeat(
+                        "Narrator",
+                        "Caedmon unpicks the stitches in six ledgers. He lays the chamber rubbings edge to edge. Every page has a thumb-wide strip of clean paper in the same place.",
+                    ),
+                    StoryBeat(
+                        "Soldier",
+                        "I went back for that bit. Look, you can see where I tore the paper the second time.",
+                    ),
+                    StoryBeat("Caedmon", "I know. Mine came out the same. Leave the space."),
+                    StoryBeat(
+                        "Soldier", "Can I tell the watch we're done? My brother wants to come home."
+                    ),
+                    StoryBeat("Caedmon", "Tell him to come. I'll keep the lamp here."),
+                )
+            )
+        elif quest_name == "Bring Him Home":
             self._show_timmy_home_scene()
         elif quest_name == "Rookie Mistake":
             self._show_rookie_burial_scenes()
