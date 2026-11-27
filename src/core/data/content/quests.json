@@ -63,7 +63,7 @@
           "Total": 1,
           "Start Text": "Caedmon has the slip. Joffrey took chalk and enough oil for one lamp. If you cross his trail, will you see whether he reached the patrol?",
           "End Text": "My pendant...Elysia take me...he left me these keys last I saw of him...please avenge my love...(the waitress runs out sobbing...)",
-          "Help Text": "An adventurer came in earlier. He said he saw Joffrey on the second floor of the dungeon. Joffrey had just unlocked a door in the northeast corner.",
+          "Help Text": "He said to look low on the wall. Start on the fourth floor, where the survey route turns toward the pens.",
           "Reward": ["OldKey"],
           "Reward Number": 3,
           "Experience": 3500,

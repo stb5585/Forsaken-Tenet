@@ -35,6 +35,17 @@ class DungeonInteractionMixin:
 
         ahead_tile = self.player_char.world_dict.get((ahead_x, ahead_y, ahead_z))
 
+        for tile in (self.get_current_tile(), ahead_tile):
+            site = quest_progress.joffrey_site(self.player_char, tile)
+            if site == "dead_body":
+                self._show_special_event_dialogue("Joffrey at the Pens", title="The Lower Pens")
+                if quest_progress.recover_joffrey(self.player_char, tile):
+                    self.add_message("You take Joffrey's locket back for Liora.")
+                return
+            if site == "burial_site" and tile is ahead_tile:
+                self.add_message("The cairn stands beside Joffrey's last chalk mark.")
+                return
+
         if ahead_tile:
             tile_type = type(ahead_tile).__name__
 
@@ -707,8 +718,14 @@ class DungeonInteractionMixin:
 
     def _interact_dead_body(self, body_tile):
         """Handle dead body interaction."""
+        departed = getattr(self.player_char, "main_story", {}).get("joffrey_departed")
+        if departed and not self.player_char.quest_dict.get("Main", {}).get("A Bad Dream", {}).get(
+            "Turned In"
+        ):
+            self.add_message("This soldier wears a different patrol clasp.")
+            return
         # Check for quest item pickup
-        if "A Bad Dream" in self.player_char.quest_dict.get("Main", {}):
+        if not departed and "A Bad Dream" in self.player_char.quest_dict.get("Main", {}):
             if not hasattr(body_tile, "read") or not body_tile.read:
                 self.game.special_event("Dead Body")
                 self.add_message("You found a Lucky Locket on the body!")

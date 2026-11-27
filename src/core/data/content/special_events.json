@@ -38,6 +38,13 @@
             "You have obtained the Unobtainium!"
             ]
     },
+    "Joffrey at the Pens": {
+        "Text": [
+            "The chalk stops halfway through an arrow. Joffrey lies below it with one hand inside the bent bars of a pen. His wrist is cold.",
+            "A broken strap is wound tight across his chest. The brass tag on its buckle reads DOMINGO. Beyond the bars, a set of boot prints leads away.",
+            "Liora’s locket is caught in his collar. You ease it free, cover him with the loose stones beside the pen, and set the stub of chalk on top."
+        ]
+    },
     "Dead Body": {
         "Text" : [
             "Before you lies the body of a warrior, battered, bloody, and broken.",

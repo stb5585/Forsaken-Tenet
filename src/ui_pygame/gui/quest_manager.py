@@ -831,6 +831,12 @@ class QuestManager:
                 self.player_char.quest_dict[typ] = {}
             self.player_char.quest_dict[typ][quest_name] = copy.deepcopy(q)
 
+            if (
+                quest_name == "A Bad Dream"
+                and main_story.ensure_state(self.player_char)["joffrey_found"]
+            ):
+                self.player_char.quest_dict[typ][quest_name]["Completed"] = True
+
             if quest_name == "The Holy Grail of Quests":
                 self._ensure_chalice_progress(self.player_char.quest_dict[typ][quest_name])
 

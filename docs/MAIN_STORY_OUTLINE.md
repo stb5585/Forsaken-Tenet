@@ -557,9 +557,7 @@ correct the route. Vesperion distorts the evidence and apparent urgency so
 immediate action seems necessary, but does not compel him. The false route
 leads Joffrey into Domingo's path, and Domingo kills him while he is attempting
 to reach the missing patrol. Joffrey's physical body is discovered on level 4
-near the Domingo route, not at the existing level-2 corpse tile. Its exact map
-coordinate and story-state visibility belong to the Chapter 5 production
-packet.
+near the Domingo route, not at the existing level-2 corpse tile. On floor 4, the low chalk at (15, 13) points south to the pens. The body at (15, 15) appears after his departure and becomes a cairn after the hero recovers the locket. Earlier saves already pursuing the original search retain their floor-2 route.
 
 ### Fixed Tragic Outcome
 

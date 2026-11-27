@@ -529,6 +529,8 @@ class DeadBody(SpecialTile):
                 self.enter_combat(game.player_char)
 
     def special_text(self, game):
+        if getattr(game.player_char, "main_story", {}).get("joffrey_departed"):
+            return
         if "A Bad Dream" in game.player_char.quest_dict["Main"]:
             if not self.read:
                 game.special_event("Dead Body")

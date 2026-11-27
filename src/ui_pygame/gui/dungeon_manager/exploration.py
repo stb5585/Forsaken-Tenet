@@ -96,6 +96,8 @@ class DungeonExplorationMixin:
                 enemy = self._resolve_tile_enemy(current_tile)
                 if enemy:
                     messages.append(f"A {enemy.name} blocks your path!")
+            if quest_progress.joffrey_site(self.player_char, current_tile) == "dead_body":
+                messages.append("A scout lies beside the pens. Press O to examine him.")
             gathering_message = map_tiles.gathering_hint(
                 self.player_char,
                 current_tile,
