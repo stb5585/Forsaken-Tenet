@@ -7,7 +7,7 @@ import random
 
 import pygame
 
-from src.core import map_tiles
+from src.core import map_tiles, quest_progress
 from src.ui_pygame.assets.enemy_combat_sprite_manager import get_enemy_combat_sprite_manager
 
 from ..geometry import Quad
@@ -493,6 +493,19 @@ class RendererSpecialTileMixin:
         if gathering_definition is not None:
             # Gathering assets are projected as part of their floor tile. This
             # keeps them grounded in perspective, including beneath the player.
+            return
+
+        site = quest_progress.joffrey_site(getattr(self, "player_char", None), tile)
+        if site:
+            self._render_floor_sprite(
+                site,
+                rect,
+                darkness=darkness,
+                depth=depth,
+                kind="dead_body",
+                side=side,
+                lateral_view=lateral_view,
+            )
             return
 
         decorative_sprite_key = self._get_decorative_floor_sprite_key(tile_type)
@@ -1116,6 +1129,8 @@ class RendererSpecialTileMixin:
     def _is_floor_sprite_tile(tile, player_char=None) -> bool:
         if tile is None:
             return False
+        if quest_progress.joffrey_site(player_char, tile):
+            return True
         if map_tiles.definition_for_tile(tile) is not None:
             return True
         if bool(getattr(tile, "rookie_body_marker", False)) or bool(

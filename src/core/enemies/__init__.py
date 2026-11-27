@@ -145,6 +145,7 @@ from .midgame import (
     DrowAssassin,
     EarthMyrmidon,
     EvilCrusader,
+    ExpeditionSurvivor,
     FireMyrmidon,
     FlameWisp,
     Fuath,

@@ -332,22 +332,27 @@ RELIC_DISCOVERY_TEXT = {
     "Quadrata": (
         "Quadrata settles into your hands, steady as a vow carved into stone. "
         "For one breath, the dungeon's shifting dark feels measured and contained."
+        "\n\nA folded slip rests beneath the square. Four rules in a careful hand. The last reads: If the way is blocked, wait here. The paper is worn thin along that line."
     ),
     "Hexagonum": (
         "Hexagonum hums with living geometry, every edge answering roots, bone, and deep earth. "
         "Something patient beneath the floor recognizes you."
+        "\n\nA root has grown through a scrap of paper. In the margin someone wrote: It bit because it was hungry. Underneath, in smaller letters: Then why did it let me go?"
     ),
     "Luna": (
         "Luna glows with pale warmth, a quiet reminder that love is a choice renewed. "
         "The altar light softens, but the silence around it does not."
+        "\n\nOn the back of a key tag someone wrote: I locked the door to keep her safe. There was room beneath for a reply. The space is blank."
     ),
     "Polaris": (
-        "Polaris catches a fixed northern light, pointing onward through the dark. "
-        "The way ahead is no safer, only harder to lose."
+        "One golem still points at a doorway bricked up years ago. You count the bricks twice. "
+        "You rub the grit off Polaris with your sleeve. A chipped point nicks your thumb."
+        "\n\nA route drawn on linen ends halfway across the cloth. The same hand has written beside it: He says he can see the rest from where he stands."
     ),
     "Infinitas": (
-        "Infinitas turns without beginning or end, holding the shape of endurance. "
-        "The circle closes in your palm, and still the road continues."
+        "Six grooves run around the plinth, worn to the width of a paw. "
+        "The relief slate beside the door still bears the same name on every line. As you lift Infinitas, you can finally hear your own steps."
+        "\n\nA scrap is caught in the groove beneath the ring. The writing trails downhill: Tomorrow, if he asks me to keep walking, I hope he forgets to ask what I want."
     ),
 }
 

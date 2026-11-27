@@ -87,6 +87,40 @@ def _advance_or_complete_quest(quest_name: str, quest_data: dict[str, Any]) -> s
     return f"You have completed the quest {quest_name}."
 
 
+CHURCH_PROVISIONS = {
+    "Who": "Waitress",
+    "Start Text": "The church kitchen is short again. I still have the big pot we bought for the wedding. Bring me twelve portions and I'll put it to use.",
+    "Help Text": "Bring the meat here. The church sent over two lads to carry the pot.",
+    "End Text": "That's enough for tonight and breakfast besides. Here, I put your potion aside.",
+}
+
+JOFFREY_CHALK_POSITION = (15, 13, 4)
+JOFFREY_BODY_POSITION = (15, 15, 4)
+
+
+def joffrey_site(player, tile):
+    """Return the visible fourth-floor site at this tile, including after burial."""
+    position = tuple(getattr(tile, axis, None) for axis in ("x", "y", "z"))
+    if position != JOFFREY_BODY_POSITION:
+        return None
+    story = getattr(player, "main_story", {})
+    if not story.get("joffrey_departed"):
+        return None
+    return "burial_site" if story.get("joffrey_found") else "dead_body"
+
+
+def recover_joffrey(player, tile):
+    """Return the locket once and settle an active search at the new site."""
+    if joffrey_site(player, tile) != "dead_body":
+        return False
+    player.modify_inventory(items.LuckyLocket(), rare=True, quest=True)
+    player.main_story["joffrey_found"] = True
+    quest = player.quest_dict.get("Main", {}).get("A Bad Dream")
+    if isinstance(quest, dict):
+        quest["Completed"] = True
+    return True
+
+
 def record_location(player, position: tuple[int, int, int]) -> str:
     """Record arrival at a location for active data-driven locate quests."""
     normalized_position = tuple(position)
@@ -98,7 +132,18 @@ def record_location(player, position: tuple[int, int, int]) -> str:
     message = _complete_matching_side_quests(player, "Locate", matches)
     ensure_story = getattr(player, "ensure_main_story_state", None)
     if callable(ensure_story):
-        descent_text = opening_story.record_first_descent(ensure_story(), normalized_position)
+        story = ensure_story()
+        if (
+            normalized_position == JOFFREY_CHALK_POSITION
+            and story.get("joffrey_departed")
+            and not story.get("joffrey_chalk_seen")
+            and not story.get("joffrey_found")
+        ):
+            message += (
+                "Two chalk strokes at ankle height. The second points south, toward the pens.\n"
+            )
+            story["joffrey_chalk_seen"] = True
+        descent_text = opening_story.record_first_descent(story, normalized_position)
         if descent_text:
             message += f"{descent_text}\n"
     return message
@@ -258,6 +303,15 @@ def ensure_uncertain_reports_quest(player) -> dict[str, Any]:
 
 def can_offer_authored_quest(player, quest_name: str) -> bool:
     """Apply story-state prerequisites not expressible as a turned-in quest."""
+    if quest_name == "A Bad Dream":
+        return bool(main_story.ensure_state(player)["joffrey_departed"])
+    if quest_name == "In the Day of Our Lord":
+        return bool(player.quest_dict.get("Main", {}).get("A Bad Dream", {}).get("Completed"))
+    if quest_name == "Dracarys":
+        holy = player.quest_dict.get("Main", {}).get(HOLY_RELICS, {})
+        return bool(
+            holy.get("Polaris Recovered") or "Polaris" in getattr(player, "special_inventory", {})
+        )
     if quest_name != "Cry Havoc!":
         return True
     uncertain = ensure_quest_categories(player)["Main"].get(UNCERTAIN_REPORTS)
@@ -400,6 +454,8 @@ def ensure_holy_relics_quest(
         main_quests[HOLY_RELICS] = quest_data
 
     quest_data.setdefault("Stage", "collecting")
+    if "Polaris" in getattr(player, "special_inventory", {}):
+        quest_data["Polaris Recovered"] = True
     quest_data.setdefault("Total", len(RELIC_NAMES))
     quest_data["Help Text"] = _holy_relics_help(relic_count(player))
 

@@ -38,6 +38,11 @@ class DungeonNavigationMixin:
             return False
 
         tile_type = type(tile_ahead).__name__
+        if isinstance(tile_ahead, map_tiles.BossRoom):
+            blocker = tile_ahead.story_blocker(self.player_char)
+            if blocker:
+                self.add_message(blocker)
+                return False
         sync_tile = getattr(tile_ahead, "sync_for_player", None)
         if callable(sync_tile):
             sync_tile(self.player_char)

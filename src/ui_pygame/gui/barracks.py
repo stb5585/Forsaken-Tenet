@@ -125,6 +125,10 @@ class BarracksManager(TownScreenBase):
         barracks_options = ["Quests", "Storage Locker"]
         story_state = main_story.ensure_state(self.player_char)
         quest_dict = getattr(self.player_char, "quest_dict", {})
+        if "The Holy Relics" in quest_dict.get("Main", {}) and story_state.get(
+            "hooded_figure_triangulus_response_seen"
+        ):
+            self._review_relic_routes(story_state)
         uncertain = quest_dict.get("Main", {}).get("Uncertain Reports")
         if isinstance(uncertain, dict) and not story_state.get("opening_ledger_seen"):
             barracks_options.insert(1, "Review Patrol Ledgers")
@@ -255,6 +259,156 @@ class BarracksManager(TownScreenBase):
 
             elif choice_label == "Secret Hall":
                 self.visit_grandmaster_secret_hall(draw_barracks_background)
+
+    def _review_relic_routes(self, story):
+        """Hear one pending patrol matter per visit after the first relic report."""
+        reports = getattr(self.player_char, "special_inventory", {})
+        order = story.get("route_order")
+        if order is None:
+            scene = StorySceneScreen(
+                self.presenter,
+                "Barracks — The South Gate Key",
+                participants=("Caedmon", "Soldier"),
+                background_image="barracks.jpg",
+                player_char=self.player_char,
+            )
+            scene.show_dialogue(
+                (
+                    StoryBeat(
+                        "Narrator",
+                        "A soldier sets a key on the desk. His other hand is wrapped in a wet bandage.",
+                    ),
+                    StoryBeat(
+                        "Soldier",
+                        "My partner twisted her knee. I left her at the landing. I need the key back.",
+                    ),
+                    StoryBeat(
+                        "Caedmon",
+                        "Last night I sent two people down for a man who'd already come home. Nobody saw him come in.",
+                    ),
+                    StoryBeat("Soldier", "She'll be trying those steps on her own by now."),
+                    StoryBeat(
+                        "Caedmon",
+                        "I'm sending a litter either way. What would you do about the key?",
+                    ),
+                )
+            )
+            choice = scene.choose(
+                "What do you suggest?",
+                [
+                    "Have him guide the litter crew down.",
+                    "Give him the key. She knows his voice.",
+                    "Write down who takes it. They sign it back in.",
+                ],
+                allow_cancel=False,
+            )
+            story["route_order"] = main_story.ROUTE_ORDERS[choice]
+            scene.show_dialogue(
+                (
+                    StoryBeat(
+                        "Caedmon",
+                        (
+                            "Get two bearers. You know the landing, so you lead.",
+                            "Here. Stay with her when the bearers reach you.",
+                            "Pencil's by your elbow. Put the landing beside your name.",
+                        )[choice],
+                    ),
+                )
+            )
+        elif "Quadrata" in reports and not story["quadrata_report_seen"]:
+            scene = StorySceneScreen(
+                self.presenter,
+                "Barracks — The Returned Key",
+                participants=("Soldier", "Caedmon"),
+                background_image="barracks.jpg",
+                player_char=self.player_char,
+            )
+            scene.show_dialogue(
+                (
+                    StoryBeat(
+                        "Soldier",
+                        {
+                            "Escort": "We took turns on the litter. She complained about every bump.",
+                            "Exception": "She heard me on the steps. Called me three kinds of fool for worrying.",
+                            "SignOut": "Someone saw the landing beside my name and sent a blanket down after us.",
+                        }[order],
+                    ),
+                    StoryBeat("Caedmon", "She's home. There's the key on its hook."),
+                    StoryBeat(
+                        "Soldier",
+                        "Can we move that hook? You have to stand on his desk to reach it.",
+                    ),
+                    StoryBeat("Caedmon", "Get a hammer."),
+                )
+            )
+            story["quadrata_report_seen"] = True
+        elif "Hexagonum" in reports and not story["hexagonum_report_seen"]:
+            scene = StorySceneScreen(
+                self.presenter,
+                "Barracks — The Spring Water",
+                participants=("Seraphine Voss", "Mara Vale"),
+                background_image="barracks.jpg",
+                player_char=self.player_char,
+            )
+            scene.show_dialogue(
+                (
+                    StoryBeat(
+                        "Narrator",
+                        "Beside Hexagonum sits a jar of spring water. White threads cling to the glass.",
+                    ),
+                    StoryBeat(
+                        "Mara Vale",
+                        "That was clear when I filled it. I've six more jars downstairs.",
+                    ),
+                    StoryBeat(
+                        "Seraphine Voss", "Leave one here by the relic. Put another by the window."
+                    ),
+                    StoryBeat("Mara Vale", "And what do I give the people waiting for water?"),
+                    StoryBeat(
+                        "Seraphine Voss", "The barrel from my rooms. Bring a cart. I can't lift it."
+                    ),
+                )
+            )
+            story["hexagonum_report_seen"] = True
+        elif "Luna" in reports and story.get("liora_reply") and not story["luna_report_seen"]:
+            scene = StorySceneScreen(
+                self.presenter,
+                "Barracks — The Pen Register",
+                participants=("Caedmon", "Liora"),
+                background_image="barracks.jpg",
+                player_char=self.player_char,
+            )
+            scene.show_dialogue(
+                (
+                    StoryBeat(
+                        "Narrator",
+                        "Liora has laid the pen register open beside Luna. Every feeding has a date and a keeper's initials.",
+                    ),
+                    StoryBeat(
+                        "Liora",
+                        {
+                            "tracks": "Did you ever find whose boots those were?",
+                            "burial": "Will somebody sit with him until we can bring him home?",
+                            "map": "I want a copy of that map. With the spot marked, please.",
+                        }[story["liora_reply"]],
+                    ),
+                    StoryBeat(
+                        "Caedmon",
+                        {
+                            "tracks": "Still asking. Two keepers never signed out.",
+                            "burial": "I'll take first watch myself.",
+                            "map": "Take mine. I know the way.",
+                        }[story["liora_reply"]],
+                    ),
+                    StoryBeat("Liora", "Did Joffrey know what you kept down there?"),
+                    StoryBeat("Caedmon", "He asked me once. I told him to stick to his survey."),
+                    StoryBeat(
+                        "Narrator",
+                        "He turns the register toward her. This time he waits while she reads.",
+                    ),
+                )
+            )
+            story["luna_report_seen"] = True
 
     def _review_opening_ledgers(self, background_draw_func=None) -> None:
         """Let the player inspect the three contradictory patrol entries in any order."""

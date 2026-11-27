@@ -189,16 +189,12 @@ def test_first_relic_report_turn_in_creates_holy_relics(monkeypatch):
     assert holy["Completed"] is False
     assert holy["Stage"] == "collecting"
     assert "Recovered 1/6 relics" in holy["Help Text"]
-    assert [beat.speaker for beat in scenes[0][:5]] == [
-        "Caedmon",
-        "Edrin",
-        "Caedmon",
-        "Edrin",
-        "Caedmon",
-    ]
+    assert [beat.speaker for beat in scenes[0][:5]] == ["Edrin", "You", "Edrin", "You", "Caedmon"]
+    assert scenes[0][1].portrait_name == quest_manager.PLAYER_PORTRAIT_KEY
+    assert scenes[0][3].portrait_name == quest_manager.PLAYER_PORTRAIT_KEY
     assert scenes[0][5].speaker == "Narrator"
     assert "ledgers" in scenes[0][5].text
-    assert scene_kwargs[0]["background_image"] == "town.png"
+    assert scene_kwargs[0]["background_image"] == "barracks.jpg"
     assert "background_draw_func" not in scene_kwargs[0]
     assert all("Quest Complete: Uncertain Reports" not in message for message in rendered)
 
@@ -325,6 +321,43 @@ def test_can_offer_and_already_killed_helpers():
     assert manager._already_killed("Dragon") is True
     assert manager._already_killed("Barghest") is True
     assert manager._already_killed("Slime") is False
+
+
+def test_barghest_briefing_remembers_deferral_and_recognizes_an_early_kill(monkeypatch):
+    manager = _manager(_make_player(level=20))
+    player = manager.player_char
+    quest = get_quests()["Sergeant"]["Main"]["20"]["Cry Havoc!"]
+    beats = []
+    prompts = []
+    choices = iter([1, 0])
+
+    class Briefing:
+        def __init__(self, _presenter, _title, **kwargs):
+            assert kwargs["background_image"] == "barracks.jpg"
+
+        def show_dialogue(self, lines):
+            beats.extend(lines)
+
+        def choose(self, prompt, _options, **kwargs):
+            assert kwargs["speaker"] == "Caedmon"
+            prompts.append(prompt)
+            return next(choices)
+
+    monkeypatch.setattr(quest_manager, "StorySceneScreen", Briefing)
+    assert manager._offer("Sergeant", "Cry Havoc!", quest, "Main") is False
+    assert "Cry Havoc!" not in player.quest_dict["Main"]
+    assert player.main_story["barghest_briefing_seen"] is True
+    assert [beat.speaker for beat in beats].count("Edrin") == 1
+
+    beats.clear()
+    player.world_dict = {(18, 2, 1): BarghestBossRoom()}
+    assert manager._offer("Sergeant", "Cry Havoc!", quest, "Main") is True
+    assert not beats
+    assert "Barghest" in prompts[0]
+    assert "give me your account" in prompts[1]
+    accepted = player.quest_dict["Main"]["Cry Havoc!"]
+    assert accepted["Completed"] and not accepted["Turned In"]
+    assert accepted["Reward"] == [core_items.PowerRing]
 
 
 def test_check_and_offer_autocompletes_defeated_boss_room_without_kill_entry(monkeypatch):
@@ -564,7 +597,6 @@ def test_bring_him_home_turn_in_shows_timmy_home_event(monkeypatch):
         "Timmy's Mother",
         "Timmy's Father",
         "Timmy",
-        "Caedmon",
     )
     assert [beat.speaker for beat in scenes[0].beats] == [
         "Narrator",
@@ -572,10 +604,10 @@ def test_bring_him_home_turn_in_shows_timmy_home_event(monkeypatch):
         "Narrator",
         "Timmy",
         "Timmy's Father",
-        "Timmy's Mother",
-        "Caedmon",
+        "Narrator",
     ]
-    assert "family back together" in scenes[0].beats[-1].text
+    assert "pulls him in" in scenes[0].beats[-1].text
+    assert not any("Quest Complete: Bring Him Home" in text for text in rendered)
 
 
 def test_rookie_mistake_arrival_scenes_precede_rewards_and_consume_body(monkeypatch):
@@ -629,7 +661,7 @@ def test_rookie_mistake_arrival_scenes_precede_rewards_and_consume_body(monkeypa
         for beat in scene.beats
         if beat.portrait_name == quest_manager.PLAYER_PORTRAIT_KEY
     ]
-    assert [beat.speaker for beat in hero_beats] == ["Mara", "Mara"]
+    assert [beat.speaker for beat in hero_beats] == ["Mara"]
     assert "Dead Soldier" not in player.special_inventory
     assert player.quest_dict["Side"]["Rookie Mistake"]["Turned In"] is True
     assert sum(call[0] == "Mana Potion" for call in player.inventory_calls) == 4
@@ -877,3 +909,22 @@ def test_wizards_folly_turn_in_shows_nimue_followup_with_renderer(monkeypatch):
     assert rendered
     assert "The water settles." in rendered[-1]
     assert "Nimue remembers." in rendered[-1]
+
+
+def test_locket_return_keeps_liora_and_provisions_and_grants_one_locker_key(monkeypatch):
+    player = _make_player(level=65)
+    player.main_story = {"joffrey_found": True, "joffrey_departed": True}
+    quest = _content_quest("Waitress", "Main", "A Bad Dream")
+    player.quest_dict["Main"]["A Bad Dream"] = quest
+    beef = {"Collected": 7, "Completed": False}
+    player.quest_dict["Side"]["Where's the Beef?"] = beef
+    manager = _manager(player, quest_text_renderer=lambda text: None)
+    scene = SimpleNamespace(show_dialogue=lambda beats: None, choose=lambda *a, **k: 1)
+    monkeypatch.setattr(quest_manager, "StorySceneScreen", lambda *a, **k: scene)
+    monkeypatch.setattr(quest_manager, "LevelUpScreen", FakeLevelUpScreen)
+    assert manager.turn_in_completed_quest("A Bad Dream", "Main")
+    assert not manager.turn_in_completed_quest("A Bad Dream", "Main")
+    assert player.main_story["liora_reply"] == "tracks"
+    assert beef["Who"] == "Waitress" and beef["Collected"] == 7
+    assert [call[0] for call in player.inventory_calls].count("Brass Key") == 1
+    assert all("Where's the Beef?" not in group for group in manager._eligible_quests("Busboy")[1])

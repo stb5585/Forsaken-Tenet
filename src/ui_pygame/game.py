@@ -42,7 +42,7 @@ from .gui.race_selection import RaceSelectionScreen
 from .gui.shop_screen import ShopScreen
 from .gui.shop_selection import ShopSelectionScreen
 from .gui.shops import ShopManager
-from .gui.story_scene import StoryBeat, StorySceneScreen
+from .gui.story_scene import PLAYER_PORTRAIT_KEY, StoryBeat, StorySceneScreen
 from .gui.town_menu import TownMenuScreen
 from .gui.town_navigation import TownNavigationScreen
 from .presentation.pygame_presenter import PygamePresenter
@@ -819,16 +819,10 @@ class PygameGame:
                 StoryBeat("Oren", "Too bad we don't have the room for all of them."),
                 StoryBeat(
                     "Narrator",
-                    "Oren turns from the familiar argument and gives the newcomer his full "
-                    "attention.",
+                    "Oren moves a stack of empty plates off the stool beside you.",
                     portrait_name="",
                 ),
-                StoryBeat(
-                    "Oren",
-                    "Hmm, I've never seen your face before. I'm Oren Caldus, the proprietor "
-                    "of this establishment. People come to Silvana chasing something or "
-                    "fleeing it. What about you?",
-                ),
+                StoryBeat("Oren", "Sit down while there's a seat. I'm Oren. What brings you in?"),
             ),
             fade_in_ms=900,
         )
@@ -873,51 +867,63 @@ class PygameGame:
                 StoryBeat("Caedmon", "Edrin. You left with Mira and Tomas. Where are they?"),
                 StoryBeat(
                     "Edrin",
-                    "Still below. We took the north survey route—the one Joffrey marked last "
-                    "week. Mira chalked every turn.",
+                    "Still down there. We took your north route, Joffrey. Mira chalked the turns.",
                 ),
-                StoryBeat("Joffrey", "That route has two junctions before the old drainage hall."),
+                StoryBeat("Joffrey", "Two junctions before the drainage hall?"),
                 StoryBeat(
                     "Edrin",
-                    "I counted four. Tomas swore the passage never bent. We checked the wall. "
-                    "Mira's marks were there, but not in the order she made them.",
+                    "Four. I counted. Tomas said we'd walked straight the whole way. "
+                    "Even the chalk was wrong. We passed Mira's last mark before her first.",
                 ),
-                StoryBeat("Caedmon", "Then what happened?"),
+                StoryBeat("Caedmon", "Where did you lose them?"),
                 StoryBeat(
                     "Edrin",
-                    "The lamps went out. We heard stone moving. When the light came back, a "
-                    "sealed door stood where the passage had been. Mira and Tomas were on the "
-                    "other side.",
+                    "Our lamps went out. Stone grinding somewhere. When I got mine lit, "
+                    "there was a door between us.",
                 ),
-                StoryBeat("Caedmon", "Did you hear them?"),
+                StoryBeat("Caedmon", "Could you hear them through it?"),
                 StoryBeat(
                     "Edrin",
-                    "Tomas, once. Mira kept striking the stone. She shouted that the same three "
-                    "marks were carved beneath our feet, but I saw them above the door.",
+                    "I heard Tomas once. Mira kept knocking. She said there were three marks "
+                    "underfoot. I could see all three above the door.",
                 ),
-                StoryBeat("Joffrey", "Why did you leave?"),
+                StoryBeat("Joffrey", "Was she still knocking when you left?"),
                 StoryBeat(
                     "Edrin",
-                    "Something was following me. Pale eyes. Every time I looked back, it wore a "
-                    "different shape. I came back because they need help—not because I stopped "
-                    "looking.",
+                    "I stayed as long as I could. There was something behind me. Every time "
+                    "I looked it had a different shape. Same pale eyes, though.",
                 ),
+                StoryBeat("Joffrey", "Here, lean on me. I'm trying to work out where to dig."),
             )
         )
         aid_options = [
             "I'll clear some space. Keep the crowd back.",
             "I'll hold him steady while Liora works.",
-            "I'll repeat the report exactly as Edrin gave it.",
-            "I'll get Caedmon's kit and clean water.",
+            "I'll write it down while it's fresh.",
+            "I'll get the kit and some clean water.",
         ]
         aid_choice = scene.choose("How do you help?", aid_options, allow_cancel=False)
-        aid_actions = (
-            "You clear space around Edrin and hold the gathering crowd back.",
-            "You hold Edrin steady while Liora binds his wounds.",
-            "You listen without interrupting and commit Edrin's report to memory.",
-            "You bring Caedmon's kit and clean water to Liora.",
+        hero_name = str(getattr(self.player_char, "name", None) or "You")
+        aid_responses = (
+            (
+                StoryBeat("Narrator", "You ease the onlookers back from the table."),
+                StoryBeat("Liora", "That's better. Edrin, can you see me?"),
+            ),
+            (
+                StoryBeat("Liora", "Here. His elbow. Hold him just there."),
+                StoryBeat("Edrin", "Your sleeve. I've got blood all over it."),
+            ),
+            (
+                StoryBeat("Oren", "Here. Use the back of the drinks bill."),
+                StoryBeat("Caedmon", "How many junctions did you put down?"),
+                StoryBeat(hero_name, "Four. That's how many Edrin counted.", PLAYER_PORTRAIT_KEY),
+            ),
+            (
+                StoryBeat("Narrator", "You bring the kit and a basin of clean water."),
+                StoryBeat("Liora", "Set it by my knee. Thank you."),
+            ),
         )
-        scene.show_dialogue((StoryBeat("Narrator", aid_actions[aid_choice], portrait_name=""),))
+        scene.show_dialogue(aid_responses[aid_choice])
         opening_story.record_arrival(
             story_state,
             opening_story.ARRIVAL_MOTIVES[motive_choice],
@@ -935,25 +941,19 @@ class PygameGame:
             (
                 StoryBeat(
                     "Oren",
-                    "Thanks for your help, stranger. Few I've encountered are willing to aid "
-                    "without payment.",
+                    "Caedmon, take this one along. Saw what needed doing.",
                 ),
-                StoryBeat(
-                    "Narrator",
-                    "Oren gives Caedmon a surprised look. Caedmon does not return it.",
-                    portrait_name="",
-                ),
-                StoryBeat("Caedmon", "You seem impressed, Oren. I am not as convinced just yet."),
-                StoryBeat("Oren", "Then give them a chance to prove it."),
+                StoryBeat("Caedmon", "Ever been down those stairs before?"),
+                StoryBeat("Oren", "Just got in. Hasn't even touched that drink."),
                 StoryBeat(
                     "Caedmon",
-                    "Three patrols came back with reports that contradict their maps. My people "
-                    "know those routes, so they keep defending what they remember.",
+                    "Good. I've had three patrols in my map room this week. Ask any of them "
+                    "where a passage goes and they'll trace it with their eyes shut.",
                 ),
                 StoryBeat(
                     "Caedmon",
-                    "You're new. You don't have an old map or a patrol's pride to defend. Follow "
-                    "the reports. Bring me evidence I can verify.",
+                    "Read their reports. Then go down and tell me what you actually find. "
+                    "I need somewhere to start looking for those two.",
                 ),
             )
         )
@@ -978,12 +978,6 @@ class PygameGame:
 
     def choose_triangulus_identity(self) -> str | None:
         """Ask and return the saved-value form of the Triangulus identity answer."""
-        options = [
-            "The name I choose.",
-            "What I've done and what I do next.",
-            "What I refuse to forget.",
-            "My next choice.",
-        ]
         scene = StorySceneScreen(
             self.presenter,
             "The Sealed Chamber — Triangulus",
@@ -992,7 +986,7 @@ class PygameGame:
         )
         choice = scene.choose(
             "Take away your title, bloodline, and what others expect. What is still yours?",
-            options,
+            list(opening_story.TRIANGULUS_ANSWER_TEXT.values()),
         )
         if choice is None:
             return None
@@ -1039,7 +1033,9 @@ class PygameGame:
             background_image="dungeon.png",
             player_char=self.player_char,
         )
-        scene.show_dialogue((StoryBeat("Narrator", message, portrait_name=""),))
+        scene.show_dialogue(
+            tuple(StoryBeat("Narrator", paragraph) for paragraph in message.split("\n\n"))
+        )
 
     def _resolve_rookie_mistake_on_arrival(self) -> bool:
         """Turn in the recovered recruit through the authored arrival sequence."""
@@ -1083,12 +1079,11 @@ class PygameGame:
                     ),
                     StoryBeat(
                         "Liora",
-                        "There you are. Caedmon has kept the barracks map room open for us.",
+                        "There you are. Caedmon's still in the barracks map room.",
                     ),
                     StoryBeat(
                         "Joffrey",
-                        "Come with us. Your route changed where mine did, and we need to put "
-                        "both accounts in front of him.",
+                        "Did you get a look at the stonework by the stairs? Come show me.",
                     ),
                     StoryBeat(
                         "Narrator",
@@ -1118,29 +1113,33 @@ class PygameGame:
                     ),
                     StoryBeat(
                         "Joffrey",
-                        "Your route and mine disagree at the same junction. I drew mine before "
-                        "you arrived.",
+                        "Here's the drain by the stairs. I drew one solid slab across the end. "
+                        "What did you see there?",
                     ),
                 ),
                 fade_in_ms=700,
             )
-            barracks_scene.choose(
-                "How do you answer?",
+            map_choice = barracks_scene.choose(
+                "What do you tell Joffrey?",
                 [
-                    "We can't trust either route yet.",
-                    "I know what I saw below.",
-                    "What could have changed the junction?",
+                    "An old arch. Right where you've drawn that wall.",
+                    "I saw an arch. I couldn't tell where it led.",
+                    "You're sure that was a wall when you drew it?",
                 ],
             )
+            map_replies = (
+                "Right there? Give me the pencil. I'll put your arch beside my wall.",
+                "Fair enough. I'll mark the arch. No passage until we've seen one.",
+                "One unbroken slab. I sat with my back against it to draw the stair.",
+            )
+            if map_choice is not None:
+                barracks_scene.show_dialogue((StoryBeat("Joffrey", map_replies[map_choice]),))
             barracks_scene.show_dialogue(
                 (
-                    StoryBeat(
-                        "Caedmon",
-                        "Patrols rely on these maps. We fix this before anyone goes back down.",
-                    ),
-                    StoryBeat("Liora", "And when the correction sends another patrol down?"),
+                    StoryBeat("Caedmon", "Leave both marks. I want the next patrol to see them."),
+                    StoryBeat("Liora", "And if they get down there and neither mark fits?"),
                     StoryBeat("Joffrey", "Then I go with them."),
-                    StoryBeat("Liora", "That is the answer I was afraid you would give."),
+                    StoryBeat("Liora", "I thought you might say that."),
                 )
             )
             story_state["joffrey_route_review_seen"] = True

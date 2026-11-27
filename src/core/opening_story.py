@@ -6,7 +6,13 @@ from copy import deepcopy
 
 ARRIVAL_MOTIVES = ("Fortune", "Service", "Knowledge", "Reinvention")
 ARRIVAL_AID_CHOICES = ("ClearSpace", "SteadySurvivor", "RememberAccount", "FetchHelp")
-TRIANGULUS_IDENTITY_ANSWERS = ("ChosenName", "Deeds", "Memory", "NextChoice")
+TRIANGULUS_ANSWER_TEXT = {
+    "ChosenName": "The name I choose.",
+    "Deeds": "What I've done and what I do next.",
+    "Memory": "What I refuse to forget.",
+    "NextChoice": "My next choice.",
+}
+TRIANGULUS_IDENTITY_ANSWERS = tuple(TRIANGULUS_ANSWER_TEXT)
 MIGRATED_CHOICE = "Unrecorded"
 
 OPENING_STATE_DEFAULTS: dict[str, object] = {
@@ -15,6 +21,7 @@ OPENING_STATE_DEFAULTS: dict[str, object] = {
     "arrival_aid": None,
     "hooded_figure_observed": False,
     "opening_ledger_seen": False,
+    "barghest_briefing_seen": False,
     "dungeon_entry_story_seen": False,
     "first_descent_story_seen": False,
     "joffrey_tavern_scene_seen": False,
@@ -34,8 +41,9 @@ FIRST_DUNGEON_ENTRY_TEXT = (
     "You begin the descent. Return with answers, if the dark allows it."
 )
 FIRST_DESCENT_TEXT = (
-    "The worked stone nearest Silvana bears recent tool marks and drainage cuts. "
-    "Beneath them, an older arch continues into masonry no town ledger claims."
+    "A fresh drainage cut runs along the foot of the stair. Where it meets the wall, "
+    "the blocks curve into an older arch. Its opening is bricked up. The cut runs "
+    "straight under it."
 )
 
 PATROL_FATE_TEXT = (

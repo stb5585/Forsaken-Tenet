@@ -14,6 +14,7 @@ from src.core import (
 from src.core.player import DIRECTIONS
 from src.paths import PYGAME_ASSETS_DIR
 
+from ..story_scene import StoryBeat, StorySceneScreen
 from .core import get_npc_art_manager, get_special_events
 from .helpers import relic_discovery_text
 
@@ -34,6 +35,17 @@ class DungeonInteractionMixin:
         ahead_z = self.player_char.location_z
 
         ahead_tile = self.player_char.world_dict.get((ahead_x, ahead_y, ahead_z))
+
+        for tile in (self.get_current_tile(), ahead_tile):
+            site = quest_progress.joffrey_site(self.player_char, tile)
+            if site == "dead_body":
+                self._show_special_event_dialogue("Joffrey at the Pens", title="The Lower Pens")
+                if quest_progress.recover_joffrey(self.player_char, tile):
+                    self.add_message("You take Joffrey's locket back for Liora.")
+                return
+            if site == "burial_site" and tile is ahead_tile:
+                self.add_message("The cairn stands beside Joffrey's last chalk mark.")
+                return
 
         if ahead_tile:
             tile_type = type(ahead_tile).__name__
@@ -417,12 +429,6 @@ class DungeonInteractionMixin:
                         )
                     else:
                         self.add_message(opening_story.PATROL_FATE_TEXT)
-                answer_options = [
-                    "The name I choose to answer to.",
-                    "What I have done, and what I do next.",
-                    "What I refuse to forget.",
-                    "The choice that is still mine to make.",
-                ]
                 choose_answer = getattr(self.game, "choose_triangulus_identity", None)
                 if callable(choose_answer):
                     answer = choose_answer()
@@ -430,7 +436,7 @@ class DungeonInteractionMixin:
                 else:
                     choice = self._show_dungeon_choice(
                         "When title, blood, and expectation fall silent, what remains yours?",
-                        answer_options,
+                        list(opening_story.TRIANGULUS_ANSWER_TEXT.values()),
                     )
                     answer = (
                         None
@@ -713,8 +719,23 @@ class DungeonInteractionMixin:
 
     def _interact_dead_body(self, body_tile):
         """Handle dead body interaction."""
+        departed = getattr(self.player_char, "main_story", {}).get("joffrey_departed")
+        if departed:
+            search = self.player_char.quest_dict.get("Side", {}).get("Something to Cry About", {})
+            if search and not search.get("Completed"):
+                self._show_special_event_dialogue(
+                    "Expedition Survivor", title="The Expedition Camp"
+                )
+                self._play_sfx("waitress_wail")
+                self._refresh_cached_frame()
+                self.combat_manager.start_combat(
+                    self.player_char, enemies.ExpeditionSurvivor(), body_tile
+                )
+                return
+            self.add_message("This soldier wears a different patrol clasp.")
+            return
         # Check for quest item pickup
-        if "A Bad Dream" in self.player_char.quest_dict.get("Main", {}):
+        if not departed and "A Bad Dream" in self.player_char.quest_dict.get("Main", {}):
             if not hasattr(body_tile, "read") or not body_tile.read:
                 self.game.special_event("Dead Body")
                 self.add_message("You found a Lucky Locket on the body!")
@@ -854,9 +875,7 @@ class DungeonInteractionMixin:
                 if true_final:
                     self._complete_true_final_sequence()
                 else:
-                    self.add_message("You have defeated Vesperion! The dungeon fades away...")
-                    self.player_char.quit = True
-                    self.running = False
+                    self._enter_liminal_gap_stub(return_location, vesperion)
             elif not self.player_char.is_alive():
                 self.add_message("You were defeated... The world fades to black.")
                 self._detach_dungeon_background_provider()
@@ -885,9 +904,48 @@ class DungeonInteractionMixin:
         story_state["main_story_complete"] = True
         self._show_special_event_dialogue("Vesperion True Final Victory", title="Vesperion")
         self._show_special_event_dialogue("The Forsaken Tenet Ending", title="The Forsaken Tenet")
-        self._show_special_event_dialogue("The Thirsty Dog Epilogue", title="The Thirsty Dog")
+        self._show_tavern_epilogue(story_state)
         self.add_message("Vesperion is defeated. Voluntas endures, and the main story is complete.")
         self.player_char.quit = True
         self.player_char.state = "normal"
         self.running = False
         self._mark_view_dirty()
+
+    def _show_tavern_epilogue(self, story):
+        """Return to the inn for the player's last ordinary choice."""
+        events = get_special_events()
+        scene = StorySceneScreen(
+            self.presenter,
+            "The Thirsty Dog — Closing Time",
+            participants=(
+                ("Oren", "Pell", "Liora") if story.get("liora_reply") else ("Oren", "Pell")
+            ),
+            background_image="tavern.jpg",
+            player_char=self.player_char,
+        )
+        beats = []
+        if story.get("liora_reply"):
+            kitchen = events["Liora After the Evening Star"]["Text"]
+            beats.extend((StoryBeat("Narrator", kitchen[0]), StoryBeat("Liora", kitchen[1])))
+        beats.extend(
+            StoryBeat("Narrator", line) for line in events["The Thirsty Dog Epilogue"]["Text"]
+        )
+        scene.show_dialogue(beats)
+        choice = scene.choose(
+            "A traveler stands dripping on the step. What do you do?",
+            ["Find her a dry chair.", "Cut the bread.", "Hang her coat by the fire."],
+            allow_cancel=False,
+        )
+        scene.show_dialogue(
+            (
+                StoryBeat(
+                    "Narrator",
+                    (
+                        "Pell tests the mended rung with his heel. Between you, you carry the stool to the fire. She sits.",
+                        "You cut the heel off the loaf. She takes it before you've found a plate. Oren cuts another slice.",
+                        "There's a free peg behind the door. By the time you sit down, a little steam is rising from her coat.",
+                    )[choice],
+                ),
+            )
+        )
+        story["epilogue_choice"] = ("chair", "bread", "coat")[choice]

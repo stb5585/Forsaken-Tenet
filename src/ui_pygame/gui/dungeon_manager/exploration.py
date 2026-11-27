@@ -96,6 +96,8 @@ class DungeonExplorationMixin:
                 enemy = self._resolve_tile_enemy(current_tile)
                 if enemy:
                     messages.append(f"A {enemy.name} blocks your path!")
+            if quest_progress.joffrey_site(self.player_char, current_tile) == "dead_body":
+                messages.append("A scout lies beside the pens. Press O to examine him.")
             gathering_message = map_tiles.gathering_hint(
                 self.player_char,
                 current_tile,
@@ -235,6 +237,11 @@ class DungeonExplorationMixin:
         elif "AntiMagicSwitch" in tile_type:
             self._interact_anti_magic_switch(current_tile)
 
+        if isinstance(current_tile, map_tiles.BossRoom):
+            blocker = current_tile.story_blocker(self.player_char)
+            if blocker:
+                self.add_message(blocker)
+                return
         current_enemy = self._resolve_tile_enemy(current_tile)
         is_boss_encounter = current_enemy is not None and (
             "Boss" in tile_type or "Lair" in tile_type

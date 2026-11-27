@@ -939,8 +939,8 @@ def test_relic_discovery_text_mapping_and_fallback():
         "Quadrata": "measured and contained",
         "Hexagonum": "Something patient",
         "Luna": "silence around it",
-        "Polaris": "harder to lose",
-        "Infinitas": "road continues",
+        "Polaris": "chipped point nicks your thumb",
+        "Infinitas": "relief slate",
     }
 
     for relic_name, phrase in expected.items():
@@ -1649,11 +1649,12 @@ def test_final_room_incubus_and_golden_chalice_branches(monkeypatch):
     final_tile = FinalRoom()
     manager.combat_manager.start_combat = lambda *_args, **_kwargs: True
     manager._interact_final_room(final_tile)
-    assert player.quit is True
-    assert manager.running is False
+    assert player.main_story["liminal_gap_entered"]
+    assert not player.quit
     assert final_tile.adjacent_calls
     assert any("Vesperion:I await your challenge" == msg for msg in manager.messages)
 
+    player.main_story.update(main_story.default_state())
     player.quit = False
     manager.running = True
     player.is_alive = lambda: False
@@ -2711,6 +2712,22 @@ def test_final_room_true_final_reentry_uses_true_final_prelude(monkeypatch):
     manager._refresh_cached_frame = lambda: None
     manager._mark_view_dirty = lambda: None
     presenter.render_menu = lambda prompt, options: 0
+    tavern_beats = []
+
+    class TavernScene:
+        def __init__(self, presenter, title, **kwargs):
+            assert kwargs["background_image"] == "tavern.jpg"
+
+        def show_dialogue(self, beats):
+            tavern_beats.extend(beat.text for beat in beats)
+
+        def choose(self, prompt, options, **kwargs):
+            assert len(options) == 3
+            return 1
+
+    monkeypatch.setattr(
+        "src.ui_pygame.gui.dungeon_manager.interactions.StorySceneScreen", TavernScene
+    )
     shown = []
     combat_calls = []
     presenter.show_message = lambda *args, **kwargs: shown.append((args, kwargs))
@@ -2757,7 +2774,6 @@ def test_final_room_true_final_reentry_uses_true_final_prelude(monkeypatch):
         "Vesperion",
         "Vesperion",
         "The Forsaken Tenet",
-        "The Thirsty Dog",
     ]
     assert "This time, choose." in shown[0][0][0]
     assert "Choice has wounds." in shown[1][0][0]
@@ -2770,7 +2786,8 @@ def test_final_room_true_final_reentry_uses_true_final_prelude(monkeypatch):
         "npc:Vesperion",
     ]
     assert "The tenet is remembered." in shown[4][0][0]
-    assert "who is missing" in shown[5][0][0]
+    assert player.main_story["epilogue_choice"] == "bread"
+    assert "another slice" in tavern_beats[-1]
     assert combat_calls[0][1].name == "Vesperion"
     assert player.main_story["vesperion_choice_argument_seen"] is True
     assert player.main_story["vesperion_true_final_defeated"] is True

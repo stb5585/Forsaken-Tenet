@@ -21,13 +21,12 @@
     },
     "Timmy Home": {
         "Text": [
-            "Before Caedmon can finish the report, Timmy's parents rush across the barracks yard.",
+            "Timmy's parents come running across the barracks yard. Caedmon steps out of their way.",
             "Timmy's Mother: Timmy.",
             "She drops to her knees and pulls him close. His father stops beside them, one hand over his mouth.",
-            "Timmy: I told them someone would find me. I knew someone would come.",
-            "Timmy's Father: We looked everywhere we were allowed to go. Thank you for bringing him back to us.",
-            "Timmy's Mother: Come on. You're going home, and you're not leaving our sight again.",
-            "Caedmon: You did more than complete an assignment today. You brought a family back together."
+            "Timmy: Dad? I lost my lamp.",
+            "Timmy's Father: That's all right, son. Come here.",
+            "His father kneels in the mud. Timmy gets one arm free and pulls him in too."
             ]
     },
     "Unobtainium": {
@@ -38,6 +37,19 @@
             "You reach for it, half expecting to be obliterated...but all you feel is warmth throughout your body.",
             "You have obtained the Unobtainium!"
             ]
+    },
+    "Expedition Survivor": {
+        "Text": [
+            "The woman kneeling by the coat has stitched the expedition badge back onto its sleeve. She pulls the blanket up under her companion's chin.",
+            "‘We sent the boy for help. He's coming back with a litter.’ You take one step closer. Her scream drives you against the wall."
+        ]
+    },
+    "Joffrey at the Pens": {
+        "Text": [
+            "The chalk stops halfway through an arrow. Joffrey lies below it with one hand inside the bent bars of a pen. His wrist is cold.",
+            "A broken strap is wound tight across his chest. The brass tag on its buckle reads DOMINGO. Beyond the bars, a set of boot prints leads away.",
+            "Liora’s locket is caught in his collar. You ease it free, cover him with the loose stones beside the pen, and set the stub of chalk on top."
+        ]
     },
     "Dead Body": {
         "Text" : [
@@ -69,19 +81,10 @@
             ]
     },
     "Joffrey's Key": {
-        "Text" : [
-            "That key that you have...that's one of our storage locker keys.",
-            "You say you got this from the waitress at the tavern?",
-            "She attacked you?! Grief can break a person in ways no sword should have to answer.",
-            "Maybe this key is to his locker. Let me see...yes it is.",
-            "All that's left inside are some potions and this letter.",
-            "'My love, I know you have questions but the answers will not be to your liking...",
-            "forgive me but I could not resist his will. If you are reading this, it means I am dead...",
-            "please remember that above all, I love you.' -Joffrey",
-            "The Sergeant reads the last line twice, then folds the letter with unusual care.",
-            "'Whatever Joffrey meant, he loved her. Do not let the rest of this place make you forget that.'",
-            "Keep your wits about you, there's evil afoot.",
-            "Since there is no one left to claim his things, you can have what's left. Put them to good use."
+        "Text": [
+            "Caedmon turns the brass key twice. A folded note rests on top of five stoppered bottles. Liora has pencilled her name on the flap.",
+            "Lio — Tell Pell I've found room for his three extra tables. He'll have to get them down the barracks stairs himself. Caedmon had me leave both marks by the drain. I keep thinking of Edrin trying to count junctions with all that blood in his eyes. If the next lot get turned round, I'll go myself. Save me the end of the loaf. Love, J.",
+            "Caedmon holds out the note. ‘Take that to her. You can use the bottles.’"
         ]
     },
     "Power Up": {
@@ -104,29 +107,22 @@
     },
     "Final Boss": {
         "Text": [
-            "You enter a massive room where twilight hangs in the air like a second sky.",
-            "A pale star burns above the far altar, bright enough to hurt and cold enough to silence the breath in your chest.",
-            "The figure waiting beneath it is neither fiend nor king.",
-            "'You carried every relic here and still do not understand what they guard,' Vesperion says.",
-            "'Choice made every wound you passed on the way to me. Every grief. Every betrayal. Every brave, doomed hope.'",
-            "The six relics answer in your pack, but their light feels incomplete.",
-            "'If Voluntas is sacred, champion, then choose what its suffering is worth.'"
-            ]
+            "Six hollows in the stone take the light of the six relics. Between the first and last is a handspan of bare stone. You put your palm there. Nothing answers.",
+            "The man beneath the star watches you try again. ‘They left that space on purpose,’ Vesperion says. ‘I used to stand there.’"
+        ]
     },
     "Vesperion False Final": {
         "Text": [
-            "The Evening Star descends.",
-            "For one impossible breath you see every choice you ever made arranged in a perfect, merciless pattern.",
-            "Vesperion closes his hand, and the pattern breaks.",
-            "'You mistake endurance for freedom,' he says. 'Now witness what choice leaves behind.'"
-            ]
+            "You bring the six lights together. For a moment you can see straight through the floor to the passages below.",
+            "Vesperion puts his hand in the gap you couldn't close. The floor gives way under you. He stays where he is."
+        ]
     },
     "Liminal Gap Arrival": {
         "Text": [
             "You wake on cold stone beneath a sky with no horizon, wounded but alive.",
             "The Liminal Gap stretches around you: neither dungeon nor afterlife, but a gray sanctuary caught between a last breath and the next choice.",
             "A hidden guide speaks from somewhere beyond the veil, voice thin with pain.",
-            "'Voluntas is not lost. Not yet. Come to the center, and do not mistake survival for escape.'"
+            "‘Over here. Take your time. That first step cost me a rib.’"
             ]
     },
     "Liminal Gap Blocker": {
@@ -138,12 +134,10 @@
     },
     "Hooded Figure Liminal Reveal": {
         "Text": [
-            "The Hooded Figure kneels beside a dim white flame, one hand pressed against a wound that bleeds starlight instead of blood.",
-            "The same presence that haunted your path now looks smaller, older, and terribly tired.",
-            "'Yes,' the figure says. 'I guided you. I frightened you. I withheld more than I should have.'",
-            "'But Vesperion has thrown you where his mercy cannot fully reach. Here, in the Liminal Gap, the forgotten principle still has an echo.'",
-            "'I am not your enemy. Not anymore, if I ever was.'"
-            ]
+            "The Figure sits with their back against the flame's plinth. There is blood on the cuff that reached for your map.",
+            "‘I could have asked,’ they say. ‘I thought you'd turn away. I wanted you here badly enough to let you think I meant you harm.’",
+            "They take their hand off the plinth. ‘Those six left something of themselves in the relics before they died. You can hear them here. I'll wait.’"
+        ]
     },
     "Liminal Guide Save": {
         "Text": [
@@ -605,18 +599,16 @@
     },
     "Seventh Seat Reveal": {
         "Text": [
-            "The empty Seventh Seat does not fill.",
-            "No relic appears. No crown descends. No hidden weapon waits in the gray light.",
-            "Instead, the six awakened clues bend toward the absence and name what was removed.",
-            "Voluntas: the choice that gives every other principle meaning.",
-            "Vesperion once guarded this seat. Then he hollowed it from history because he mistook peace for silence."
+            "Six handprints glow on the arms of six chairs. The seventh has a thumb-worn groove of its own. Someone used to sit here.",
+            "Under the dust on the seat you find a word scratched twice, first in a steady hand and then in a learner's. Voluntas."
         ]
     },
     "Hooded Figure Witness Reveal": {
         "Text": [
-            "The Hooded Figure lowers their gaze before the empty seat.",
-            "'I am not Voluntas,' they say. 'I am only one of its witnesses, wounded and left behind when Vesperion broke the road.'",
-            "'I preserved enough of the path for one soul to choose it again. That must be you, if you can face every self you did not become.'"
+            "‘I watched the first Guardian teach him those letters. Vesperion was the pupil she chose to take her place. He was mortal then.’",
+            "‘When the cities went to war a second time, each army marched under a different teaching. The six shut the archives and withdrew. People died outside those doors. He never forgave them for that.’",
+            "‘He knew they'd stay at their seals if he tore the seventh teaching out. They did. Each left a memory for whoever came after. You've heard their voices. All six died there.’",
+            "The Figure presses a hand against the split in the stone. ‘The Hollowing tore through him too. The breaches kept him alive. They've opened and closed for centuries. He hasn't aged a day.’"
         ]
     },
     "Acolyte Liminal Waiting": {
@@ -628,10 +620,10 @@
     },
     "Acolyte Liminal Mirror": {
         "Text": [
-            "The Acolyte looks up, and for a moment you see the outline of someone who once stood where you stand.",
-            "'I chose until choosing broke me,' they say. 'Vesperion offered mercy. No more wrong turns. No more grief born from my own hand.'",
-            "'At first it felt like peace. Then I understood: a life without choice can no longer wound, but it can no longer love either.'",
-            "They turn back toward the gray light. 'Go on, then. Prove your burden means something.'"
+            "The stranger traces a keyhole in the dust. ‘I locked the door to keep her safe. Did you find that one?’ You know the cramped letters now.",
+            "‘The tag came first. She went home without me. After that came the bite in the roots. I wrote my rules while my hand was healing. Then he drew half a route on linen and waited for me to fill in the rest.’",
+            "‘That last scrap, where I asked him to tell me whether to keep walking? He made me ask twice. He needed somebody who knew the way out to stay of their own accord. Then he could say it had been kind.’",
+            "You ask what they'd like you to do with the pages. Their thumb smooths the same crease again and again. At last you put them down within reach."
         ]
     },
     "Class Voluntas Affirmation": {
@@ -1051,9 +1043,8 @@
     },
     "Hooded Figure Witness Farewell": {
         "Text": [
-            "The Hooded Figure keeps their hood drawn even now.",
-            "'A name would turn the witness into the answer,' they say. 'I am not the answer.'",
-            "'I kept a door from closing. You chose to walk through it. That is enough.'"
+            "At the threshold the Figure takes your elbow, feels you steady yourself, and lets go.",
+            "‘Can you get back across?’ you ask. They settle onto the step. ‘In a while. You go when you're ready.’"
         ]
     },
     "Return From Liminal Gap": {
@@ -1065,57 +1056,45 @@
     },
     "True Final Prelude": {
         "Text": [
-            "The final chamber recognizes you differently now.",
-            "Vesperion turns beneath the Evening Star, and the face behind the busboy's borrowed kindness is no longer hidden.",
-            "'You found the wound I spared the world from naming,' he says.",
-            "'Look at Joffrey. Look at the Waitress. Look at every ruin choice left behind. Tell me again that Voluntas is mercy.'",
-            "The six relics answer, incomplete no longer.",
-            "You step forward with every choice that made you."
+            "Vesperion is rolling up his sleeves, one narrow turn and then another. You've seen Tavin do that a hundred times before putting his hands in the wash water.",
+            "‘Oren always kept it too hot,’ he says. He sees where you're looking and leaves the second cuff undone."
         ]
     },
     "Vesperion Choice Argument": {
         "Text": [
-            "Vesperion studies the path that followed you back from the Liminal Gap.",
-            "'You call it freedom because you survived long enough to name it,' he says.",
-            "'But every answer you carry is another wound you were forced to make meaningful.'"
+            "‘I went to the archives while the city burned. Six people inside, each free to unbolt the door. I waited outside with a child whose name I never learned.’",
+            "‘Yes, I knew the six would die if they held the seals. I let them hold. Tell me how many more cities I ought to have let burn while I waited for decent people to agree.’"
         ]
     },
     "Vesperion Tragedy Reframing": {
         "Text": [
-            "'The tavern boy smiled because it was useful,' Vesperion says, and the borrowed gentleness is gone.",
-            "'Joffrey died. The Waitress broke. You watched grief become another proof you could not bear to surrender.'",
-            "'I did not invent pain. I offered the only mercy that would have ended its need for permission.'"
+            "‘I asked how long it took to reach the pens,’ Vesperion says, using Tavin's voice. ‘Joffrey did the sum. Liora has to live with his answer.’",
+            "‘You saw the one who came before you. I let them walk away. They asked me to take the choice out of their hands. Why would it have been kinder to refuse?’"
         ]
     },
     "Vesperion True Final Victory": {
         "Text": [
-            "The Evening Star fractures without falling.",
-            "Vesperion reaches for the pattern one last time, but the six awakened principles refuse to close around your will.",
-            "For the first time, his mercy has no command inside it.",
-            "'Then choose,' he whispers, no longer triumphant. 'Choose all of it. Even the pain.'",
-            "The light breaks, and the hollow where Voluntas was erased begins to remember its own name.",
-            "The final chamber does not crown you. It opens.",
-            "You do not take Voluntas. You leave it free."
+            "Vesperion reaches for the break between the lights. This time his hand passes through it. For a moment he looks his age.",
+            "The light goes out of the breaches one by one. Somewhere below, a latch drops. The final chamber opens onto stairs you can climb on your own."
         ]
     },
     "The Forsaken Tenet Ending": {
         "Text": [
-            "The Liminal Gap exhales through the world.",
-            "Self, Order, Nature, Love, Guidance, and Eternity remain, but none of them stand alone anymore.",
-            "Voluntas is not restored as a relic or throne. It returns wherever a soul can answer yes, no, stay, go, forgive, refuse, begin again.",
-            "The grief Vesperion used does not vanish. Joffrey is still gone. The Waitress still suffered. The Acolyte still chose peace until peace became empty.",
-            "But grief is no longer proof that choice should be buried.",
-            "The Hooded Figure watches from the threshold as dawn reaches places twilight tried to keep.",
-            "The Forsaken Tenet is remembered."
+            "At the foot of the stairs you count what you carry. All six relics are there. The seventh seat stays where you left it.",
+            "Above you somebody is knocking stones loose from the blocked stair. ‘Stand clear!’ a voice calls. Daylight comes through first. A hand follows."
+        ]
+    },
+    "Liora After the Evening Star": {
+        "Text": [
+            "Liora is in the kitchen with her sleeves rolled up. The little chain at her waist catches on a drawer pull. She frees it with a practiced flick of her thumb.",
+            "‘Here, taste this. I used to give Joffrey the first spoonful because he'd eat anything.’ She watches your face. ‘Oh, that much salt? Pass me a potato.’"
         ]
     },
     "The Thirsty Dog Epilogue": {
         "Text": [
-            "For a moment, memory returns to the tavern where so many choices first tangled.",
-            "The bar is quieter now. One table remains unset, and no busboy comes to clear it.",
-            "No miracle gives Joffrey back to the Waitress, and no ending makes grief harmless.",
-            "Some patrons speak more softly. Some do not speak at all. The ordinary work of cups, chairs, and surviving continues.",
-            "But the silence is no longer command. It is a place where the living may choose what to do with love, loss, and morning."
+            "Oren keeps reaching under the counter for a dry cup. Tavin used to stack them there. After the third time he moves the crate himself.",
+            "Pell has taken Joffrey's old stool to the window to mend its loose rung. ‘Sit there and you'll go through it,’ he tells the first customer. She takes another chair.",
+            "At closing time someone knocks. Oren has the bolt halfway across. He slides it back. ‘Kitchen's cold,’ he says, opening the door. ‘There's bread.’"
         ]
     },
     "Relic Room": {
@@ -1206,13 +1185,8 @@
     },
     "Nightmare": {
         "Text": [
-            "You travel a great hall, expecting something monstrous to attack. What you find is much worse.",
-            "The hair on the back of your neck stands at attention and suddenly feel fear grab ahold of you.",
-            "Your will is steadfast but you know that will only last for so long as the sight you feared emerges.",
-            "A massive stallion with a mane and tail of flames, the rest as black as the deepest depths.",
-            "It says no words but has no need, for silence is much more frightening.",
-            "You catch a glimpse of a relic perched atop a glowing pedestal but the Nightmare stands in your way.",
-            "With a flare of its nostrils, the beast charges right at you, filled with malice aforethought."
+            "Someone has chalked KEEP TO THE WHITE LINE along the hall. The line runs straight through a patch of scorched boot leather.",
+            "At the far end a black horse lowers its head. Its mane lights the chalk at your feet. The hoofbeats start before you see it move."
         ]
     },
     "Cockatrice": {
@@ -1226,12 +1200,8 @@
     },
     "Wendigo": {
         "Text": [
-            "The stagnant isolation of the dungeon is suddenly disturbed, replaced by a bone-chilling cold.",
-            "The icy winds howl as you approach the sacred grounds of the third relic.",
-            "Emerging from the darkness, a beast towers above, its gaunt frame shrouded in frost and shadows.",
-            "Its hollow eyes burn with a ravenous hunger, and its clawed hands twitch with restless energy.",
-            "The air grows colder, biting at your skin, as the creature lets out an unearthly wail.",
-            "The guardian of the relic stands ready, an embodiment of hunger and despair, the Wendigo."
+            "A sack of grain hangs from the rafters. Everything within reach has been scraped bare, even the bark on the carrying pole.",
+            "Something tall straightens beneath the sack. Frost falls from its shoulders. The Wendigo draws one long breath through its teeth and turns toward you."
         ]
     },
     "Golem": {
@@ -1271,12 +1241,8 @@
     },
     "Domingo": {
         "Text": [
-            "Your search for another one of the mystical relics leads you down a dark flight of stairs.",
-            "As you descend into the dungeon, you notice the air grow heavy, and a gurgling sound echoing from beyond.",
-            "A cartoonish creature emerges, its writhing tentacles glowing faintly with an unearthly, pulsating light.",
-            "Its bulbous body quivers, and its eyes...far too many eyes...unnervingly fixate on you.",
-            "'You dare face the perfection of creation?' a voice reverberates in your mind. How?!",
-            "The creature's tentacles twitch, ready to unleash its magical fury. 'Prepare to witness true power!'"
+            "One of the iron straps on the wall still holds a little brass tag. Someone stamped DOMINGO into it, then punched a second hole when the first wore through.",
+            "A tentacle loops around the loose end of the strap. The voice in your head is startlingly clear. 'Put that down.' You open your empty hands. Something behind you slams shut."
         ]
     },
     "Red Dragon": {
@@ -1292,12 +1258,9 @@
     },
     "Cerberus": {
         "Text": [
-            "You step out from the hidden passage and expect a moment to gather yourself. You were mistaken.",
-            "The ground quakes, and an ominous growl fills the air as the three-headed Cerberus emerges before you.",
-            "Each head snarls and gnashes in unison, its glowing eyes locking onto you with predatory intent.",
-            "'You dare to disturb the sanctity of the final relic?' the voices echo, a guttural chorus of menace.",
-            "'No one passes. No one escapes.' The beast's claws dig into the ground, its teeth gleaming in the faint light.",
-            "This is your pentultimate test-face the guardian or perish in its jaws."
+            "The track in front of the pedestal is worn deep enough to catch your boot. Three heads lift as you stumble.",
+            "'Relief?' asks one. Another noses your empty hands. The third closes its teeth on the edge of your cloak.",
+            "Behind the beast hangs an empty peg polished smooth by a chain long since gone. Cerberus braces all four feet across the track."
         ]
     },
     "Devil": {

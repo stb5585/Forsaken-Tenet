@@ -1,6 +1,6 @@
 """Boss-room tiles and their encounter rules."""
 
-from .. import enemies, thieves_guild
+from .. import enemies, quest_progress, thieves_guild
 from .paths import SpecialTile
 from .rules import (
     JESTER_TOKENS_REQUIRED,
@@ -12,6 +12,18 @@ from .rules import (
 
 
 class BossRoom(SpecialTile):
+    story_quest = None
+    blocked_message = ""
+
+    def story_blocker(self, player):
+        if self.defeated or not self.story_quest:
+            return ""
+        # Previously accepted contracts remain playable on older saves.
+        if self.story_quest in player.quest_dict.get("Main", {}):
+            return ""
+        if not quest_progress.can_offer_authored_quest(player, self.story_quest):
+            return self.blocked_message
+        return ""
 
     def __init__(self, x, y, z):
         super().__init__(x, y, z)
@@ -31,6 +43,8 @@ class BossRoom(SpecialTile):
         return []
 
     def modify_player(self, game):
+        if self.story_blocker(game.player_char):
+            return
         self.visited = True
         self.adjacent_visited(game.player_char)
         if self.z == REALM_OF_CAMBION_LEVEL:
@@ -242,6 +256,9 @@ class JesterBossRoom(BossRoom):
 
 
 class DomingoBossRoom(BossRoom):
+    story_quest = "In the Day of Our Lord"
+    blocked_message = "The inner pen is barred. Search the outer pens for the missing scout first."
+
     def __init__(self, x, y, z):
         super().__init__(x, y, z)
         self.enemy = enemies.Domingo
@@ -253,6 +270,11 @@ class DomingoBossRoom(BossRoom):
 
 
 class RedDragonBossRoom(BossRoom):
+    story_quest = "Dracarys"
+    blocked_message = (
+        "Smoke hides the stair. The four golems guard a light you could take through it."
+    )
+
     def __init__(self, x, y, z):
         super().__init__(x, y, z)
         self.enemy = enemies.RedDragon

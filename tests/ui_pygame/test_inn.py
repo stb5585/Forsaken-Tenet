@@ -6,8 +6,9 @@ from __future__ import annotations
 from types import SimpleNamespace
 
 import pygame
+import pytest
 
-from src.core import main_story
+from src.core import main_story, opening_story
 from src.ui_pygame.gui import inn
 
 
@@ -40,12 +41,14 @@ def _make_player(*, level=10):
     )
 
 
-def test_first_relic_aftermath_and_hooded_echo_are_one_time(monkeypatch):
+@pytest.mark.parametrize("answer", [*opening_story.TRIANGULUS_IDENTITY_ANSWERS, "Unrecorded", None])
+@pytest.mark.parametrize("choice", [0, 1, None])
+def test_first_relic_aftermath_and_hooded_echo_are_one_time(monkeypatch, answer, choice):
     FakePopup.messages = []
     FakePopup.show_kwargs = []
     player = _make_player()
     player.quest_dict["Main"]["The Holy Relics"] = {"Completed": False}
-    player.main_story["triangulus_identity_answer"] = "NextChoice"
+    player.main_story["triangulus_identity_answer"] = answer
     presenter = _make_presenter()
     monkeypatch.setattr(
         inn.InnManager, "_load_background", lambda self: setattr(self, "background", None)
@@ -62,6 +65,11 @@ def test_first_relic_aftermath_and_hooded_echo_are_one_time(monkeypatch):
         def show_dialogue(self, beats):
             self.beats.extend(beats)
 
+        def choose(self, _prompt, options, **kwargs):
+            assert options == ["Who told you that?", "Keep walking"]
+            assert kwargs["record_selection"] is False
+            return choice
+
     monkeypatch.setattr("src.ui_pygame.gui.inn.StorySceneScreen", FakeStoryScene)
     monkeypatch.setattr(
         "src.ui_pygame.gui.inn.LevelUpScreen",
@@ -71,8 +79,8 @@ def test_first_relic_aftermath_and_hooded_echo_are_one_time(monkeypatch):
 
     manager._show_first_relic_aftermath()
     manager._show_first_relic_aftermath()
-    manager._show_hooded_triangulus_response()
-    manager._show_hooded_triangulus_response()
+    assert manager._show_hooded_triangulus_response() is True
+    assert manager._show_hooded_triangulus_response() is False
 
     assert player.main_story["first_relic_tavern_aftermath_seen"] is True
     assert player.main_story["hooded_figure_triangulus_response_seen"] is True
@@ -85,7 +93,16 @@ def test_first_relic_aftermath_and_hooded_echo_are_one_time(monkeypatch):
     assert "background_draw_func" not in scenes[0].kwargs
     assert any("clears an untouched cup" in beat.text for beat in scenes[0].beats)
     assert scenes[-1].beats[0].speaker == "Narrator"
-    assert "your next choice is still yours" in scenes[-1].beats[2].text
+    spoken = scenes[-1].beats
+    expected = opening_story.TRIANGULUS_ANSWER_TEXT.get(answer)
+    assert spoken[1].text == (
+        f"“{expected}”" if expected else "You answered the question at the altar."
+    )
+    if choice == 0:
+        assert spoken[2].portrait_name == inn.PLAYER_PORTRAIT_KEY
+        assert spoken[-1].speaker == "Hooded Figure"
+    else:
+        assert len(spoken) == 2
 
 
 def _make_presenter():
@@ -151,7 +168,7 @@ def test_visit_inn_and_patron_helpers(monkeypatch):
         "Oren",
         "Liora",
         "Pell",
-        "Joffrey",
+        "Duty Soldier",
         "Hooded Figure",
         "Back",
     ]
@@ -562,3 +579,88 @@ def test_accept_bounty_stays_open_until_no_bounties_remain(monkeypatch):
     assert any(
         "No new bounties available at this time." in message for message in FakePopup.messages
     )
+
+
+def test_joffrey_leaves_once_after_route_review_and_hexagonum(monkeypatch):
+    from src.core import quest_progress
+
+    manager = object.__new__(inn.InnManager)
+    manager.player_char = player = _make_player(level=45)
+    manager.presenter = object()
+    scenes = []
+
+    class Scene:
+        def __init__(self, _presenter, title, **_kwargs):
+            scenes.append(title)
+
+        def show_dialogue(self, beats):
+            assert {"Liora", "Joffrey", "Tavin"} <= {beat.speaker for beat in beats}
+
+    monkeypatch.setattr(inn, "StorySceneScreen", Scene)
+    player.main_story.update(
+        hexagonum_report_seen=True,
+        joffrey_tavern_scene_seen=True,
+        joffrey_patrol_briefing_seen=True,
+    )
+    manager._show_joffrey_departure()
+    assert not scenes
+    assert not quest_progress.can_offer_authored_quest(player, "A Bad Dream")
+    player.main_story["joffrey_route_review_seen"] = True
+    manager._show_joffrey_departure()
+    manager._show_joffrey_departure()
+    assert len(scenes) == 1
+    assert quest_progress.can_offer_authored_quest(player, "A Bad Dream")
+    assert "Joffrey" not in manager._build_patron_list()
+    assert "Duty Soldier" in manager._build_patron_list()
+
+
+def test_late_act_two_scenes_remember_choices_across_visits(monkeypatch):
+    manager = object.__new__(inn.InnManager)
+    manager.player_char = player = _make_player(level=65)
+    manager.presenter = object()
+    player.main_story.update(joffrey_found=True, liora_reply="map")
+    player.special_inventory = dict.fromkeys(("Joffrey's Letter", "Polaris", "Infinitas"))
+    titles = []
+
+    class Scene:
+        def __init__(self, _presenter, title, **kwargs):
+            titles.append(title)
+
+        def show_dialogue(self, beats):
+            assert beats
+
+        def choose(self, prompt, options, **kwargs):
+            return 1
+
+    monkeypatch.setattr(inn, "StorySceneScreen", Scene)
+    for _ in range(4):
+        manager._show_late_relic_scene()
+        main_story.ensure_state(player)
+    assert len(titles) == 3
+    assert player.main_story["liora_letter_read"]
+    assert player.main_story["polaris_advice"] == "refuse"
+    assert player.main_story["infinitas_return"] == "help"
+
+
+def test_closing_wage_book_preserves_the_missing_patrons_quest_access(monkeypatch):
+    manager = object.__new__(inn.InnManager)
+    manager.presenter = object()
+    player = manager.player_char = _make_player(level=65)
+    player.main_story.update(infinitas_return="help", joffrey_found=True)
+    player.quest_dict["Main"]["A Bad Dream"] = {"Turned In": True}
+    scenes = []
+    monkeypatch.setattr(
+        inn,
+        "StorySceneScreen",
+        lambda *args, **kwargs: SimpleNamespace(show_dialogue=scenes.append),
+    )
+    manager._show_late_relic_scene()
+    assert not scenes
+    player.quest_dict["Main"]["The Holy Relics"] = {"Turned In": True}
+    manager._show_late_relic_scene()
+    manager._show_late_relic_scene()
+    assert len(scenes) == 1
+    options = manager._build_patron_list()
+    assert "Liora" in options and "Tavin" not in options
+    assert manager.PATRON_ROLES["Tavin’s notes"] == "Busboy"
+    assert "Tavin’s notes" in options

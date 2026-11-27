@@ -10,7 +10,7 @@ import random
 import textwrap
 from typing import Any
 
-from src.core import items, quest_progress
+from src.core import items, main_story, quest_progress
 from src.core.player.combat import has_special_power_reward
 from src.core.town import (
     RESPONSE_MAP,
@@ -158,6 +158,14 @@ class QuestManager:
                 main_list.append(q)
         for lvl, q in data.get("Side", {}).items():
             if level >= int(lvl):
+                if (
+                    getattr(self.player_char, "main_story", {}).get("liora_reply")
+                    and "Where's the Beef?" in q
+                ):
+                    q = dict(q)
+                    beef = q.pop("Where's the Beef?")
+                    if giver == "Waitress":
+                        q["Where's the Beef?"] = {**beef, **quest_progress.CHURCH_PROVISIONS}
                 side_list.append(q)
         return main_list, side_list
 
@@ -256,60 +264,48 @@ class QuestManager:
 
     def _show_uncertain_reports_completion(self) -> None:
         """Resolve the first relic report as an authored multi-speaker scene."""
+        player_name = str(getattr(self.player_char, "name", None) or "You")
         scene = StorySceneScreen(
             self.presenter,
             "Barracks — The First Relic",
             participants=("Caedmon", "Edrin", "Joffrey"),
             participant_anchors={"Joffrey": "Caedmon"},
-            background_image="town.png",
+            background_image="barracks.jpg",
             player_char=self.player_char,
         )
         scene.show_dialogue(
             (
-                StoryBeat(
-                    "Caedmon",
-                    "Before we discuss what you recovered, we finish the patrol account.",
-                ),
                 StoryBeat("Edrin", "Tomas?"),
                 StoryBeat(
-                    "Caedmon",
-                    "Found dead at the sealed threshold. Mira's route marks continued beyond "
-                    "him, but they ended without a body.",
+                    player_name, "I found him under the stone. He was dead.", PLAYER_PORTRAIT_KEY
                 ),
-                StoryBeat("Edrin", "Still missing is not the same as gone."),
-                StoryBeat("Caedmon", "No. It is not."),
+                StoryBeat("Edrin", "Was Mira with him?"),
+                StoryBeat(
+                    player_name,
+                    "I found her chalk marks past the door. That's as far as I could follow them.",
+                    PLAYER_PORTRAIT_KEY,
+                ),
+                StoryBeat("Caedmon", "I'll leave her name on the board."),
                 StoryBeat(
                     "Narrator",
-                    "Caedmon lays three old expedition ledgers beside the recovered "
-                    "Triangulus relic.",
-                    portrait_name="",
+                    "Caedmon takes three ledgers down from the shelf. Each has a sketch in the margin.",
                 ),
                 StoryBeat(
-                    "Caedmon",
-                    "These patrols entered by different routes and believed they had found "
-                    "different chambers. All three copied the same markings.",
+                    "Caedmon", "Three different patrols drew these. Joffrey, lay the relic here."
                 ),
                 StoryBeat(
                     "Joffrey",
-                    "The lines were incomplete. Set the relic beside them and the fragments "
-                    "form the same arrangement.",
+                    "See where this line breaks off? There's the rest of it on the next page. The points fit.",
                 ),
-                StoryBeat("Edrin", "Mira kept saying the empty center mattered."),
+                StoryBeat("Edrin", "Mira kept trying to tell me about the space in the middle."),
                 StoryBeat(
                     "Caedmon",
-                    "There is more. An older, damaged record shows six positions arranged "
-                    "around that center.",
+                    "Have a look at this older sheet. Torn clean across, but you can still count six places round the middle.",
                 ),
-                StoryBeat("Joffrey", "Six chambers?"),
+                StoryBeat("Joffrey", "Six rooms like the one you found?"),
                 StoryBeat(
                     "Caedmon",
-                    "Perhaps. Or six objects, six stations, or one mistake repeated by "
-                    "generations of scribes.",
-                ),
-                StoryBeat(
-                    "Caedmon",
-                    "We have evidence of a pattern, not an explanation. Recover anything "
-                    "that answers this relic and bring it home.",
+                    "Could be. If you find anything else that fits these marks, bring it back. We'll lay it beside this one.",
                 ),
             )
         )
@@ -344,6 +340,17 @@ class QuestManager:
         end_text = qdata.get("End Text", "")
         if quest_name == "Uncertain Reports":
             self._show_uncertain_reports_completion()
+        if quest_name in (
+            "Uncertain Reports",
+            "Bring Him Home",
+            "Rookie Mistake",
+            "Lapidation",
+            "The Holy Relics",
+        ):
+            end_text = ""
+        if quest_name == "A Bad Dream" and getattr(self.player_char, "main_story", {}).get(
+            "joffrey_found"
+        ):
             end_text = ""
         if end_text and show_end_text:
             if self.quest_text_renderer:
@@ -599,6 +606,66 @@ class QuestManager:
         if quest_name == "A Bad Dream":
             self._remove_lucky_locket_for_bad_dream()
 
+            if getattr(self.player_char, "main_story", {}).get("joffrey_found"):
+                scene = StorySceneScreen(
+                    self.presenter,
+                    "The Thirsty Dog — The Locket",
+                    participants=("Liora", "Tavin"),
+                    background_image="tavern.jpg",
+                    player_char=self.player_char,
+                )
+                scene.show_dialogue(
+                    (
+                        StoryBeat(
+                            "Narrator",
+                            "Liora reaches across the counter. The chain slides into her palm.",
+                        ),
+                        StoryBeat(
+                            "Liora",
+                            "It still catches. Here, you have to lift the clasp a little. Where was he?",
+                        ),
+                    )
+                )
+                answer = scene.choose(
+                    "What do you tell her?",
+                    [
+                        "By the pens. I covered him with stones.",
+                        "He reached the bars. Someone made it out the other side.",
+                        "Show her his last chalk mark on the map.",
+                    ],
+                    allow_cancel=False,
+                )
+                scene.show_dialogue(
+                    (
+                        StoryBeat(
+                            "Liora",
+                            (
+                                "Thank you for staying with him.",
+                                "You saw tracks? Show Caedmon where they went.",
+                                "Right down there? I kept looking at the fork.",
+                            )[answer],
+                        ),
+                        StoryBeat(
+                            "Tavin", "I could have stood in the doorway. Do you ever wish I had?"
+                        ),
+                        StoryBeat("Liora", "I wish he'd come home. Give me a minute, Tav."),
+                        StoryBeat(
+                            "Narrator",
+                            "She threads the chain through her apron tie and counts three old keys onto the counter. A little brass one follows.",
+                        ),
+                        StoryBeat(
+                            "Liora",
+                            "The brass one's for his locker. Bring me anything with my name on it.",
+                        ),
+                    )
+                )
+                self.player_char.main_story["liora_reply"] = ("burial", "tracks", "map")[answer]
+                self.player_char.modify_inventory(items.BrassKey(), rare=True)
+                beef = self.player_char.quest_dict.get("Side", {}).get("Where's the Beef?")
+                if beef and not beef.get("Turned In"):
+                    beef.update(quest_progress.CHURCH_PROVISIONS)
+                return
+
             # Show Busboy special event
             show_special_event_text("Busboy")
 
@@ -635,10 +702,53 @@ class QuestManager:
 
     def _handle_pre_turn_in_quest_events(self, quest_name: str) -> None:
         """Show quest-resolution scenes before rewards and completion settlement."""
-        if quest_name == "Bring Him Home":
+        if quest_name == "The Holy Relics":
+            scene = StorySceneScreen(
+                self.presenter,
+                "Barracks — The Last Rubbing",
+                participants=("Caedmon", "Soldier"),
+                background_image="barracks.jpg",
+                player_char=self.player_char,
+            )
+            scene.show_dialogue(
+                (
+                    StoryBeat(
+                        "Narrator",
+                        "Caedmon unpicks the stitches in six ledgers. He lays the chamber rubbings edge to edge. Every page has a thumb-wide strip of clean paper in the same place.",
+                    ),
+                    StoryBeat(
+                        "Soldier",
+                        "I went back for that bit. Look, you can see where I tore the paper the second time.",
+                    ),
+                    StoryBeat("Caedmon", "I know. Mine came out the same. Leave the space."),
+                    StoryBeat(
+                        "Soldier", "Can I tell the watch we're done? My brother wants to come home."
+                    ),
+                    StoryBeat("Caedmon", "Tell him to come. I'll keep the lamp here."),
+                )
+            )
+        elif quest_name == "Bring Him Home":
             self._show_timmy_home_scene()
         elif quest_name == "Rookie Mistake":
             self._show_rookie_burial_scenes()
+        if quest_name == "Lapidation":
+            scene = StorySceneScreen(
+                self.presenter,
+                "The Thirsty Dog — Rutger’s Necklace",
+                participants=("Pell",),
+                background_image="tavern.jpg",
+                player_char=self.player_char,
+            )
+            scene.show_dialogue(
+                (
+                    StoryBeat("Pell", "You saw the bird fall? All the way down?"),
+                    StoryBeat(
+                        "Narrator",
+                        "Pell undoes his necklace. He starts to slip it over his head again, catches himself and holds it out to you.",
+                    ),
+                    StoryBeat("Pell", "Clasp sticks. Here, let me."),
+                )
+            )
         self._handle_quest_events(quest_name)
 
     def _show_rookie_burial_scenes(self) -> None:
@@ -663,12 +773,12 @@ class QuestManager:
                 StoryBeat("Caedmon", "Clear the gate. Give them room."),
                 StoryBeat(
                     player_name,
-                    "I found him on the first level. He did not make it back.",
+                    "First level. I carried him up from there.",
                     portrait_name=PLAYER_PORTRAIT_KEY,
                 ),
                 StoryBeat(
                     "Caedmon",
-                    "I sent him below before he was ready. That failure is mine, not his.",
+                    "He asked me if he was ready. I told him he was.",
                 ),
                 StoryBeat(
                     "Narrator",
@@ -685,11 +795,7 @@ class QuestManager:
             self.presenter,
             "Silvana Graveyard — The Last Watch",
             participants=("Priest", "Caedmon"),
-            participant_anchors={
-                "Soldier": "Caedmon",
-                "Joffrey": "Caedmon",
-                "Liora": "Priest",
-            },
+            participant_anchors={"Soldier": "Caedmon"},
             background_image="graveyard.jpg",
             player_char=self.player_char,
         )
@@ -701,32 +807,15 @@ class QuestManager:
                     "Joffrey, Liora, and townspeople stand together in the rain.",
                     portrait_name="",
                 ),
-                StoryBeat(
-                    "Priest",
-                    "We are here to remember a life, not to turn a needless death into a "
-                    "lesson about courage.",
-                ),
+                StoryBeat("Priest", "Take the foot, Caedmon. Easy now."),
                 StoryBeat(
                     "Narrator",
-                    "You and Caedmon lower the wrapped recruit into the earth. A soldier sets "
-                    "his patrol clasp on the simple wooden marker.",
-                    portrait_name="",
-                ),
-                StoryBeat(
-                    player_name,
-                    "He came home. He will not be left in the dark.",
-                    portrait_name=PLAYER_PORTRAIT_KEY,
+                    "You and Caedmon lower the recruit into the grave. Caedmon opens his hand. The patrol clasp has left a mark in his palm.",
                 ),
                 StoryBeat("Soldier", "We should have gone with him."),
-                StoryBeat("Liora", "Then remember that the next time someone calls risk honor."),
-                StoryBeat("Joffrey", "His name stays in the patrol ledger."),
                 StoryBeat(
-                    "Priest",
-                    "Let the dead rest, and let the living carry the truth of how he died.",
-                ),
-                StoryBeat(
-                    "Caedmon",
-                    "This death goes in my ledger. Thank you for bringing him home.",
+                    "Narrator",
+                    "The soldier takes the clasp from Caedmon and pins it to the wooden marker. The Priest waits beside him until he steps back.",
                 ),
             ),
             fade_in_ms=1000,
@@ -741,7 +830,7 @@ class QuestManager:
         scene = StorySceneScreen(
             self.presenter,
             "Silvana — Timmy Comes Home",
-            participants=("Timmy's Mother", "Timmy's Father", "Timmy", "Caedmon"),
+            participants=("Timmy's Mother", "Timmy's Father", "Timmy"),
             participant_anchors={"Timmy": "Timmy's Mother"},
             background_image="town.png",
             player_char=self.player_char,
@@ -750,34 +839,18 @@ class QuestManager:
             (
                 StoryBeat(
                     "Narrator",
-                    "Before Caedmon can finish the report, Timmy's parents rush across the "
-                    "barracks yard.",
-                    portrait_name="",
+                    "Timmy's parents come running across the barracks yard. Caedmon steps out of their way.",
                 ),
                 StoryBeat("Timmy's Mother", "Timmy."),
                 StoryBeat(
                     "Narrator",
-                    "She drops to her knees and pulls him close. His father stops beside them, "
-                    "one hand over his mouth.",
-                    portrait_name="",
+                    "She drops to her knees and pulls him close. His father stops beside them, one hand over his mouth.",
                 ),
+                StoryBeat("Timmy", "Dad? I lost my lamp."),
+                StoryBeat("Timmy's Father", "That's all right, son. Come here."),
                 StoryBeat(
-                    "Timmy",
-                    "I told them someone would find me. I knew someone would come.",
-                ),
-                StoryBeat(
-                    "Timmy's Father",
-                    "We looked everywhere we were allowed to go. Thank you for bringing him "
-                    "back to us.",
-                ),
-                StoryBeat(
-                    "Timmy's Mother",
-                    "Come on. You're going home, and you're not leaving our sight again.",
-                ),
-                StoryBeat(
-                    "Caedmon",
-                    "You did more than complete an assignment today. You brought a family "
-                    "back together.",
+                    "Narrator",
+                    "His father kneels in the mud. Timmy gets one arm free and pulls him in too.",
                 ),
             )
         )
@@ -785,9 +858,43 @@ class QuestManager:
     def _already_killed(self, enemy_name: str) -> bool:
         return already_defeated_enemy(self.player_char, enemy_name)
 
-    def _offer(self, giver: str, quest_name: str, q: dict[str, Any], typ: str) -> bool:
-        # Offer quest via presenter
-        text = q.get("Start Text", "")
+    def _offer_barghest_briefing(self) -> bool:
+        """Ask for the assignment in the barracks, shortening subsequent visits."""
+        story = main_story.ensure_state(self.player_char)
+        scene = StorySceneScreen(
+            self.presenter,
+            "Barracks — Cry Havoc!",
+            participants=("Joffrey", "Edrin", "Caedmon"),
+            participant_anchors={"Caedmon": "Joffrey"},
+            background_image="barracks.jpg",
+            player_char=self.player_char,
+        )
+        if not story["barghest_briefing_seen"]:
+            scene.show_dialogue(
+                (
+                    StoryBeat(
+                        "Narrator", "Joffrey props the bestiary open so Edrin can see the drawing."
+                    ),
+                    StoryBeat("Joffrey", "The hound on this page. Does it look familiar?"),
+                    StoryBeat("Edrin", "The eyes do. It was taller when it came after me."),
+                    StoryBeat("Joffrey", "Barghest. Turn the page. That's still the same beast."),
+                    StoryBeat(
+                        "Caedmon",
+                        "I've got two other reports of those eyes. Both by the sealed chamber.",
+                    ),
+                )
+            )
+            story["barghest_briefing_seen"] = True
+        if self._already_killed("Barghest"):
+            prompt = "You've been to that chamber. Will you give me your account?"
+            answers = ["I'll make my report.", "Another time."]
+        else:
+            prompt = "Will you take the Barghest and have a look inside that chamber?"
+            answers = ["I'll go.", "Not yet."]
+        return scene.choose(prompt, answers, speaker="Caedmon") == 0
+
+    def _confirm_standard_offer(self, quest_name: str, text: str) -> bool:
+        """Show a quest giver's offer and ask whether to accept it."""
         # Display quest text - use renderer if available, otherwise the standard confirmation popup
         if self.quest_text_renderer:
             if self.renderer_preserve_formatting:
@@ -810,16 +917,28 @@ class QuestManager:
         # Separate Accept/Decline menu
         if self.quest_choice_renderer:
             choice = self.quest_choice_renderer("Accept this quest?", ["Accept", "Decline"])
-            accepted = choice == 0
+            return choice == 0
+        popup = ConfirmationPopup(self.presenter, "Accept this quest?")
+        return bool(self._show_popup(popup))
+
+    def _offer(self, giver: str, quest_name: str, q: dict[str, Any], typ: str) -> bool:
+        barghest_briefing = quest_name == "Cry Havoc!"
+        if barghest_briefing:
+            accepted = self._offer_barghest_briefing()
         else:
-            popup = ConfirmationPopup(self.presenter, "Accept this quest?")
-            accepted = self._show_popup(popup)
+            accepted = self._confirm_standard_offer(quest_name, q.get("Start Text", ""))
 
         if accepted:
             # Add a copy of quest to player quest log
             if typ not in self.player_char.quest_dict:
                 self.player_char.quest_dict[typ] = {}
             self.player_char.quest_dict[typ][quest_name] = copy.deepcopy(q)
+
+            if (
+                quest_name == "A Bad Dream"
+                and main_story.ensure_state(self.player_char)["joffrey_found"]
+            ):
+                self.player_char.quest_dict[typ][quest_name]["Completed"] = True
 
             if quest_name == "The Holy Grail of Quests":
                 self._ensure_chalice_progress(self.player_char.quest_dict[typ][quest_name])
@@ -845,6 +964,9 @@ class QuestManager:
                 except Exception:
                     pass
 
+            if barghest_briefing:
+                return True
+
             # Use personalized response from RESPONSE_MAP
             response = RESPONSE_MAP.get(
                 giver, ["Quest accepted! Check your quest log for details.", "Maybe next time."]
@@ -864,6 +986,9 @@ class QuestManager:
                 self._show_popup(popup)
             return True
         else:
+            if barghest_briefing:
+                return False
+
             # Use personalized rejection response from RESPONSE_MAP
             response = RESPONSE_MAP.get(
                 giver, ["Quest accepted! Check your quest log for details.", "Maybe next time."]

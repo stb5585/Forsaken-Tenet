@@ -112,7 +112,7 @@ def test_story_polish_content_keys_are_present_and_spoiler_scoped():
     endgame_tragedy_text = "\n".join(events["Vesperion Tragedy Reframing"]["Text"])
     assert "Vesperion" in endgame_tragedy_text
     assert "Joffrey" in endgame_tragedy_text
-    assert "Waitress" in endgame_tragedy_text
+    assert "Liora" in endgame_tragedy_text
 
     ending_text = "\n".join(
         line
@@ -123,8 +123,8 @@ def test_story_polish_content_keys_are_present_and_spoiler_scoped():
         )
         for line in events[key]["Text"]
     )
-    assert "The final chamber does not crown you" in ending_text
-    assert "ordinary work" in ending_text
+    assert "six relics" in ending_text
+    assert "opens" in ending_text and "bread" in ending_text
 
 
 def test_red_dragon_continuity_copy_separates_route_meanings():
@@ -139,7 +139,7 @@ def test_red_dragon_continuity_copy_separates_route_meanings():
     assert "Whatever truths the dragon carries" in red_dragon_text
     assert "not Kaelenon's restored self" in zahhak_text
     assert "draconic spirit" in zahhak_text
-    assert "progression victory is complete for every hero" in dracarys_text
+    assert "stair to the sixth floor" in dracarys_text
     for legacy_final_boss_framing in ("ultimate challenge...me", "futility", "my wrath"):
         assert legacy_final_boss_framing not in dracarys_text
 
@@ -154,4 +154,4 @@ def test_timmy_events_cover_discovery_and_both_parent_reunion():
     assert "mum and dad" in discovery
     assert "Timmy's Mother" in reunion
     assert "Timmy's Father" in reunion
-    assert "family back together" in reunion
+    assert "pulls him in" in reunion.splitlines()[-1]

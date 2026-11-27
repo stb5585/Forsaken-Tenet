@@ -547,6 +547,8 @@ route:
 The later letter must refer back to details the player witnessed in these
 scenes rather than inventing Joffrey's motives after his death.
 
+The fourth scene now plays on the next tavern visit after the Hexagonum barracks report and the three earlier living scenes. A return mark appears at a fork Joffrey remembers erasing. Tavin asks about the distance to the pens; Joffrey works out the timing and leaves of his own accord. Liora keeps the slip for Caedmon. This departure unlocks her existing search offer; a duty soldier covers Joffrey’s tavern quests.
+
 ### Fatal Trigger
 
 A patrol disappears after following a route Joffrey charted. Believing his
@@ -555,9 +557,7 @@ correct the route. Vesperion distorts the evidence and apparent urgency so
 immediate action seems necessary, but does not compel him. The false route
 leads Joffrey into Domingo's path, and Domingo kills him while he is attempting
 to reach the missing patrol. Joffrey's physical body is discovered on level 4
-near the Domingo route, not at the existing level-2 corpse tile. Its exact map
-coordinate and story-state visibility belong to the Chapter 5 production
-packet.
+near the Domingo route, not at the existing level-2 corpse tile. On floor 4, the low chalk at (15, 13) points south to the pens. The body at (15, 15) appears after his departure and becomes a cairn after the hero recovers the locket. Earlier saves already pursuing the original search retain their floor-2 route.
 
 ### Fixed Tragic Outcome
 
@@ -652,6 +652,9 @@ with incomplete evidence.
 
 ### Hooded Figure Development
 
+**Authorial decision:** The Figure intends to help. From the encounter outside the Thirsty Dog onward, the player has reason to suspect ill intentions. Their knowledge intrudes on private moments. Later help must leave the hero free to refuse; the Figure never explains this design to the player.
+
+
 The Hooded Figure should become more useful without becoming less unsettling.
 Their credibility grows because they leave room for refusal and admit limits,
 not because the story declares them trustworthy.
@@ -720,6 +723,20 @@ and Vesperion's argument.
 
 Infinitas completes the visible circle while revealing that endurance without
 the freedom to stop is only captivity stretched across time.
+
+### Act II in-game verification
+
+| Chapter | Path to exercise | Expected result |
+| --- | --- | --- |
+| 5 | Bring the locket to Liora with a partially filled wedding order. | Choose what to tell her. She stays at the inn, keeps the collected provisions for the church, and gives you the locker key. |
+| 5 | Open Joffrey's locker at the barracks, then revisit the inn. | The key yields his letter and five potions once. Liora reads the letter. With Luna recovered, she follows up on your account at the barracks. |
+| 5 | Take Tavin's search to the floor-two expedition camp. | Follow the crying to (11, 9). The expedition survivor uses Anguished Scream. This encounter is separate from Joffrey's cairn and locker rewards. |
+| 6 | Approach the dragon before and after recovering Polaris. Visit the inn and speak to the Figure. | Polaris marks the aggregate relic quest and opens the dragon route. The player can check the Figure's map claim or take the map back. The dragon contract awards the Class Ring. |
+| 7 | Get past Cerberus, recover Infinitas and return to the inn. | Pell hands back a half-finished beer. Choosing a bed, help with the pack, or supper before leaving gives a distinct reply and records the choice. |
+
+The tavern presents one pending late-relic scene per visit, oldest first. Returning
+after the letter, Polaris and Infinitas together takes three visits. Saves with a
+previously accepted boss contract can still finish it.
 
 ## Act III — The Forsaken Tenet
 
@@ -865,6 +882,15 @@ The strongest ending image should be small rather than cosmic: a choice made in
 The Thirsty Dog after the Evening Star is gone. Someone lights the window
 candle, leaves a chair empty, opens the door, or chooses to descend for their
 own reason. The world continues because choice continues.
+
+### Act III in-game verification
+
+| Chapter | Playtest route | What to check |
+| --- | --- | --- |
+| 8 | Turn in the six relics to Caedmon. Visit the inn after Pell’s last-watch conversation. | The rubbings share a blank space. Oren cannot date Tavin’s first shift. Tavin’s notes still provide access to his quest business. |
+| 8 | Enter the final chamber and reach the scripted turn in combat. | The six lights leave a gap. The first confrontation sends the hero to the Liminal Gap. |
+| 9 | Try the Seventh Seat early, then revisit it after the six trials. Speak to the Acolyte and face Reflection. | Each trial can recall its corresponding town scene. Unrecorded choices stay unspoken. The seat reveals the succession and the cost of the Hollowing. The Acolyte puts the fragments in order. |
+| 10 | Return through the threshold and defeat Vesperion. | Tavin’s habits give him away. The confrontation recalls the player’s account to Liora when available. The final tavern scene lets the player welcome a traveler in one of three ways. |
 
 ## Supporting Arc Placement
 
