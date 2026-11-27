@@ -513,7 +513,7 @@
           "What": "Domingo",
           "Total": 1,
           "Start Text": "We hatched Domingo here. The little thing used to curl up against the warm side of the incubator. We wanted a town guard. When it grew too big to handle, we put it in irons. The straps have torn clean out of the wall. I need you to find it before anyone else does.",
-          "End Text": "The keepers want their tag back. I'll take it to them. They ought to hear how it ended from someone who signed the order.",
+          "End Text": "The keepers want their tag back. I'll take it to them. They ought to hear how it ended from someone who signed the order. The staffed warp point is open to you now.",
           "Help Text": "The magical creature excels at, you guessed it, magic. Look out for the powerful Photon Sphere spell. The scientists will not risk opening the deeper warp until Domingo is gone.",
           "Reward": ["Warp Point"],
           "Reward Number": 1,
