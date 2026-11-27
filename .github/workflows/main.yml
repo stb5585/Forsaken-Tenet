@@ -91,7 +91,7 @@ jobs:
         run: python -m compileall src
 
   artifact-smoke:
-    if: github.event_name == 'workflow_dispatch' || github.event_name == 'release'
+    if: github.event_name != 'push'
     needs: validation
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -99,22 +99,45 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect packaged resource changes
+        id: package
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          required=true
+          if [[ "$EVENT_NAME" == pull_request ]]; then
+            changes=$(git diff --name-only HEAD^1 HEAD -- \
+              .github/workflows/main.yml game_pygame.py pyproject.toml constraints.txt \
+              tools/build_distribution.py src/paths.py src/core/data src/ui_pygame/assets)
+            if [[ -z "$changes" ]]; then
+              required=false
+            fi
+          fi
+          echo "required=$required" >> "$GITHUB_OUTPUT"
 
       - name: Set up Python
+        if: steps.package.outputs.required == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: "pip"
 
       - name: Install build dependencies
+        if: steps.package.outputs.required == 'true'
         run: |
           python -m pip install --upgrade --constraint constraints.txt pip
           python -m pip install --constraint constraints.txt --build-constraint constraints.txt ".[dev]"
 
       - name: Build onedir application
+        if: steps.package.outputs.required == 'true'
         run: python tools/build_distribution.py --clean
 
       - name: Smoke-test frozen application outside checkout
+        if: steps.package.outputs.required == 'true'
         env:
           SDL_VIDEODRIVER: dummy
           SDL_AUDIODRIVER: dummy
@@ -123,6 +146,7 @@ jobs:
         run: ${{ github.workspace }}/dist/forsaken-tenet/forsaken-tenet --smoke-test
 
       - name: Upload intentional application artifact
+        if: github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: forsaken-tenet-linux-onedir

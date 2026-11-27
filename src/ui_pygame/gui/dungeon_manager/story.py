@@ -82,10 +82,17 @@ class DungeonStoryMixin:
         self._show_special_event_dialogue("Liminal Guide Save", title="The Hooded Figure")
         save_game = getattr(self.game, "save_game", None)
         if callable(save_game):
-            save_game()
+            previous_save_used = story_state.get("liminal_gap_guide_save_used", False)
+            previous_read = guide_tile.read
             story_state["liminal_gap_guide_save_used"] = True
             guide_tile.read = True
-            self.add_message("The Hooded Figure anchors your progress.")
+            if save_game():
+                self.add_message("The Hooded Figure anchors your progress.")
+            else:
+                self.player_char.ensure_main_story_state()[
+                    "liminal_gap_guide_save_used"
+                ] = previous_save_used
+                guide_tile.read = previous_read
         else:
             self.add_message("The Hooded Figure reaches for an anchor that is not there.")
 

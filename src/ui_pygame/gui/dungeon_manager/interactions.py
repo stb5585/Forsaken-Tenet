@@ -906,8 +906,10 @@ class DungeonInteractionMixin:
         self._show_special_event_dialogue("The Forsaken Tenet Ending", title="The Forsaken Tenet")
         self._show_tavern_epilogue(story_state)
         self.add_message("Vesperion is defeated. Voluntas endures, and the main story is complete.")
-        self.player_char.quit = True
         self.player_char.state = "normal"
+        self.player_char.to_town()
+        save_game = getattr(self.game, "save_game", None)
+        self.player_char.quit = bool(save_game()) if callable(save_game) else True
         self.running = False
         self._mark_view_dirty()
 

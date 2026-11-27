@@ -155,3 +155,53 @@ def test_timmy_events_cover_discovery_and_both_parent_reunion():
     assert "Timmy's Mother" in reunion
     assert "Timmy's Father" in reunion
     assert "pulls him in" in reunion.splitlines()[-1]
+
+
+def test_authored_quest_references_match_runtime_content():
+    from src.core import map_tiles, quest_progress
+    from src.core.identity import ENEMY_TYPES, ITEM_TYPES
+    from tests.test_framework import TestGameState
+
+    quests = load_json_data("quests.json")
+    definitions = [
+        (giver, name, quest)
+        for giver, categories in quests.items()
+        for levels in categories.values()
+        for group in levels.values()
+        for name, quest in group.items()
+    ]
+    names = {name for _, name, _ in definitions}
+    item_names = {item_type.__name__ for _, item_type in ITEM_TYPES.items()}
+    defeat_targets = {
+        objective["What"]
+        for _, _, quest in definitions
+        for objective in (quest, *quest.get("Stages", {}).values())
+        if objective.get("Type") == "Defeat"
+    }
+    # Instantiate the boss and encounter targets to use their real display names.
+    from src.core import enemies
+
+    enemy_names = {
+        enemy_type().name
+        for enemy_id, enemy_type in ENEMY_TYPES.items()
+        if enemy_id in {target.lower().replace(" ", "_") for target in defeat_targets}
+    }
+    enemy_names.add(enemies.Pseudodragon().name)
+
+    for giver, name, quest in definitions:
+        assert quest["Who"] in quests, name
+        assert quest.get("Requires") is None or quest["Requires"] in names, name
+        for objective in (quest, *quest.get("Stages", {}).values()):
+            kind, target = objective.get("Type"), objective.get("What")
+            if kind == "Collect":
+                assert target in item_names or target == "Relics", name
+            elif kind == "Defeat":
+                assert target in enemy_names, name
+            elif kind == "Talk":
+                assert target in quests, name
+
+    player = TestGameState.create_player()
+    player.load_tiles()
+    assert player.world_dict[quest_progress.JOFFREY_BODY_POSITION].enter
+    assert player.world_dict[map_tiles.WIND_COMMUNION_POS].enter
+    assert any(isinstance(tile, map_tiles.UndergroundSpring) for tile in player.world_dict.values())

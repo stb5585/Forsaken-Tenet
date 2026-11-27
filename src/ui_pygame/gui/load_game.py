@@ -334,7 +334,7 @@ class LoadGameScreen:
 
         for save_file in save_files:
             try:
-                metadata = SaveManager.describe_save_file(save_file)
+                metadata = SaveManager.describe_save_file(save_file, include_preview=True)
                 if (
                     not metadata["valid"]
                     or not metadata["extension_matches_expected"]
@@ -387,7 +387,7 @@ class LoadGameScreen:
                     )
                     continue
 
-                player_char = SaveManager.load_player(save_file)
+                player_char = metadata.get("preview_player")
                 if player_char:
                     # Extract character information
                     char_data = {

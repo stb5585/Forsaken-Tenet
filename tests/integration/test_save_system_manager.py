@@ -911,3 +911,34 @@ def test_save_manager_corrupt_json_load_returns_none_without_deleting_file(monke
     assert SaveManager.load_player("corrupt.tmp", is_tmp=True, skip_tiles=True) is None
     assert save_path.read_text(encoding="utf-8") == "{bad json"
     assert tmp_path_file.read_text(encoding="utf-8") == "{bad json"
+
+
+def test_posted_bounties_and_completed_campaign_round_trip(tmp_path, monkeypatch):
+    monkeypatch.setattr(SaveManager, "SAVE_DIR", str(tmp_path))
+    monkeypatch.setattr(SaveManager, "TMP_DIR", str(tmp_path / "temp"))
+    player = TestGameState.create_player()
+    target = enemies.Goblin()
+    offer = {"enemy": target, "reward": items.HealthPotion, "num": 3, "gold": 64, "exp": 12}
+    player.bounty_offers = {target.name: offer}
+    player.to_town()
+    player.ensure_main_story_state().update(main_story_complete=True, epilogue_choice="chair")
+    slot = SaveManager.player_save_filename("Ada Vale", "ada vale.save")
+
+    assert slot == "ada vale.save"
+    assert SaveManager.save_player(player, slot)
+    metadata = SaveManager.describe_save_file(slot, include_preview=True)
+    assert metadata["loadable"]
+    assert not metadata["preview_player"].world_dict
+    restored = SaveManager.load_player(slot)
+    assert restored.world_dict
+    assert restored.in_town()
+    assert restored.main_story["main_story_complete"]
+    assert restored.main_story["epilogue_choice"] == "chair"
+    assert restored.bounty_offers[target.name]["gold"] == 64
+    assert restored.bounty_offers[target.name]["reward"] is items.HealthPotion
+
+    restored.quest_dict["Bounty"][target.name] = [restored.bounty_offers.pop(target.name), 1, False]
+    assert SaveManager.save_player(restored, slot)
+    reloaded = SaveManager.load_player(slot)
+    assert not reloaded.bounty_offers
+    assert reloaded.quest_dict["Bounty"][target.name][1] == 1

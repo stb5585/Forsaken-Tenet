@@ -541,8 +541,11 @@ class ShopManager(TownScreenBase):
                 continue
 
             # Use QuantityPopup for better quantity selection
-            self.player_char.stats.strength * 10
-            max_qty = min(self.player_char.gold // cost, 99) if cost > 0 else 99
+            remaining = 99 - len(self.player_char.inventory.get(item.name, ()))
+            if remaining <= 0:
+                self.presenter.show_message(f"You already carry the maximum number of {item.name}.")
+                continue
+            max_qty = min(self.player_char.gold // cost, remaining) if cost > 0 else remaining
 
             qty_popup = QuantityPopup(self.presenter, item.name, cost, max_qty)
             quantity = qty_popup.show(
@@ -560,6 +563,10 @@ class ShopManager(TownScreenBase):
                 self.presenter.show_message(f"Not enough gold! Need {total_cost}g")
                 # Update the shop screen to reflect current gold
                 shop_screen.draw_all()
+                continue
+
+            if quantity > 99 - len(self.player_char.inventory.get(item.name, ())):
+                self.presenter.show_message(f"There is no room for {quantity} more {item.name}.")
                 continue
 
             equip_actions = self._equip_actions_for_purchase(item, quantity)

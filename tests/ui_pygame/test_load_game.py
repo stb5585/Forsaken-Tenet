@@ -131,17 +131,18 @@ def test_load_game_draw_helpers_and_data_loading(monkeypatch):
             return player_b
         raise RuntimeError("broken")
 
-    def fake_describe_save_file(filename):
+    def fake_describe_save_file(filename, *, include_preview=False):
         metadata = _valid_save_metadata(filename, empty=filename == "empty.save")
         if filename == "../bad.save":
             metadata["valid"] = False
             metadata["is_file"] = False
+        if include_preview and metadata["valid"] and not metadata["empty"]:
+            metadata["preview_player"] = fake_load_player(filename)
         return metadata
 
     monkeypatch.setattr(
         load_game.SaveManager, "describe_save_file", staticmethod(fake_describe_save_file)
     )
-    monkeypatch.setattr(load_game.SaveManager, "load_player", staticmethod(fake_load_player))
     screen.load_save_files(["a.save", "b.save", "c.save"])
 
     assert screen.save_data[0]["name"] == "Hero"
@@ -214,7 +215,7 @@ def test_load_game_lists_incompatible_save_with_schema_explanation(monkeypatch):
         load_game.SaveManager,
         "describe_save_file",
         staticmethod(
-            lambda filename: {
+            lambda filename, **kwargs: {
                 **_valid_save_metadata(filename),
                 "loadable": False,
                 "compatibility_status": "pre_foundation",
@@ -379,19 +380,11 @@ def test_load_game_navigation_deletes_selected_save(monkeypatch):
     monkeypatch.setattr(
         load_game.SaveManager,
         "describe_save_file",
-        staticmethod(_valid_save_metadata),
-    )
-    monkeypatch.setattr(
-        load_game.SaveManager,
-        "load_player",
         staticmethod(
-            lambda filename: SimpleNamespace(
-                name=filename.removesuffix(".save"),
-                race=SimpleNamespace(name="Human"),
-                cls=SimpleNamespace(name="Warrior"),
-                level=SimpleNamespace(level=1, exp=0),
-                gold=0,
-            )
+            lambda filename, **kwargs: {
+                **_valid_save_metadata(filename),
+                "preview_player": SimpleNamespace(name=filename.removesuffix(".save")),
+            }
         ),
     )
 
@@ -442,24 +435,10 @@ def test_load_game_navigation_warns_for_unloadable_save_without_returning(monkey
         load_game.SaveManager,
         "describe_save_file",
         staticmethod(
-            lambda filename: _valid_save_metadata(filename, empty=filename == "empty.save")
-        ),
-    )
-    monkeypatch.setattr(
-        load_game.SaveManager,
-        "load_player",
-        staticmethod(
-            lambda filename: (
-                SimpleNamespace(
-                    name="hero",
-                    race=SimpleNamespace(name="Human"),
-                    cls=SimpleNamespace(name="Warrior"),
-                    level=SimpleNamespace(level=1, exp=0),
-                    gold=0,
-                )
-                if filename == "hero.save"
-                else None
-            )
+            lambda filename, **kwargs: {
+                **_valid_save_metadata(filename, empty=filename == "empty.save"),
+                "preview_player": SimpleNamespace(name="hero") if filename == "hero.save" else None,
+            }
         ),
     )
 

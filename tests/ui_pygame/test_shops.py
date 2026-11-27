@@ -1135,3 +1135,24 @@ def test_secret_shop_submenus_and_misc_helpers(monkeypatch):
         "dungeon.png",
         {"Keys": shops.items_module.items_dict["Misc"]["Key"]},
     ) in delegated
+
+
+def test_purchase_charges_only_for_capacity_even_if_popup_returns_excess(monkeypatch):
+    from tests.test_framework import TestGameState
+
+    manager = _manager(monkeypatch)
+    manager.player_char = player = TestGameState.create_player()
+    player.gold = 300
+    item = items.HealthPotion()
+    player.inventory[item.name] = [item] * 98
+    row = (item.name, item, 10, 98)
+    FakeShopScreen.item_sequences = [[row, row, None]]
+    FakeQuantityPopup.responses = [3, 1]
+    monkeypatch.setattr(shops, "ShopScreen", FakeShopScreen)
+    monkeypatch.setattr("src.ui_pygame.gui.confirmation_popup.QuantityPopup", FakeQuantityPopup)
+    monkeypatch.setattr(shops, "ConfirmationPopup", FakePopup)
+
+    manager._buy_with_shop_screen({"Potions": [item]}, "Potions")
+
+    assert len(player.inventory[item.name]) == 99
+    assert player.gold == 290

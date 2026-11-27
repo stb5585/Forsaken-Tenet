@@ -35,12 +35,11 @@ contracts belong in their owner documents.
 - `Deferred`: intentionally postponed until its dependency is complete.
 - `Watch`: preserve current behavior and record issues encountered nearby.
 
-## Active Priority — Opening Story Vertical Slice
+## Completed Milestone — Campaign Story Through Act III
 
-Status: `Active — Opening Story Implemented; Manual Playtest Pending`
+Status: `Merged — Campaign Playtest Pending`
 
-The project remains temporarily shifted from gameplay expansion and broad
-playtesting to campaign story development. The accepted creative authority is
+The Prologue through Act III merged in PR #78. The accepted creative authority is
 [`NARRATIVE_FOUNDATION.md`](NARRATIVE_FOUNDATION.md), the reconciled route is
 [`MAIN_STORY_OUTLINE.md`](MAIN_STORY_OUTLINE.md), and the first
 implementation-ready slice is
@@ -219,16 +218,29 @@ and any future qualified-pair work are owned by
 [`MULTI_ENEMY_FUTURE_GATE.md`](MULTI_ENEMY_FUTURE_GATE.md). Floor 5 and rosters
 larger than two remain deferred.
 
-## Paused Program — Broad Manual Playtest
+## Active Priority — Broad Manual Playtest
 
-Status: `Paused — Resume After Opening Narrative Vertical Slice`
+Status: `Ready — Campaign Merged`
 
 The comprehensive class-kit, progression, balance, interface, and endgame pass
-remains defined by the current queue and evidence format. Resume it after the
-opening narrative slice has been implemented and evaluated. A reproducible
-defect may still be fixed when the fix is narrow and does not settle an
-unapproved design question. Numeric tuning requires a focused evidence row and
-promoted one-page spec.
+uses the current queue and evidence format. Start with a melee, caster, and
+companion build. Record two promotions, a failed boss attempt and recovery,
+resource use across a full floor, and the return to town. For quests, include an
+objective completed before acceptance and a second visit to the giver after turn-in.
+Compare frame time and memory through a shop, ordinary fight, and dialogue in
+windowed and fullscreen modes. Repeat the input checks with the touch overlay.
+Record reproducible defects and document evidence before changing balance values.
+
+The initial headless sample used 32 warm draws per mode at 1024×768. The
+dungeon background used during combat took about 20 ms median, compared
+with 4 ms for the shop and 3 ms for dialogue. Synthetic touch hit-testing
+passed in both display modes. These measurements exclude actual display
+presentation and remote streaming.
+
+The first seeded level-30 balance sample used eight fights per matchup.
+Against Aboleth, Crusader won eight fights while Wizard and Warlock lost
+all eight. Check the encounter with representative player builds and
+inspect the long caster fights before adjusting stats or abilities.
 
 ## Ready After The Foundational Refactors
 
