@@ -165,6 +165,7 @@ from .midgame import (
     Necromancer,
     NightHag,
     NightHag2,
+    ExpeditionSurvivor,
     Ogre,
     Owlbear,
     PitViper,

@@ -612,3 +612,31 @@ def test_joffrey_leaves_once_after_route_review_and_hexagonum(monkeypatch):
     assert quest_progress.can_offer_authored_quest(player, "A Bad Dream")
     assert "Joffrey" not in manager._build_patron_list()
     assert "Duty Soldier" in manager._build_patron_list()
+
+
+def test_late_act_two_scenes_remember_choices_across_visits(monkeypatch):
+    manager = object.__new__(inn.InnManager)
+    manager.player_char = player = _make_player(level=65)
+    manager.presenter = object()
+    player.main_story.update(joffrey_found=True, liora_reply="map")
+    player.special_inventory = dict.fromkeys(("Joffrey's Letter", "Polaris", "Infinitas"))
+    titles = []
+
+    class Scene:
+        def __init__(self, _presenter, title, **kwargs):
+            titles.append(title)
+
+        def show_dialogue(self, beats):
+            assert beats
+
+        def choose(self, prompt, options, **kwargs):
+            return 1
+
+    monkeypatch.setattr(inn, "StorySceneScreen", Scene)
+    for _ in range(4):
+        manager._show_late_relic_scene()
+        main_story.ensure_state(player)
+    assert len(titles) == 3
+    assert player.main_story["liora_letter_read"]
+    assert player.main_story["polaris_advice"] == "refuse"
+    assert player.main_story["infinitas_return"] == "help"

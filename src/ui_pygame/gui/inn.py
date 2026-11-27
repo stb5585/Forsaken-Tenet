@@ -52,6 +52,7 @@ class InnManager(TownScreenBase):
         self._popup_background_draw_func = lambda: inn_screen.draw_frame(do_flip=False)
         self._show_first_relic_aftermath()
         self._show_joffrey_departure()
+        self._show_late_relic_scene()
 
         while True:
             choice_idx = inn_screen.navigate(
@@ -240,9 +241,135 @@ class InnManager(TownScreenBase):
         )
         story["joffrey_departed"] = True
 
+    def _show_late_relic_scene(self):
+        story = main_story.ensure_state(self.player_char)
+        inventory = getattr(self.player_char, "special_inventory", {})
+        if (
+            "Joffrey's Letter" in inventory
+            and story["joffrey_found"]
+            and not story["liora_letter_read"]
+        ):
+            scene = StorySceneScreen(
+                self.presenter,
+                "The Thirsty Dog — The Folded Note",
+                participants=("Liora", "Oren"),
+                background_image="tavern.jpg",
+                player_char=self.player_char,
+            )
+            scene.show_dialogue(
+                (
+                    StoryBeat(
+                        "Liora",
+                        "That's my writing on the outside. I used to leave him notes in that locker.",
+                    ),
+                    StoryBeat(
+                        "Narrator",
+                        "She reads to the bottom, then turns the paper over to see if there's more.",
+                    ),
+                    StoryBeat("Liora", "The end of the loaf. I used to tell him the mice got it."),
+                    StoryBeat("Oren", "I wondered why you kept a bread tin upstairs."),
+                    StoryBeat(
+                        "Liora", "Here. Keep it with his map, would you? I'd lose it down here."
+                    ),
+                )
+            )
+            story["liora_letter_read"] = True
+        elif "Polaris" in inventory and story["polaris_advice"] is None:
+            scene = StorySceneScreen(
+                self.presenter,
+                "The Thirsty Dog — A Fifth-Floor Map",
+                participants=("Tavin", "Hooded Figure"),
+                background_image="tavern.jpg",
+                player_char=self.player_char,
+            )
+            scene.show_dialogue(
+                (
+                    StoryBeat(
+                        "Tavin",
+                        "Copy the golems' arrows. Four guards all pointing the same way? Good enough for me.",
+                    ),
+                    StoryBeat(
+                        "Hooded Figure",
+                        "One points into a wall. You counted the bricks before you put the star away.",
+                    ),
+                    StoryBeat(
+                        "Narrator",
+                        "The Figure has a finger on your folded map. You never felt them reach into your coat.",
+                    ),
+                )
+            )
+            answer = scene.choose(
+                "What do you do?",
+                ["Open the map and check.", "Take the map back."],
+                allow_cancel=False,
+            )
+            scene.show_dialogue(
+                (
+                    StoryBeat(
+                        "Narrator",
+                        (
+                            "The Figure lifts their hand. Under the last arrow, the surveyor has drawn a doorway. You remember solid stone.",
+                            "You button the map inside your coat. The Figure draws their stool aside to let you pass.",
+                        )[answer],
+                    ),
+                )
+            )
+            story["polaris_advice"] = main_story.ACT_TWO_ANSWERS["polaris_advice"][answer]
+        elif "Infinitas" in inventory and story["infinitas_return"] is None:
+            scene = StorySceneScreen(
+                self.presenter,
+                "The Thirsty Dog — Last Watch",
+                participants=("Pell", "Oren"),
+                background_image="tavern.jpg",
+                player_char=self.player_char,
+            )
+            scene.show_dialogue(
+                (
+                    StoryBeat(
+                        "Narrator",
+                        "Pell turns a cup upside down. A little beer spills onto the table.",
+                    ),
+                    StoryBeat("Pell", "Had half. Wanted the rest. Oren, would you take it away?"),
+                    StoryBeat("Oren", "Give it here. There's stew if you want some."),
+                    StoryBeat(
+                        "Pell",
+                        "I've been thinking about that dog. All those shifts and nobody once came down to relieve him. Who's relieving you?",
+                    ),
+                )
+            )
+            answer = scene.choose(
+                "What do you need tonight?",
+                [
+                    "A bed. Wake me in the morning.",
+                    "Someone to go over my pack.",
+                    "Supper. Then I'll go.",
+                ],
+                allow_cancel=False,
+            )
+            scene.show_dialogue(
+                (
+                    StoryBeat(
+                        "Oren",
+                        (
+                            "Take the little room. I'll keep the door downstairs oiled so it doesn't wake you.",
+                            "Put it here. Pell, hold the lamp. That bottom strap's nearly through.",
+                            "Then sit. It'll travel better in you than in a jar.",
+                        )[answer],
+                    ),
+                )
+            )
+            story["infinitas_return"] = main_story.ACT_TWO_ANSWERS["infinitas_return"][answer]
+
     def _random_patron_comment(self, patron: str) -> str | None:
         # Gather patron-specific dialogues eligible for the player's level
         combined_pool: list[str] = []
+        if patron == "Waitress" and getattr(self.player_char, "main_story", {}).get("liora_reply"):
+            return random.choice(
+                (
+                    "There's broth left. I'll warm you some.",
+                    "Pell sat with me this morning. Didn't say much. That helped.",
+                )
+            )
         dialogues = PATRON_DIALOGUES.get(patron)
         player_level = self.player_char.player_level()
         if dialogues:
@@ -266,6 +393,8 @@ class InnManager(TownScreenBase):
             if not self.player_char.quest_dict["Main"]["A Bad Dream"].get("Turned In"):
                 options.append("Liora")
             else:
+                if getattr(self.player_char, "main_story", {}).get("joffrey_found"):
+                    options.append("Liora")
                 options.append("Tavin")
         else:
             options.append("Liora")

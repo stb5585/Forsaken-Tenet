@@ -724,6 +724,20 @@ and Vesperion's argument.
 Infinitas completes the visible circle while revealing that endurance without
 the freedom to stop is only captivity stretched across time.
 
+### Act II in-game verification
+
+| Chapter | Path to exercise | Expected result |
+| --- | --- | --- |
+| 5 | Bring the locket to Liora with a partially filled wedding order. | Choose what to tell her. She stays at the inn, keeps the collected provisions for the church, and gives you the locker key. |
+| 5 | Open Joffrey's locker at the barracks, then revisit the inn. | The key yields his letter and five potions once. Liora reads the letter. With Luna recovered, she follows up on your account at the barracks. |
+| 5 | Take Tavin's search to the floor-two expedition camp. | Follow the crying to (11, 9). The expedition survivor uses Anguished Scream. This encounter is separate from Joffrey's cairn and locker rewards. |
+| 6 | Approach the dragon before and after recovering Polaris. Visit the inn and speak to the Figure. | Polaris marks the aggregate relic quest and opens the dragon route. The player can check the Figure's map claim or take the map back. The dragon contract awards the Class Ring. |
+| 7 | Get past Cerberus, recover Infinitas and return to the inn. | Pell hands back a half-finished beer. Choosing a bed, help with the pack, or supper before leaving gives a distinct reply and records the choice. |
+
+The tavern presents one pending late-relic scene per visit, oldest first. Returning
+after the letter, Polaris and Infinitas together takes three visits. Saves with a
+previously accepted boss contract can still finish it.
+
 ## Act III — The Forsaken Tenet
 
 ## Chapter 8 — The Closing Circle

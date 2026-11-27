@@ -139,7 +139,7 @@ def test_red_dragon_continuity_copy_separates_route_meanings():
     assert "Whatever truths the dragon carries" in red_dragon_text
     assert "not Kaelenon's restored self" in zahhak_text
     assert "draconic spirit" in zahhak_text
-    assert "progression victory is complete for every hero" in dracarys_text
+    assert "stair to the sixth floor" in dracarys_text
     for legacy_final_boss_framing in ("ultimate challenge...me", "futility", "my wrath"):
         assert legacy_final_boss_framing not in dracarys_text
 

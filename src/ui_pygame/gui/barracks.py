@@ -370,6 +370,45 @@ class BarracksManager(TownScreenBase):
                 )
             )
             story["hexagonum_report_seen"] = True
+        elif "Luna" in reports and story.get("liora_reply") and not story["luna_report_seen"]:
+            scene = StorySceneScreen(
+                self.presenter,
+                "Barracks — The Pen Register",
+                participants=("Caedmon", "Liora"),
+                background_image="barracks.jpg",
+                player_char=self.player_char,
+            )
+            scene.show_dialogue(
+                (
+                    StoryBeat(
+                        "Narrator",
+                        "Liora has laid the pen register open beside Luna. Every feeding has a date and a keeper's initials.",
+                    ),
+                    StoryBeat(
+                        "Liora",
+                        {
+                            "tracks": "Did you ever find whose boots those were?",
+                            "burial": "Will somebody sit with him until we can bring him home?",
+                            "map": "I want a copy of that map. With the spot marked, please.",
+                        }[story["liora_reply"]],
+                    ),
+                    StoryBeat(
+                        "Caedmon",
+                        {
+                            "tracks": "Still asking. Two keepers never signed out.",
+                            "burial": "I'll take first watch myself.",
+                            "map": "Take mine. I know the way.",
+                        }[story["liora_reply"]],
+                    ),
+                    StoryBeat("Liora", "Did Joffrey know what you kept down there?"),
+                    StoryBeat("Caedmon", "He asked me once. I told him to stick to his survey."),
+                    StoryBeat(
+                        "Narrator",
+                        "He turns the register toward her. This time he waits while she reads.",
+                    ),
+                )
+            )
+            story["luna_report_seen"] = True
 
     def _review_opening_ledgers(self, background_draw_func=None) -> None:
         """Let the player inspect the three contradictory patrol entries in any order."""

@@ -25,7 +25,7 @@ def test_enemies_facade_preserves_all_split_class_exports():
         for name, implementation in _module_enemy_classes(module).items()
     }
 
-    assert len(direct_exports) == 144
+    assert len(direct_exports) == 145
     for name, implementation in direct_exports.items():
         assert getattr(enemies, name) is implementation
 

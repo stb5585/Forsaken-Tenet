@@ -909,3 +909,22 @@ def test_wizards_folly_turn_in_shows_nimue_followup_with_renderer(monkeypatch):
     assert rendered
     assert "The water settles." in rendered[-1]
     assert "Nimue remembers." in rendered[-1]
+
+
+def test_locket_return_keeps_liora_and_provisions_and_grants_one_locker_key(monkeypatch):
+    player = _make_player(level=65)
+    player.main_story = {"joffrey_found": True, "joffrey_departed": True}
+    quest = _content_quest("Waitress", "Main", "A Bad Dream")
+    player.quest_dict["Main"]["A Bad Dream"] = quest
+    beef = {"Collected": 7, "Completed": False}
+    player.quest_dict["Side"]["Where's the Beef?"] = beef
+    manager = _manager(player, quest_text_renderer=lambda text: None)
+    scene = SimpleNamespace(show_dialogue=lambda beats: None, choose=lambda *a, **k: 1)
+    monkeypatch.setattr(quest_manager, "StorySceneScreen", lambda *a, **k: scene)
+    monkeypatch.setattr(quest_manager, "LevelUpScreen", FakeLevelUpScreen)
+    assert manager.turn_in_completed_quest("A Bad Dream", "Main")
+    assert not manager.turn_in_completed_quest("A Bad Dream", "Main")
+    assert player.main_story["liora_reply"] == "tracks"
+    assert beef["Who"] == "Waitress" and beef["Collected"] == 7
+    assert [call[0] for call in player.inventory_calls].count("Brass Key") == 1
+    assert all("Where's the Beef?" not in group for group in manager._eligible_quests("Busboy")[1])

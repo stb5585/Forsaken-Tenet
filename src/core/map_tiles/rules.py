@@ -345,13 +345,13 @@ RELIC_DISCOVERY_TEXT = {
         "\n\nOn the back of a key tag someone wrote: I locked the door to keep her safe. There was room beneath for a reply. The space is blank."
     ),
     "Polaris": (
-        "Polaris catches a fixed northern light, pointing onward through the dark. "
-        "The way ahead is no safer, only harder to lose."
+        "One golem still points at a doorway bricked up years ago. You count the bricks twice. "
+        "You rub the grit off Polaris with your sleeve. A chipped point nicks your thumb."
         "\n\nA route drawn on linen ends halfway across the cloth. The same hand has written beside it: He says he can see the rest from where he stands."
     ),
     "Infinitas": (
-        "Infinitas turns without beginning or end, holding the shape of endurance. "
-        "The circle closes in your palm, and still the road continues."
+        "Six grooves run around the plinth, worn to the width of a paw. "
+        "The relief slate beside the door still bears the same name on every line. As you lift Infinitas, you can finally hear your own steps."
         "\n\nA scrap is caught in the groove beneath the ring. The writing trails downhill: Tomorrow, if he asks me to keep walking, I hope he forgets to ask what I want."
     ),
 }

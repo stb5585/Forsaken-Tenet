@@ -38,6 +38,12 @@
             "You have obtained the Unobtainium!"
             ]
     },
+    "Expedition Survivor": {
+        "Text": [
+            "The woman kneeling by the coat has stitched the expedition badge back onto its sleeve. She pulls the blanket up under her companion's chin.",
+            "‘We sent the boy for help. He's coming back with a litter.’ You take one step closer. Her scream drives you against the wall."
+        ]
+    },
     "Joffrey at the Pens": {
         "Text": [
             "The chalk stops halfway through an arrow. Joffrey lies below it with one hand inside the bent bars of a pen. His wrist is cold.",
@@ -75,19 +81,10 @@
             ]
     },
     "Joffrey's Key": {
-        "Text" : [
-            "That key that you have...that's one of our storage locker keys.",
-            "You say you got this from the waitress at the tavern?",
-            "She attacked you?! Grief can break a person in ways no sword should have to answer.",
-            "Maybe this key is to his locker. Let me see...yes it is.",
-            "All that's left inside are some potions and this letter.",
-            "'My love, I know you have questions but the answers will not be to your liking...",
-            "forgive me but I could not resist his will. If you are reading this, it means I am dead...",
-            "please remember that above all, I love you.' -Joffrey",
-            "The Sergeant reads the last line twice, then folds the letter with unusual care.",
-            "'Whatever Joffrey meant, he loved her. Do not let the rest of this place make you forget that.'",
-            "Keep your wits about you, there's evil afoot.",
-            "Since there is no one left to claim his things, you can have what's left. Put them to good use."
+        "Text": [
+            "Caedmon turns the brass key twice. A folded note rests on top of five stoppered bottles. Liora has pencilled her name on the flap.",
+            "Lio — Tell Pell I've found room for his three extra tables. He'll have to get them down the barracks stairs himself. Caedmon had me leave both marks by the drain. I keep thinking of Edrin trying to count junctions with all that blood in his eyes. If the next lot get turned round, I'll go myself. Save me the end of the loaf. Love, J.",
+            "Caedmon holds out the note. ‘Take that to her. You can use the bottles.’"
         ]
     },
     "Power Up": {

@@ -87,6 +87,13 @@ def _advance_or_complete_quest(quest_name: str, quest_data: dict[str, Any]) -> s
     return f"You have completed the quest {quest_name}."
 
 
+CHURCH_PROVISIONS = {
+    "Who": "Waitress",
+    "Start Text": "The church kitchen is short again. I still have the big pot we bought for the wedding. Bring me twelve portions and I'll put it to use.",
+    "Help Text": "Bring the meat here. The church sent over two lads to carry the pot.",
+    "End Text": "That's enough for tonight and breakfast besides. Here, I put your potion aside.",
+}
+
 JOFFREY_CHALK_POSITION = (15, 13, 4)
 JOFFREY_BODY_POSITION = (15, 15, 4)
 
@@ -298,6 +305,13 @@ def can_offer_authored_quest(player, quest_name: str) -> bool:
     """Apply story-state prerequisites not expressible as a turned-in quest."""
     if quest_name == "A Bad Dream":
         return bool(main_story.ensure_state(player)["joffrey_departed"])
+    if quest_name == "In the Day of Our Lord":
+        return bool(player.quest_dict.get("Main", {}).get("A Bad Dream", {}).get("Completed"))
+    if quest_name == "Dracarys":
+        holy = player.quest_dict.get("Main", {}).get(HOLY_RELICS, {})
+        return bool(
+            holy.get("Polaris Recovered") or "Polaris" in getattr(player, "special_inventory", {})
+        )
     if quest_name != "Cry Havoc!":
         return True
     uncertain = ensure_quest_categories(player)["Main"].get(UNCERTAIN_REPORTS)
@@ -440,6 +454,8 @@ def ensure_holy_relics_quest(
         main_quests[HOLY_RELICS] = quest_data
 
     quest_data.setdefault("Stage", "collecting")
+    if "Polaris" in getattr(player, "special_inventory", {}):
+        quest_data["Polaris Recovered"] = True
     quest_data.setdefault("Total", len(RELIC_NAMES))
     quest_data["Help Text"] = _holy_relics_help(relic_count(player))
 

@@ -939,8 +939,8 @@ def test_relic_discovery_text_mapping_and_fallback():
         "Quadrata": "measured and contained",
         "Hexagonum": "Something patient",
         "Luna": "silence around it",
-        "Polaris": "harder to lose",
-        "Infinitas": "road continues",
+        "Polaris": "chipped point nicks your thumb",
+        "Infinitas": "relief slate",
     }
 
     for relic_name, phrase in expected.items():

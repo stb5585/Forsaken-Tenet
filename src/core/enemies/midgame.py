@@ -1100,6 +1100,35 @@ class NightHag2(NightHag):
         ]
 
 
+class ExpeditionSurvivor(Humanoid):
+    """The last living member of the expedition at the second-floor cairn."""
+
+    def __init__(self):
+        super().__init__(
+            name="Expedition Survivor",
+            health=485,
+            mana=276,
+            strength=18,
+            intel=24,
+            wisdom=30,
+            con=15,
+            charisma=15,
+            dex=20,
+            attack=40,
+            defense=51,
+            magic=72,
+            magic_def=68,
+            exp=2500,
+        )
+        self.gold = 1000
+        self.equipment["Weapon"] = items.Dirk()
+        self.action_stack = [{"ability": "Attack", "priority": ActionPriority.NORMAL}]
+        scream = abilities.WidowsWail()
+        scream.name = "Anguished Scream"
+        self.spellbook["Skills"][scream.name] = scream
+        self.action_stack.insert(0, {"ability": scream.name, "priority": ActionPriority.HIGH})
+
+
 class Treant(Fey):
 
     def __init__(self):

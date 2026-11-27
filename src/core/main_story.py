@@ -145,10 +145,21 @@ for _guardian, _definition in GUARDIAN_TRIAL_DEFINITIONS.items():
 
 ROUTE_ORDERS = ("Escort", "Exception", "SignOut")
 
+ACT_TWO_ANSWERS = {
+    "liora_reply": ("burial", "tracks", "map"),
+    "polaris_advice": ("inspect", "refuse"),
+    "infinitas_return": ("rest", "help", "continue"),
+}
+
 DEFAULT_MAIN_STORY_STATE = {
     "route_order": None,
     "joffrey_departed": False,
     "joffrey_found": False,
+    "liora_letter_read": False,
+    "luna_report_seen": False,
+    "liora_reply": None,
+    "polaris_advice": None,
+    "infinitas_return": None,
     "joffrey_chalk_seen": False,
     "quadrata_report_seen": False,
     "hexagonum_report_seen": False,
@@ -243,6 +254,10 @@ def normalize_state(state: object = None) -> dict[str, object]:
                     if normalized_archetype in {*CLASS_VOLUNTAS_ARCHETYPES, "wanderer"}
                     else None
                 )
+                continue
+            if key in ACT_TWO_ANSWERS:
+                answer = state.get(key)
+                normalized[key] = answer if answer in ACT_TWO_ANSWERS[key] else None
                 continue
             if key == "route_order":
                 order = state.get(key)

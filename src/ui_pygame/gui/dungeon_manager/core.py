@@ -233,8 +233,7 @@ class DungeonCoreMixin:
         if self.player_char.quest_dict["Side"]["Something to Cry About"].get("Completed"):
             return
 
-        # Dead body is at approximately (18, 12, 2) - you can adjust these coords if needed
-        dead_body_x, dead_body_y = 18, 12
+        dead_body_x, dead_body_y = 11, 9
         player_x = self.player_char.location_x
         player_y = self.player_char.location_y
 

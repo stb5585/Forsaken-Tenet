@@ -719,9 +719,18 @@ class DungeonInteractionMixin:
     def _interact_dead_body(self, body_tile):
         """Handle dead body interaction."""
         departed = getattr(self.player_char, "main_story", {}).get("joffrey_departed")
-        if departed and not self.player_char.quest_dict.get("Main", {}).get("A Bad Dream", {}).get(
-            "Turned In"
-        ):
+        if departed:
+            search = self.player_char.quest_dict.get("Side", {}).get("Something to Cry About", {})
+            if search and not search.get("Completed"):
+                self._show_special_event_dialogue(
+                    "Expedition Survivor", title="The Expedition Camp"
+                )
+                self._play_sfx("waitress_wail")
+                self._refresh_cached_frame()
+                self.combat_manager.start_combat(
+                    self.player_char, enemies.ExpeditionSurvivor(), body_tile
+                )
+                return
             self.add_message("This soldier wears a different patrol clasp.")
             return
         # Check for quest item pickup

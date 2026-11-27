@@ -158,6 +158,14 @@ class QuestManager:
                 main_list.append(q)
         for lvl, q in data.get("Side", {}).items():
             if level >= int(lvl):
+                if (
+                    getattr(self.player_char, "main_story", {}).get("liora_reply")
+                    and "Where's the Beef?" in q
+                ):
+                    q = dict(q)
+                    beef = q.pop("Where's the Beef?")
+                    if giver == "Waitress":
+                        q["Where's the Beef?"] = {**beef, **quest_progress.CHURCH_PROVISIONS}
                 side_list.append(q)
         return main_list, side_list
 
@@ -333,6 +341,10 @@ class QuestManager:
         if quest_name == "Uncertain Reports":
             self._show_uncertain_reports_completion()
         if quest_name in ("Uncertain Reports", "Bring Him Home", "Rookie Mistake", "Lapidation"):
+            end_text = ""
+        if quest_name == "A Bad Dream" and getattr(self.player_char, "main_story", {}).get(
+            "joffrey_found"
+        ):
             end_text = ""
         if end_text and show_end_text:
             if self.quest_text_renderer:
@@ -587,6 +599,66 @@ class QuestManager:
 
         if quest_name == "A Bad Dream":
             self._remove_lucky_locket_for_bad_dream()
+
+            if getattr(self.player_char, "main_story", {}).get("joffrey_found"):
+                scene = StorySceneScreen(
+                    self.presenter,
+                    "The Thirsty Dog — The Locket",
+                    participants=("Liora", "Tavin"),
+                    background_image="tavern.jpg",
+                    player_char=self.player_char,
+                )
+                scene.show_dialogue(
+                    (
+                        StoryBeat(
+                            "Narrator",
+                            "Liora reaches across the counter. The chain slides into her palm.",
+                        ),
+                        StoryBeat(
+                            "Liora",
+                            "It still catches. Here, you have to lift the clasp a little. Where was he?",
+                        ),
+                    )
+                )
+                answer = scene.choose(
+                    "What do you tell her?",
+                    [
+                        "By the pens. I covered him with stones.",
+                        "He reached the bars. Someone made it out the other side.",
+                        "Show her his last chalk mark on the map.",
+                    ],
+                    allow_cancel=False,
+                )
+                scene.show_dialogue(
+                    (
+                        StoryBeat(
+                            "Liora",
+                            (
+                                "Thank you for staying with him.",
+                                "You saw tracks? Show Caedmon where they went.",
+                                "Right down there? I kept looking at the fork.",
+                            )[answer],
+                        ),
+                        StoryBeat(
+                            "Tavin", "I could have stood in the doorway. Do you ever wish I had?"
+                        ),
+                        StoryBeat("Liora", "I wish he'd come home. Give me a minute, Tav."),
+                        StoryBeat(
+                            "Narrator",
+                            "She threads the chain through her apron tie and counts three old keys onto the counter. A little brass one follows.",
+                        ),
+                        StoryBeat(
+                            "Liora",
+                            "The brass one's for his locker. Bring me anything with my name on it.",
+                        ),
+                    )
+                )
+                self.player_char.main_story["liora_reply"] = ("burial", "tracks", "map")[answer]
+                self.player_char.modify_inventory(items.BrassKey(), rare=True)
+                beef = self.player_char.quest_dict.get("Side", {}).get("Where's the Beef?")
+                if beef and not beef.get("Turned In"):
+                    beef.update(quest_progress.CHURCH_PROVISIONS)
+                return
 
             # Show Busboy special event
             show_special_event_text("Busboy")

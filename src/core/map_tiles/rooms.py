@@ -507,6 +507,11 @@ class DeadBody(SpecialTile):
 
     def intro_text(self, game):
         intro_str = super().intro_text(game)
+        if getattr(game.player_char, "main_story", {}).get("joffrey_departed"):
+            return (
+                intro_str
+                + "A torn expedition coat covers a fallen soldier. Someone has mended the cuffs.\n"
+            )
         if not self.read:
             intro_str += "The body of a soldier lies in a heap on the floor.\n"
         else:
@@ -523,6 +528,12 @@ class DeadBody(SpecialTile):
     def modify_player(self, game):
         self.adjacent_visited(game.player_char)
         self.visited = True
+        if getattr(game.player_char, "main_story", {}).get("joffrey_departed"):
+            search = game.player_char.quest_dict["Side"].get("Something to Cry About", {})
+            if search and not search.get("Completed") and not self.defeated:
+                game.special_event("Expedition Survivor")
+                self.enter_combat(game.player_char)
+            return
         if "Something to Cry About" in game.player_char.quest_dict["Side"] and not self.defeated:
             if not game.player_char.quest_dict["Side"]["Something to Cry About"]["Completed"]:
                 game.special_event("Waitress")
@@ -539,7 +550,11 @@ class DeadBody(SpecialTile):
                 self.read = True
 
     def enter_combat(self, player_char):
-        self.enemy = enemies.NightHag2()
+        self.enemy = (
+            enemies.ExpeditionSurvivor()
+            if getattr(player_char, "main_story", {}).get("joffrey_departed")
+            else enemies.NightHag2()
+        )
         player_char.state = "fight"
 
     def available_actions(self, player_char):

@@ -280,3 +280,19 @@ def test_joffrey_discovery_follows_departure_and_only_awards_locket_once():
     assert player.quest_dict["Main"]["A Bad Dream"]["Completed"]
     assert quest_progress.joffrey_site(player, tile) == "burial_site"
     assert not quest_progress.recover_joffrey(player, tile)
+
+
+def test_late_act_two_boss_rooms_follow_their_quest_milestones():
+    from src.core import map_tiles
+
+    player = TestGameState.create_player()
+    domingo = map_tiles.DomingoBossRoom(15, 16, 4)
+    dragon = map_tiles.RedDragonBossRoom(0, 0, 5)
+    assert domingo.story_blocker(player)
+    assert dragon.story_blocker(player)
+    player.quest_dict["Main"]["A Bad Dream"] = {"Completed": True}
+    assert not domingo.story_blocker(player)
+    quest_progress.ensure_holy_relics_quest(player)
+    quest_progress.collect_relic(player, 5)
+    assert player.quest_dict["Main"]["The Holy Relics"]["Polaris Recovered"]
+    assert not dragon.story_blocker(player)
