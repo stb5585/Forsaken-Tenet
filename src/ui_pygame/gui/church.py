@@ -625,9 +625,9 @@ class ChurchManager(TownScreenBase):
 
     def save_game(self):
         """Save the game at the church."""
-        # Use character name as filename (always overwrites)
-        char_name = self.player_char.name.lower().replace(" ", "_")
-        filename = f"{char_name}.save"
+        filename = SaveManager.player_save_filename(
+            self.player_char.name, getattr(self.player_char, "save_slot", None)
+        )
         if SaveManager.save_player(self.player_char, filename):
             popup = ConfirmationPopup(
                 self.presenter,

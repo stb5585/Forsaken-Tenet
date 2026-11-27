@@ -239,6 +239,9 @@ class PlayerDataSerializer:
             "bounty_board_state": town_core.normalize_bounty_board_state(
                 getattr(player, "bounty_board_state", None)
             ),
+            "bounty_offers": QuestDataSerializer.serialize_bounty_offers(
+                getattr(player, "bounty_offers", {})
+            ),
             "kill_dict": player.kill_dict,
             "last_defeated_enemy": getattr(player, "last_defeated_enemy", None),
             "transient_companion": getattr(player, "transient_companion", None),
@@ -506,6 +509,9 @@ class PlayerDataSerializer:
             data.get("quest_dict", {"Bounty": {}, "Main": {}, "Progression": {}, "Side": {}})
         )
         quest_progress.migrate_relic_story_quests(player)
+        player.bounty_offers = QuestDataSerializer.deserialize_bounty_offers(
+            data.get("bounty_offers", {})
+        )
         player.bounty_board_state = town_core.normalize_bounty_board_state(
             data.get("bounty_board_state")
         )

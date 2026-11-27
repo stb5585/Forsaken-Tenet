@@ -659,6 +659,7 @@ class PygameGame:
         fade_to_black(self.presenter, duration_ms=700, hold_ms=180)
 
         self.player_char = player_char
+        self.bounties = {}
         self.initialize_managers()  # Initialize location managers
 
         return player_char
@@ -697,7 +698,9 @@ class PygameGame:
                 player_char._suppress_heal_message = True
             # Skip blocking message; jump straight into the game
 
+            player_char.save_slot = selected_file
             self.player_char = player_char
+            self.bounties = getattr(player_char, "bounty_offers", {})
             self.initialize_managers()
             return player_char
 
@@ -770,8 +773,8 @@ class PygameGame:
         self.bounties = {}
         bounty_board = town.BountyBoard()
         bounty_board.generate_bounties(self)
-        if bounty_board.bounties:
-            self.bounties = {bounty["enemy"].name: bounty for bounty in bounty_board.bounties}
+        self.bounties.update((bounty["enemy"].name, bounty) for bounty in bounty_board.bounties)
+        self.player_char.bounty_offers = self.bounties
 
     def show_intro(self):
         """Show the game introduction story."""
@@ -1840,17 +1843,20 @@ class PygameGame:
             if choice == "Exit Menu":
                 break
 
-    def save_game(self):
+    def save_game(self) -> bool:
         """Save the current game."""
-        filename = f"{str(self.player_char.name).lower()}.save"
+        filename = SaveManager.player_save_filename(
+            self.player_char.name, getattr(self.player_char, "save_slot", None)
+        )
 
         if SaveManager.save_player(self.player_char, filename):
             self.presenter.show_message(
                 f"Game saved successfully!\n\nSaved to: {USER_SAVE_DIR / filename}"
             )
             self.load_files = SaveManager.list_saves()
-        else:
-            self.presenter.show_message("Save failed. Please try again.")
+            return True
+        self.presenter.show_message("Save failed. Please try again.")
+        return False
 
     def cleanup(self):
         """Clean up resources."""

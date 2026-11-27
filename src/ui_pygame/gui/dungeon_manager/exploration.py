@@ -724,8 +724,8 @@ class DungeonExplorationMixin:
                 flush_events=True,
                 require_key_release=True,
             ):
-                self.game.save_game()
-                self.add_message("Game saved!")
+                if self.game.save_game():
+                    self.add_message("Game saved!")
 
         elif menu_options[choice] == "Quit Game (No Save)":
             from ..confirmation_popup import ConfirmationPopup

@@ -326,7 +326,7 @@ def _make_manager(monkeypatch):
     presenter = _make_presenter()
     player = _make_player()
     game = SimpleNamespace(special_event=lambda _name: None, save_calls=[])
-    game.save_game = lambda: game.save_calls.append("save")
+    game.save_game = lambda: game.save_calls.append("save") or True
 
     monkeypatch.setattr(
         dungeon_manager.core, "DungeonRenderer", lambda presenter: SimpleNamespace()
@@ -1788,8 +1788,10 @@ def test_final_room_reentry_before_true_final_shows_liminal_blocker(monkeypatch)
     )
 
 
-def test_liminal_guide_reveals_hooded_figure_and_saves(monkeypatch):
+@pytest.mark.parametrize("save_ok", [True, False])
+def test_liminal_guide_reveals_hooded_figure_and_saves(monkeypatch, save_ok):
     manager, presenter, player, game = _make_manager(monkeypatch)
+    game.save_game = lambda: game.save_calls.append("save") or save_ok
     shown = []
     presenter.show_message = lambda *args, **kwargs: shown.append((args, kwargs))
     manager._popup_menu = lambda title, options, **kwargs: 0
@@ -1806,11 +1808,11 @@ def test_liminal_guide_reveals_hooded_figure_and_saves(monkeypatch):
     manager._interact_liminal_guide(guide_tile)
 
     assert player.main_story["liminal_gap_guide_revealed"] is True
-    assert player.main_story["liminal_gap_guide_save_used"] is True
-    assert guide_tile.read is True
+    assert player.main_story["liminal_gap_guide_save_used"] is save_ok
+    assert guide_tile.read is save_ok
     assert game.save_calls == ["save"]
     assert [call[1]["title"] for call in shown] == ["The Hooded Figure", "The Hooded Figure"]
-    assert "The Hooded Figure anchors your progress." in manager.messages
+    assert ("The Hooded Figure anchors your progress." in manager.messages) is save_ok
 
 
 def test_liminal_guide_reviews_awakened_guardian_clues(monkeypatch):
@@ -2707,8 +2709,9 @@ def test_liminal_exit_returns_after_true_final_unlock(monkeypatch):
     assert "You return to the final threshold with Voluntas awakened." in manager.messages
 
 
-def test_final_room_true_final_reentry_uses_true_final_prelude(monkeypatch):
-    manager, presenter, player, _game = _make_manager(monkeypatch)
+@pytest.mark.parametrize("save_ok", [True, False])
+def test_final_room_true_final_reentry_uses_true_final_prelude(monkeypatch, save_ok):
+    manager, presenter, player, game = _make_manager(monkeypatch)
     manager._refresh_cached_frame = lambda: None
     manager._mark_view_dirty = lambda: None
     presenter.render_menu = lambda prompt, options: 0
@@ -2728,6 +2731,13 @@ def test_final_room_true_final_reentry_uses_true_final_prelude(monkeypatch):
     monkeypatch.setattr(
         "src.ui_pygame.gui.dungeon_manager.interactions.StorySceneScreen", TavernScene
     )
+    checkpoints = []
+
+    def save_checkpoint():
+        checkpoints.append((player.location_z, player.state, dict(player.main_story)))
+        return save_ok
+
+    game.save_game = save_checkpoint
     shown = []
     combat_calls = []
     presenter.show_message = lambda *args, **kwargs: shown.append((args, kwargs))
@@ -2792,7 +2802,11 @@ def test_final_room_true_final_reentry_uses_true_final_prelude(monkeypatch):
     assert player.main_story["vesperion_choice_argument_seen"] is True
     assert player.main_story["vesperion_true_final_defeated"] is True
     assert player.main_story["main_story_complete"] is True
-    assert player.quit is True
+    assert player.quit is save_ok
+    assert len(checkpoints) == 1
+    floor, state, story = checkpoints[0]
+    assert (floor, state) == (0, "normal")
+    assert story["main_story_complete"] and story["epilogue_choice"] == "bread"
     assert player.state == "normal"
     assert manager.running is False
     joined_messages = " ".join(manager.messages)

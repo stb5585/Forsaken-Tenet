@@ -83,8 +83,9 @@ SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy \
   ./dist/forsaken-tenet/forsaken-tenet --smoke-test
 ```
 
-Release artifacts are built by manual dispatch or a published GitHub release;
-ordinary pushes perform validation only.
+Manual dispatches and published GitHub releases build and upload the Linux
+artifact. Pull requests that touch packaging or game resources also build and
+smoke-test it. Ordinary pushes run source validation.
 
 ## Terminal Development
 

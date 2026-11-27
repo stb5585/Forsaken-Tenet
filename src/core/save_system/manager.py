@@ -3,7 +3,7 @@
 import json
 import os
 from dataclasses import dataclass
-from typing import TypedDict
+from typing import NotRequired, TypedDict
 
 from src.paths import USER_SAVE_DIR, USER_TEMP_DIR
 
@@ -48,6 +48,7 @@ class SaveFileMetadata(TypedDict):
     schema_version: int | None
     compatibility_status: SaveCompatibilityStatus
     status_message: str
+    preview_player: NotRequired[object | None]
 
 
 class SaveManager:
@@ -130,11 +131,17 @@ class SaveManager:
             raise
 
     @staticmethod
+    def player_save_filename(player_name: str, loaded_slot: str | None = None) -> str:
+        """Keep the selected save slot, or use a shared filename for new games."""
+        if loaded_slot and SaveManager.is_valid_save_filename(loaded_slot):
+            return loaded_slot
+        return f"{player_name.lower().replace(' ', '_')}.save"
+
+    @staticmethod
     def save_player(player: object, filename: str, is_tmp: bool = False) -> bool:
         """Save player to file."""
-        SaveManager.ensure_dirs()
-
         try:
+            SaveManager.ensure_dirs()
             filepath = SaveManager._resolve_save_path(filename, is_tmp=is_tmp)
             data = PlayerDataSerializer.serialize(player)
             SaveManager._write_json_atomic(filepath, data)
@@ -232,7 +239,9 @@ class SaveManager:
         return sorted(saves)
 
     @staticmethod
-    def describe_save_file(filename: object, is_tmp: bool = False) -> SaveFileMetadata:
+    def describe_save_file(
+        filename: object, is_tmp: bool = False, *, include_preview: bool = False
+    ) -> SaveFileMetadata:
         """Return filesystem and schema-compatibility metadata for one save entry."""
         metadata: SaveFileMetadata = {
             "filename": filename,
@@ -284,7 +293,18 @@ class SaveManager:
                     metadata["compatibility_status"] = status
                     metadata["schema_version"] = version
                     metadata["status_message"] = message
-                except (OSError, TypeError, ValueError, json.JSONDecodeError):
+                    if include_preview and status is SaveCompatibilityStatus.COMPATIBLE:
+                        metadata["preview_player"] = PlayerDataSerializer.deserialize(
+                            payload, skip_tiles=True
+                        )
+                except (
+                    AttributeError,
+                    IndexError,
+                    KeyError,
+                    OSError,
+                    TypeError,
+                    ValueError,
+                ):
                     metadata["compatibility_status"] = SaveCompatibilityStatus.UNREADABLE
                     metadata["status_message"] = "Save file is unreadable or corrupted."
         metadata["loadable"] = (

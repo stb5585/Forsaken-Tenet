@@ -83,6 +83,24 @@ class QuestDataSerializer:
         return serialized
 
     @staticmethod
+    def serialize_bounty_offers(offers: dict[str, Any]) -> dict[str, Any]:
+        """Encode posted offers using the same registry references as accepted bounties."""
+        encoded = QuestDataSerializer._serialize_bounties(
+            {name: [offer, 0, False] for name, offer in offers.items()}
+        )
+        return {enemy_id: entry[0] for enemy_id, entry in encoded.items()}
+
+    @staticmethod
+    def deserialize_bounty_offers(offers: object) -> dict[str, Any]:
+        """Hydrate posted offers from a current or older save."""
+        if not isinstance(offers, dict):
+            raise SaveValidationError("bounty_offers", "expected an object")
+        decoded = QuestDataSerializer._deserialize_bounties(
+            {enemy_id: [offer, 0, False] for enemy_id, offer in offers.items()}
+        )
+        return {name: entry[0] for name, entry in decoded.items()}
+
+    @staticmethod
     def _serialize_bounties(quests: dict[str, Any]) -> dict[str, Any]:
         encoded: dict[str, Any] = {}
         for quest_info in quests.values():
