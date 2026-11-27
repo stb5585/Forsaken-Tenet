@@ -4536,3 +4536,47 @@ def test_scene_renderer_open_adjacent_side_wall_door_keeps_side_blocker_visible(
     assert ("d1:right_blocker", "wall") in calls
 
     pygame.quit()
+
+
+def test_matching_structure_reuses_pixels_but_redraws_live_overlays(monkeypatch):
+    pygame.init()
+    try:
+        screen = pygame.display.set_mode((320, 240))
+        presenter = DummyPresenter(width=320, height=240, screen=screen)
+        renderer = SceneRenderer(presenter, TextureLibrary())
+        player = DummyPlayer()
+        world = {(0, 0, 1): OpenTile(), (1, 0, 1): OpenTile(), (2, 0, 1): LockedDoor()}
+        special_frames = []
+        original = renderer._render_special_tiles
+
+        def render_specials(scene, zones):
+            special_frames.append(scene)
+            original(scene, zones)
+
+        monkeypatch.setattr(renderer, "_render_special_tiles", render_specials)
+        screen.fill("green")
+        renderer.render(player, world)
+        layer = renderer._structure_layer
+        pixels = pygame.image.tobytes(screen, "RGB")
+        assert layer is not None
+
+        screen.fill("magenta")
+        _, height = screen.get_size()
+        view_width, _ = renderer._get_viewport_size()
+        screen.fill("green", (view_width, 0, screen.get_width() - view_width, height))
+        renderer.render(player, world)
+        assert renderer._structure_layer is layer
+        assert pygame.image.tobytes(screen, "RGB") == pixels
+        assert len(special_frames) == 2
+
+        world[(2, 0, 1)] = OpenDoor()
+        renderer.render(player, world)
+        assert renderer._structure_layer is not layer
+        door_layer = renderer._structure_layer
+
+        presenter.screen = pygame.display.set_mode((400, 300))
+        renderer.render(player, world)
+        assert renderer._structure_layer is not door_layer
+        assert renderer._structure_layer.get_size() == renderer._get_viewport_size()
+    finally:
+        pygame.quit()
