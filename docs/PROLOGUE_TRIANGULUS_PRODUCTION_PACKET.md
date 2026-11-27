@@ -82,7 +82,7 @@ yet known.
 | C9 | Chapter 2 | Relic room at `(19, 0, 1)` | Hero, Triangulus response | Choose one of four identity lenses. | Record Chosen Name, Deeds, Memory, or Next Choice; recover Triangulus; advance `Uncertain Reports` to report-back. |
 | C10 | Chapter 2 | Barracks | Caedmon, Joffrey, Edrin, hero | Turn in `Uncertain Reports`. | Caedmon identifies a possible six-part pattern, marks uncertainty explicitly, and creates `The Holy Relics`. Edrin's recognition ties the proof back to the opening loss. |
 | C11 | Chapter 2 | The Thirsty Dog | Oren, Liora, Joffrey, Tavin, Pell, hero | Hear short reactions; no new mandatory choice. | Show the relic's effect on ordinary people. Tavin asks a subtle identity question; no one supplies the correct interpretation. |
-| C12 | Chapter 2 | Town threshold after C11 | Hooded Figure, hero | Listen or leave; either completes the beat. | The Hooded Figure respects the hero's answer without commanding a meaning, then withdraws. |
+| C12 | Chapter 2 | Town threshold after C11 | Hooded Figure, hero | Challenge the Figure or keep walking. | The Figure knows what the hero said in private. Their interest feels intrusive and their purpose stays hidden. |
 
 ## Cast Authority
 
@@ -246,14 +246,13 @@ Guardian foundation.
 
 - Timmy returns alive through the existing encounter and `Timmy Home` event.
   Both moments now use staged dialogue: his discovery precedes the unchanged
-  automatic return to town, and his post-settlement reunion includes both
-  parents and Caedmon without changing rewards or Main-story gates.
-  Oren, Liora, and Caedmon receive short repeat-safe acknowledgement lines.
+  automatic return to town. At turn-in Caedmon steps aside as the parents reach Timmy. The family have the last beat before rewards settle.
 - The Rookie remains dead. Preserve the body at `(8, 8, 1)`, the two-Zombie
   encounter, the `Dead Soldier` inventory state, death-drop recovery, burial
   turn-in, rewards, and tests.
 - Rewrite victim-blaming copy. Caedmon accepts responsibility for sending an
   unready recruit into a culture that praised risk.
+- At the burial, Caedmon recalls telling the recruit he was ready. The Priest helps lower him, and a fellow soldier pins the patrol clasp to his marker.
 - Neither outcome gates `The Butcher`, `Cry Havoc!`, or Triangulus.
 - If both resolve, the ledger shows the intended contrast: one name returned to
   a family and one returned for burial.
@@ -382,99 +381,44 @@ After the answer, grant Triangulus exactly once, set `Uncertain Reports` to
 
 ### C10 — Barracks Report
 
-Turning in `Uncertain Reports` remains the sole event that creates
-`The Holy Relics`. Caedmon resolves the expedition first:
+Turning in `Uncertain Reports` creates `The Holy Relics`. The hero reports the patrol’s fate to Edrin before Caedmon opens the ledgers.
 
-- **Caedmon:** “Before we discuss what you recovered, we finish the patrol
-  account.”
-- **Edrin:** “Tomas?”
-- **Caedmon:** “Found dead at the sealed threshold. Mira's route marks continued
-  beyond him, but they ended without a body.”
-- **Edrin:** “Still missing is not the same as gone.”
-- **Caedmon:** “No. It is not.”
-
-Caedmon then lays out three old expedition ledgers beside the recovered
-Triangulus relic:
-
-- **Caedmon:** “These patrols entered by different routes and believed they had
-  found different chambers. All three copied the same markings.”
-- **Joffrey:** “The lines were incomplete. Set the relic beside them and the
-  fragments form the same arrangement.”
-- **Edrin:** “Mira kept saying the empty center mattered.”
-- **Caedmon:** “There is more. An older, damaged record shows six positions
-  arranged around that center.”
-- **Joffrey:** “Six chambers?”
-- **Caedmon:** “Perhaps. Or six objects, six stations, or one mistake repeated
-  by generations of scribes.”
-- **Caedmon:** “We have evidence of a pattern, not an explanation. Recover
-  anything that answers this relic and bring it home.”
-
-Create `The Holy Relics` and preserve its aggregate collection behavior. The
-scene does not name the principles, identify the relics' purpose, or suggest a
-seventh absence.
+- **Edrin** “Tomas?”
+- **Hero** “I found him under the stone. He was dead.”
+- **Edrin** “Was Mira with him?”
+- **Hero** “I found her chalk marks past the door. That's as far as I could follow them.”
+- **Caedmon** “I'll leave her name on the board.”
+Caedmon takes three ledgers down from the shelf. Each has a sketch in the margin.
+- **Caedmon** “Three different patrols drew these. Joffrey, lay the relic here.”
+- **Joffrey** “See where this line breaks off? There's the rest of it on the next page. The points fit.”
+- **Edrin** “Mira kept trying to tell me about the space in the middle.”
+- **Caedmon** “Have a look at this older sheet. Torn clean across, but you can still count six places round the middle.”
+- **Joffrey** “Six rooms like the one you found?”
+- **Caedmon** “Could be. If you find anything else that fits these marks, bring it back. We'll lay it beside this one.”
 
 ### C11 — Tavern Aftermath
 
-On the next tavern visit after C10, news of the discovery has already spread.
-Several conversations stop when the hero enters.
+On the next tavern visit, a rumor that Mira is gone reaches Liora. The hero can hear what happens to an eyewitness account as it crosses a crowded room.
 
-The first reactions overlap:
-
-- **Excited patron:** “If one of those can make sense of the old records,
-  imagine what six could show us.”
-- **Uneasy patron:** “Those records describe changing passages and missing
-  hours. Maybe they were hidden for a reason.”
-- **Angry patron:** “Tomas is dead, Mira is gone, and we brought the thing they
-  found home? Break it before it costs another name.”
-- **Oren:** “No one is breaking anything in my tavern. No one is calling it our
-  salvation, either.”
-
-The familiar circle responds:
-
-- **Liora:** “Put it somewhere people do not have to die proving what it is.”
-- **Joffrey:** “If it explains the routes, it may keep the next patrol alive.
-  That is reason enough to study it—not reason enough to trust it.”
-- **Pell:** “Three points. Knew a fellow with a three-point plan once. Lost two
-  points and married the third.”
-
-Oren's look ends Pell's joke before it displaces the argument.
-
-As the room returns to scattered debate, Tavin clears an untouched cup near the
-hero:
-
-- **Tavin:** “Everyone here has decided what the relic means. Did it tell you
-  anything itself?”
-
-The hero need not answer, and Tavin does not press. The varied reactions present
-the relic as opportunity, omen, and intolerable danger without supplying the
-correct interpretation.
+A stool scrapes as you come in. Someone at the bar makes room for you and half the bench leans closer.
+- **Excited Patron** “Six of them, is it? Let's see the one you brought up.”
+- **Uneasy Patron** “In here? My sister sleeps just upstairs.”
+- **Angry Patron** “Tomas is dead and Mira's gone. Give me a hammer. I'll see to it.”
+- **Liora** “Gone where? If somebody's heard from Mira, I'd like to know.”
+- **Angry Patron** “I meant she hasn't come back.”
+- **Oren** “Then say that. And you can leave my hammer where it is.”
+- **Joffrey** “Mira drew those marks for us. I'd like another look at what she saw.”
+- **Pell** “Anybody mind if I finish my supper before you get the hammer out?”
+Oren slides Pell's bowl back within reach. Tavin clears an untouched cup beside you.
+- **Tavin** “When you picked it up, did it say anything?”
 
 ### C12 — Hooded Figure Response
 
-At the next transition out of the tavern after C11, the Hooded Figure stands
-beneath the eaves without obstructing the hero's path.
+On the first exit after C11, a voice under the eaves repeats the exact answer the hero gave at the altar. Use the same wording as the C9 choice. For a save without a recorded answer the Figure says, “You answered the question at the altar.”
 
-- **Hooded Figure:** “Inside, they've called it a promise, an omen, and a threat.
-  They don't know which one it is.”
+Walking on or dismissing the prompt ends the encounter immediately. If the hero asks “Who told you that?”, the tavern door opens. The Figure waits for it to shut before asking, “Does anyone in there know what you said?” End there. The Figure respects the hero’s privacy in a way that can feel like an attempt to isolate them. The scene leaves their source and allegiance unexplained.
 
-The next line repeats the hero's stored `triangulus_identity_answer`:
-
-| Stored value | Hooded Figure line |
-| --- | --- |
-| `ChosenName` | “At the altar, you said the name you choose is still yours.” |
-| `Deeds` | “At the altar, you said what you've done and what you do next are still yours.” |
-| `Memory` | “At the altar, you said what you refuse to forget is still yours.” |
-| `NextChoice` | “At the altar, you said your next choice is still yours.” |
-| `Unrecorded` or unavailable | “At the altar, you gave an answer no witness could reward or correct.” |
-
-The Hooded Figure concludes:
-
-- **Hooded Figure:** “Let them argue. Keep your own answer. It mattered because
-  you chose it, not because anyone approved.”
-
-The hero may stop and listen or continue walking. Either action completes the
-scene. The Hooded Figure does not follow, block movement, grant an item, reveal
-an allegiance, or judge which answer the hero selected.
+Both paths consume the one-time encounter and lead directly back to town.
 
 ## Quest Mapping
 
@@ -783,7 +727,8 @@ decisions and events but must not become the sole owner of story rules.
 11. Does Triangulus feel like a story event rather than only a full-heal pickup?
 12. Is the six-part possibility earned by evidence and still meaningfully
     uncertain?
-13. After returning to ordinary play, is there a clear reason to continue?
+13. Does the exact altar callback make the Figure feel intrusive? If the player challenges them, could their silence while the door is open read differently on a second playthrough?
+14. After returning to ordinary play, is there a clear reason to continue?
 
 ## Acceptance Gate
 

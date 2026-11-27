@@ -189,16 +189,12 @@ def test_first_relic_report_turn_in_creates_holy_relics(monkeypatch):
     assert holy["Completed"] is False
     assert holy["Stage"] == "collecting"
     assert "Recovered 1/6 relics" in holy["Help Text"]
-    assert [beat.speaker for beat in scenes[0][:5]] == [
-        "Caedmon",
-        "Edrin",
-        "Caedmon",
-        "Edrin",
-        "Caedmon",
-    ]
+    assert [beat.speaker for beat in scenes[0][:5]] == ["Edrin", "You", "Edrin", "You", "Caedmon"]
+    assert scenes[0][1].portrait_name == quest_manager.PLAYER_PORTRAIT_KEY
+    assert scenes[0][3].portrait_name == quest_manager.PLAYER_PORTRAIT_KEY
     assert scenes[0][5].speaker == "Narrator"
     assert "ledgers" in scenes[0][5].text
-    assert scene_kwargs[0]["background_image"] == "town.png"
+    assert scene_kwargs[0]["background_image"] == "barracks.jpg"
     assert "background_draw_func" not in scene_kwargs[0]
     assert all("Quest Complete: Uncertain Reports" not in message for message in rendered)
 
@@ -601,7 +597,6 @@ def test_bring_him_home_turn_in_shows_timmy_home_event(monkeypatch):
         "Timmy's Mother",
         "Timmy's Father",
         "Timmy",
-        "Caedmon",
     )
     assert [beat.speaker for beat in scenes[0].beats] == [
         "Narrator",
@@ -609,10 +604,10 @@ def test_bring_him_home_turn_in_shows_timmy_home_event(monkeypatch):
         "Narrator",
         "Timmy",
         "Timmy's Father",
-        "Timmy's Mother",
-        "Caedmon",
+        "Narrator",
     ]
-    assert "family back together" in scenes[0].beats[-1].text
+    assert "pulls him in" in scenes[0].beats[-1].text
+    assert not any("Quest Complete: Bring Him Home" in text for text in rendered)
 
 
 def test_rookie_mistake_arrival_scenes_precede_rewards_and_consume_body(monkeypatch):
@@ -666,7 +661,7 @@ def test_rookie_mistake_arrival_scenes_precede_rewards_and_consume_body(monkeypa
         for beat in scene.beats
         if beat.portrait_name == quest_manager.PLAYER_PORTRAIT_KEY
     ]
-    assert [beat.speaker for beat in hero_beats] == ["Mara", "Mara"]
+    assert [beat.speaker for beat in hero_beats] == ["Mara"]
     assert "Dead Soldier" not in player.special_inventory
     assert player.quest_dict["Side"]["Rookie Mistake"]["Turned In"] is True
     assert sum(call[0] == "Mana Potion" for call in player.inventory_calls) == 4

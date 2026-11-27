@@ -417,12 +417,6 @@ class DungeonInteractionMixin:
                         )
                     else:
                         self.add_message(opening_story.PATROL_FATE_TEXT)
-                answer_options = [
-                    "The name I choose to answer to.",
-                    "What I have done, and what I do next.",
-                    "What I refuse to forget.",
-                    "The choice that is still mine to make.",
-                ]
                 choose_answer = getattr(self.game, "choose_triangulus_identity", None)
                 if callable(choose_answer):
                     answer = choose_answer()
@@ -430,7 +424,7 @@ class DungeonInteractionMixin:
                 else:
                     choice = self._show_dungeon_choice(
                         "When title, blood, and expectation fall silent, what remains yours?",
-                        answer_options,
+                        list(opening_story.TRIANGULUS_ANSWER_TEXT.values()),
                     )
                     answer = (
                         None

@@ -6,7 +6,13 @@ from copy import deepcopy
 
 ARRIVAL_MOTIVES = ("Fortune", "Service", "Knowledge", "Reinvention")
 ARRIVAL_AID_CHOICES = ("ClearSpace", "SteadySurvivor", "RememberAccount", "FetchHelp")
-TRIANGULUS_IDENTITY_ANSWERS = ("ChosenName", "Deeds", "Memory", "NextChoice")
+TRIANGULUS_ANSWER_TEXT = {
+    "ChosenName": "The name I choose.",
+    "Deeds": "What I've done and what I do next.",
+    "Memory": "What I refuse to forget.",
+    "NextChoice": "My next choice.",
+}
+TRIANGULUS_IDENTITY_ANSWERS = tuple(TRIANGULUS_ANSWER_TEXT)
 MIGRATED_CHOICE = "Unrecorded"
 
 OPENING_STATE_DEFAULTS: dict[str, object] = {

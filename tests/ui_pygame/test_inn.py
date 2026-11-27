@@ -6,8 +6,9 @@ from __future__ import annotations
 from types import SimpleNamespace
 
 import pygame
+import pytest
 
-from src.core import main_story
+from src.core import main_story, opening_story
 from src.ui_pygame.gui import inn
 
 
@@ -40,12 +41,14 @@ def _make_player(*, level=10):
     )
 
 
-def test_first_relic_aftermath_and_hooded_echo_are_one_time(monkeypatch):
+@pytest.mark.parametrize("answer", [*opening_story.TRIANGULUS_IDENTITY_ANSWERS, "Unrecorded", None])
+@pytest.mark.parametrize("choice", [0, 1, None])
+def test_first_relic_aftermath_and_hooded_echo_are_one_time(monkeypatch, answer, choice):
     FakePopup.messages = []
     FakePopup.show_kwargs = []
     player = _make_player()
     player.quest_dict["Main"]["The Holy Relics"] = {"Completed": False}
-    player.main_story["triangulus_identity_answer"] = "NextChoice"
+    player.main_story["triangulus_identity_answer"] = answer
     presenter = _make_presenter()
     monkeypatch.setattr(
         inn.InnManager, "_load_background", lambda self: setattr(self, "background", None)
@@ -62,6 +65,11 @@ def test_first_relic_aftermath_and_hooded_echo_are_one_time(monkeypatch):
         def show_dialogue(self, beats):
             self.beats.extend(beats)
 
+        def choose(self, _prompt, options, **kwargs):
+            assert options == ["Who told you that?", "Keep walking"]
+            assert kwargs["record_selection"] is False
+            return choice
+
     monkeypatch.setattr("src.ui_pygame.gui.inn.StorySceneScreen", FakeStoryScene)
     monkeypatch.setattr(
         "src.ui_pygame.gui.inn.LevelUpScreen",
@@ -71,8 +79,8 @@ def test_first_relic_aftermath_and_hooded_echo_are_one_time(monkeypatch):
 
     manager._show_first_relic_aftermath()
     manager._show_first_relic_aftermath()
-    manager._show_hooded_triangulus_response()
-    manager._show_hooded_triangulus_response()
+    assert manager._show_hooded_triangulus_response() is True
+    assert manager._show_hooded_triangulus_response() is False
 
     assert player.main_story["first_relic_tavern_aftermath_seen"] is True
     assert player.main_story["hooded_figure_triangulus_response_seen"] is True
@@ -85,7 +93,16 @@ def test_first_relic_aftermath_and_hooded_echo_are_one_time(monkeypatch):
     assert "background_draw_func" not in scenes[0].kwargs
     assert any("clears an untouched cup" in beat.text for beat in scenes[0].beats)
     assert scenes[-1].beats[0].speaker == "Narrator"
-    assert "your next choice is still yours" in scenes[-1].beats[2].text
+    spoken = scenes[-1].beats
+    expected = opening_story.TRIANGULUS_ANSWER_TEXT.get(answer)
+    assert spoken[1].text == (
+        f"“{expected}”" if expected else "You answered the question at the altar."
+    )
+    if choice == 0:
+        assert spoken[2].portrait_name == inn.PLAYER_PORTRAIT_KEY
+        assert spoken[-1].speaker == "Hooded Figure"
+    else:
+        assert len(spoken) == 2
 
 
 def _make_presenter():

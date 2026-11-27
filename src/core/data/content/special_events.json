@@ -21,13 +21,12 @@
     },
     "Timmy Home": {
         "Text": [
-            "Before Caedmon can finish the report, Timmy's parents rush across the barracks yard.",
+            "Timmy's parents come running across the barracks yard. Caedmon steps out of their way.",
             "Timmy's Mother: Timmy.",
             "She drops to her knees and pulls him close. His father stops beside them, one hand over his mouth.",
-            "Timmy: I told them someone would find me. I knew someone would come.",
-            "Timmy's Father: We looked everywhere we were allowed to go. Thank you for bringing him back to us.",
-            "Timmy's Mother: Come on. You're going home, and you're not leaving our sight again.",
-            "Caedmon: You did more than complete an assignment today. You brought a family back together."
+            "Timmy: Dad? I lost my lamp.",
+            "Timmy's Father: That's all right, son. Come here.",
+            "His father kneels in the mud. Timmy gets one arm free and pulls him in too."
             ]
     },
     "Unobtainium": {

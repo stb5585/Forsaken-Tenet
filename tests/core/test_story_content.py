@@ -154,4 +154,4 @@ def test_timmy_events_cover_discovery_and_both_parent_reunion():
     assert "mum and dad" in discovery
     assert "Timmy's Mother" in reunion
     assert "Timmy's Father" in reunion
-    assert "family back together" in reunion
+    assert "pulls him in" in reunion.splitlines()[-1]

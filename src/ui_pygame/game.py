@@ -978,12 +978,6 @@ class PygameGame:
 
     def choose_triangulus_identity(self) -> str | None:
         """Ask and return the saved-value form of the Triangulus identity answer."""
-        options = [
-            "The name I choose.",
-            "What I've done and what I do next.",
-            "What I refuse to forget.",
-            "My next choice.",
-        ]
         scene = StorySceneScreen(
             self.presenter,
             "The Sealed Chamber — Triangulus",
@@ -992,7 +986,7 @@ class PygameGame:
         )
         choice = scene.choose(
             "Take away your title, bloodline, and what others expect. What is still yours?",
-            options,
+            list(opening_story.TRIANGULUS_ANSWER_TEXT.values()),
         )
         if choice is None:
             return None

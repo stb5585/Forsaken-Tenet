@@ -256,60 +256,48 @@ class QuestManager:
 
     def _show_uncertain_reports_completion(self) -> None:
         """Resolve the first relic report as an authored multi-speaker scene."""
+        player_name = str(getattr(self.player_char, "name", None) or "You")
         scene = StorySceneScreen(
             self.presenter,
             "Barracks — The First Relic",
             participants=("Caedmon", "Edrin", "Joffrey"),
             participant_anchors={"Joffrey": "Caedmon"},
-            background_image="town.png",
+            background_image="barracks.jpg",
             player_char=self.player_char,
         )
         scene.show_dialogue(
             (
-                StoryBeat(
-                    "Caedmon",
-                    "Before we discuss what you recovered, we finish the patrol account.",
-                ),
                 StoryBeat("Edrin", "Tomas?"),
                 StoryBeat(
-                    "Caedmon",
-                    "Found dead at the sealed threshold. Mira's route marks continued beyond "
-                    "him, but they ended without a body.",
+                    player_name, "I found him under the stone. He was dead.", PLAYER_PORTRAIT_KEY
                 ),
-                StoryBeat("Edrin", "Still missing is not the same as gone."),
-                StoryBeat("Caedmon", "No. It is not."),
+                StoryBeat("Edrin", "Was Mira with him?"),
+                StoryBeat(
+                    player_name,
+                    "I found her chalk marks past the door. That's as far as I could follow them.",
+                    PLAYER_PORTRAIT_KEY,
+                ),
+                StoryBeat("Caedmon", "I'll leave her name on the board."),
                 StoryBeat(
                     "Narrator",
-                    "Caedmon lays three old expedition ledgers beside the recovered "
-                    "Triangulus relic.",
-                    portrait_name="",
+                    "Caedmon takes three ledgers down from the shelf. Each has a sketch in the margin.",
                 ),
                 StoryBeat(
-                    "Caedmon",
-                    "These patrols entered by different routes and believed they had found "
-                    "different chambers. All three copied the same markings.",
+                    "Caedmon", "Three different patrols drew these. Joffrey, lay the relic here."
                 ),
                 StoryBeat(
                     "Joffrey",
-                    "The lines were incomplete. Set the relic beside them and the fragments "
-                    "form the same arrangement.",
+                    "See where this line breaks off? There's the rest of it on the next page. The points fit.",
                 ),
-                StoryBeat("Edrin", "Mira kept saying the empty center mattered."),
+                StoryBeat("Edrin", "Mira kept trying to tell me about the space in the middle."),
                 StoryBeat(
                     "Caedmon",
-                    "There is more. An older, damaged record shows six positions arranged "
-                    "around that center.",
+                    "Have a look at this older sheet. Torn clean across, but you can still count six places round the middle.",
                 ),
-                StoryBeat("Joffrey", "Six chambers?"),
+                StoryBeat("Joffrey", "Six rooms like the one you found?"),
                 StoryBeat(
                     "Caedmon",
-                    "Perhaps. Or six objects, six stations, or one mistake repeated by "
-                    "generations of scribes.",
-                ),
-                StoryBeat(
-                    "Caedmon",
-                    "We have evidence of a pattern, not an explanation. Recover anything "
-                    "that answers this relic and bring it home.",
+                    "Could be. If you find anything else that fits these marks, bring it back. We'll lay it beside this one.",
                 ),
             )
         )
@@ -344,6 +332,7 @@ class QuestManager:
         end_text = qdata.get("End Text", "")
         if quest_name == "Uncertain Reports":
             self._show_uncertain_reports_completion()
+        if quest_name in ("Uncertain Reports", "Bring Him Home", "Rookie Mistake"):
             end_text = ""
         if end_text and show_end_text:
             if self.quest_text_renderer:
@@ -663,12 +652,12 @@ class QuestManager:
                 StoryBeat("Caedmon", "Clear the gate. Give them room."),
                 StoryBeat(
                     player_name,
-                    "I found him on the first level. He did not make it back.",
+                    "First level. I carried him up from there.",
                     portrait_name=PLAYER_PORTRAIT_KEY,
                 ),
                 StoryBeat(
                     "Caedmon",
-                    "I sent him below before he was ready. That failure is mine, not his.",
+                    "He asked me if he was ready. I told him he was.",
                 ),
                 StoryBeat(
                     "Narrator",
@@ -685,11 +674,7 @@ class QuestManager:
             self.presenter,
             "Silvana Graveyard — The Last Watch",
             participants=("Priest", "Caedmon"),
-            participant_anchors={
-                "Soldier": "Caedmon",
-                "Joffrey": "Caedmon",
-                "Liora": "Priest",
-            },
+            participant_anchors={"Soldier": "Caedmon"},
             background_image="graveyard.jpg",
             player_char=self.player_char,
         )
@@ -701,32 +686,15 @@ class QuestManager:
                     "Joffrey, Liora, and townspeople stand together in the rain.",
                     portrait_name="",
                 ),
-                StoryBeat(
-                    "Priest",
-                    "We are here to remember a life, not to turn a needless death into a "
-                    "lesson about courage.",
-                ),
+                StoryBeat("Priest", "Take the foot, Caedmon. Easy now."),
                 StoryBeat(
                     "Narrator",
-                    "You and Caedmon lower the wrapped recruit into the earth. A soldier sets "
-                    "his patrol clasp on the simple wooden marker.",
-                    portrait_name="",
-                ),
-                StoryBeat(
-                    player_name,
-                    "He came home. He will not be left in the dark.",
-                    portrait_name=PLAYER_PORTRAIT_KEY,
+                    "You and Caedmon lower the recruit into the grave. Caedmon opens his hand. The patrol clasp has left a mark in his palm.",
                 ),
                 StoryBeat("Soldier", "We should have gone with him."),
-                StoryBeat("Liora", "Then remember that the next time someone calls risk honor."),
-                StoryBeat("Joffrey", "His name stays in the patrol ledger."),
                 StoryBeat(
-                    "Priest",
-                    "Let the dead rest, and let the living carry the truth of how he died.",
-                ),
-                StoryBeat(
-                    "Caedmon",
-                    "This death goes in my ledger. Thank you for bringing him home.",
+                    "Narrator",
+                    "The soldier takes the clasp from Caedmon and pins it to the wooden marker. The Priest waits beside him until he steps back.",
                 ),
             ),
             fade_in_ms=1000,
@@ -741,7 +709,7 @@ class QuestManager:
         scene = StorySceneScreen(
             self.presenter,
             "Silvana — Timmy Comes Home",
-            participants=("Timmy's Mother", "Timmy's Father", "Timmy", "Caedmon"),
+            participants=("Timmy's Mother", "Timmy's Father", "Timmy"),
             participant_anchors={"Timmy": "Timmy's Mother"},
             background_image="town.png",
             player_char=self.player_char,
@@ -750,34 +718,18 @@ class QuestManager:
             (
                 StoryBeat(
                     "Narrator",
-                    "Before Caedmon can finish the report, Timmy's parents rush across the "
-                    "barracks yard.",
-                    portrait_name="",
+                    "Timmy's parents come running across the barracks yard. Caedmon steps out of their way.",
                 ),
                 StoryBeat("Timmy's Mother", "Timmy."),
                 StoryBeat(
                     "Narrator",
-                    "She drops to her knees and pulls him close. His father stops beside them, "
-                    "one hand over his mouth.",
-                    portrait_name="",
+                    "She drops to her knees and pulls him close. His father stops beside them, one hand over his mouth.",
                 ),
+                StoryBeat("Timmy", "Dad? I lost my lamp."),
+                StoryBeat("Timmy's Father", "That's all right, son. Come here."),
                 StoryBeat(
-                    "Timmy",
-                    "I told them someone would find me. I knew someone would come.",
-                ),
-                StoryBeat(
-                    "Timmy's Father",
-                    "We looked everywhere we were allowed to go. Thank you for bringing him "
-                    "back to us.",
-                ),
-                StoryBeat(
-                    "Timmy's Mother",
-                    "Come on. You're going home, and you're not leaving our sight again.",
-                ),
-                StoryBeat(
-                    "Caedmon",
-                    "You did more than complete an assignment today. You brought a family "
-                    "back together.",
+                    "Narrator",
+                    "His father kneels in the mud. Timmy gets one arm free and pulls him in too.",
                 ),
             )
         )
