@@ -696,19 +696,24 @@ class TestDataDrivenSpellCast:
         assert target.stat_effects["Attack"].active is True
         assert target.stat_effects["Attack"].extra < 0
 
-    def test_wind_attack_spells_can_reduce_speed(self):
+    def test_wind_attack_spells_can_reduce_speed(self, monkeypatch):
+        import random
+
         from src.core import abilities
 
-        spell = abilities.Gust()
-        for _ in range(50):
-            caster, target = self._make_combatants()
-            caster.stats.intel = 120
-            target.stats.dex = 1
-            spell.cast(caster, target)
-            if target.stat_effects["Speed"].active:
-                return
+        caster, target = self._make_combatants()
+        caster.stats.intel = 120
+        target.stats.dex = 1
+        # Guarantee contact, then choose a winning roll in the stat contest.
+        target.status_effects["Stun"].active = True
+        monkeypatch.setattr(random, "randint", lambda _low, high: high)
 
-        pytest.fail("Gust should have reduced Speed at least once")
+        result = abilities.Gust().cast(caster, target)
+
+        assert result.hit is True
+        assert result.extra["stat_contest_won"] is True
+        assert target.stat_effects["Speed"].active is True
+        assert target.stat_effects["Speed"].extra == -3
 
     def test_earth_attack_spells_can_knock_prone_but_respect_flying(self, monkeypatch):
         """Tremor applies Prone after a winning contest, except to flyers."""
