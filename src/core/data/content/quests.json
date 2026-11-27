@@ -61,7 +61,7 @@
           "Type": "Locate",
           "What": "Joffrey",
           "Total": 1,
-          "Start Text": "This morning I woke in a sweat...I dreamed I was standing in a small room and to my horror a great flaming horse struck down my betrothed...please find my Joffrey before my dream truly becomes a nightmare...",
+          "Start Text": "Caedmon has the slip. Joffrey took chalk and enough oil for one lamp. If you cross his trail, will you see whether he reached the patrol?",
           "End Text": "My pendant...Elysia take me...he left me these keys last I saw of him...please avenge my love...(the waitress runs out sobbing...)",
           "Help Text": "An adventurer came in earlier. He said he saw Joffrey on the second floor of the dungeon. Joffrey had just unlocked a door in the northeast corner.",
           "Reward": ["OldKey"],

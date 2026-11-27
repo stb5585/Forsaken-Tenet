@@ -547,6 +547,8 @@ route:
 The later letter must refer back to details the player witnessed in these
 scenes rather than inventing Joffrey's motives after his death.
 
+The fourth scene now plays on the next tavern visit after the Hexagonum barracks report and the three earlier living scenes. A return mark appears at a fork Joffrey remembers erasing. Tavin asks about the distance to the pens; Joffrey works out the timing and leaves of his own accord. Liora keeps the slip for Caedmon. This departure unlocks her existing search offer; a duty soldier covers Joffrey’s tavern quests.
+
 ### Fatal Trigger
 
 A patrol disappears after following a route Joffrey charted. Believing his

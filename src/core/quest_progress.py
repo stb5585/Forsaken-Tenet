@@ -258,6 +258,8 @@ def ensure_uncertain_reports_quest(player) -> dict[str, Any]:
 
 def can_offer_authored_quest(player, quest_name: str) -> bool:
     """Apply story-state prerequisites not expressible as a turned-in quest."""
+    if quest_name == "A Bad Dream":
+        return bool(main_story.ensure_state(player)["joffrey_departed"])
     if quest_name != "Cry Havoc!":
         return True
     uncertain = ensure_quest_categories(player)["Main"].get(UNCERTAIN_REPORTS)

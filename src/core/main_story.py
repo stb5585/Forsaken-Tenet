@@ -147,6 +147,7 @@ ROUTE_ORDERS = ("Escort", "Exception", "SignOut")
 
 DEFAULT_MAIN_STORY_STATE = {
     "route_order": None,
+    "joffrey_departed": False,
     "quadrata_report_seen": False,
     "hexagonum_report_seen": False,
     **opening_story.copied_defaults(),

@@ -31,6 +31,7 @@ class InnManager(TownScreenBase):
         "Pell": "Drunkard",
         "Tavin": "Busboy",
         "Joffrey": "Soldier",
+        "Duty Soldier": "Soldier",
         "Hooded Figure": "Hooded Figure",
     }
 
@@ -50,6 +51,7 @@ class InnManager(TownScreenBase):
         )
         self._popup_background_draw_func = lambda: inn_screen.draw_frame(do_flip=False)
         self._show_first_relic_aftermath()
+        self._show_joffrey_departure()
 
         while True:
             choice_idx = inn_screen.navigate(
@@ -169,6 +171,75 @@ class InnManager(TownScreenBase):
         story["hooded_figure_triangulus_response_seen"] = True
         return True
 
+    def _show_joffrey_departure(self) -> None:
+        """Send the scout after the missing patrol once his earlier scenes have played."""
+        story = main_story.ensure_state(self.player_char)
+        if story["joffrey_departed"] or "A Bad Dream" in self.player_char.quest_dict.get(
+            "Main", {}
+        ):
+            return
+        if not all(
+            story[key]
+            for key in (
+                "joffrey_tavern_scene_seen",
+                "joffrey_patrol_briefing_seen",
+                "joffrey_route_review_seen",
+                "hexagonum_report_seen",
+            )
+        ):
+            return
+        scene = StorySceneScreen(
+            self.presenter,
+            "The Thirsty Dog — The Missing Patrol",
+            participants=("Joffrey", "Liora", "Tavin"),
+            background_image="tavern.jpg",
+            player_char=self.player_char,
+        )
+        scene.show_dialogue(
+            (
+                StoryBeat(
+                    "Narrator",
+                    "Joffrey has spread a patrol map across two place settings. A slip of paper lies beside it, still wet at the edges.",
+                ),
+                StoryBeat(
+                    "Joffrey",
+                    "The fourth-floor patrol missed both bells. They took my survey. Look where somebody put the return mark.",
+                ),
+                StoryBeat("Liora", "At the fork. Is that blood?"),
+                StoryBeat(
+                    "Joffrey",
+                    "Red survey ink. But I rubbed that fork out before I gave them the map.",
+                ),
+                StoryBeat(
+                    "Liora",
+                    "Then let Caedmon have a look. His watch is changing. You could take two of them with you.",
+                ),
+                StoryBeat(
+                    "Tavin", "How long would it take them to walk from that fork to the pens?"
+                ),
+                StoryBeat(
+                    "Narrator",
+                    "Joffrey measures the distance with his thumb. He leaves his supper where it is.",
+                ),
+                StoryBeat(
+                    "Joffrey", "Less than a change of watch. I can catch them at the lower steps."
+                ),
+                StoryBeat(
+                    "Liora",
+                    "I'd sooner you waited. Give me the slip, at least. I'll see the others get the right map.",
+                ),
+                StoryBeat(
+                    "Joffrey",
+                    "Tell them to look for my chalk low on the wall. The lamps throw a shadow over the high marks.",
+                ),
+                StoryBeat(
+                    "Narrator",
+                    "Liora folds the slip into her apron. Joffrey takes the chalk from her pencil cup and goes.",
+                ),
+            )
+        )
+        story["joffrey_departed"] = True
+
     def _random_patron_comment(self, patron: str) -> str | None:
         # Gather patron-specific dialogues eligible for the player's level
         combined_pool: list[str] = []
@@ -202,7 +273,10 @@ class InnManager(TownScreenBase):
         # the player's first deliberate tavern visit onward.
         options.append("Pell")
         if self.player_char.player_level() >= 10:
-            options.append("Joffrey")
+            gone = main_story.ensure_state(self.player_char)[
+                "joffrey_departed"
+            ] or "A Bad Dream" in self.player_char.quest_dict.get("Main", {})
+            options.append("Duty Soldier" if gone else "Joffrey")
             if self.player_char.player_level() >= 25:
                 if "Red Dragon" in self.player_char.quest_dict.get("Main", {}):
                     if not self.player_char.quest_dict["Main"]["Red Dragon"].get("Turned In"):
@@ -224,7 +298,10 @@ class InnManager(TownScreenBase):
             # Rebuild patron list each iteration to reflect quest state changes
             options = self._build_patron_list()
             patrons_screen.set_option_portraits(
-                [patron if patron != "Back" else None for patron in options]
+                [
+                    "Soldier" if patron == "Duty Soldier" else patron if patron != "Back" else None
+                    for patron in options
+                ]
             )
             choice = patrons_screen.navigate(
                 options,

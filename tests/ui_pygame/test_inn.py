@@ -168,7 +168,7 @@ def test_visit_inn_and_patron_helpers(monkeypatch):
         "Oren",
         "Liora",
         "Pell",
-        "Joffrey",
+        "Duty Soldier",
         "Hooded Figure",
         "Back",
     ]
@@ -579,3 +579,36 @@ def test_accept_bounty_stays_open_until_no_bounties_remain(monkeypatch):
     assert any(
         "No new bounties available at this time." in message for message in FakePopup.messages
     )
+
+
+def test_joffrey_leaves_once_after_route_review_and_hexagonum(monkeypatch):
+    from src.core import quest_progress
+
+    manager = object.__new__(inn.InnManager)
+    manager.player_char = player = _make_player(level=45)
+    manager.presenter = object()
+    scenes = []
+
+    class Scene:
+        def __init__(self, _presenter, title, **_kwargs):
+            scenes.append(title)
+
+        def show_dialogue(self, beats):
+            assert {"Liora", "Joffrey", "Tavin"} <= {beat.speaker for beat in beats}
+
+    monkeypatch.setattr(inn, "StorySceneScreen", Scene)
+    player.main_story.update(
+        hexagonum_report_seen=True,
+        joffrey_tavern_scene_seen=True,
+        joffrey_patrol_briefing_seen=True,
+    )
+    manager._show_joffrey_departure()
+    assert not scenes
+    assert not quest_progress.can_offer_authored_quest(player, "A Bad Dream")
+    player.main_story["joffrey_route_review_seen"] = True
+    manager._show_joffrey_departure()
+    manager._show_joffrey_departure()
+    assert len(scenes) == 1
+    assert quest_progress.can_offer_authored_quest(player, "A Bad Dream")
+    assert "Joffrey" not in manager._build_patron_list()
+    assert "Duty Soldier" in manager._build_patron_list()
