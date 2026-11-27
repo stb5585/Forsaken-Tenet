@@ -450,3 +450,28 @@ def test_store_and_retrieve_empty_states(monkeypatch):
     assert "You have no items to store." in FakePopup.messages
     assert "Your storage is empty." in FakePopup.messages
     assert any(call.get("flush_events") for call in FakePopup.calls)
+
+
+def test_relic_reports_remember_the_order_and_deliver_once(monkeypatch):
+    scenes = []
+
+    class Scene:
+        def __init__(self, presenter, title, **kwargs):
+            scenes.append(title)
+
+        def show_dialogue(self, beats):
+            assert beats
+
+        def choose(self, prompt, answers, **kwargs):
+            return 2
+
+    monkeypatch.setattr(barracks, "StorySceneScreen", Scene)
+    manager = object.__new__(barracks.BarracksManager)
+    manager.presenter = object()
+    manager.player_char = SimpleNamespace(special_inventory={"Quadrata": [], "Hexagonum": []})
+    story = barracks.main_story.default_state()
+    for _ in range(4):
+        manager._review_relic_routes(story)
+        story = barracks.main_story.normalize_state(story)
+    assert story["route_order"] == "SignOut"
+    assert len(scenes) == len(set(scenes)) == 3

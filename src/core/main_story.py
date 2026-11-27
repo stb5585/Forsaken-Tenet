@@ -143,7 +143,12 @@ for _guardian, _definition in GUARDIAN_TRIAL_DEFINITIONS.items():
         choice: f"{_guardian} Trial {choice}" for choice in GUARDIAN_TRIAL_CHOICES[_guardian]
     }
 
+ROUTE_ORDERS = ("Escort", "Exception", "SignOut")
+
 DEFAULT_MAIN_STORY_STATE = {
+    "route_order": None,
+    "quadrata_report_seen": False,
+    "hexagonum_report_seen": False,
     **opening_story.copied_defaults(),
     "vesperion_false_final_triggered": False,
     "pending_liminal_gap_entry": False,
@@ -235,6 +240,10 @@ def normalize_state(state: object = None) -> dict[str, object]:
                     if normalized_archetype in {*CLASS_VOLUNTAS_ARCHETYPES, "wanderer"}
                     else None
                 )
+                continue
+            if key == "route_order":
+                order = state.get(key)
+                normalized[key] = order if order in ROUTE_ORDERS else None
                 continue
             if key == "reflection_voluntas_answer":
                 saved_answer = state.get(key)

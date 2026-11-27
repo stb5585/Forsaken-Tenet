@@ -1205,13 +1205,8 @@
     },
     "Nightmare": {
         "Text": [
-            "You travel a great hall, expecting something monstrous to attack. What you find is much worse.",
-            "The hair on the back of your neck stands at attention and suddenly feel fear grab ahold of you.",
-            "Your will is steadfast but you know that will only last for so long as the sight you feared emerges.",
-            "A massive stallion with a mane and tail of flames, the rest as black as the deepest depths.",
-            "It says no words but has no need, for silence is much more frightening.",
-            "You catch a glimpse of a relic perched atop a glowing pedestal but the Nightmare stands in your way.",
-            "With a flare of its nostrils, the beast charges right at you, filled with malice aforethought."
+            "Someone has chalked KEEP TO THE WHITE LINE along the hall. The line runs straight through a patch of scorched boot leather.",
+            "At the far end a black horse lowers its head. Its mane lights the chalk at your feet. The hoofbeats start before you see it move."
         ]
     },
     "Cockatrice": {
@@ -1225,12 +1220,8 @@
     },
     "Wendigo": {
         "Text": [
-            "The stagnant isolation of the dungeon is suddenly disturbed, replaced by a bone-chilling cold.",
-            "The icy winds howl as you approach the sacred grounds of the third relic.",
-            "Emerging from the darkness, a beast towers above, its gaunt frame shrouded in frost and shadows.",
-            "Its hollow eyes burn with a ravenous hunger, and its clawed hands twitch with restless energy.",
-            "The air grows colder, biting at your skin, as the creature lets out an unearthly wail.",
-            "The guardian of the relic stands ready, an embodiment of hunger and despair, the Wendigo."
+            "A sack of grain hangs from the rafters. Everything within reach has been scraped bare, even the bark on the carrying pole.",
+            "Something tall straightens beneath the sack. Frost falls from its shoulders. The Wendigo draws one long breath through its teeth and turns toward you."
         ]
     },
     "Golem": {
@@ -1270,12 +1261,8 @@
     },
     "Domingo": {
         "Text": [
-            "Your search for another one of the mystical relics leads you down a dark flight of stairs.",
-            "As you descend into the dungeon, you notice the air grow heavy, and a gurgling sound echoing from beyond.",
-            "A cartoonish creature emerges, its writhing tentacles glowing faintly with an unearthly, pulsating light.",
-            "Its bulbous body quivers, and its eyes...far too many eyes...unnervingly fixate on you.",
-            "'You dare face the perfection of creation?' a voice reverberates in your mind. How?!",
-            "The creature's tentacles twitch, ready to unleash its magical fury. 'Prepare to witness true power!'"
+            "One of the iron straps on the wall still holds a little brass tag. Someone stamped DOMINGO into it, then punched a second hole when the first wore through.",
+            "A tentacle loops around the loose end of the strap. The voice in your head is startlingly clear. 'Put that down.' You open your empty hands. Something behind you slams shut."
         ]
     },
     "Red Dragon": {
@@ -1291,12 +1278,9 @@
     },
     "Cerberus": {
         "Text": [
-            "You step out from the hidden passage and expect a moment to gather yourself. You were mistaken.",
-            "The ground quakes, and an ominous growl fills the air as the three-headed Cerberus emerges before you.",
-            "Each head snarls and gnashes in unison, its glowing eyes locking onto you with predatory intent.",
-            "'You dare to disturb the sanctity of the final relic?' the voices echo, a guttural chorus of menace.",
-            "'No one passes. No one escapes.' The beast's claws dig into the ground, its teeth gleaming in the faint light.",
-            "This is your pentultimate test-face the guardian or perish in its jaws."
+            "The track in front of the pedestal is worn deep enough to catch your boot. Three heads lift as you stumble.",
+            "'Relief?' asks one. Another noses your empty hands. The third closes its teeth on the edge of your cloak.",
+            "Behind the beast hangs an empty peg polished smooth by a chain long since gone. Cerberus braces all four feet across the track."
         ]
     },
     "Devil": {

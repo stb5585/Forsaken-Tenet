@@ -332,7 +332,7 @@ class QuestManager:
         end_text = qdata.get("End Text", "")
         if quest_name == "Uncertain Reports":
             self._show_uncertain_reports_completion()
-        if quest_name in ("Uncertain Reports", "Bring Him Home", "Rookie Mistake"):
+        if quest_name in ("Uncertain Reports", "Bring Him Home", "Rookie Mistake", "Lapidation"):
             end_text = ""
         if end_text and show_end_text:
             if self.quest_text_renderer:
@@ -628,6 +628,24 @@ class QuestManager:
             self._show_timmy_home_scene()
         elif quest_name == "Rookie Mistake":
             self._show_rookie_burial_scenes()
+        if quest_name == "Lapidation":
+            scene = StorySceneScreen(
+                self.presenter,
+                "The Thirsty Dog — Rutger’s Necklace",
+                participants=("Pell",),
+                background_image="tavern.jpg",
+                player_char=self.player_char,
+            )
+            scene.show_dialogue(
+                (
+                    StoryBeat("Pell", "You saw the bird fall? All the way down?"),
+                    StoryBeat(
+                        "Narrator",
+                        "Pell undoes his necklace. He starts to slip it over his head again, catches himself and holds it out to you.",
+                    ),
+                    StoryBeat("Pell", "Clasp sticks. Here, let me."),
+                )
+            )
         self._handle_quest_events(quest_name)
 
     def _show_rookie_burial_scenes(self) -> None:

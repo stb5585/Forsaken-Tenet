@@ -652,6 +652,9 @@ with incomplete evidence.
 
 ### Hooded Figure Development
 
+**Authorial decision:** The Figure intends to help. From the encounter outside the Thirsty Dog onward, the player has reason to suspect ill intentions. Their knowledge intrudes on private moments. Later help must leave the hero free to refuse; the Figure never explains this design to the player.
+
+
 The Hooded Figure should become more useful without becoming less unsettling.
 Their credibility grows because they leave room for refusal and admit limits,
 not because the story declares them trustworthy.

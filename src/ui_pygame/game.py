@@ -1033,7 +1033,9 @@ class PygameGame:
             background_image="dungeon.png",
             player_char=self.player_char,
         )
-        scene.show_dialogue((StoryBeat("Narrator", message, portrait_name=""),))
+        scene.show_dialogue(
+            tuple(StoryBeat("Narrator", paragraph) for paragraph in message.split("\n\n"))
+        )
 
     def _resolve_rookie_mistake_on_arrival(self) -> bool:
         """Turn in the recovered recruit through the authored arrival sequence."""

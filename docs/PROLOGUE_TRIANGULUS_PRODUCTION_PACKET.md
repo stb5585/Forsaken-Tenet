@@ -727,7 +727,7 @@ decisions and events but must not become the sole owner of story rules.
 11. Does Triangulus feel like a story event rather than only a full-heal pickup?
 12. Is the six-part possibility earned by evidence and still meaningfully
     uncertain?
-13. Does the exact altar callback make the Figure feel intrusive? If the player challenges them, could their silence while the door is open read differently on a second playthrough?
+13. The Figure is meant to feel intrusive and is secretly helping. Does the timing let the private quotation register? If the player challenges them, could their silence while the door is open read differently on a second playthrough?
 14. After returning to ordinary play, is there a clear reason to continue?
 
 ## Acceptance Gate
