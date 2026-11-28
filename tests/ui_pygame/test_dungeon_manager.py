@@ -2864,7 +2864,9 @@ def test_explore_dungeon_loop_and_render_paths(monkeypatch):
     loading_calls = []
     suppressed = []
     handled_keys = []
-    manager._show_dungeon_loading_screen = lambda msg, duration=1.25: loading_calls.append(msg)
+    manager._show_dungeon_loading_screen = (
+        lambda msg, duration=1.25, **_kwargs: loading_calls.append(msg)
+    )
     manager._suppress_navigation_input = lambda ms=250: suppressed.append(ms)
     manager._handle_keypress = lambda key: handled_keys.append(key) or setattr(
         manager, "running", False

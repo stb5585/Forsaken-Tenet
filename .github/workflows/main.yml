@@ -112,7 +112,8 @@ jobs:
           if [[ "$EVENT_NAME" == pull_request ]]; then
             changes=$(git diff --name-only HEAD^1 HEAD -- \
               .github/workflows/main.yml game_pygame.py pyproject.toml constraints.txt \
-              tools/build_distribution.py src/paths.py src/core/data src/ui_pygame/assets)
+              tools/build_distribution.py tools/export_runtime_art.py packaging/ \
+              src/paths.py src/core/data src/ui_pygame/assets)
             if [[ -z "$changes" ]]; then
               required=false
             fi

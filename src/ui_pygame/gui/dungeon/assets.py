@@ -309,27 +309,31 @@ class TextureLibrary:
         self._asset_fallbacks[f"{category}:{texture_key}"] = str(path)
 
     def ensure_loaded(self) -> None:
+        for _ in self.load_texture_steps():
+            pass
+
+    def load_texture_steps(self):
+        """Load textures incrementally and resume after an interrupted prewarm."""
         if self._loaded:
             return
 
         for texture_key, rel_path in self.texture_paths.items():
+            if texture_key in self._textures:
+                continue
             if texture_key == "ceiling_void":
                 void = pygame.Surface((128, 128), pygame.SRCALPHA)
                 void.fill((*FALLBACK_COLORS["ceiling_void"], 255))
                 self._textures[texture_key] = self._prepare_texture(texture_key, void)
-                continue
-
-            full_path = self.tileset_base / rel_path
-            if os.path.exists(full_path):
-                self._textures[texture_key] = self._prepare_texture(
-                    texture_key,
-                    self._load_image_surface(full_path),
-                )
             else:
-                self._record_asset_fallback("texture", texture_key, full_path)
-                fallback = pygame.Surface((128, 128), pygame.SRCALPHA)
-                fallback.fill((*FALLBACK_COLORS.get(texture_key, FALLBACK_COLORS["wall"]), 255))
-                self._textures[texture_key] = self._prepare_texture(texture_key, fallback)
+                full_path = self.tileset_base / rel_path
+                if os.path.exists(full_path):
+                    surface = self._load_image_surface(full_path)
+                else:
+                    self._record_asset_fallback("texture", texture_key, full_path)
+                    surface = pygame.Surface((128, 128), pygame.SRCALPHA)
+                    surface.fill((*FALLBACK_COLORS.get(texture_key, FALLBACK_COLORS["wall"]), 255))
+                self._textures[texture_key] = self._prepare_texture(texture_key, surface)
+            yield
 
         self._build_gathering_floor_textures()
         self._loaded = True

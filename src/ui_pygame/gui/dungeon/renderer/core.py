@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+from types import SimpleNamespace
 
 import pygame
 
@@ -49,19 +50,9 @@ class RendererCoreMixin:
         self.player_char = player_char
         view_w, view_h = self._get_viewport_size()
 
-        scene = extract_visible_scene(player_char, world_dict, max_depth=3)
-        self._configure_surface_slot_overrides(scene)
-        zones = {
-            depth: build_zone_geometry(
-                build_depth_rect(view_w, view_h, depth),
-                build_next_depth_rect(build_depth_rect(view_w, view_h, depth)),
-                depth=depth,
-            )
-            for depth in (1, 2, 3)
-        }
+        scene, zones, commands = self._prepare_scene(player_char, world_dict, (view_w, view_h))
         self._precache_jester_force_field_bodies(world_dict, zones)
 
-        commands = self._build_render_commands(scene, zones)
         self._emit_debug_snapshot(scene, commands)
         self._render_structure(commands, (view_w, view_h))
 
@@ -72,6 +63,51 @@ class RendererCoreMixin:
 
         if self.debug_geometry:
             self._render_debug_overlay(zones, scene)
+
+    def _prepare_scene(self, player_char, world_dict, view_size):
+        view_w, view_h = view_size
+        scene = extract_visible_scene(player_char, world_dict, max_depth=3)
+        self._configure_surface_slot_overrides(scene)
+        zones = {
+            depth: build_zone_geometry(
+                build_depth_rect(view_w, view_h, depth),
+                build_next_depth_rect(build_depth_rect(view_w, view_h, depth)),
+                depth=depth,
+            )
+            for depth in (1, 2, 3)
+        }
+        return scene, zones, self._build_render_commands(scene, zones)
+
+    def prepare_projection_cache(self, player_char, world_dict):
+        """Warm the entry view, then its immediate turns, without drawing."""
+        yield from self.textures.load_texture_steps()
+        view_size = self._get_viewport_size()
+        directions = ("north", "east", "south", "west")
+        facing_index = directions.index(player_char.facing)
+        for offset in (0, -1, 1):
+            camera = SimpleNamespace(
+                location_x=player_char.location_x,
+                location_y=player_char.location_y,
+                location_z=player_char.location_z,
+                facing=directions[(facing_index + offset) % len(directions)],
+            )
+            _, _, commands = self._prepare_scene(camera, world_dict, view_size)
+            for command in self._ordered_commands(commands):
+                self._get_projected_panel(command, view_size)
+                yield
+
+    @staticmethod
+    def _ordered_commands(commands):
+        return sorted(commands, key=lambda item: (-item.depth, item.order))
+
+    def _get_projected_panel(self, command: RenderCommand, view_size: tuple[int, int]):
+        return self.textures.get_projected_surface(
+            panel_id=command.panel_id,
+            texture_key=command.texture_key,
+            quad=command.quad,
+            darkness=command.darkness,
+            view_size=view_size,
+        )
 
     def _render_structure(self, commands: list[RenderCommand], view_size: tuple[int, int]) -> None:
         """Reuse the most recent opaque dungeon geometry beneath live effects."""
@@ -96,14 +132,8 @@ class RendererCoreMixin:
 
         screen.fill((0, 0, 0), viewport)
         overdraw = []
-        for command in sorted(commands, key=lambda item: (-item.depth, item.order)):
-            projected = self.textures.get_projected_surface(
-                panel_id=command.panel_id,
-                texture_key=command.texture_key,
-                quad=command.quad,
-                darkness=command.darkness,
-                view_size=view_size,
-            )
+        for command in self._ordered_commands(commands):
+            projected = self._get_projected_panel(command, view_size)
             screen.blit(projected.surface, projected.topleft)
             if can_cache:
                 x, y = projected.topleft

@@ -83,6 +83,12 @@ SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy \
   ./dist/forsaken-tenet/forsaken-tenet --smoke-test
 ```
 
+The desktop build stages runtime copies of oversized item art, enemy combat
+sprites, and full-body player dialogue portraits. The staging step preserves
+aspect ratio, transparency, and resource paths. The checkout retains the
+original art for editing and source runs. Runtime bounds and the first-use
+sample are recorded in the [mobile roadmap](docs/MOBILE_PLATFORM_ROADMAP.md#runtime-art-in-the-desktop-build).
+
 Manual dispatches and published GitHub releases build and upload the Linux
 artifact. Pull requests that touch packaging or game resources also build and
 smoke-test it. Ordinary pushes run source validation.

@@ -4580,3 +4580,44 @@ def test_matching_structure_reuses_pixels_but_redraws_live_overlays(monkeypatch)
         assert renderer._structure_layer.get_size() == renderer._get_viewport_size()
     finally:
         pygame.quit()
+
+
+def test_entry_prewarm_reuses_projections_for_entry_and_turns():
+    pygame.init()
+    try:
+        screen = pygame.display.set_mode((320, 240))
+        renderer = SceneRenderer(DummyPresenter(320, 240, screen), TextureLibrary())
+        player = DummyPlayer()
+        world = {
+            (0, 0, 1): OpenTile(),
+            (1, 0, 1): OpenTile(),
+            (0, -1, 1): WallTile(),
+            (0, 1, 1): OpenTile(),
+            (0, 2, 1): LockedDoor(),
+        }
+        screen.fill("green")
+        original_pixels = pygame.image.tobytes(screen, "RGB")
+
+        interrupted = renderer.prepare_projection_cache(player, world)
+        next(interrupted)
+        first_key, first_texture = next(iter(renderer.textures._textures.items()))
+        interrupted.close()
+
+        for _ in renderer.prepare_projection_cache(player, world):
+            pass
+
+        assert renderer.textures._textures[first_key] is first_texture
+        assert player.facing == "east"
+        assert pygame.image.tobytes(screen, "RGB") == original_pixels
+        assert renderer.textures.consume_projected_cache_activity()[1] > 0
+        for facing in ("east", "north", "south"):
+            player.facing = facing
+            renderer.render(player, world)
+            hits, misses = renderer.textures.consume_projected_cache_activity()
+            assert hits > 0 and misses == 0
+
+        world[(0, 2, 1)] = OpenDoor()
+        renderer.render(player, world)
+        assert renderer.textures.consume_projected_cache_activity()[1] > 0
+    finally:
+        pygame.quit()

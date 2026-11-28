@@ -285,6 +285,17 @@ Exit gate:
   software/PIL perspective-projection cost. Use performance diagnostics on the
   target Sunshine host to determine whether projection-cache misses align with
   movement stalls before adding a complete-scene cache or precomputing panels.
+- Dungeon entry uses the existing loading transition to prepare textures and
+  projected panels. It prepares the entry view first, then the immediate left
+  and right views while time remains. The normal draw completes any unfinished
+  preparation. Door changes still resolve through the current scene and its
+  projection cache keys.
+- In five paired headless runs at 1920×1080, median loading time stayed near
+  1.26 seconds with entry preparation enabled. Median first dungeon-view draw
+  fell from 677 ms to 69 ms, and median loading-plus-first-draw time fell from
+  1.93 to 1.33 seconds. The first left-turn draw at the entrance fell from
+  164 ms to 56 ms. These measurements cover the loading loop and renderer.
+  They exclude the existing navigation input guard and streaming latency.
 - In-place dungeon combat now follows the dungeon viewport width for enemy
   sprites and battlefield overlays. Its former right-column enemy info card is
   intentionally suppressed because it overlapped the responsive dungeon HUD;
@@ -298,7 +309,7 @@ Run the transition replay from the repository root.
 SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy ./.venv/bin/python -m tools.profile_cold_frames
 ```
 
-Each of five sessions per resolution starts with a new dungeon renderer and
+The baseline ran before dungeon entry preparation was added. Each of five sessions per resolution starts with a new dungeon renderer and
 cleared item, enemy, and NPC art caches. It draws the real floor-one entrance,
 then changes the camera to an authored door, turns, opens the door, and samples
 combat, one shop item, and a dialogue scene. It measures renderer work with
@@ -324,13 +335,34 @@ such as alpha conversion, background compositing, and combat UI drawing.
 The 1080p entrance drew 32 new structural panels. Projection took 332 ms and
 35 image loads took 157 ms. The first turn generated four new projections
 (107 ms) and opening the door generated one (29 ms). Repeated draws generated
-none. Start by preparing the entry view during the existing loading transition
-and measure both the loading duration and the first interactive frame. For
-turns and doors, profile nearby projected panels independently and test a small
-idle prewarm budget before increasing cache capacity. The existing combat
-preparation already warms the first enemy sprite. Shop and dialogue costs were
-mostly in setup, where background loading, fitting, and portrait decoding
-are better targets than increasing the scaled art limits.
+none. The entry preparation results above measure the subsequent change against
+a separate paired sample. Later turns and door openings remain useful targets
+for profiling nearby panels. Combat preparation already warms the first enemy
+sprite. Shop and dialogue costs were mostly in setup, where background loading,
+fitting, and portrait decoding account for much of the work.
+
+### Runtime art in the desktop build
+
+PyInstaller stages display-sized PNGs for oversized individual item art,
+enemy combat sprites, and full-body player dialogue cutouts. The build uses
+the same resource names and mapping files. Checkout runs use the source art.
+The exporter preserves the full canvas, aspect ratio, and alpha channel.
+
+| Art | Maximum bundled dimensions |
+| --- | --- |
+| Item art | 640×512 |
+| Enemy combat sprites | 768×900 |
+| Vesperion combat sprite | 1024×1280 |
+| Full-body player dialogue | 512×840 |
+
+The onedir artifact measured 402.4 MiB before staging and 339.1 MiB after
+staging. In nine fresh-manager samples per image at a 1080p display size,
+median decode-and-scale time fell from 8.6 to 3.3 ms for Bastard Sword,
+23.5 to 8.4 ms for Health Potion, 33.7 to 10.2 ms for Acolyte, 29.9 to
+17.8 ms for Vesperion, and 11.2 to 6.8 ms for a human player cutout. The
+headless sample uses the shipped loaders with warm OS file caches and
+excludes display presentation. Fullscreen visual review above 1080p is
+pending. Larger display slots may upscale the staged art.
 
 ## Phase 3 — Screen Runtime And Modal Migration
 
