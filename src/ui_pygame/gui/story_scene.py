@@ -8,6 +8,7 @@ import pygame
 
 from src.ui_pygame.assets.npc_art_manager import get_npc_art_manager
 from src.ui_pygame.assets.player_dialogue_art_manager import PlayerDialogueArtManager
+from src.ui_pygame.assets.scaled_surface_cache import ScaledSurfaceCache
 from src.ui_pygame.screen_runtime import get_events
 
 from .input_guards import (
@@ -218,6 +219,9 @@ class StorySceneScreen(TownScreenBase):
         self.background_draw_func = background_draw_func
         self.player_char = player_char or getattr(presenter, "player", None)
         self.player_dialogue_art_manager = player_dialogue_art_manager or PlayerDialogueArtManager()
+        self._scaled_portraits = ScaledSurfaceCache[tuple[pygame.Surface, tuple[int, int], bool]](
+            8 * 1024**2
+        )
         self.current_beat = StoryBeat("Narrator", "")
         self.transcript: list[StoryBeat] = []
         self._staged_portraits: dict[str, StagedPortrait] = {}
@@ -406,6 +410,10 @@ class StorySceneScreen(TownScreenBase):
             text_width = dialogue_rect.width - max(48, int(dialogue_rect.width * 0.06))
         return "\n".join(wrap_text_to_pixel_width(beat.text, self.normal_font, text_width))
 
+    def scaled_cache_stats(self) -> dict[str, int]:
+        """Report scaled portrait cache usage for this scene."""
+        return self._scaled_portraits.stats()
+
     def _draw_staged_portrait(
         self,
         staged: StagedPortrait,
@@ -423,9 +431,14 @@ class StorySceneScreen(TownScreenBase):
             max(1, int(source_width * scale)),
             max(1, int(source_height * scale)),
         )
-        fitted = pygame.transform.smoothscale(portrait, size)
-        if self._portrait_should_mirror(staged):
-            fitted = pygame.transform.flip(fitted, True, False)
+        mirror = self._portrait_should_mirror(staged)
+        key = (portrait, size, mirror)
+        fitted = self._scaled_portraits.get(key)
+        if fitted is None:
+            fitted = pygame.transform.smoothscale(portrait, size)
+            if mirror:
+                fitted = pygame.transform.flip(fitted, True, False)
+            self._scaled_portraits[key] = fitted
         destination = fitted.get_rect(midbottom=rect.midbottom)
         active = staged.speaker == active_speaker
         if active:

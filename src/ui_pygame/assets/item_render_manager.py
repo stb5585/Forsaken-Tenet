@@ -13,6 +13,7 @@ import pygame
 
 from src.paths import PYGAME_ASSETS_DIR
 from src.ui_pygame.assets.icon_manager import IconManager
+from src.ui_pygame.assets.scaled_surface_cache import ScaledSurfaceCache
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +86,7 @@ class ItemRenderManager:
         self.missing_mappings: set[str] = set()
         self._atlas_surface: pygame.Surface | None = None
         self._render_cache: dict[str, pygame.Surface] = {}
-        self._scaled_cache: dict[tuple[str, tuple[int, int]], pygame.Surface] = {}
+        self._scaled_cache = ScaledSurfaceCache[tuple[str, tuple[int, int]]](24 * 1024**2)
         self._fallback_surface: pygame.Surface | None = None
         self._icon_manager = IconManager()
         self.load_manifest()
@@ -308,6 +309,10 @@ class ItemRenderManager:
         pygame.draw.line(surface, (190, 151, 74), (80, 120), (80, 160), 5)
         self._fallback_surface = surface
         return surface
+
+    def scaled_cache_stats(self) -> dict[str, int]:
+        """Report scaled artwork cache usage and activity."""
+        return self._scaled_cache.stats()
 
     def clear_cache(self) -> None:
         self._atlas_surface = None

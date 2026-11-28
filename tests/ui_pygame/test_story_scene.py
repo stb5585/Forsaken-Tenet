@@ -323,10 +323,11 @@ def test_portraits_are_mirrored_when_native_facing_points_outward(monkeypatch):
         pygame.Rect(500, 100, 300, 600),
         active_speaker="Hero",
     )
+    npc_portrait = portrait.copy()
     monkeypatch.setattr(
         scene,
         "npc_portrait_surface",
-        lambda **_kwargs: portrait,
+        lambda **_kwargs: npc_portrait,
     )
     scene._draw_staged_portrait(
         story_scene.StagedPortrait("Caedmon", "Caedmon", "left"),
@@ -334,6 +335,12 @@ def test_portraits_are_mirrored_when_native_facing_points_outward(monkeypatch):
         active_speaker="Caedmon",
     )
 
+    scene._draw_staged_portrait(
+        story_scene.StagedPortrait("Caedmon", "Caedmon", "left"),
+        pygame.Rect(50, 100, 300, 600),
+        active_speaker="Hero",
+    )
+    assert scene.scaled_cache_stats()["hits"] == 1
     assert flip_calls == [(True, False), (True, False)]
 
 
