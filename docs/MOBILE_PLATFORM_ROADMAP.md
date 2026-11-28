@@ -364,6 +364,46 @@ headless sample uses the shipped loaders with warm OS file caches and
 excludes display presentation. Fullscreen visual review above 1080p is
 pending. Larger display slots may upscale the staged art.
 
+### Floor streaming decision
+
+The current desktop build loads the whole world. Keep that approach while
+world construction and retention are a small part of the load-time and
+memory budgets on target hardware. Re-run the baseline after substantial
+map growth or when save restoration becomes a visible pause on a supported
+low-memory device.
+
+```bash
+./.venv/bin/python -m tools.profile_world_loading
+```
+
+The sample covers 3,510 tiles across nine floors and a 1.02 MiB save
+with a changed door. Measurements are from 15 Linux workspace runs
+per operation with warm OS file caches. Allocation tracing was performed
+separately and measures Python allocations, excluding native memory such
+as decoded Pygame surfaces. Timings exclude display and network work.
+
+| Operation | Median | Retained Python memory | Peak Python memory |
+| --- | ---: | ---: | ---: |
+| Build a player and the full world | 14.5 ms | 2.50 MiB | 2.63 MiB |
+| Read a save and restore the full world | 48.3 ms | 2.96 MiB | 4.52 MiB |
+| Read the same save with tile restoration skipped | 4.7 ms | 0.05 MiB | 2.61 MiB |
+
+Skipping tiles provides a comparison for the cost of world restoration.
+A streamed implementation would still build the current floor and pay
+transition costs elsewhere. If target-hardware measurements justify that
+tradeoff, prototype lazy floor construction before adding eviction:
+
+- Preserve existing seeded trap, gathering, and mimic assignments across
+  load order. The current generators draw from world-wide streams.
+- Keep coordinate-keyed save state available for unloaded floors, including
+  doors, boss outcomes, and gathering progress. Round-trip a save through
+  stairs, warp points, and side realms in both directions.
+- Move cross-floor reads and updates onto explicit world queries or state
+  records. Town boss checks, dropped-body markers, and Funhouse teleporter
+  deactivation currently inspect the loaded world.
+- Compare first load, repeated floor transitions, and retained memory on the
+  target device before enabling streaming by default.
+
 ## Phase 3 — Screen Runtime And Modal Migration
 
 State: `In Progress — runtime and event-owner foundation complete`
