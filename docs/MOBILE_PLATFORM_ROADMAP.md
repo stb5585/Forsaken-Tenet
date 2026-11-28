@@ -235,6 +235,19 @@ Exit gate:
 - Larger source art may be downscaled once and cached for a viewport. Existing
   low-resolution art is never treated as a lossless fullscreen asset; filtering
   cannot restore detail lost from an upscaled source.
+- Scaled shop art and enemy sprites each have a 24 MiB pixel-buffer budget.
+  Each dialogue scene has an 8 MiB budget for its scaled portraits. These
+  budgets count retained scaled surfaces by pitch and height. Source images,
+  transient transforms, and other caches contribute separately to process RAM.
+- The repeatable headless session uses 32 shop items, 24 enemy sprites, and
+  three dialogue portraits at 1024×768, 1280×720, and 1920×1080, then returns
+  to 1024×768. At the third size, shop and enemy caches retained 67.9 MiB
+  before the change and 47.5 MiB afterward. All repeated recent requests
+  hit at each size. On returning to the first size, its older variants had
+  been evicted and were rebuilt once. The 1080p dialogue retained 3.3 MiB
+  and required three scales over 36 frames, down from 108.
+  Run `SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy ./.venv/bin/python -m tools.profile_scaled_art`
+  to reproduce the rendering sample.
 - `town@2x.png` and `dungeon@2x.png` are the current landscape presentation
   variants. They use aspect-preserving cover placement, so their viewport has
   no black frame. The supplied/generated sources are 1672x941, however, so a

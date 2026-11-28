@@ -11,6 +11,7 @@ from typing import Any
 import pygame
 
 from src.paths import PYGAME_ASSETS_DIR
+from src.ui_pygame.assets.scaled_surface_cache import ScaledSurfaceCache
 
 logger = logging.getLogger(__name__)
 
@@ -126,7 +127,7 @@ class EnemyCombatSpriteManager:
         self.combat_scale_map: dict[str, float] = {}
         self.dungeon_scale_map: dict[str, float] = {}
         self._sprite_cache: dict[str, pygame.Surface] = {}
-        self._scaled_cache: dict[tuple[str, tuple[int, int]], pygame.Surface] = {}
+        self._scaled_cache = ScaledSurfaceCache[tuple[str, tuple[int, int]]](24 * 1024**2)
         self._fallback_surface: pygame.Surface | None = None
         self.load_map()
         self.load_scale_map()
@@ -405,6 +406,10 @@ class EnemyCombatSpriteManager:
         pygame.draw.circle(surface, (210, 172, 88, 255), (216, 154), 7)
         self._fallback_surface = surface
         return surface
+
+    def scaled_cache_stats(self) -> dict[str, int]:
+        """Report scaled artwork cache usage and activity."""
+        return self._scaled_cache.stats()
 
     def clear_cache(self) -> None:
         self._sprite_cache.clear()
