@@ -301,6 +301,46 @@ Exit gate:
   intentionally suppressed because it overlapped the responsive dungeon HUD;
   detailed combat-side panels remain a later combat-layout migration.
 
+### Cold-frame profiling
+
+Run the transition replay from the repository root.
+
+```bash
+SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy ./.venv/bin/python -m tools.profile_cold_frames
+```
+
+The baseline ran before dungeon entry preparation was added. Each of five sessions per resolution starts with a new dungeon renderer and
+cleared item, enemy, and NPC art caches. It draws the real floor-one entrance,
+then changes the camera to an authored door, turns, opens the door, and samples
+combat, one shop item, and a dialogue scene. It measures renderer work with
+authored state changes. It excludes modal waits, the loading animation, display
+presentation, and network streaming. OS file caches may be warm. The tool
+reports median and max wall time and separately counts image loads, smooth
+scales, and structural panel projection work. The categories leave out work
+such as alpha conversion, background compositing, and combat UI drawing.
+
+| Phase | 1024×768 median | 1920×1080 median | 1080p repeat |
+| --- | ---: | ---: | ---: |
+| First dungeon entrance draw | 420 ms | 671 ms | 12 ms |
+| Door approach draw | 89 ms | 209 ms | 12 ms |
+| First turn draw | 66 ms | 167 ms | 12 ms |
+| Opened door draw | 31 ms | 84 ms | 11 ms |
+| Prepare combat art | 8 ms | 15 ms | — |
+| First combat draw after preparation | 7 ms | 14 ms | 13 ms |
+| Shop setup | 16 ms | 77 ms | — |
+| First Bastard Sword preview | 10 ms | 9 ms | <1 ms |
+| Dialogue setup | 31 ms | 53 ms | — |
+| First dialogue draw | 6 ms | 10 ms | 7 ms |
+
+The 1080p entrance drew 32 new structural panels. Projection took 332 ms and
+35 image loads took 157 ms. The first turn generated four new projections
+(107 ms) and opening the door generated one (29 ms). Repeated draws generated
+none. The entry preparation results above measure the subsequent change against
+a separate paired sample. Later turns and door openings remain useful targets
+for profiling nearby panels. Combat preparation already warms the first enemy
+sprite. Shop and dialogue costs were mostly in setup, where background loading,
+fitting, and portrait decoding account for much of the work.
+
 ### Runtime art in the desktop build
 
 PyInstaller stages display-sized PNGs for oversized individual item art,
