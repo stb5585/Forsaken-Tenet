@@ -285,6 +285,17 @@ Exit gate:
   software/PIL perspective-projection cost. Use performance diagnostics on the
   target Sunshine host to determine whether projection-cache misses align with
   movement stalls before adding a complete-scene cache or precomputing panels.
+- Dungeon entry uses the existing loading transition to prepare textures and
+  projected panels. It prepares the entry view first, then the immediate left
+  and right views while time remains. The normal draw completes any unfinished
+  preparation. Door changes still resolve through the current scene and its
+  projection cache keys.
+- In five paired headless runs at 1920×1080, median loading time stayed near
+  1.26 seconds with entry preparation enabled. Median first dungeon-view draw
+  fell from 677 ms to 69 ms, and median loading-plus-first-draw time fell from
+  1.93 to 1.33 seconds. The first left-turn draw at the entrance fell from
+  164 ms to 56 ms. These measurements cover the loading loop and renderer.
+  They exclude the existing navigation input guard and streaming latency.
 - In-place dungeon combat now follows the dungeon viewport width for enemy
   sprites and battlefield overlays. Its former right-column enemy info card is
   intentionally suppressed because it overlapped the responsive dungeon HUD;

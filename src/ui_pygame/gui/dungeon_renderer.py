@@ -29,6 +29,10 @@ class DungeonRenderer:
         self.screen = self.presenter.screen
         self.width, self.height = self.screen.get_size()
 
+    def prepare_projection_cache(self, player_char, world_dict):
+        """Return the prewarm steps for the upcoming dungeon frame."""
+        return self.scene_renderer.prepare_projection_cache(player_char, world_dict)
+
     def render_dungeon_view(self, player_char, world_dict):
         self._refresh_screen_refs()
         started = perf_counter()

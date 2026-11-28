@@ -5,6 +5,7 @@ import random
 import sys
 from math import ceil
 from pathlib import Path
+from time import perf_counter
 
 import pygame
 
@@ -522,8 +523,10 @@ class DungeonCoreMixin:
                 return candidate
         return None
 
-    def _show_dungeon_loading_screen(self, message: str, duration: float = 1.25):
-        """Display a short fake-loading screen with progress bar."""
+    def _show_dungeon_loading_screen(
+        self, message: str, duration: float = 1.25, *, preparation=None
+    ):
+        """Show the loading screen and fit preparation steps into its existing duration."""
         bg = self._load_dungeon_background()
         screen = self.presenter.screen
         width, height = screen.get_size()
@@ -582,6 +585,19 @@ class DungeonCoreMixin:
 
             if progress >= 1.0:
                 break
+
+            if preparation is not None:
+                deadline = perf_counter() + min(0.012, max(0, end_ms - now) / 1000)
+                while perf_counter() < deadline and pygame.time.get_ticks() < end_ms:
+                    try:
+                        next(preparation)
+                    except StopIteration:
+                        preparation = None
+                        break
+                    except (OSError, pygame.error) as exc:
+                        logger.warning("Dungeon entry prewarm stopped: %s", exc)
+                        preparation = None
+                        break
 
             clock.tick(60)
 

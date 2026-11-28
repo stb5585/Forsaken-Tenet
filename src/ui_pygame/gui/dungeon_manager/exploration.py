@@ -457,14 +457,19 @@ class DungeonExplorationMixin:
             )
         else:
             msg = "Entering the dungeon..."
-        self._show_dungeon_loading_screen(msg, duration=1.25)
-        self._suppress_navigation_input(ms=350)
-
-        # Initial message
         current_tile = self.get_current_tile()
         if current_tile:
             current_tile.visited = True
             current_tile.adjacent_visited(self.player_char)
+
+        prepare = getattr(self.renderer, "prepare_projection_cache", None)
+        preparation = (
+            prepare(self.player_char, self.player_char.world_dict)
+            if callable(prepare) and current_tile and not self.player_char.in_town()
+            else None
+        )
+        self._show_dungeon_loading_screen(msg, duration=1.25, preparation=preparation)
+        self._suppress_navigation_input(ms=350)
 
         self.add_message("You enter the dungeon...")
         self.add_message(f"Facing: {self.player_char.facing}")
