@@ -301,6 +301,29 @@ Exit gate:
   intentionally suppressed because it overlapped the responsive dungeon HUD;
   detailed combat-side panels remain a later combat-layout migration.
 
+### Runtime art in the desktop build
+
+PyInstaller stages display-sized PNGs for oversized individual item art,
+enemy combat sprites, and full-body player dialogue cutouts. The build uses
+the same resource names and mapping files. Checkout runs use the source art.
+The exporter preserves the full canvas, aspect ratio, and alpha channel.
+
+| Art | Maximum bundled dimensions |
+| --- | --- |
+| Item art | 640×512 |
+| Enemy combat sprites | 768×900 |
+| Vesperion combat sprite | 1024×1280 |
+| Full-body player dialogue | 512×840 |
+
+The onedir artifact measured 402.4 MiB before staging and 339.1 MiB after
+staging. In nine fresh-manager samples per image at a 1080p display size,
+median decode-and-scale time fell from 8.6 to 3.3 ms for Bastard Sword,
+23.5 to 8.4 ms for Health Potion, 33.7 to 10.2 ms for Acolyte, 29.9 to
+17.8 ms for Vesperion, and 11.2 to 6.8 ms for a human player cutout. The
+headless sample uses the shipped loaders with warm OS file caches and
+excludes display presentation. Fullscreen visual review above 1080p is
+pending. Larger display slots may upscale the staged art.
+
 ## Phase 3 — Screen Runtime And Modal Migration
 
 State: `In Progress — runtime and event-owner foundation complete`

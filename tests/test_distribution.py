@@ -43,3 +43,44 @@ def test_headless_startup_from_clean_working_directory(tmp_path):
     assert result.returncode == 0, result.stderr
     assert "Startup smoke test passed." in result.stdout
     assert (tmp_path / "user-data" / "saves").is_dir()
+
+
+def test_runtime_art_staging_preserves_source_and_bundle_paths(tmp_path):
+    from PIL import Image
+
+    from tools.export_runtime_art import stage_runtime_art
+
+    source = tmp_path / "example.png"
+    with Image.new("RGBA", (512, 768), (24, 88, 120, 96)) as image:
+        image.save(source)
+    original = source.read_bytes()
+    destination = "src/ui_pygame/assets/item_art/weapons/swords"
+
+    staged = stage_runtime_art(source, destination, tmp_path / "stage")
+
+    assert staged == tmp_path / "stage" / destination / source.name
+    with Image.open(staged) as runtime:
+        assert runtime.size == (341, 512)
+        assert runtime.mode == "RGBA"
+        assert runtime.getpixel((0, 0))[3] == 96
+    assert source.read_bytes() == original
+    assert stage_runtime_art(source, "src/ui_pygame/assets/backgrounds", tmp_path) == source
+    assert stage_runtime_art(staged, destination, tmp_path / "second-stage") == staged
+
+
+def test_runtime_dialogue_art_preserves_full_canvas(tmp_path):
+    from PIL import Image
+
+    from tools.export_runtime_art import stage_runtime_art
+
+    source = tmp_path / "portrait.png"
+    with Image.new("RGBA", (512, 1068)) as image:
+        image.paste((90, 120, 140, 255), (100, 200, 400, 1000))
+        image.save(source)
+
+    staged = stage_runtime_art(source, "src/ui_pygame/assets/player_dialogue", tmp_path / "stage")
+
+    with Image.open(staged) as runtime:
+        assert runtime.size == (403, 840)
+        assert runtime.getpixel((0, 0))[3] == 0
+        assert runtime.getpixel((200, 400))[3] == 255
